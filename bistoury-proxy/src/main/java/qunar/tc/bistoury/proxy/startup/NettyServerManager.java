@@ -24,6 +24,7 @@ import qunar.tc.bistoury.serverside.common.ZKClient;
 import qunar.tc.bistoury.serverside.common.ZKClientCache;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 import qunar.tc.bistoury.serverside.store.RegistryStore;
+import qunar.tc.bistoury.serverside.util.ServerManager;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -66,6 +67,9 @@ public class NettyServerManager {
     private ZKClient zkClient;
     private Conf conf;
 
+    int websocketPort = -1;
+    int tomcatPort = -1;
+
     private NettyServerForAgent nettyServerForAgent;
 
     private NettyServerForUi nettyServerForUi;
@@ -74,6 +78,9 @@ public class NettyServerManager {
     public void start() {
         zkClient = ZKClientCache.get(registryStore.getZkAddress());
         conf = Conf.fromMap(DynamicConfigLoader.load("global.properties").asMap());
+
+        websocketPort = conf.getInt("server.port", -1);
+        tomcatPort = ServerManager.getTomcatPort();
 
         nettyServerForAgent = startAgentServer(conf);
         nettyServerForUi = startUiServer(conf);
@@ -158,7 +165,7 @@ public class NettyServerManager {
     }
 
     private void registerUiNode() {
-        this.uiNode = doRegister(registryStore.getProxyZkPathForNewUi(), getIp() + ":" + conf.getInt("server.port", -1));
+        this.uiNode = doRegister(registryStore.getProxyZkPathForNewUi(), getIp() + ":" + tomcatPort + ":" + websocketPort);
     }
 
     private static String getIp() {

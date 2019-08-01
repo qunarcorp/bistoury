@@ -1,6 +1,7 @@
 package qunar.tc.bistoury.ui.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.ning.http.client.AsyncHttpClient;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -22,6 +24,7 @@ import qunar.tc.bistoury.ui.service.ProxyService;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Controller
@@ -32,8 +35,11 @@ public class ConfigController {
 
     private static final String SCHEMA = "ws://";
     private static final String PATH = "/ws";
+    private static final String COLON = ":";
 
     private static final AsyncHttpClient httpClient = AsyncHttpClientHolder.getInstance();
+
+    private static final Splitter PROXY_SPLITTER = Splitter.on(COLON);
 
     private static final TypeReference<ApiResult<AgentInfo>> AGENT_TYPE_REFERENCE = new TypeReference<ApiResult<AgentInfo>>() {
     };
@@ -70,17 +76,24 @@ public class ConfigController {
 
     private void doGetWebSocketUrl(List<String> result, List<String> proxyWebSocketUrls, final String agentIp) {
         for (String proxyWebSocketUrl : proxyWebSocketUrls) {
-            String proxyIp = proxyWebSocketUrl.substring(0, proxyWebSocketUrl.indexOf(':'));
-
-            String url = buildProxyAgentUrl(proxyIp);
+            Optional<ProxyInfo> optional = parseProxyInfo(proxyWebSocketUrl);
+            if (!optional.isPresent()) {
+                continue;
+            }
+            ProxyInfo proxyInfo = optional.get();
+            String url = buildProxyAgentUrl(proxyInfo);
             if (existAgent(url, agentIp)) {
-                result.add(SCHEMA + proxyWebSocketUrl + PATH);
+                result.add(buildWebsocketUrl(proxyInfo));
             }
         }
     }
 
-    private String buildProxyAgentUrl(String proxyIp) {
-        return String.format(proxyAgent, proxyIp);
+    private String buildWebsocketUrl(ProxyInfo proxyInfo) {
+        return SCHEMA + proxyInfo.getIp() + COLON + proxyInfo.getWebsocketPort() + PATH;
+    }
+
+    private String buildProxyAgentUrl(ProxyInfo proxyInfo) {
+        return String.format(proxyAgent, proxyInfo.getIp(), proxyInfo.getTomcatPort());
     }
 
     private boolean existAgent(String url, @RequestParam String agentIp) {
@@ -100,6 +113,17 @@ public class ConfigController {
         return false;
     }
 
+    private Optional<ProxyInfo> parseProxyInfo(String line) {
+        List<String> list = PROXY_SPLITTER.splitToList(line);
+        if (CollectionUtils.isEmpty(list) || list.size() != 3) {
+            return Optional.empty();
+        }
+        final String ip = list.get(0);
+        final int tomcatPort = Integer.valueOf(list.get(1));
+        final int websocketPort = Integer.valueOf(list.get(2));
+        return Optional.of(new ProxyInfo(ip, tomcatPort, websocketPort));
+    }
+
     private static class AgentInfo {
         private String ip;
 
@@ -109,6 +133,51 @@ public class ConfigController {
 
         public void setIp(String ip) {
             this.ip = ip;
+        }
+    }
+
+    private static class ProxyInfo {
+        private String ip;
+        private int tomcatPort;
+        private int websocketPort;
+
+        public ProxyInfo(String ip, int tomcatPort, int websocketPort) {
+            this.ip = ip;
+            this.tomcatPort = tomcatPort;
+            this.websocketPort = websocketPort;
+        }
+
+        public String getIp() {
+            return ip;
+        }
+
+        public void setIp(String ip) {
+            this.ip = ip;
+        }
+
+        public int getTomcatPort() {
+            return tomcatPort;
+        }
+
+        public void setTomcatPort(int tomcatPort) {
+            this.tomcatPort = tomcatPort;
+        }
+
+        public int getWebsocketPort() {
+            return websocketPort;
+        }
+
+        public void setWebsocketPort(int websocketPort) {
+            this.websocketPort = websocketPort;
+        }
+
+        @Override
+        public String toString() {
+            return "ProxyInfo{" +
+                    "ip='" + ip + '\'' +
+                    ", tomcatPort=" + tomcatPort +
+                    ", websocketPort=" + websocketPort +
+                    '}';
         }
     }
 }
