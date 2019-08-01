@@ -1,0 +1,142 @@
+code,
+kbd,
+pre,
+samp {
+    font-family: Consolas, Monospace;
+    font-size: 14px;
+}
+
+.jqconsole span {
+    word-wrap: break-word;
+    word-break: break-all;
+    white-space: pre-wrap !important;
+}
+
+.mainnav a.nav1 {
+    color: #418CC6;
+    text-decoration: none;
+    background: #EFF3F8;
+}
+
+/* The console container element */
+.console {
+    border: none !important;
+    height: calc(100% - 10px);
+    width: 100%;
+    position: relative;
+    margin: 10px auto 0px auto;
+}
+
+.full-screen-console {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    margin: 0px;
+}
+
+.console-li {
+    height: 100%;
+}
+
+.console-content {
+    background-color: #0a2833;
+    line-height: 20px;
+    font-size: 1.2em;
+}
+
+/* The inner console element. */
+.jqconsole {
+    padding: 10px;
+    background-color: #0a2833;
+}
+
+/* The cursor. */
+.jqconsole-cursor {
+    background-color: gray;
+    width: 8px;
+}
+
+/* The cursor color when the console looses focus. */
+.jqconsole-blurred .jqconsole-cursor {
+    background-color: #ffffff;
+}
+
+.jqconsole-header {
+    color: #ad8920;
+}
+
+.jqconsole-prompt-prefix {
+    color: #ad8920;
+}
+
+/* The current prompt text color */
+.jqconsole-prompt {
+    color: #fff;
+}
+
+/* The command history */
+.jqconsole-old-prompt {
+    color: #eee;
+    font-weight: normal;
+}
+
+/* The text color when in input mode. */
+.jqconsole-input {
+    color: #dd0;
+}
+
+/* Previously entered input. */
+.jqconsole-old-input {
+    color: #bb0;
+    font-weight: normal;
+}
+
+/* The text color of the output. */
+.jqconsole-output {
+    color: #ccd;
+    font-size: 14px;
+}
+
+#dialog label,
+#dialog input {
+    display: block;
+}
+
+#dialog label {
+    margin-top: 0.5em;
+}
+
+#dialog input,
+#dialog textarea {
+    width: 95%;
+}
+
+#tabs {
+    margin-top: 0px;
+    padding: 0px;
+    border: none;
+    height: 100%;
+}
+
+#tabs li .ui-icon-close {
+    float: left;
+    margin: 0.4em 0.2em 0 0;
+    cursor: pointer;
+}
+
+#add_tab {
+    cursor: pointer;
+}
+
+.ui-autocomplete {
+    max-height: 300px;
+    overflow-y: auto;
+    /* 防止水平滚动条 */
+    overflow-x: hidden;
+    z-index: 1500;
+}

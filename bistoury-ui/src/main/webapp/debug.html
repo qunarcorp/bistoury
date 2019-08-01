@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>在线debug</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/bootstrap.min.css?version=2.0.0">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css?version=2.0.0"/>
+    <link rel="stylesheet" href="css/bootstrap-table.css?version=2.0.0">
+    <link rel="stylesheet" href="css/bootstrap-chosen.css?version=2.0.0"/>
+    <link rel="stylesheet" href="css/main.css?version=2.0.0"/>
+    <link rel="stylesheet" href="css/base.css?version=2.0.0"/>
+    <link rel="stylesheet" href="css/debug.css?version=2.0.0"/>
+    <link rel="stylesheet" href="css/spop.min.css?version=2.0.0"/>
+
+    <link rel="stylesheet" href="highlight/styles/github-gist.css?version=2.0.0">
+
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bootstrap-table.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bootstrap-table-zh-CN.js"></script>
+    <script type="text/javascript" src="js/chosen.jquery.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/base64.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/jsencrypt.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/tripledes.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/mode-ecb.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/debug.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/spop.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bistoury.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/websocket.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/UUID.js?version=2.0.0"></script>
+
+    <script type="text/javascript" src="highlight/highlight.pack.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/header.js?version=2.0.0"></script>
+
+</head>
+<body>
+<div>
+    <div class="col-md-12 header" id="header">
+    </div>
+    <div class="container">
+        <div class="col-md-8 col-md-offset-2 content">
+            <div id="app-host-panel" class="col-md-8 col-md-offset-2" style="top: 40px;display: none">
+                <div class="form-group">
+                    <select id="app-list" class="form-control" data-placeholder="请选择应用名" style="width: 100%;margin-left: 0px;">
+                        <option value=""></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="host-list" class="form-control" data-placeholder="请选择机器" style="width: 100%;margin-left: 0px;">
+                        <option value=""></option>
+                    </select>
+                </div>
+                <div style="margin-top: 10px;width:100%;float: right;margin-bottom: 10px;">
+                    <p>
+                        初次使用时请
+                        <a id="set-gitlab-private-token" style="cursor: pointer">
+                            点此
+                        </a> 设置 Gitlab Private Token。
+                        <a href="api/url/redirect.do?name=debug.help.url" target="_blank">
+                            点此
+                        </a>查看帮助文档
+                    </p>
+                    <button id="app-host-choose" class="btn btn-info" style="margin-top: 10px;">debug</button>
+                    <!--<button id="app-host-jar-debug" class="btn btn-info" style="margin-top: 10px;">jar debug</button>-->
+                </div>
+                <div style="color: red" class="tips">
+                    <table style="border: none;">
+                        <colgroup>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <tr>
+                            <td>注意：</td>
+                            <td>agent第一次启动时，响应时间较长，可能需要10s。</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div id="jar-debug-panel" class="col-md-12" style="display: none">
+                <div class="back-app-host-panel">
+                    <button class="btn btn-info" style="border-radius: 0px;width: 85px;float: right;height: 37px;">返回</button>
+                </div>
+                <table id="jar-debug-table" class="table table-hover"></table>
+            </div>
+            <!--<div id="file-tree-panel" class="col-md-12" style="display: none">
+                <div class="back-app-host-panel">
+                    <button class="btn btn-info" style="border-radius: 0px;width: 85px;float: right;height: 37px;">返回</button>
+                </div>
+                <div>
+                    <ol class="breadcrumb path-tab">
+                    </ol>
+                </div>
+                <div id="file-tree">
+                    <table id="file-tree-table" class="col-md-12 table table-hover" style="font-size: 14px;border: none;">
+                        <thead>
+                        <tr>
+                            <th class="col-md-12">Name</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>-->
+        </div>
+        <div class="col-md-7 content file-panel" id="code-panel" style="z-index: 100;left: 0px;display: none">
+            <div class="col-md-12">
+                <div class="col-md-12">
+                    <div>
+                        <button id="back-class-table" class="btn btn-info" style="border-radius: 0px;width: 85px;float: right;height: 37px;">返回</button>
+                        <button id="down-source" class="btn btn-info" style="border-radius: 0px;width: 85px;float: right;height: 37px;display: none">下载源码
+                        </button>
+                    </div>
+                    <div>
+                        <ol class="breadcrumb path-tab">
+                        </ol>
+                    </div>
+                    <div class="col-md-7" id="file-content-panel">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="splitter-handle" class="col-md-offset-7 content splitter-handle" style="display: none" title="收起调试结果">
+            <div class="splitter-handle-highlight"></div>
+        </div>
+        <div class="col-md-5 col-md-offset-7 content file-panel" id="debug-result-panel" style="padding: 10px;left: 0px;right: 0px;display: none;">
+            <div id="debug-result-content">
+                <form>
+                    <input type="hidden" id="code-line">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="file-path" placeholder="点击左侧代码段的行号进行选择" disabled>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="project" placeholder="项目名称" title="项目名称" disabled>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="branch" placeholder="分支、tag、checksum" title="分支/tag/checksum" disabled>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="app" placeholder="应用" title="应用" disabled>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="host" placeholder="主机" title="主机" disabled>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="conditional-breakpoint" class="form-control" rows="3" placeholder="请输入断点条件（可选）"></textarea>
+                        <a href="api/url/redirect.do?name=debug.help.url" target="_blank">格式说明</a>
+                    </div>
+                    <div class="form-group">
+                        <a class="btn btn-info" id="add-breakpoint" href="#">添加断点</a>
+                        <a class="btn btn-info" id="delete-breakpoint" href="#" style="display: none">删除断点</a>
+                    </div>
+                </form>
+                <div class="col-md-12" id="debug-result">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">静态变量</div>
+                        <div class="panel-body">
+                            <table class="col-md-12 table table-hover" id="static-var">
+                                <colgroup>
+                                    <col width="20%">
+                                    <col width="80%">
+                                </colgroup>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">成员变量</div>
+                        <div class="panel-body">
+                            <table class="col-md-12 table table-hover" id="member-var">
+                                <colgroup>
+                                    <col width="20%">
+                                    <col width="80%">
+                                </colgroup>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">局部变量</div>
+                        <div class="panel-body">
+                            <table class="col-md-12 table table-hover" id="local-var">
+                                <colgroup>
+                                    <col width="20%">
+                                    <col width="80%">
+                                </colgroup>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">调用栈</div>
+                        <div class="panel-body">
+                            <table class="col-md-12 table table-hover" id="stack-trace">
+                                <colgroup>
+                                    <col width="100%">
+                                </colgroup>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 ">
+    <div class="modal fade col-md-8 col-md-offset-2" tabindex="-1" role="dialog" id="private-token-modal">
+        <div class="modal-dialog" role="document" style="width: 100%">
+            <div class="modal-content" style="margin-top: 100px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" style="font-size: 20px;">设置 Gitlab Private Token</h4>
+                </div>
+                <div class="modal-body col-md-12">
+                    <form class="form-horizontal">
+                        <div class="form-group col-md-12">
+                            <label for="private-token" class=" control-label" style="width: 15%">Private Token</label>
+                            <input type="text" class="form-control " id="private-token" placeholder="Gitlab Private Token"
+                                   style="width: 82%!important;float: right;">
+                        </div>
+                        <div class="form-group" style="width: 85%;float: right">
+                            <p style="margin-top: 10px">
+                                Private token 需要<a href="api/url/redirect.do?name=gitlab.private.token.url" target="_blank">点此</a>从 Gitlab 上获取。
+                            </p>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="save-gitlab-private-token">保存</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

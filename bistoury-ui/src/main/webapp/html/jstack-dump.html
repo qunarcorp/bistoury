@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>jstack 信息界面</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="../css/bootstrap.min.css?version=2.0.0">
+    <link rel="stylesheet" href="../css/bootstrap-treeview.css?version=2.0.0">
+    <link rel="stylesheet" href="../css/bootstrap-table.css?version=2.0.0">
+    <link rel="stylesheet" href="../css/main.css?version=2.0.0"/>
+    <link rel="stylesheet" href="../css/menu.css?version=2.0.0"/>
+    <link rel="stylesheet" href="../css/bootstrap-select.min.css?version=2.0.0">
+    <link rel="stylesheet" href="../css/daterangepicker.css?version=2.0.0">
+    <link rel="stylesheet" href="../css/jstack-dump.css?version=2.0.0">
+    <link rel="stylesheet" href="../css/spop.min.css?version=2.0.0">
+    <script type="text/javascript" src="../js/jquery-3.3.1.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/bootstrap-treeview.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/bootstrap-table.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/bootstrap-table-zh-CN.js"></script>
+    <script type="text/javascript" src="../js/echarts.common.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/jquery.cookie.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/base64.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/jsencrypt.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/tripledes.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/mode-ecb.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/header.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/bootstrap-select.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/handlebars-v4.0.5.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/moment.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/daterangepicker.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/jstack-dump.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/spop.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/bistoury.js?version=2.0.0"></script>
+    <script type="text/javascript" src="../js/websocket.js?version=2.0.0"></script>
+
+</head>
+
+<body>
+<div class="col-md-12 header" id="header">
+</div>
+<div id="jstack-info">
+
+    <div class="modal fade" id="jstack-dump-modal" tabindex="-1" role="dialog" aria-labelledby="jstack-dump-modal"
+         style="width: 90%;margin-left: 3%;overflow-y: hidden">
+        <div class="modal-dialog" role="document" style="width: 100%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="jstack-dump-modal-title">gc-jstack</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <table class="table table-hover" id="jstack-dump-table" style="overflow-y: auto"
+                               data-sort-name="cpuTime" data-sort-order="asc">
+                            <thead>
+                            <tr>
+                                <th style="width: 30% ">Thread Name</th>
+                                <th style="width: 10%">state</th>
+                                <th style="width: 10%">cpu time</th>
+                                <th style="width: 10%">lockOn</th>
+                                <th style="width: 40%">StackTrace</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td id="jstack_dump_name">RMI TCP Connection(71)-127.0.0.1</td>
+                                <td id="jstack_dump_state">RUNNABLE</td>
+                                <td id="jstack_dump_cpu_percent">0</td>
+                                <td id="jstack_dump_lock_on">0</td>
+                                <td>
+                                    <div id="jstack_dump_stackTrace">
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-container">
+        <div class="echart-body" id="jstack-curve">
+        </div>
+        <div class="row echart-center">
+            <div class="col-md-1"></div>
+            <button class="btn btn-primary" id="btn_refresh"><span class="glyphicon glyphicon-refresh"></span> 刷新
+            </button>
+            <div id="thread-select" class="col-md-2">
+
+            </div>
+            <div class="col-md-4">
+                <div>
+                    时间选择 : &nbsp;&nbsp;&nbsp;<input class="datepicker" style="padding:5px;width: 250px">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;时间间隔 <span id="minuteInterval">****</span>&nbsp;分钟
+                </div>
+            </div>
+        </div>
+        <div class="echart-point">
+            <form class="form-inline" style="margin-bottom: 10px;margin-left: 30px">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label for="search_jstack_name">ThreadName</label>
+                        <input type="text" class="form-control" id="search_jstack_name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="search_stack_trace">StackTrace</label>
+                        <input type="text" class="form-control" id="search_stack_trace">
+                    </div>
+                    <input type="checkbox" id="input_checkbox_blocked" name="checkbox" value="checkbox" style="zoom:150%; margin-left: 20px"
+                           checked>
+                    <label>Blocked</label>
+                    <input type="checkbox" id="input_checkbox_runnable" name="checkbox" value="checkbox" style="zoom:150%;"
+                           checked>
+                    <label>RUNNABLE</label>
+                    <input type="checkbox" id="input_checkbox_waiting" name="checkbox" value="checkbox" style="zoom:150%;"
+                           checked>
+                    <label>WAITING </label>
+                    <input type="checkbox" id="input_checkbox_time_waiting" name="checkbox" value="checkbox" style="zoom:150%;"
+                           checked>
+                    <label>TIMED_WAITING</label>
+
+                </div>
+            </form>
+            <div id="state-num" class="row" style="margin-bottom: 10px;margin-left: 30px">
+            </div>
+            <div class="row" style="margin-left: 30px;margin-bottom: 20px">
+                <span class="label label-info label-font" id="label_appCode"></span>
+                <span class="label label-info label-font" id="label_hostIp"></span>
+                <span class="label label-info label-font" id="label_date"></span>
+                <span class="label label-success label-font" style="margin-left: 20px" id="label_minute_total_cpu_time"></span>
+                <span class="label label-success label-font" style="margin-left: 20px" id="label_moment_total_cpu_time"></span>
+            </div>
+            <div style="margin-top: 5px">
+                <table class="table table-hover" id="all-jstack-table" data-sort-name="minuteCpuTime" data-sort-order="desc">
+                    <thead class>
+                    </thead>
+                    <tbody style="overflow: auto;height: 400px">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script id="stacktrace-template" type="text/x-handlebars-template">
+    <span class="label  {{labelColor}}"> </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+    <div class="glyphicon glyphicon-eye-open glyphicon-stacktrace" style="font-weight:bold" data-placement="right"
+         rel="popover" data-toggle="popover" title='<div style="font-weight: bold">stacktrace</div>' data-content="
+                <div style='white-space:pre'>{{#each stacktrace}}
+{{this}}{{/each}}
+                </div>
+            " data-original-title="">
+    </div>
+</script>
+
+<script id="progress-template" type="text/x-handlebars-template">
+    <div class="progress"><span class="progress-value"> {{percent}} %</span>
+        <div class="progress-bar" role="progressbar" aria-valuenow={{percent}} aria-valuemin="0" aria-valuemax="100"
+             style="width: {{percent}}%;"><span style="display:none">{{percent}}</span></div>
+    </div>
+</script>
+
+
+<script id="state-num-template" type="text/x-handlebars-template">
+    <span class="label  label-danger"> </span><span style="margin-left:10px">BLOCKED (NUM : {{BLOCKED}})</span>
+    <span class="label label-success" style="margin-left: 15px"> </span><span style="margin-left:10px">RUNNABLE
+        (NUM : {{RUNNABLE}})</span>
+    <span class="label label-warning" style="margin-left: 15px"> </span><span style="margin-left:10px">WAITING/TIMED_WAITING
+        (NUM : {{WAITING}})</span>
+    <span class="label label-default" style="margin-left: 15px"> </span><span style="margin-left:10px">OTHER
+        (NUM : {{OTHER}})</span>
+    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Total : {{TOTAL}}</span>
+</script>
+<script id="thread-info-template" type="text/x-handlebars-template">
+    <select class="selectpicker" data-live-search="true">
+        {{#each thread}}
+        <option value="{{this.value}}">{{this.name}}</option>
+        {{/each}}
+    </select>
+</script>
+<script>
+</script>
+</body>
+
+</html>

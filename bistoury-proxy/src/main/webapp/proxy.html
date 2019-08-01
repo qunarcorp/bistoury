@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bistoury Proxy Version</title>
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="css/bootstrap.min.css?version=2.0.0">
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js?version=2.0.0"></script>
+</head>
+<style>
+    li[role=presentation] > a {
+        border-radius: 0px;
+    }
+</style>
+<body>
+<div class="col-md-12">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist" style="background-color: #eee;">
+        <li role="presentation"><span style="font-size: 26px;padding: 10px;">Bistoury Agent Version</span></li>
+        <li role="presentation" class="active"><a href="#abstract" id="abstract-tab" aria-controls="abstract" role="tab" data-toggle="tab">版本概览</a></li>
+        <li role="presentation"><a href="#detail" id="detail-tab" aria-controls="detail" role="tab" data-toggle="tab">详细信息</a></li>
+        <li role="presentation"><a href="#search" id="search-tab" aria-controls="search" role="tab" data-toggle="tab">版本查询</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="abstract">
+            <div class="col-md-8 col-md-offset-2">
+                <button class="btn btn-info btn-sm" id="abstract-refresh" style="margin-top: 10px">刷新</button>
+                <table id="abstract-version" class="table table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>Version</th>
+                        <th>Count</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="detail">
+            <div class="col-md-8 col-md-offset-2">
+                <button class="btn btn-info btn-sm" id="detail-refresh" style="margin-top: 10px">刷新</button>
+                <table id="detail-version" class="table table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>AgentId</th>
+                        <th>Version</th>
+                        <th>Active</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="search">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="form-inline" style="margin-top: 40px">
+                    <input type="text" class="form-control" id="agentId" placeholder="请输入AgentId" style="width: 500px;border-radius: 0px;">
+                    <button id="search-btn" class="btn btn-info" style="border-radius: 0px;">查询</button>
+                </div>
+                <table id="search-version" class="table table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>AgentId</th>
+                        <th>Version</th>
+                        <th>Active</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        function getAbstractInfo() {
+            $.ajax({
+                "url": "/proxy/agent/version/abstract.do",
+                "type": "get",
+                success: function (ret) {
+                    if (ret.status === 0) {
+                        buildAbstractVersion(ret.data);
+                    } else {
+                        alert(ret.message)
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                    alert("获取Agent版本概览失败")
+                }
+
+            });
+        }
+
+        function getDetailInfo() {
+            $.ajax({
+                "url": "/proxy/agent/version/detail.do",
+                "type": "get",
+                success: function (ret) {
+                    if (ret.status === 0) {
+                        buildDetailVersion(ret.data);
+                    } else {
+                        alert(ret.message)
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                    alert("获取Agent版本详细信息失败")
+                }
+
+            });
+        }
+
+        function searchInfo() {
+            var agentId = $("#agentId").val();
+            if (!agentId) {
+                alert("请输入AgentId");
+                return;
+            }
+            $.ajax({
+                "url": "/proxy/agent/version/search.do",
+                "type": "get",
+                "data": {"agentId": agentId},
+                success: function (ret) {
+                    if (ret.status === 0) {
+                        buildSearchVersion(ret.data);
+                    } else {
+                        alert(ret.message)
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                    alert("Agent版本查询失败")
+                }
+
+            });
+        }
+
+        function buildAbstractVersion(data) {
+            for (var key in data) {
+                var versionTd = $("<td></td>").append(key);
+                var countTd = $("<td></td>").append(data[key]);
+                $("<tr></tr>").append(versionTd).append(countTd).appendTo("#abstract-version tbody");
+            }
+        }
+
+
+        function buildDetailVersion(data) {
+            for (var key in data) {
+                var agent = data[key];
+                var agentIdTd = $("<td></td>").append(agent.agentId);
+                var versionTd = $("<td></td>").append(agent.version);
+                var activeTd = $("<td></td>").append(agent.active);
+                $("<tr></tr>").append(agentIdTd).append(versionTd).append(activeTd).appendTo("#detail-version tbody");
+            }
+        }
+
+        function buildSearchVersion(data) {
+            for (var key in data) {
+                var agent = data[key];
+                var agentIdTd = $("<td></td>").append(agent.agentId);
+                var versionTd = $("<td></td>").append(agent.version);
+                var activeTd = $("<td></td>").append(agent.active);
+                $("<tr></tr>").append(agentIdTd).append(versionTd).append(activeTd).appendTo("#search-version tbody");
+            }
+        }
+
+        function init() {
+            getAbstractInfo();
+        }
+
+        $("#search-btn").click(function () {
+            $("#search-version tbody").empty();
+            searchInfo();
+        })
+
+        $("#abstract-tab").click(function () {
+            $("#abstract-version tbody").empty();
+            getAbstractInfo();
+        })
+        $("#detail-tab").click(function () {
+            $("#detail-version tbody").empty();
+            getDetailInfo();
+        })
+
+        $("#abstract-refresh").click(function () {
+            $("#abstract-version tbody").empty();
+            getAbstractInfo();
+        })
+        $("#detail-refresh").click(function () {
+            $("#detail-version tbody").empty();
+            getDetailInfo();
+        })
+        init();
+    })
+</script>
+</body>
+</html>

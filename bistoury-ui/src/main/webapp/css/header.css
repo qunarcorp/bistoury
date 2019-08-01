@@ -1,0 +1,80 @@
+.header {
+    height: 45px;
+    background-color: #438eb9;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 9999;
+}
+
+.header .navbar, .navbar-header {
+    height: 45px !important;
+    min-height: 45px !important;
+    border: none;
+}
+
+.header .container-fluid {
+    padding: 0px;
+    height: 45px;
+    background-color: #438eb9 !important;
+}
+
+.header .container-fluid .navbar-brand {
+    margin-left: 0px !important;
+    color: #fff;
+}
+
+.header .container-fluid .back {
+    padding-bottom: 0px;
+    padding-right: 15px;
+    height: 45px;
+    border-left: 1px solid #c7c7c7;
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+.header .container-fluid .back:hover {
+    background-color: #438ec0 !important;
+    color: #fff !important;
+}
+
+.header .navbar-header {
+    padding: 0px !important;
+    height: 45px !important;
+    background-color: #438eb9 !important;
+}
+
+.header .navbar-header li {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.header .navbar-header li .active {
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.header .navbar-header a {
+    height: 45px !important;
+}
+
+.navbar-default .navbar-nav > .active > a {
+    background-image: none !important;
+    font-size: 16px;
+    background-color: #36c6c8 !important;
+}
+
+.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:focus, .navbar-default .navbar-nav > .open > a:hover {
+    background-image: none !important;
+    color: #fff !important;
+    background-color: #2e6da4 !important;
+}
+
+.header .navbar-default .navbar-nav > li > a {
+    color: #fff !important;
+    background-color: #438ec0;
+    height: 45px;
+    font-size: 15px;
+}

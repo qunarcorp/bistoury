@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+    <id>bin</id>
+    <baseDirectory>bistoury-ui-${project.version}-bin</baseDirectory>
+
+    <formats>
+        <format>dir</format>
+        <format>tar.gz</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <includes>
+                <include>conf/**</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <includes>
+                <include>sql/**</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/webapp</directory>
+            <outputDirectory>webapp</outputDirectory>
+            <fileMode>0755</fileMode>
+            <lineEnding>keep</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>src/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>0755</fileMode>
+            <lineEnding>keep</lineEnding>
+        </fileSet>
+    </fileSets>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <unpack>false</unpack>
+            <useProjectArtifact>true</useProjectArtifact>
+        </dependencySet>
+    </dependencySets>
+</assembly>

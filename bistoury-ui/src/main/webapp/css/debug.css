@@ -1,0 +1,239 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0
+}
+
+.header {
+    width: 100%;
+    height: 45px;
+    position: absolute;
+    z-index: 2000;
+    top: 0;
+}
+
+.container {
+    overflow: auto;
+    top: 45px;
+    position: absolute;
+    z-index: 10;
+    bottom: 0px;
+    width: 100%;
+    background-color: #eee;
+}
+
+.content {
+    overflow: auto;
+    top: 0px;
+    position: absolute;
+    z-index: 10;
+    bottom: 0px;
+    background-color: #fff;
+}
+
+input {
+    height: 40px !important;
+    width: 100% !important;
+}
+
+.search input {
+    height: 34px !important;
+    width: 500px !important;
+}
+
+.breadcrumb {
+    margin: 0px;
+    font-size: 15px;
+    min-height: 37px;
+    border-bottom: solid 2px #48b8d9;
+    border-radius: 0px;
+}
+
+#file-tree table th, #file-tree table td {
+    border-right: none;
+    border-left: none;
+}
+
+.CodeMirror {
+    border: 1px solid #eee;
+    height: auto !important;
+    font-family: Consolas, "微软雅黑", Verdana, Tahoma, Arial, Helvetica, "宋体", "sans-serif" !important;
+}
+
+.CodeMirror-activeline-background {
+    background-color: #eee !important;
+}
+
+.CodeMirror-linenumber {
+    cursor: pointer;
+}
+
+.CodeMirror-activeline .CodeMirror-activeline-gutter .CodeMirror-linenumber {
+    background-color: #ff0000 !important;
+    color: #fff;
+}
+
+.CodeMirror-scroll {
+    height: auto;
+    overflow-y: hidden;
+    overflow-x: auto;
+}
+
+.chosen-disabled .chosen-single {
+    cursor: not-allowed !important;
+    background-color: #eee !important;
+}
+
+.chosen-disabled {
+    background-color: #eee !important;
+    color: #999999 !important;
+    opacity: 1 !important;
+}
+
+#file-content-panel {
+    position: fixed;
+    left: 0px;
+    top: 84px;
+    overflow: auto;
+    bottom: 0px;
+}
+
+#debug-result table {
+    margin: 0px !important;
+}
+
+#debug-result .panel-body {
+    padding: 0px !important;
+}
+
+#debug-result pre {
+    border: none;
+    font-size: 14px;
+}
+
+.panel-default > .panel-heading {
+    font-size: 15px;
+    font-weight: bolder;
+}
+
+.tips table tr td {
+    border: none;
+}
+
+.splitter-handle {
+    position: initial !important;
+}
+
+.splitter-handle-highlight {
+    width: 5px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 999;
+    position: fixed;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAMCAQAAADitaTfAAAAFUlEQVQIW2O++j+bkWUTAwZgJiwBAB9kCOy+u0d3AAAAAElFTkSuQmCC) no-repeat center center;
+}
+
+table pre {
+    background: inherit;
+    word-spacing: normal;
+    white-space: pre-wrap !important;
+}
+
+pre {
+    position: relative;
+    border: solid 1px #ccc;
+    border-left: none;
+    border-radius: 0px;
+    background: #FFF;
+    overflow: hidden;
+    margin: 0px;
+    padding: 0px;
+    white-space: pre !important;
+}
+
+code {
+    white-space: pre !important;
+    display: block;
+    overflow-y: auto;
+    overflow-x: auto !important;
+}
+
+.hljs ol {
+    padding: 0px;
+    margin: 0px;
+}
+
+.hljs ol li {
+    margin: 0px !important;
+    list-style-type: none;
+}
+
+.line-number {
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    width: 50px;
+    position: absolute;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    border: solid 1px #ccc;
+}
+
+.line-number .selected {
+    background-color: #ff0000;
+    color: #fff;
+}
+
+.line-number .selected:hover {
+    background-color: #ff0000 !important;
+    color: #fff !important;
+}
+
+.line-number .mouse-over {
+    background-color: #ff0000;
+    color: #fff;
+}
+
+.line-number .mouse-over:hover {
+    background-color: #ff0000 !important;
+    color: #fff !important;
+}
+
+.code-line {
+    margin-left: 50px;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+}
+
+.code-line .selected {
+    background-color: #eee !important;
+}
+
+.code-line .mouse-over {
+    background-color: #eee !important;
+}
+
+.line-number .number {
+    height: 20px;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+}
+
+.line-number .number:hover {
+    background-color: #eee;
+}
+
+.code-line .line {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    height: 20px;
+}
+
+.code-line .line:hover {
+    background-color: #eee;
+}
+
+.code-line .line .code-content {
+    margin-left: 10px;
+    margin-right: 10px;
+}

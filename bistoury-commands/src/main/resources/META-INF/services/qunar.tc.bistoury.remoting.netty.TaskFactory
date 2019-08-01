@@ -1,0 +1,10 @@
+qunar.tc.bistoury.commands.arthas.ArthasTaskFactory
+qunar.tc.bistoury.commands.JdkProcessCmdTaskFactory
+qunar.tc.bistoury.commands.host.HostTaskFactory
+qunar.tc.bistoury.commands.host.ThreadInfoTaskFactory
+qunar.tc.bistoury.commands.heapHisto.HeapHistoTaskFactory
+qunar.tc.bistoury.commands.monitor.QMonitorQueryTaskFactory
+qunar.tc.bistoury.commands.cpujstack.CpuTimeTaskFactory
+qunar.tc.bistoury.commands.cpujstack.ThreadInfoTaskFactory
+qunar.tc.bistoury.commands.cpujstack.ThreadNumTaskFactory
+qunar.tc.bistoury.commands.decompiler.DecompilerTaskFactory

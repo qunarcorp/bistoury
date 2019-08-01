@@ -1,0 +1,112 @@
+<html>
+<head>
+    <title>Bistoury 登录</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/bootstrap.min.css?version=2.0.0">
+    <link rel="stylesheet" href="css/spop.min.css?version=2.0.0">
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/spop.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bistoury.js?version=2.0.0"></script>
+    <style>
+        .control-label {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="col-md-12">
+    <div class="col-md-4 col-md-offset-4" style="margin-top: 100px;background-color: #eee;padding: 80px;border-radius: 10px;">
+        <form class="form-horizontal" action="/login.do" onsubmit="return vaild()" enctype="application/x-www-form-urlencoded" method="post">
+            <div class="form-group">
+                <label for="userCode" class="col-sm-2 control-label">用户名</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="userCode" name="userCode" required placeholder="user code">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password" class="col-sm-2 control-label">密码</label>
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" id="password" name="password" required placeholder="Password">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-default">登录</button>
+                    <a id="register" class="btn btn-default">注册</a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        function vaild() {
+            var userCode = document.getElementById("userCode").value;
+            var password = document.getElementById("password").value;
+            if (userCode && password) {
+                return true;
+            } else {
+                bistoury.error("用户名密码不能为空")
+                return false;
+            }
+        }
+
+        $(document).ready(function () {
+            $("#register").click(function () {
+                register();
+            })
+
+            function register() {
+                var userCode = $("#userCode").val();
+                var password = $("#password").val();
+                if (userCode && password) {
+                    $.ajax({
+                        url: '/user/register.do',
+                        method: 'POST',
+                        dataType: 'JSON',
+                        data: {
+                            userCode: userCode,
+                            password: password
+                        },
+                        success: function (res) {
+                            console.log(res);
+                            if (res.status == 0) {
+                                bistoury.success("注册成功，请登录")
+                            } else {
+                                bistoury.error("注册失败，" + res.message);
+                            }
+                        },
+                        error: function (error) {
+                            bistoury.error("注册失败，" + error.message);
+                        }
+                    })
+                } else {
+                    bistoury.error("用户名密码不能为空")
+                }
+            }
+
+            let errorCode = getQueryVariable("error");
+            if (errorCode == -1) {
+                alert("登录失败。请重新登录");
+                window.location = "/login.html";
+            } else if (errorCode == -2) {
+                alert("请登录")
+                window.location = "/login.html";
+            }
+
+            function getQueryVariable(variable) {
+                var query = window.location.search.substring(1);
+                var vars = query.split("&");
+                for (var i = 0; i < vars.length; i++) {
+                    var pair = vars[i].split("=");
+                    if (pair[0] == variable) {
+                        return pair[1];
+                    }
+                }
+                return (false);
+            }
+        })
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,39 @@
+.markdown-preview.markdown-preview {
+  // modify your style here
+  // eg: background-color: blue;
+  pre[class*="language-"] {
+    overflow: auto;
+  }
+
+  figure, p {
+    margin: 0;
+  }
+
+  blockquote {
+    margin: 0;
+  }
+}
+
+html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview {
+  padding: 2em !important;
+  top: 45px !important;
+  position: fixed;
+  overflow: auto;
+  height: calc(100% - 45px) !important;
+}
+
+@media screen and (min-width: 914px) {
+  html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview {
+    padding: 2em 5em !important;
+    position: fixed;
+    overflow: auto;
+    top: 45px;
+    height: calc(100% - 45px) !important;
+  }
+}
+
+html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc {
+  top: 45px !important;
+  height: calc(100% - 45px) !important;
+  padding: 10px 0 20px 0;
+}

@@ -1,0 +1,70 @@
+package qunar.tc.bistoury.ui.controller;
+
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import qunar.tc.bistoury.common.AsyncHttpClientHolder;
+import qunar.tc.bistoury.common.JacksonSerializer;
+import qunar.tc.bistoury.serverside.bean.ApiResult;
+import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.util.ResultHelper;
+import qunar.tc.bistoury.ui.service.ProxyService;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.util.List;
+
+/**
+ * @author zhenyu.nie created on 2019 2019/1/10 21:12
+ */
+@Controller
+@RequestMapping("notify")
+public class AgentMetaController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AgentMetaController.class);
+
+    private static final AsyncHttpClient httpClient = AsyncHttpClientHolder.getInstance();
+
+    private String proxyAgentMetaRefresh;
+
+    @Resource
+    private ProxyService proxyService;
+
+    @PostConstruct
+    public void init() {
+        DynamicConfigLoader.load("config.properties").addListener(conf -> proxyAgentMetaRefresh = conf.getString("agent.meta.refresh"));
+    }
+
+    @RequestMapping("agentMetaUpdate")
+    @ResponseBody
+    public ApiResult notifyAgentMetaUpdate(@RequestBody List<String> ips) {
+        logger.info("notify agent meta update, {}", ips);
+
+        if (ips == null || ips.isEmpty()) {
+            return ResultHelper.fail(-2, "no agent ip");
+        }
+
+        byte[] byteIps = JacksonSerializer.serializeToBytes(ips);
+        List<String> proxyWebSocketUrls = proxyService.getAllProxyUrls();
+        for (String proxyWebSocketUrl : proxyWebSocketUrls) {
+            String proxyIp = proxyWebSocketUrl.substring(0, proxyWebSocketUrl.indexOf(':'));
+            String url = buildAgentMetaRefreshUrl(proxyIp);
+            doNotify(url, byteIps);
+        }
+        return ResultHelper.success(true);
+    }
+
+    private String buildAgentMetaRefreshUrl(String proxyIp) {
+        return String.format(proxyAgentMetaRefresh, proxyIp);
+    }
+
+    private void doNotify(String url, byte[] byteIps) {
+        Request request = httpClient.preparePost(url).setBody(byteIps).build();
+        httpClient.executeRequest(request);
+    }
+}

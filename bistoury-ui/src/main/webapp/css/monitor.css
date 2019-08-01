@@ -1,0 +1,28 @@
+.daterangepicker_end_input {
+    padding-left: 0px !important;
+}
+
+.range_inputs input {
+    height: 32px !important;
+    border-radius: 0px !important;
+}
+
+.monitor-input {
+    height: 32px !important;
+    border-radius: 0px;
+}
+
+.monitor-input[disabled] {
+    cursor: auto;
+    background-color: #fff;
+}
+
+.monitor-label {
+    padding-right: 10px;
+    font-size: 16px;
+    padding-top: 6px;
+}
+
+.list-group a {
+    border-radius: 0px !important;
+}

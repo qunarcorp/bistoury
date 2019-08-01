@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>动态监控</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/bootstrap.min.css?version=2.0.0">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css?version=2.0.0"/>
+    <link rel="stylesheet" href="css/bootstrap-treeview.css?version=2.0.0">
+    <link rel="stylesheet" href="css/bootstrap-chosen.css?version=2.0.0"/>
+    <link rel="stylesheet" href="css/daterangepicker-1.3.7.css?version=2.0.0"/>
+    <link rel="stylesheet" media="all" href="css/daterangepicker-bs3.css?version=2.0.0"/>
+    <link rel="stylesheet" href="css/main.css?version=2.0.0"/>
+    <link rel="stylesheet" href="css/base.css?version=2.0.0"/>
+    <link rel="stylesheet" href="css/debug.css?version=2.0.0"/>
+    <link rel="stylesheet" href="css/monitor.css?version=2.0.0">
+    <link rel="stylesheet" href="css/spop.min.css?version=2.0.0"/>
+
+    <link rel="stylesheet" href="highlight/styles/github-gist.css?version=2.0.0">
+
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bistoury.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/websocket.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/moment-2.5.1.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/daterangepicker-1.3.7.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/chosen.jquery.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/base64.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/jsencrypt.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/tripledes.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/mode-ecb.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/monitor.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/spop.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/UUID.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js?version=2.0.0"></script>
+
+    <script type="text/javascript" src="highlight/highlight.pack.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/header.js?version=2.0.0"></script>
+
+</head>
+<body>
+<div>
+    <div class="col-md-12 header" id="header">
+    </div>
+    <div class="container" id="monitor-add-panel">
+        <div class="col-md-10 col-md-offset-1 content">
+            <div id="app-host-panel" class="col-md-8 col-md-offset-2" style="top: 40px;display: none">
+                <div class="form-group">
+                    <select id="app-list" class="form-control app-list" data-placeholder="请选择应用名" style="width: 100%;margin-left: 0px;">
+                        <option value=""></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="host-list" class="form-control host-list" data-placeholder="请选择机器" style="width: 100%;margin-left: 0px;">
+                        <option value=""></option>
+                    </select>
+                </div>
+                <div style="margin-top: 10px;width:100%;float: right;margin-bottom: 10px;">
+                    <p>
+                        初次使用时请
+                        <a id="set-gitlab-private-token" style="cursor: pointer">
+                            点此
+                        </a> 设置 Gitlab Private Token。
+                        <a href="api/url/redirect.do?name=monitor.help.url" target="_blank">
+                            点此
+                        </a>查看帮助文档
+                    </p>
+                    <button id="app-host-choose" class="btn btn-info" style="margin-top: 10px;">选择</button>
+                    <button id="go-monitor-result" class="btn-info btn" style="margin-top: 10px;">查看监控</button>
+                </div>
+                <div style="color: red" class="tips">
+                    <table style="border: none;">
+                        <colgroup>
+                            <col>
+                            <col>
+                        </colgroup>
+                        <tr>
+                            <td>注意：</td>
+                            <td>agent第一次启动时，响应时间较长，可能需要10s。</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div id="file-tree-panel" class="col-md-12" style="display: none">
+                <div id="back-app-host-panel">
+                    <button class="btn btn-info" style="border-radius: 0px;width: 85px;float: right;height: 37px;">返回</button>
+                </div>
+                <div>
+                    <ol class="breadcrumb path-tab">
+                    </ol>
+                </div>
+                <div id="file-tree">
+                    <table id="file-tree-table" class="col-md-12 table table-hover" style="font-size: 14px;border: none;">
+                        <thead>
+                        <tr>
+                            <th class="col-md-12">Name</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 content" id="monitor-result-panel"
+             style="margin: 0px;padding-top: 10px;overflow: hidden;left: 0px;position: absolute;top: 0px;display: none;">
+            <div class="col-md-12">
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="col-md-12">
+                        <form class="form-horizontal">
+                            <div class="form-group col-md-6">
+                                <label class="col-md-4  control-label monitor-label">应用</label>
+                                <div class="col-md-8">
+                                    <select id="monitor-app-list" class="form-control app-list" data-placeholder="请选择应用名" style="width: 100%;margin-left: 0px;">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="col-md-4  control-label monitor-label">主机</label>
+                                <div class="col-md-8">
+                                    <select id="monitor-host-list" class="form-control host-list" data-placeholder="请选择机器"
+                                            style="width: 100%;margin-left: 0px;">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-12 col-md-offset-2">
+                        <form class="form-inline search-form-panel" id="search-message-from" style="margin-top: 6px;">
+                            <div id="reportrange" class="pull-left dateRange col-md-4"
+                                 style="margin:0px 5px 0px -15px; background-color: #fff;">
+                                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                <span id="searchDateRange-message"></span>
+                                <b class="caret"></b>
+                            </div>
+                            <input id="startDate" name="startDate"
+                                   class="form-control" style="width: 160px;display:none;" type="text"
+                                   data-date-format="yyyy-MM-dd HH:mm:ss" placeholder="开始(指定时间范围查询更快速)"
+                                   value="">
+                            <input id="endDate" name="endDate" value=""
+                                   class="form-control" style="width: 160px;display:none;" type="text"
+                                   data-date-format="yyyy-MM-dd HH:mm:ss" placeholder="截至(指定时间范围查询更快速)">
+                            <div class="input-group">
+                                <a class="btn btn-default btn-sm"
+                                   href="javascript:void(0);" id="search-monitor" type="button">
+                                    <i class="glyphicon glyphicon-search"></i> 查詢
+                                </a>
+                            </div>
+                            <div class="input-group">
+                                <a class="btn btn-default btn-sm"
+                                   href="javascript:void(0);" id="refresh-monitor" type="button">
+                                    <i class="glyphicon glyphicon-refresh"></i> 刷新
+                                </a>
+                            </div>
+                            <div class="input-group">
+                                <a class="btn btn-default btn-sm" href="javascript:void(0);" type="button" id="go-add-monitor">
+                                    <i class="glyphicon glyphicon-share-alt" style="transform:scaleX(-1)"></i>返回
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <hr/>
+                </div>
+                <div class="col-md-12" style="position: absolute;top: 125px;overflow: auto;">
+                    <div class="col-md-3" id="quota-list-panel"
+                         style="padding: 0px;overflow: auto;position: fixed;left: 0px;right: 0px;top: 0px;bottom: 0px;margin-top: 170px;">
+                        <div class="list-group" id="quota-list">
+                        </div>
+                    </div>
+                    <div class="col-md-9 col-md-offset-3"
+                         style=" border-left: solid 1px #eee; overflow: auto;margin-top: 170px;position: fixed;top: 0px;left: 0px;bottom: 0px;right: 0px;">
+                        <div id="monitor-curve">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7 content file-panel" id="code-panel" style="z-index: 100;left: 0px;display: none">
+            <div class="col-md-12">
+                <div class="col-md-12">
+                    <div id="back-file-tree">
+                        <button class="btn btn-info" style="border-radius: 0px;width: 85px;float: right;height: 37px;">返回</button>
+                    </div>
+                    <div>
+                        <ol class="breadcrumb path-tab">
+                        </ol>
+                    </div>
+                    <div class="col-md-7" id="file-content-panel">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="splitter-handle" class="col-md-offset-7 content splitter-handle" style="display: none" title="收起监控面板">
+            <div class="splitter-handle-highlight"></div>
+        </div>
+        <div class="col-md-5 col-md-offset-7 content file-panel" id="debug-result-panel" style="padding: 10px;left: 0px;right: 0px;display: none;">
+            <div id="debug-result-content">
+                <form>
+                    <input type="hidden" id="code-line">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="file-path" placeholder="点击左侧代码段的行号进行选择" disabled>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="project" placeholder="项目名称" title="项目名称" disabled>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="branch" placeholder="分支、tag、checksum" title="分支/tag/checksum" disabled>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="app" placeholder="应用" title="应用" disabled>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="host" placeholder="主机" title="主机" disabled>
+                    </div>
+                    <div class="form-group">
+                        <a class="btn btn-info" id="add-monitor" href="#">添加监控</a>
+                        <a class="btn btn-info" id="watch-monitor-result" href="#">查看监控</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 ">
+    <div class="modal fade col-md-8 col-md-offset-2" tabindex="-1" role="dialog" id="private-token-modal">
+        <div class="modal-dialog" role="document" style="width: 100%">
+            <div class="modal-content" style="margin-top: 100px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" style="font-size: 20px;">设置 Gitlab Private Token</h4>
+                </div>
+                <div class="modal-body col-md-12">
+                    <form class="form-horizontal">
+                        <div class="form-group col-md-12">
+                            <label for="private-token" class=" control-label" style="width: 15%">Private Token</label>
+                            <input type="text" class="form-control " id="private-token" placeholder="Gitlab Private Token"
+                                   style="width: 82%!important;float: right;">
+                        </div>
+                        <div class="form-group" style="width: 85%;float: right">
+                            <p style="margin-top: 10px">
+                                Private token 需要<a href="api/url/redirect.do?name=gitlab.private.token.url" target="_blank">点此</a>从 Gitlab 上获取。
+                            </p>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="save-gitlab-private-token">保存</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

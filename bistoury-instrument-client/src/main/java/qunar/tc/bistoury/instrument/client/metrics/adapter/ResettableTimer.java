@@ -1,0 +1,67 @@
+package qunar.tc.bistoury.instrument.client.metrics.adapter;
+
+import com.codahale.metrics.Clock;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.Metric;
+import com.google.common.primitives.Ints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: liuzz
+ * Date: 15-5-7
+ * Time: 下午2:02
+ */
+public class ResettableTimer implements Metric {
+    private static final Logger LOG = LoggerFactory.getLogger(ResettableTimer.class);
+
+    public static final double P98 = 98.0;
+
+    private static final int DEFAULT_TIMER_SIZE = 8000;
+    private static final double[] DEFAULT_PER = new double[]{P98};
+
+    private final Meter meter;
+    private final StatsBuffer timer;
+
+    public ResettableTimer() {
+        this(Clock.defaultClock(), DEFAULT_PER, DEFAULT_TIMER_SIZE);
+    }
+
+    public ResettableTimer(Clock clock, double[] percentiles, int timerSize) {
+        this.meter = new Meter(clock);
+        this.timer = new StatsBuffer(timerSize, percentiles);
+    }
+
+    public void update(long el, TimeUnit timeUnit) {
+        meter.mark();
+        long time = timeUnit.toMillis(el);
+        try {
+            timer.record(Ints.checkedCast(time));
+        } catch (IllegalArgumentException e) {
+            LOG.debug("update timer failed.", e);
+        }
+    }
+
+    public double getFifteenMinuteRate() {
+        return meter.getFifteenMinuteRate();
+    }
+
+    public double getFiveMinuteRate() {
+        return meter.getFiveMinuteRate();
+    }
+
+    public double getMeanRate() {
+        return meter.getMeanRate();
+    }
+
+    public double getOneMinuteRate() {
+        return meter.getOneMinuteRate();
+    }
+
+    public StatsBuffer getBuffer() {
+        return timer;
+    }
+}

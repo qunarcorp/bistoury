@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>主机信息</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/bootstrap.min.css?version=2.0.0">
+    <link rel="stylesheet" href="css/bootstrap-treeview.css?version=2.0.0">
+    <link rel="stylesheet" href="css/bootstrap-table.css?version=2.0.0">
+    <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css?version=2.0.0">
+    <link rel="stylesheet" href="css/main.css?version=2.0.0"/>
+    <link rel="stylesheet" href="css/menu.css?version=2.0.0"/>
+    <link rel="stylesheet" href="highlight/styles/github-gist.css?version=2.0.0">
+    <link rel="stylesheet" href="css/spop.min.css?version=2.0.0">
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/websocket.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bootstrap-treeview.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bootstrap-table.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bootstrap-table-zh-CN.js"></script>
+    <script type="text/javascript" src="js/bootstrap-datetimepicker.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/base64.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/jsencrypt.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/tripledes.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/mode-ecb.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/machine.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/header.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/spop.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bistoury.js?version=2.0.0"></script>
+    <script type="text/javascript" src="highlight/highlight.pack.js?version=2.0.0"></script>
+</head>
+<body>
+<div>
+    <div class="col-md-12 header" id="header">
+
+    </div>
+    <div class="help-container">
+        <div class="menu" id="menu">
+
+        </div>
+        <div class="content">
+            <div id="content-pane">
+                <nav class="navbar navbar-default navbar-fixed-top">
+                    <div>
+                        <ul class="nav nav-pills" id="tab-menu">
+                            <li role="presentation" class="active" id="base-info-menu"><a href="#">基础信息</a></li>
+                            <li role="presentation" id="config-info-menu"><a href="#">文件信息</a></li>
+                            <li role="presentation" id="jvm-info-menu"><a href="#">jvm信息</a></li>
+                            <li role="presentation" id="thread-info-menu"><a href="#">Thread Dump</a></li>
+                            <li role="presentation" id="jstack-dump-menu"><a>jstack输出</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="tab-info" style="width: 100%;">
+                    <div id="base-info" class="tab">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th class="col-md-2">名称</th>
+                                <th class="col-md-4">值</th>
+                                <th class="col-md-4">描述</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Host Name</td>
+                                <td id="host-name" datatype="value"></td>
+                                <td>主机名</td>
+                            </tr>
+                            <tr>
+                                <td>IP</td>
+                                <td id="host-ip" datatype="value"></td>
+                                <td>IP地址</td>
+                            </tr>
+                            <tr>
+                                <td>Available Memory</td>
+                                <td id="host-am" datatype="value"></td>
+                                <td>可用内存</td>
+                            </tr>
+                            <tr>
+                                <td>Physical Memory Avaliable</td>
+                                <td id="host-pma" datatype="value"></td>
+                                <td>可用物理内存</td>
+                            </tr>
+                            <tr>
+                                <td>Physical Memory Total</td>
+                                <td id="host-pmt" datatype="value"></td>
+                                <td>总物理内存</td>
+                            </tr>
+                            <tr>
+                                <td>System CPU Load</td>
+                                <td id="host-scl" datatype="value"></td>
+                                <td>系统CPU利用率</td>
+                            </tr>
+                            <tr>
+                                <td>CPU Load Averages</td>
+                                <td id="host-cla" datatype="value"></td>
+                                <td>CPU 平均负载(仅linux下有值，1分钟、5分钟、15分钟、活动进程数/总进程数、当前运行进程ID)</td>
+                            </tr>
+                            <tr>
+                                <td>Disk Avaliable</td>
+                                <td id="host-da" datatype="value"></td>
+                                <td>可用磁盘空间</td>
+                            </tr>
+                            <tr>
+                                <td>Disk Total</td>
+                                <td id="host-dt" datatype="value"></td>
+                                <td>总磁盘空间</td>
+                            </tr>
+                            <tr>
+                                <td>OS</td>
+                                <td id="host-os" datatype="value"></td>
+                                <td>操作系统</td>
+                            </tr>
+                            <tr>
+                                <td>Java Version</td>
+                                <td id="host-java-version" datatype="value"></td>
+                                <td>Java 版本</td>
+                            </tr>
+                            <tr>
+                                <td>number of processors</td>
+                                <td id="host-nop" datatype="value"></td>
+                                <td>CPU 核数</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="config-info" class="tab">
+                        <div class="btn-group second-tab-menu" role="group" aria-label="" id="config-tab-menu">
+                            <button type="button" class="btn btn-default" id="appconfig-menu">应用配置文件</button>
+                        </div>
+                        <div class="second-tab-container">
+                            <div id="appconfig" class="config-tab">
+                                <table id="appconfig-table" class="table table-hover"></table>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="jvm-info" class="tab">
+                        <div class="btn-group second-tab-menu" role="group" aria-label="" id="jvm-tab-menu">
+                            <button type="button" class="btn btn-default" id="jvm-outline-menu">jvm概要</button>
+                            <button type="button" class="btn btn-default" id="jar-dep-menu">Jar Dependency</button>
+                            <button type="button" class="btn btn-default" id="jvm-memory-monitor-menu">JVM Memory Pool
+                                Monitor
+                            </button>
+                            <button type="button" class="btn btn-default" id="jvm-visua-gc-menu">Visua GC</button>
+                            <button type="button" class="btn btn-default" id="jvm-heap-histo-menu">Heap Histo</button>
+                        </div>
+                        <div class="second-tab-container">
+                            <div id="jvm-outline" class="jvm-tab">
+                                <div class="panel panel-default panel-left">
+                                    <div class="panel-heading">
+                                        基本信息
+                                    </div>
+                                    <div class="panel-body">
+                                        <table class="table table-hover">
+                                            <colgroup>
+                                                <col name="" width="30%">
+                                                <col name="" width="70%">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <td>运行时间</td>
+                                                <td id="jvm-upTime" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>虚拟机</td>
+                                                <td id="jvm-vmName" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>供应商</td>
+                                                <td id="jvm-vmVendor" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>JDK版本</td>
+                                                <td id="jvm-jdkVersion" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>进程CPU时间</td>
+                                                <td id="jvm-processCpuTime" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>JIT编译器</td>
+                                                <td id="jvm-jitCompiler" datatype="value"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default panel-right">
+                                    <div class="panel-heading">
+                                        程序
+                                    </div>
+                                    <div class="panel-body">
+                                        <table class="table table-hover">
+                                            <colgroup>
+                                                <col name="" width="30%">
+                                                <col name="" width="70%">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <td>活动线程</td>
+                                                <td id="jvm-currentThreadCount" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>线程峰值</td>
+                                                <td id="jvm-peakThreadCount" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>启动线程总数</td>
+                                                <td id="jvm-totalStartedThreadCount" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>守护线程数</td>
+                                                <td id="jvm-daemonThreadCount" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>已加载当前类</td>
+                                                <td id="jvm-loadedClassCount" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>已加载类总数</td>
+                                                <td id="jvm-totalLoadedClassCount" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>已卸载类总数</td>
+                                                <td id="jvm-unloadedClassCount" datatype="value"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default panel-left">
+                                    <div class="panel-heading">
+                                        规格
+                                    </div>
+                                    <div class="panel-body">
+                                        <table class="table table-hover">
+                                            <colgroup>
+                                                <col name="" width="30%">
+                                                <col name="" width="70%">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <td>当前堆内存</td>
+                                                <td id="jvm-heapUsedMemory" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>最大堆大小</td>
+                                                <td id="jvm-heapMaxMemory" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>堆提交内存</td>
+                                                <td id="jvm-heapCommitedMemory" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>非堆提交内存</td>
+                                                <td id="jvm-nonHeapCommitedMemory" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>当前非堆内存</td>
+                                                <td id="jvm-nonHeapUsedMemory" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>最大非堆大小</td>
+                                                <td id="jvm-nonHeapMaxMemory" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>垃圾收集器</td>
+                                                <td id="jvm-gcInfos" datatype="value"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default panel-right">
+                                    <div class="panel-heading">
+                                        软件
+                                    </div>
+                                    <div class="panel-body">
+                                        <table class="table table-hover">
+                                            <colgroup>
+                                                <col name="" width="30%">
+                                                <col name="" width="70%">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <td>操作系统</td>
+                                                <td id="jvm-os" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>体系结构</td>
+                                                <td id="jvm-osArch" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>处理器核数</td>
+                                                <td id="jvm-availableProcessors" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>提交虚拟内存</td>
+                                                <td id="jvm-commitedVirtualMemory" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>总物理内存</td>
+                                                <td id="jvm-totalPhysicalMemorySize" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>空闲物理内存</td>
+                                                <td id="jvm-freePhysicalMemorySize" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>总交换空间</td>
+                                                <td id="jvm-totalSwapSpaceSize" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>空闲交换空间</td>
+                                                <td id="jvm-freeSwapSpaceSize" datatype="value"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default panel-full">
+                                    <div class="panel-heading">
+                                        JVM
+                                    </div>
+                                    <div class="panel-body">
+                                        <table class="table table-hover">
+                                            <colgroup>
+                                                <col name="" width="15%">
+                                                <col name="" width="85%">
+                                            </colgroup>
+                                            <tbody>
+                                            <tr>
+                                                <td>JVM参数</td>
+                                                <td id="jvm-vmOptions" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>类路径</td>
+                                                <td id="jvm-classPath" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>库路径</td>
+                                                <td id="jvm-libraryPath" datatype="value"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>引导类路径</td>
+                                                <td id="jvm-bootClassPath" datatype="value"></td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="jar-dep" class="jvm-tab">
+                                <table id="jar-dep-table" class="table table-hover"></table>
+                            </div>
+                            <div id="jvm-memory-monitor" class="jvm-tab">
+                                <div class="curve" id="metaspace-curve"></div>
+                                <div class="curve" id="psOldGen-curve"></div>
+                                <div class="curve" id="compressedClassSpace-curve"></div>
+                                <div class="curve" id="pSSurvivorSpace-curve"></div>
+                                <div class="curve" id="pSEdenSpace-curve"></div>
+                                <div class="curve" id="codeCache-curve"></div>
+                            </div>
+                            <div id="jvm-visua-gc" class="jvm-tab">
+                                <div class="curve" id="compile-time-curve"></div>
+                                <div class="curve" id="class-loader-time-curve"></div>
+                                <div class="curve" id="gc-time-curve"></div>
+                                <div class="curve" id="eden-space-curve"></div>
+                                <div class="curve" id="survivor-0-curve"></div>
+                                <div class="curve" id="survivor-1-curve"></div>
+                                <div class="curve" id="old-gen-curve"></div>
+                                <div class="curve" id="gc-metaspace-curve"></div>
+                                <div class="curve" id="perm-gen-curve"></div>
+                            </div>
+                            <div id="jvm-heap-histo" class="jvm-tab">
+                                <div class="col-md-12">
+                                    <p>查询 heap histo 可以选择参数，默认使用 -all。选择后可点击 <i class="glyphicon glyphicon-refresh"></i>（刷新图标）重新查询</p>
+                                    <p>可以通过选择查询时间，查询最近三天中的 heap histo，采用的参数为 -all，选择时间后点击查询按钮查询历史 heap histo</p>
+                                    <p style="color: red">注意：-live 参数会导致应用进行一次 full gc，请谨慎使用。</p>
+                                    <p><a target="_blank"
+                                          href="/api/url/redirect.do?name=jstack.jmap.help.url">点此</a> 查看说明文档
+                                    </p>
+                                </div>
+                                <div id="toolbar" style="margin-right: 12px;">
+                                    <form class="form-inline">
+                                        <div class="form-group">
+                                            <label for="heap-histo-time">查询时间</label>
+                                            <input type="text" id="heap-histo-time" class="form_datetime" data-date-format="yyyy-mm-dd hh:ii"
+                                                   placeholder="请输入需要查询的时间" style="width: 180px">
+                                        </div>
+                                        <button type="button" id="heap-histo-search" class="btn btn-info">查询</button>
+                                        <select class="form-control" id="heap-histo-param" style="border-radius: 0px;">
+                                            <option value="-all">-all</option>
+                                            <option value="-live">-live</option>
+                                        </select>
+                                    </form>
+                                </div>
+                                <table id="jvm-heap-histo-table" class="table table-hover"></table>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="thread-info" class="tab">
+                        <div id="thread-curve" class="curve">
+
+                        </div>
+                        <div>
+                            <div id="thread-all" class="panel panel-left">
+                                <div>
+                                    <div style="float: left">
+                                        线程 Total Cpu Time: <span id="thread-total-cpu-time"></span>
+                                    </div>
+                                    <div style="float: right;color: #36c6c8;cursor: pointer;" id="thread-info-refresh">
+                                        刷新 <i class="glyphicon glyphicon-refresh"></i>
+                                    </div>
+                                </div>
+                                <div class="search" style="padding-top:35px ">
+                                    <input type="text" id="thread-table-search" placeholder="请输入搜索内容...">
+                                    <i class="glyphicon glyphicon-search"></i>
+                                </div>
+                                <div>
+                                    <table class="table table-hover" id="all-thread-table">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 30%">cpu time</th>
+                                            <th style="width: 20%">state</th>
+                                            <th style="width: 50%">thread name</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody style="overflow: auto;height: 400px">
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="thread-detail-info" class="panel panel-right">
+                                <div style="margin-bottom: 10px;">
+                                    <form class="form-inline">
+                                        <div class="form-group">
+                                            <label for="thread-detail-highlight">Highlight words:</label>
+                                            <input type="text" class="form-control" id="thread-detail-highlight">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="thread-max-depth">max depth:</label>
+                                            <input type="number" class="form-control" id="thread-max-depth" min="0"
+                                                   value="3"
+                                                   style="width: 60px;padding-right: 0px;">
+                                        </div>
+                                        <button type="button" class="btn btn-info"
+                                                style="float: right;margin-left: 10px;" id="thread-dead-Lock">检查死锁
+                                        </button>
+                                        <button type="button" class="btn btn-info" id="thread-dump"
+                                                style="float: right;">
+                                            Thread Dump
+                                        </button>
+                                    </form>
+                                </div>
+                                <div>
+                                    <table>
+                                        <colgroup>
+                                            <col width="20%">
+                                            <col width="80%">
+                                        </colgroup>
+                                        <tbody>
+                                        <tr>
+                                            <td>名称</td>
+                                            <td id="thread-detail-name" datatype="value"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CPU时间</td>
+                                            <td id="thread-detail-cpuTime" datatype="value"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>状态</td>
+                                            <td id="thread-detail-state" datatype="value"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>总阻止数</td>
+                                            <td id="thread-detail-blocked" datatype="value"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>总等待数</td>
+                                            <td id="thread-detail-waited" datatype="value"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>堆栈跟踪</td>
+                                            <td id="thread-detail-stackTrace" datatype="value"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="process-panel" class="tab"></div>
+                    <div id="jstack-dump-panel" class="tab"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 content host-model">
+    <div class="modal fade bs-example-modal-lg" id="thread-dump-modal" tabindex="-1" role="dialog"
+         aria-labelledby="thread-dump-modal">
+        <div class="modal-dialog" role="document" style="width: 94%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="thread-dump-modal-title">All Threads</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="search">
+                            <input type="text" id="thread-dump-search" placeholder="请输入搜索内容...">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <table class="table table-hover" id="thread-dump-table">
+                            <thead>
+                            <tr>
+                                <th style="width: 6%">Id</th>
+                                <th style="width: 24% ">Name</th>
+                                <th style="width: 10%">State</th>
+                                <th style="width: 8%">Waited Count</th>
+                                <th style="width: 8%">Blocked Count</th>
+                                <th style="width: 44%">Stack Trace</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                        <div id="thread-dump-no-data">
+                            <h3 align="center">没有查询到线程信息···</h3>
+                        </div>
+                        <div id="thread-dump-wait">
+                            <h3 align="center">加载中···</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 content host-model">
+    <div class="modal fade bs-example-modal-lg" id="file-content-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document" style="width: 90%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">文件内容</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12" id="file-content-panel">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
