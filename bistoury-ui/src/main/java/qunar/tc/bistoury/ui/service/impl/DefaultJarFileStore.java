@@ -87,8 +87,10 @@ public class DefaultJarFileStore implements JarFileStore {
 
 
         DynamicConfig dynamicConfig = DynamicConfigLoader.load("config.properties");
-        dynamicConfig.addListener(config -> mavenHost = config.getString("maven.nexus.url"));
-        jarGuaranteePeriodDays = dynamicConfig.getInt("jar.guarantee.period.days", 2);
+        dynamicConfig.addListener(config -> {
+            mavenHost = config.getString("maven.nexus.url");
+            jarGuaranteePeriodDays = config.getInt("jar.guarantee.period.days", 2);
+        });
 
         this.cache = CacheBuilder
                 .newBuilder()

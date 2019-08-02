@@ -33,7 +33,7 @@ public class HelpController {
     private static String version;
 
     static {
-        DynamicConfigLoader.load("config.properties").addListener(conf -> version = conf.getString("agent.lastVersion"));
+        DynamicConfigLoader.load("config.properties").addListener(conf -> version = conf.getString("agent.lastVersion", "1.0"));
     }
 
     @ResponseBody
