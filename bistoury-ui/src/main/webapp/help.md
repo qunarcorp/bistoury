@@ -66,14 +66,20 @@ output=master
 ```
 ### JVM参数配置
 Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
+
 |参数名称|是否必须|默认值|说明|
 |-------|---|---|----|
 |bistoury.store.path|否|/home/bistoury/store|bistoury agent数据存放路径，包括rocksdb存放的监控、jstack及jmap数据和反编译代码临时文件的存放|
 |bistoury.proxy.host|是||proxy的域名，具体值请联系管理员，agent依赖该值获取proxy的连接配置信息|
 |bistoury.app.lib.class|是||应用依赖的jar包中的一个类（推荐使用公司内部中间件的jar包或Spring相关包中的类，如org.springframework.web.servlet.DispatcherServlet），agent通过该类获取加载应用类的classloader|
-|bistoury.app.entry.class|否|org.apache.catalina.startup.Bootstrap|attach的应用入口类，用于使用jps -l命令获取应用pid|
-|bistoury.app.classes.path|否|bistoury.app.lib.class对应jar包目录同级的classes目录|项目代码编译后字节码存放目录，一般情况下为classes目录
-运行bin目录下的脚本进行启动，可以在bistoury-ui-env.sh中的JAVA_OPTS里配置JVM相关参数，GC相关配置已配置，
+|bistoury.pid.handler.jps.symbol.class|否|org.apache.catalina.startup.Bootstrap|attach的应用入口类，用于使用jps -l命令获取应用pid|
+|bistoury.pid.handler.jps.enable|否|true|是否打开通过jps -l获取pid的开关|
+|bistoury.pid.handler.ps.enable|否|true|是否打开通过ps aux|grep java 获取pid的开关|
+|bistoury.app.classes.path|否|bistoury.app.lib.class对应jar包目录同级的classes目录|项目代码编译后字节码存放目录，一般情况下为classes目录|
+|bistoury.agent.workgroup.num|否|2|agent netty work group 线程数|
+|bistoury.agent.thread.num|否|16|agent执行命令的线程数|
+
+运行bin目录下的脚本进行启动，可以在bistoury-agent-env.sh中的JAVA_OPTS里配置JVM相关参数，GC相关配置已配置，
 ## 启动bistoury agent
 在启动是可以通过-pid指定pid确定agent attach特定的java进程，不指定时会通过jps -l和ps aux|grep java 命令及proxy中配置的参数解析pid，优先级依次降低。
 + 启动

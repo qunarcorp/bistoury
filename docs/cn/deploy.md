@@ -111,7 +111,7 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 |bistoury.pid.handler.ps.enable|否|true|是否打开通过ps aux|grep java 获取pid的开关|
 |bistoury.app.classes.path|否|bistoury.app.lib.class对应jar包目录同级的classes目录|项目代码编译后字节码存放目录，一般情况下为classes目录|
 |bistoury.agent.workgroup.num|否|2|agent netty work group 线程数|
-|bistoury.agent.thread.num|否|16|agent执行命令的线程数
+|bistoury.agent.thread.num|否|16|agent执行命令的线程数|
 
 运行bin目录下的脚本进行启动，可以在bistoury-agent-env.sh中的JAVA_OPTS里配置JVM相关参数，GC相关配置已配置，
 

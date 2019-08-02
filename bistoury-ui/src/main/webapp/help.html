@@ -378,10 +378,22 @@ html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc
 <td>&#x5E94;&#x7528;&#x4F9D;&#x8D56;&#x7684;jar&#x5305;&#x4E2D;&#x7684;&#x4E00;&#x4E2A;&#x7C7B;&#xFF08;&#x63A8;&#x8350;&#x4F7F;&#x7528;&#x516C;&#x53F8;&#x5185;&#x90E8;&#x4E2D;&#x95F4;&#x4EF6;&#x7684;jar&#x5305;&#x6216;Spring&#x76F8;&#x5173;&#x5305;&#x4E2D;&#x7684;&#x7C7B;&#xFF0C;&#x5982;org.springframework.web.servlet.DispatcherServlet&#xFF09;&#xFF0C;agent&#x901A;&#x8FC7;&#x8BE5;&#x7C7B;&#x83B7;&#x53D6;&#x52A0;&#x8F7D;&#x5E94;&#x7528;&#x7C7B;&#x7684;classloader</td>
 </tr>
 <tr>
-<td>bistoury.app.entry.class</td>
+<td>bistoury.pid.handler.jps.symbol.class</td>
 <td>&#x5426;</td>
 <td>org.apache.catalina.startup.Bootstrap</td>
 <td>attach&#x7684;&#x5E94;&#x7528;&#x5165;&#x53E3;&#x7C7B;&#xFF0C;&#x7528;&#x4E8E;&#x4F7F;&#x7528;jps -l&#x547D;&#x4EE4;&#x83B7;&#x53D6;&#x5E94;&#x7528;pid</td>
+</tr>
+<tr>
+<td>bistoury.pid.handler.jps.enable</td>
+<td>&#x5426;</td>
+<td>true</td>
+<td>&#x662F;&#x5426;&#x6253;&#x5F00;&#x901A;&#x8FC7;jps -l&#x83B7;&#x53D6;pid&#x7684;&#x5F00;&#x5173;</td>
+</tr>
+<tr>
+<td>bistoury.pid.handler.ps.enable</td>
+<td>&#x5426;</td>
+<td>true</td>
+<td>&#x662F;&#x5426;&#x6253;&#x5F00;&#x901A;&#x8FC7;ps aux</td>
 </tr>
 <tr>
 <td>bistoury.app.classes.path</td>
@@ -389,9 +401,21 @@ html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc
 <td>bistoury.app.lib.class&#x5BF9;&#x5E94;jar&#x5305;&#x76EE;&#x5F55;&#x540C;&#x7EA7;&#x7684;classes&#x76EE;&#x5F55;</td>
 <td>&#x9879;&#x76EE;&#x4EE3;&#x7801;&#x7F16;&#x8BD1;&#x540E;&#x5B57;&#x8282;&#x7801;&#x5B58;&#x653E;&#x76EE;&#x5F55;&#xFF0C;&#x4E00;&#x822C;&#x60C5;&#x51B5;&#x4E0B;&#x4E3A;classes&#x76EE;&#x5F55;</td>
 </tr>
+<tr>
+<td>bistoury.agent.workgroup.num</td>
+<td>&#x5426;</td>
+<td>2</td>
+<td>agent netty work group &#x7EBF;&#x7A0B;&#x6570;</td>
+</tr>
+<tr>
+<td>bistoury.agent.thread.num</td>
+<td>&#x5426;</td>
+<td>16</td>
+<td>agent&#x6267;&#x884C;&#x547D;&#x4EE4;&#x7684;&#x7EBF;&#x7A0B;&#x6570;</td>
+</tr>
 </tbody>
 </table>
-<p>&#x8FD0;&#x884C;bin&#x76EE;&#x5F55;&#x4E0B;&#x7684;&#x811A;&#x672C;&#x8FDB;&#x884C;&#x542F;&#x52A8;&#xFF0C;&#x53EF;&#x4EE5;&#x5728;bistoury-ui-env.sh&#x4E2D;&#x7684;JAVA_OPTS&#x91CC;&#x914D;&#x7F6E;JVM&#x76F8;&#x5173;&#x53C2;&#x6570;&#xFF0C;GC&#x76F8;&#x5173;&#x914D;&#x7F6E;&#x5DF2;&#x914D;&#x7F6E;&#xFF0C;</p>
+<p>&#x8FD0;&#x884C;bin&#x76EE;&#x5F55;&#x4E0B;&#x7684;&#x811A;&#x672C;&#x8FDB;&#x884C;&#x542F;&#x52A8;&#xFF0C;&#x53EF;&#x4EE5;&#x5728;bistoury-agent-env.sh&#x4E2D;&#x7684;JAVA_OPTS&#x91CC;&#x914D;&#x7F6E;JVM&#x76F8;&#x5173;&#x53C2;&#x6570;&#xFF0C;GC&#x76F8;&#x5173;&#x914D;&#x7F6E;&#x5DF2;&#x914D;&#x7F6E;&#xFF0C;</p>
 <h2 class="mume-header" id="%E5%90%AF%E5%8A%A8bistoury-agent">&#x542F;&#x52A8;bistoury agent</h2>
 
 <p>&#x5728;&#x542F;&#x52A8;&#x662F;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;-pid&#x6307;&#x5B9A;pid&#x786E;&#x5B9A;agent attach&#x7279;&#x5B9A;&#x7684;java&#x8FDB;&#x7A0B;&#xFF0C;&#x4E0D;&#x6307;&#x5B9A;&#x65F6;&#x4F1A;&#x901A;&#x8FC7;jps -l&#x548C;ps aux|grep java &#x547D;&#x4EE4;&#x53CA;proxy&#x4E2D;&#x914D;&#x7F6E;&#x7684;&#x53C2;&#x6570;&#x89E3;&#x6790;pid&#xFF0C;&#x4F18;&#x5148;&#x7EA7;&#x4F9D;&#x6B21;&#x964D;&#x4F4E;&#x3002;</p>
