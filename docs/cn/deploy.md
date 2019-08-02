@@ -1,13 +1,4 @@
----
-title: Bistory 部署
-description: Bistory 编译、打包、部署 
-html:
-    offline: false
-    toc: true
-toc:
-    depth_from: 1
-    depth_to: 3
----
+
 本文档介绍了如何编译、打包、部署Bistoury。
 # 一、准备工作
 ## 1.1 说明
@@ -18,14 +9,10 @@ proxy建议使用多台机器，然后多台机器绑定到同一域名下。
 ### 1.1.1 OS
 ui、proxy、agent脚本理论上能在所有linux发行版上运行。
 ### 1.1.2 Java
-+ ui、proxy: 1.8+
-+ agent: 1.8+
-ui和proxy使用可1.8的新特性，所以部署需要使用1.8，agent因为会attach到其他应用中，而其他应用的Java版本未知，所以agent均使用1.7编码。
-## 1.2 Mysql
-版本要求：5.6.5+
-## 1.3 Zookeeper
+ui、proxy和agent均使用Java1.8+，同时由于agent会attach到应用中，所以应用也需要使用Java1.8+
+## 1.2 Zookeeper
 ui依赖zk发现存活的proxy，所以需要部署zk集群。
->注：如果没有zk集群，可以覆盖实现qunar.tc.bistoury.ui.service.impl.ProxyServiceImpl#getAllProxyUrls方法返回proxy信息，返回数据格式为：ip:port
+>注：如果没有zk集群，可以覆盖实现qunar.tc.bistoury.ui.service.impl.ProxyServiceImpl#getAllProxyUrls方法返回proxy信息，返回数据格式为：ip:tomcatPort:websocketPort
 # 二、部署步骤
 部署步骤共分为三步：
 + 1、初始化数据库
@@ -111,7 +98,9 @@ Bistoury的ui和proxy需要知道如何连接到在上面创建的数据库，�
 ./bistoury-ui.sh restart
 ```
 ### 2.3.3 bistoury-agent部署
+
 Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
+
 |参数名称|是否必须|默认值|说明|
 |-------|---|---|----|
 |bistoury.store.path|否|/home/bistoury/store|bistoury agent数据存放路径，包括rocksdb存放的监控、jstack及jmap数据和反编译代码临时文件的存放|
@@ -122,8 +111,10 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 |bistoury.pid.handler.ps.enable|否|true|是否打开通过ps aux|grep java 获取pid的开关|
 |bistoury.app.classes.path|否|bistoury.app.lib.class对应jar包目录同级的classes目录|项目代码编译后字节码存放目录，一般情况下为classes目录|
 |bistoury.agent.workgroup.num|否|2|agent netty work group 线程数|
-|bistoury.agent.thread.num|否|16|agent执行
-运行bin目录下的脚本进行启动，可以在bistoury-ui-env.sh中的JAVA_OPTS里配置JVM相关参数，GC相关配置已配置，
+|bistoury.agent.thread.num|否|16|agent执行命令的线程数
+
+运行bin目录下的脚本进行启动，可以在bistoury-agent-env.sh中的JAVA_OPTS里配置JVM相关参数，GC相关配置已配置，
+
 + 启动
 在启动是可以通过-pid指定pid确定agent attach特定的java进程，不指定时会通过jps -l和ps aux|grep java 命令及proxy中配置的参数解析pid，优先级依次降低。
 ```shell
