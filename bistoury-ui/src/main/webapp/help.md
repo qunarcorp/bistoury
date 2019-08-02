@@ -34,13 +34,17 @@ toc:
 [自动 jstack 及 jmap 使用说明](/api/url/redirect.do?name=jstack.jmap.help.url)
 # Bistoury
 ## Bistoury是什么？
-> Bistoury是在公司原有agent的基础上集成了阿里巴巴开源的Arthas和唯品会开源的vjtools提供更加完善的问题诊断功能，生产问题诊断的一把瑞士军刀。
+> `Bistoury` 去哪网开源的一个对应用透明，无侵入的Java诊断工具，Bistoury在公司内部原有agent的基础上集成Alibaba开源的[Arthas](https://github.com/alibaba/arthas)和唯品会开源的[vjtools](https://github.com/vipshop/vjtools)，提供更加丰富的功能。
 ## Bistoury 能做什么？
-- 能够直接查看线上日志。
-- 可以监控到JVM的实时运行状态。
+- 查看应用日志
+- 查看主机运行状态
+- 在线debug
+- 动态监控
+- JVM运行状态监控
+- thread dump
+- jstack
 - 能查看这个类从哪个 jar 包加载的，为什么会报各种类相关的 Exception。
 - 能查看的代码中的方法有没有执行到。
-- 能从全局视角来查看系统的运行状况。
 
 Bistoury采用命令行交互模式，同时提供丰富的自动补全功能，进一步方便进行问题的定位和诊断。
 

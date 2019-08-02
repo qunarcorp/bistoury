@@ -12,11 +12,14 @@
 - JVM运行状态监控
 - thread dump
 - jstack
-除了以上功能，详细请查看[帮组文档](docs/cn/command.md)
+- 能查看这个类从哪个 jar 包加载的，为什么会报各种类相关的 Exception。
+- 能查看的代码中的方法有没有执行到。
+- 命令行工具，命令列表请查看[命令使用文档](docs/cn/commands.md)
 
 ## Usage
 
 - [部署](docs/cn/deploy.md)
+- [命令使用文档](docs/cn/commands.md)
 - [在线debug使用文档](docs/cn/debug.md)
 - [动态监控使用文档](docs/cn/monitor.md)
 - [定时jstack和jmap -histo使用文档](docs/cn/jstack_jmap.md)

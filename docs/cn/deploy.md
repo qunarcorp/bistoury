@@ -115,7 +115,19 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 
 运行bin目录下的脚本进行启动，可以在bistoury-agent-env.sh中的JAVA_OPTS里配置JVM相关参数，GC相关配置已配置，
 
+在启动在需要在指定目录下创建一个发布信息文件（默认路径为相对日志目录的相对路径../webapps/releaseInfo.properties），默认格式如下：
+```properties
+#gitlab项目名
+project=tc/bistoury
+#项目所属module，没有module时值为英文句号[.]
+module=bistoury-ui
+#应用运行的版本号/分支/tag
+output=master
+```
+可以qunar.tc.bistoury.ui.util.ReleaseInfoParse接口自定义解析
+
 + 启动
+
 在启动是可以通过-pid指定pid确定agent attach特定的java进程，不指定时会通过jps -l和ps aux|grep java 命令及proxy中配置的参数解析pid，优先级依次降低。
 ```shell
 #注意：格式固定
