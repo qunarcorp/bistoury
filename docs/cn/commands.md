@@ -45,7 +45,7 @@
 >options——查看或设置Bistoury全局开关
 
 ## Web Console
->可以通过 [Web Console](/qconsole.html) 使用`Bistoury`
+>部署之后可以通过 Web Console 使用`Bistoury`，不需要登录服务器，在网页上即可完成日志查看、jvm状态查看、jstack等操作。
 # 命令列表
 
 ## **ls**
