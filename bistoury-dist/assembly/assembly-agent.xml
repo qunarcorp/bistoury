@@ -9,7 +9,7 @@
         <format>dir</format>
         <format>tar.gz</format>
     </formats>
-
+    <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
             <includes>

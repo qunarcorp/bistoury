@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BISTOURY_STORY_PATH="~/workspace/q/bistoury/store"
+BISTOURY_STORY_PATH="~/bistoury/store"
 BISTOURY_PROXY_HOST="127.0.0.1:8080"
 BISTOURY_APP_LIB_CLASS="org.springframework.web.servlet.DispatcherServlet"
 JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_211.jdk/Contents/Home"

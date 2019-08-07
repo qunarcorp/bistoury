@@ -9,11 +9,30 @@ BISTOURY_MAIN="qunar.tc.bistoury.indpendent.agent.Main"
 . "$BISTOURY_BIN_DIR/base.sh"
 . "$BISTOURY_BIN_DIR/bistoury-agent-env.sh"
 
+CMD=${!#}
+APP_PID=""
+
+while getopts p:j: opt;do
+    case $opt in
+        p) APP_PID=$OPTARG;;
+        j) JAVA_HOME=$OPTARG;;
+        *) echo "-p    通过-p指定应用进程pid"
+           echo "-j    通过-j指定java home"
+           echo "-h    通过-h查看命令帮助"
+           exit 0
+    esac
+done
+
 if [[ "$JAVA_HOME" != "" ]];then
     JAVA="$JAVA_HOME/bin/java"
 else
     JAVA=java;
 fi
+
+if [[ -n $APP_PID ]]; then
+    JAVA_OPTS="$JAVA_OPTS -Dbistoury.user.pid=$APP_PID"
+fi
+
 CLASSPATH="$CLASSPATH:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/sa-jdi.jar"
 JAVA_OPTS="$JAVA_OPTS -Xloggc:${BISTOURY_LOG_DIR}/bistoury-gc-${TIMESTAMP}.log -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${BISTOURY_LOG_DIR}"
 BISTOURY_PID_FILE="$BISTOURY_PID_DIR/bistoury-agent.pid"
@@ -56,16 +75,6 @@ stop(){
       echo "STOPPED"
     fi
 }
-
-if [[ $# == 1 ]]; then
-    CMD=${1:-}
-elif [[ $1 == "-pid" && $# == 3 ]]; then
-    JAVA_OPTS="$JAVA_OPTS -Dbistoury.user.pid=$2"
-    CMD=${3:-}
-else
-    echo 命令格式错误
-    exit 0;
-fi
 
 case ${CMD} in
 start)
