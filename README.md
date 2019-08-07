@@ -14,10 +14,10 @@
 - jstack
 - 能查看这个类从哪个 jar 包加载的，为什么会报各种类相关的 Exception。
 - 能查看的代码中的方法有没有执行到。
-- 命令行工具，命令列表请查看[命令使用文档](docs/cn/commands.md)
+- 命令行工具
 
 ## Usage
-
+- [快速开始](docs/cn/quick_start.md)
 - [部署](docs/cn/deploy.md)
 - [命令使用文档](docs/cn/commands.md)
 - [在线debug使用文档](docs/cn/debug.md)

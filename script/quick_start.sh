@@ -75,6 +75,7 @@ if [[ "start" == $CMD ]] && [[ ! -n $JAVA_HOME ]]; then
 fi
 
 if [[ "start" == $CMD ]] && [[ -n "$APP_PID" &&  -n "$JAVA_HOME" ]]; then
+    ln -s $JAVA_HOME /tmp/java
     start $APP_PID $JAVA_HOME
 elif [[ "stop" == $CMD ]]; then
     stop
