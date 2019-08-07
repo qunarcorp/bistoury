@@ -14,13 +14,13 @@
 
 - 目前仅支持linux或unix环境，所以需要一个linux或unix环境
 - Bistoury依赖zk，所以需要在本机启动一个zk服务，端口为2181，你也可以在bistoury-ui-{proxject.version}-bin/conf/registry.properties和bistoury-proxy-{proxject.version}-bin/conf/registry.properties中修改zk地址
-- 不占用8080，8081端口，proxy使用8080端口，ui使用8081端口
+- 不占用8080，8081,8899,20880端口，proxy使用8080端口，ui使用8081端口，ui连接proxy使用8899端口，agent连接proxy使用20880端口
 - 在本机启动一个java应用，用于bistoury attach，且这个Java应用需要使用了org.springframework.web.servlet.DispatcherServlet类
 
 如果需要使用debug和动态监控，还需要准备的有：
 
 - 在bistoury-ui-{proxject.version}-bin/conf/config.properties文件中配置gitlab.endpoint属性，值为gitlab地址，注意，bistoury仅支持gitlab api v3
-- 新建一个/tmp/releaseInfo.properties文件，内容如下：
+- 新建一个/tmp/releaseInfo.properties文件，内容格式如下：
 ```properties
     #gitlab项目名
     project=tc/bistoury
