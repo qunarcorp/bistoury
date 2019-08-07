@@ -7,6 +7,6 @@
 
     <context:annotation-config/>
 
-    <import resource="service.xml"/>
     <import resource="database.xml"/>
+    <import resource="service.xml"/>
 </beans>

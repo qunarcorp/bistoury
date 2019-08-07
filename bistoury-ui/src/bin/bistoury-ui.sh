@@ -8,6 +8,17 @@ BISTOURY_MAIN="qunar.tc.bistoury.ui.container.Bootstrap"
 . "$BISTOURY_BIN_DIR/base.sh"
 . "$BISTOURY_BIN_DIR/bistoury-ui-env.sh"
 
+CMD=${!#}
+
+while getopts j: opt;do
+    case $opt in
+        j) JAVA_HOME=$OPTARG;;
+        *) echo "-j    通过-j指定java home"
+           echo "-h    通过-h查看命令帮助"
+           exit 0
+    esac
+done
+
 if [[ "$JAVA_HOME" != "" ]];then
     JAVA="$JAVA_HOME/bin/java"
 else
@@ -55,8 +66,6 @@ stop(){
     fi
 }
 
-
-CMD=${1:-}
 case ${CMD} in
 start)
     start
