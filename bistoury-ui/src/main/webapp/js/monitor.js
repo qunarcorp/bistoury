@@ -815,6 +815,11 @@ $(document).ready(function () {
             bistoury.warning("请先选择主机")
             return;
         }
+
+        currentProject = "";
+        currentModule = "";
+        currentBranch = "";
+
         getGitlabPrivateToken(function (res) {
             if (res.status == 0) {
                 getReleaseInfo();
