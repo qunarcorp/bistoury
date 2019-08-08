@@ -894,7 +894,7 @@ $(document).ready(function () {
     $("#go-add-monitor").click(function () {
         $("#monitor-result-panel").hide();
         $("#app-host-panel").show();
-        $("#file-tree-panel").hide();
+        $("#jar-debug-panel").hide();
         $(".file-panel").hide();
         $("#splitter-handle").hide();
     })
