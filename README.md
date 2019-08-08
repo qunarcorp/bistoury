@@ -17,12 +17,18 @@
 - 命令行工具
 
 ## Usage
-- [快速开始](docs/cn/quick_start.md)
+
 - [部署](docs/cn/deploy.md)
 - [命令使用文档](docs/cn/commands.md)
 - [在线debug使用文档](docs/cn/debug.md)
 - [动态监控使用文档](docs/cn/monitor.md)
 - [定时jstack和jmap -histo使用文档](docs/cn/jstack_jmap.md)
+
+## 即将发布
+
+更完善的文档
+
+通过一个脚本在单机部署整套Bistoury服务
 
 ## Screenshots
 ![console](docs/image/console.png)
