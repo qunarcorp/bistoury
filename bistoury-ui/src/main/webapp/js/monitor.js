@@ -1,14 +1,20 @@
 $(document).ready(function () {
     var keepRunning = false;
     var minute = 1 * 60 * 1000;
-    var pathArray = [];
     var currentProject;
+    var currentModule;
     var currentBranch;
+    var currentFile;
+    var currentClass;
+    var lineMapping = {};
+    var linePrefix = "line";
+    var decompilerFile = false;
+    var downSourceAllow = false;
+    var jarDebug = false;
     var base64 = new Base65();
     var currentHost = {};
     var currentAppCode;
     var currentMonitor = {};
-    var currentCorp = "";
     var EMPTY_TIMER_DATA = ["-", "-"];
     var EMPTY_COUNT_DATA = ["-"];
     var _monitor = {
@@ -41,7 +47,26 @@ $(document).ready(function () {
         // send(currentHost, 41, command);
     }
 
-    function getCmReleaseInfo() {
+    function getAllClass() {
+        var command = "jardebug";
+        bistouryWS.sendCommand(currentHost, 9, command, stop, handleResult);
+        // send(currentHost, 9, command);
+    }
+
+    function getClassPath(className) {
+        var command = "jarclasspath " + encodeURI(className);
+        bistouryWS.sendCommand(currentHost, 9, command, stop, handleResult);
+        // send(currentHost, 9, command);
+    }
+
+    function decompileClass(className, classPath) {
+        var command = "decompilerclass " + encodeURI(className) + " " + encodeURI(classPath);
+
+        bistouryWS.send(currentHost, 50, command, {className: encodeURI(className), classPath: encodeURI(classPath)}, stop, handleResult);
+        // send(currentHost, 50, command);
+    }
+
+    function getReleaseInfo() {
         var command = "qdebugreleaseinfo " + currentHost.logDir;
         bistouryWS.sendCommand(currentHost, 8, command, stop, handleResult);
         // send(currentHost, 8, command);
@@ -320,16 +345,59 @@ $(document).ready(function () {
     }
 
     function buildFilePanel(file) {
-        buildPath();
+        $("#file-path").val("");
+        $("#project").val(currentProject);
+        $("#branch").val(currentBranch);
+        $("#app").val(currentHost.appCode);
+        $("#host").val(currentHost.host + ":" + currentHost.port);
+        $(".file-panel").show();
+        $("#splitter-handle").show();
+
+        decompilerFile = false;
+        buildFileContent(file.fileName, base64.decode(file.content))
+    }
+
+    function buildDecompilerFileContent(filename, fileContent) {
+        $("#file-path").val("");
+        $("#project").val(currentProject);
+        $("#branch").val(currentBranch);
+        $("#app").val(currentHost.appCode);
+        $("#host").val(currentHost.host + ":" + currentHost.port);
+        $(".file-panel").show();
+        $("#splitter-handle").show();
+
+        decompilerFile = true;
+        fileContent = base64.decode(fileContent);
+        buildFileContent(filename, buildLineMapping(fileContent));
+    }
+
+    function buildMavenSourceFileContent(filename, fileContent) {
+        $("#file-path").val("");
+        $("#project").val(currentProject);
+        $("#branch").val(currentBranch);
+        $("#app").val(currentHost.appCode);
+        $("#host").val(currentHost.host + ":" + currentHost.port);
+        $(".file-panel").show();
+        $("#splitter-handle").show();
+
+        decompilerFile = false;
+        buildFileContent(filename, fileContent);
+    }
+
+    function buildFileContent(filename, fileContent) {
+
+        currentFile = filename;
+
+        $(".path-tab").empty();
+        $(".path-tab").append($("<li></li>").append(currentFile).addClass("active"));
 
         $("#code-line").val("");
         $("#conditional-breakpoint").val("");
 
         $("#file-content-panel").empty();
-        var language = getMode(file.fileName);
-        var fileContent = base64.decode(file.content);
+        var language = getMode(filename);
         var content = hljs.highlight(language, fileContent);
-        var codetext = content.value.split('\n');
+        var codetext = content.value.split("\n");
         var code = $("<code></code>");
         var lineNumberPanel = $("<div></div>").addClass("line-number");
         var codeLinePanel = $("<div></div>").addClass("code-line");
@@ -337,12 +405,30 @@ $(document).ready(function () {
             var lineNumber = $("<div></div>").addClass("number").append($("<span></span>").append(index + 1));
             var codeLine = $("<div></div>").addClass("line").append($("<span></span>").addClass("code-content").append(value));
             lineNumber.click(function () {
-                $("#code-line").val(index + 1);
-                $("#file-path").val(pathArray[pathArray.length - 1] + ":" + (index + 1));
+                if (decompilerFile) {
+                    var key = linePrefix + (index + 1);
+                    var line = lineMapping[key];
+                    if (line != null && line != undefined && line.length > 0) {
+                        $("#code-line").val(Number(line[0]));
+                    } else {
+                        $("#code-line").val("");
+                    }
+                } else {
+                    $("#code-line").val(index + 1);
+                }
+                $("#file-path").val(currentFile + ":" + (index + 1));
                 $(".number").removeClass("selected");
                 $(this).addClass("selected")
                 $(".line").removeClass("selected")
                 codeLine.addClass("selected");
+            })
+            lineNumber.mouseover(function () {
+                $(this).addClass("mouse-over")
+                codeLine.addClass("mouse-over");
+            })
+            lineNumber.mouseout(function () {
+                $(".number").removeClass("mouse-over");
+                $(".line").removeClass("mouse-over")
             })
             lineNumberPanel.append(lineNumber);
             code.append(codeLine);
@@ -350,143 +436,138 @@ $(document).ready(function () {
         var pre = $("<pre></pre>").append(code)
         codeLinePanel.append(pre);
         $("#file-content-panel").append(lineNumberPanel).append(codeLinePanel);
-
     }
 
-    function buildTree(files, path) {
-        buildPath()
-        $("#file-tree-table tbody").empty();
-        if (path) {
-            var tr = $("<tr style='cursor: pointer'></tr>");
-            var td = $("<td></td>");
-            td.append($("<i></i>").addClass("glyphicon glyphicon-share-alt").css("transform", "scaleX(-1)").css("-webkit-transform", "scaleX(-1)").css("-moz-transform", "scaleX(-1)").css("-o-transform", "scaleX(-1)").css(" filter", "FlipH();")).append("&nbsp;&nbsp;");
-            td.append($("<a></a>").attr("path", path).append(".."));
-            td.click(function () {
-                var index = path.substring(0, path.length - 1).lastIndexOf("/");
-                if (path.charAt(path.length - 1) == "/") {
-                    pathArray.remove(path.substring(index + 1, path.length - 1));
-                } else {
-                    pathArray.remove(path.substring(index + 1));
-                }
-                var newPathArray = Array.from(pathArray);
-                newPathArray.shift();
-                var newPath = "";
-                if (newPathArray.length > 0) {
-                    newPath = newPathArray.join("/") + "/";
-                }
-                getRepository(currentProject, currentBranch, newPath);
-            })
-            tr.append(td).appendTo("#file-tree-table tbody");
-        }
-        files.forEach(function (file) {
-            var tr = $("<tr style='cursor: pointer'></tr>")
-            var td = $("<td></td>")
-            if (file.type == "tree") {
-                td.append($("<i></i>").addClass("glyphicon glyphicon-folder-open")).append("&nbsp;&nbsp;");
-                td.append($("<a></a>").attr("path", path).append(file.name));
-                td.click(function () {
-                    pathArray.push(file.name)
-                    getRepository(currentProject, currentBranch, path + file.name + "/");
-                });
-            } else if (file.type == "blob") {
-                td.append($("<i></i>").addClass("glyphicon glyphicon-file")).append("&nbsp;&nbsp;");
-                td.append($("<a></a>").attr("path", path).append(file.name));
-                td.click(function () {
-                    pathArray.push(file.name)
-                    getFile(currentProject, currentBranch, path + file.name)
-                });
-            }
-            tr.append(td).appendTo("#file-tree-table tbody");
-        })
-    }
 
-    function buildPath() {
-        $(".path-tab").empty();
-        var newPath = "";
-        var newPathArray = [currentBranch];
-        for (var i = 0; i < pathArray.length; i++) {
-            var path = pathArray[i];
-            if (i == 0) {
-                newPath = "";
-            } else {
-                newPath = newPath + path + "/";
-                newPathArray.push(path);
-            }
-            if (i == pathArray.length - 1) {
-                $(".path-tab").append($("<li></li>").append(path).addClass("active"));
-                break;
-            }
-            var aLink = $("<a style='cursor: pointer'></a>").append(path).attr("id", newPath).attr("path", newPath).attr("pathArray", newPathArray);
-            aLink.click(function () {
-                var tempPath = $(this).attr("path");
-                var tempPathArray = $(this).attr("pathArray");
-                pathArray = tempPathArray.split(",");
-                keepRunning = false;
-                $("#file-tree-panel").show();
-                $(".file-panel").hide();
-                $("#splitter-handle").hide();
-                getRepository(currentProject, currentBranch, tempPath);
-            })
-            $(".path-tab").append($("<li></li>").append(aLink));
-        }
-    }
-
-    function getRepository(project, ref, path, fun) {
-        $.ajax({
-            url: '/api/gitlab/repository/tree.do',
-            method: 'POST',
-            dataType: 'JSON',
-            data: {
-                corp: currentCorp,
-                projectId: project,
-                ref: ref,
-                path: path
-            },
-            success: function (res) {
-                if (res.status == 0) {
-                    buildTree(res.data, path)
-                    if (fun && typeof fun == "function") {
-                        fun.call();
+    function buildLineMapping(fileContent) {
+        lineMapping = {};
+        var index = fileContent.lastIndexOf("Lines mapping:");
+        if (index >= 0) {
+            var map = fileContent.substring(index + 15);
+            var mapping = map.split("\n");
+            mapping.forEach(function (line) {
+                if (line != null && line != undefined && line != "") {
+                    var lineNumbers = line.split(" <-> ");
+                    if (lineNumbers.length == 2) {
+                        var key = linePrefix + lineNumbers[1].trim();
+                        if (lineMapping[key] == null || lineMapping[key] == undefined) {
+                            lineMapping[key] = new Array();
+                        }
+                        lineMapping[key].push(lineNumbers[0]);
                     }
-                } else {
-                    bistoury.error("文件列表查询失败，" + res.message)
                 }
-            },
-            error: function (error) {
-                bistoury.error("文件列表查询失败，" + error.message)
-            }
-        })
+            })
+            fileContent = fileContent.substring(0, index);
+        }
+        return fileContent;
     }
 
-    function getFile(project, ref, path) {
+    function buildJarDebugPanel(result) {
+        var data = result.map(function (item) {
+            return {
+                "name": item
+            }
+        });
+        $('#jar-debug-table').bootstrapTable('removeAll');
+        $('#jar-debug-table').bootstrapTable('append', data);
+    }
+
+    function getFile(project, ref, currentModule, currentClass, func) {
         $.ajax({
-            url: '/api/gitlab/repository/file.do',
+            url: '/api/gitlab/repository/filebyclass.do',
             method: 'POST',
             dataType: 'JSON',
             data: {
-                corp: currentCorp,
                 projectId: project,
                 ref: ref,
-                filepath: path
+                module: currentModule,
+                className: currentClass
             },
             success: function (res) {
                 if (res.status == 0) {
-                    $("#file-path").val("");
-                    $("#project").val(currentProject);
-                    $("#branch").val(currentBranch);
-                    $("#app").val(currentHost.appCode);
-                    $("#host").val(currentHost.host + ":" + currentHost.port);
-                    $("#file-tree-panel").hide();
-                    $("#monitor-result-panel").hide();
-                    $(".file-panel").show();
-                    $("#splitter-handle").show();
                     buildFilePanel(res.data);
                 } else {
-                    bistoury.error("获取文件内容失败，" + res.message)
+                    console.log(res.message)
+                    if (func) {
+                        func.call();
+                    } else {
+                        bistoury.error("获取文件内容失败，" + res.message)
+                    }
                 }
             },
             error: function (error) {
-                bistoury.error("获取文件内容失败，" + error.message)
+                if (func) {
+                    func.call();
+                } else {
+                    bistoury.error("获取文件内容失败，" + error.message)
+                }
+            }
+        })
+    }
+
+    function getFileFromMaven(className, data) {
+        var mavenInfo = data.mavenInfo;
+        $.ajax({
+            url: "/api/maven/repository/file.do",
+            method: 'POST',
+            dataType: 'JSON',
+            data: {
+                artifactId: mavenInfo.artifactId,
+                groupId: mavenInfo.groupId,
+                version: mavenInfo.version,
+                className: className
+            },
+            success: function (res) {
+                if (res.status == 0) {
+                    //成功时message存储的是文件名
+                    buildMavenSourceFileContent(res.message, res.data);
+                } else if (res.status == -2) {
+                    console.log(res.message)
+                    //此时展示下载源码按钮，1、能调用此方法，说明能获取maven信息；2、ui仓库是不存在该文件，不是读取失败
+                    downSourceAllow = true;
+                    $("#down-source").show();
+                    $("#down-source").click(function () {
+                        downSource(mavenInfo, className);
+                    })
+                    decompileClass(className, data.classPath);
+                } else {
+                    console.log(res.message)
+                    //此时不展示下载源码按钮，文件是存在的，但是读取失败
+                    downSourceAllow = false;
+                    decompileClass(className, data.classPath);
+                }
+            },
+            error: function (error) {
+                console.log(error);
+                decompileClass(className, data.classPath);
+            }
+        })
+    }
+
+    function downSource(mavenInfo, className) {
+        $.ajax({
+            url: "/api/maven/repository/downsource.do",
+            method: 'POST',
+            dataType: 'JSON',
+            data: {
+                artifactId: mavenInfo.artifactId,
+                groupId: mavenInfo.groupId,
+                version: mavenInfo.version,
+                className: className
+            },
+            success: function (res) {
+                $("#down-source").hide();
+                if (res.status == 0) {
+                    bistoury.info("源码下载完成");
+                    //成功时message存储的是文件名
+                    buildMavenSourceFileContent(res.message, res.data);
+                } else {
+                    bistoury.error(res.message);
+                }
+            },
+            error: function (error) {
+                console.log(error);
+                bistoury.error("源码下载失败")
             }
         })
     }
@@ -619,6 +700,9 @@ $(document).ready(function () {
     }
 
     function handleResult(content) {
+        if (!content) {
+            return;
+        }
         var result = JSON.parse(content);
         if (!result) {
             return;
@@ -649,15 +733,48 @@ $(document).ready(function () {
         } else if (resType == "qdebugreleaseinfo") {
             var res = result.data;
             if (res.code == 0) {
-                parseCmInfo(res.data, getRepository);
+                parseCmInfo(res.data);
             } else {
                 console.log(res.message);
+                bistoury.warning(res.message + "，代码查看仅可通过反编译")
+            }
+            getAllClass();
+        } else if (resType == "jardebug") {
+            var res = result.data;
+            if (res.code == 0) {
+                $("#app-host-panel").hide();
+                $("#jar-debug-panel").show();
+                jarDebug = true;
+                buildJarDebugPanel(res.data)
+            } else {
                 bistoury.error(res.message);
+                console.log(res.message);
+            }
+        } else if (resType == "jarclasspath") {
+            var res = result.data;
+            console.log(res);
+            if (res.code == 0) {
+                if (res.data && res.data.maven) {
+                    getFileFromMaven(res.id, res.data);
+                } else {
+                    decompileClass(res.id, res.data.classPath);
+                }
+            } else {
+                bistoury.error(res.message);
+                console.log(res.message);
+            }
+        } else if (resType == "decompilerclass") {
+            var res = result.data;
+            if (res.code == 0) {
+                buildDecompilerFileContent(res.id, res.data);
+            } else {
+                bistoury.error(res.message)
+                console.log(res.message)
             }
         }
     }
 
-    function parseCmInfo(content, func) {
+    function parseCmInfo(content) {
         $.ajax({
             url: 'api/release/info/parse.do',
             method: 'POST',
@@ -670,18 +787,14 @@ $(document).ready(function () {
                     var relaeaseInfo = res.data;
                     console.log(relaeaseInfo);
                     currentProject = relaeaseInfo.project;
+                    currentModule = relaeaseInfo.module;
                     currentBranch = relaeaseInfo.output;
-                    pathArray = new Array(currentBranch);
-                    func.call(this, currentProject, currentBranch, "", function () {
-                        $("#file-tree-panel").show();
-                        $("#app-host-panel").hide();
-                    });
                 } else {
-                    bistoury.error("release info 解析失败，" + res.message + "。无法连接gitlab获取源码")
+                    bistoury.warning("release info 解析失败，" + res.message + "。代码查看仅可通过反编译")
                 }
             },
             error: function (error) {
-                bistoury.error("release info 解析失败，" + error.message + "。无法连接gitlab获取源码")
+                bistoury.warning("release info 解析失败，" + res.message + "。代码查看仅可通过反编译")
             }
         })
     }
@@ -704,56 +817,57 @@ $(document).ready(function () {
         }
         getGitlabPrivateToken(function (res) {
             if (res.status == 0) {
-                getCmReleaseInfo();
+                getReleaseInfo();
             } else {
-                bistoury.error("请先配置private token")
+                bistoury.warning("没有配置private token，代码查看仅可通过反编译")
+                getAllClass();
             }
         })
     });
 
-    $("#back-app-host-panel").click(function () {
+    /*$("#back-app-host-panel").click(function () {
         $("#file-tree-panel").hide();
+        $("#monitor-result-panel").hide();
+        $("#app-host-panel").show();
+    })*/
+
+    $(".back-app-host-panel").click(function () {
+        $("#jar-debug-panel").hide();
         $("#monitor-result-panel").hide();
         $("#app-host-panel").show();
     })
 
-    $("#back-file-tree").click(function () {
-        keepRunning = false;
-        pathArray.pop();
-        var newPathArray = Array.from(pathArray);
-        newPathArray.shift();
-        var newPath = "";
-        if (newPathArray.length > 0) {
-            newPath = newPathArray.join("/") + "/";
-        }
-        getRepository(currentProject, currentBranch, newPath)
-        $("#file-tree-panel").show();
+    $("#back-class-table").click(function () {
+        currentFile = "";
+        decompilerFile = false;
         $(".file-panel").hide();
         $("#splitter-handle").hide();
+        $("#jar-debug-panel").show();
     })
 
     $("#add-monitor").click(function () {
         if ($("#add-monitor").attr("disabled") == "disabled") {
             return;
         }
-        var source = Array.from(pathArray);
-        source.shift();
-        var fileName = source[source.length - 1];
-        if (fileName.lastIndexOf(".java") != fileName.length - 5) {
-            bistoury.error("动态监控仅支持 Java 文件");
+        if (currentFile.lastIndexOf(".java") != currentFile.length - 5) {
+            bistoury.error("在线 Debug 仅支持 Java 文件");
             return;
         }
 
         var line = $("#code-line").val();
         if (line == null || line == undefined || line == "" || line < 0) {
-            bistoury.error("请选择需要添加监控的代码行")
+            if (decompilerFile) {
+                bistoury.error("找不到源文件对应行号，请重新选择行号");
+            } else {
+                bistoury.error("请选择需要添加断点的代码行")
+            }
             return;
         } else {
             currentMonitor = {
                 line: line,
                 app: currentHost.appCode,
                 host: currentHost.ip,
-                source: source.join("/"),
+                source: currentClass.replace(/\./g, "/") + ".java",
                 uuid: uuid()
             }
             addMonitor();
@@ -903,7 +1017,60 @@ $(document).ready(function () {
 
     function init() {
         getAppList();
+        initJarDebugTable();
     };
+
+    function initJarDebugTable() {
+        $('#jar-debug-table').bootstrapTable({
+            data: [{}],
+            striped: true, //是否显示行间隔色
+            pageNumber: 1, //初始化加载第一页
+            pagination: true,//是否分页
+            sidePagination: 'client',//server:服务器端分页|client：前端分页
+            pageSize: 10,//单页记录数
+            pageList: [10, 20, 50, 100],//可选择单页记录数
+            showRefresh: true,//刷新按钮
+            search: true,
+            searchAlign: "left",
+            buttonsAlign: "left",
+            columns: [{
+                title: 'Class',
+                field: 'name',
+                sortable: true,
+                searchable: true
+            }, {
+                title: "操作",
+                field: "operate",
+                events: operateEvents,
+                formatter: function () {
+                    return "<a class='jar-class-monitor'>监控</a>"
+                }
+            }],
+            onRefresh: function () {
+                $('#jar-debug-table').bootstrapTable('removeAll');
+                getAllClass();
+            }
+        });
+    }
+
+    window.operateEvents = {
+        "click .jar-class-monitor": function (e, value, row, index) {
+            currentClass = row.name;
+            //每个文件初始化为不可下载
+            downSourceAllow = false;
+            $("#down-source").hide();
+            $("#down-source").unbind("click");
+
+            if (currentProject && currentBranch) {
+                getFile(currentProject, currentBranch, currentModule, currentClass, function () {
+                    getClassPath(currentClass)
+                })
+            } else {
+                getClassPath(currentClass);
+            }
+
+        }
+    }
 
     function dateFormat(dateStr) {
         var date = new Date(dateStr)

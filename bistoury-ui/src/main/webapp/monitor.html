@@ -6,6 +6,7 @@
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="stylesheet" href="css/bootstrap.min.css?version=2.0.0">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css?version=2.0.0"/>
+    <link rel="stylesheet" href="css/bootstrap-table.css?version=2.0.0">
     <link rel="stylesheet" href="css/bootstrap-treeview.css?version=2.0.0">
     <link rel="stylesheet" href="css/bootstrap-chosen.css?version=2.0.0"/>
     <link rel="stylesheet" href="css/daterangepicker-1.3.7.css?version=2.0.0"/>
@@ -22,6 +23,8 @@
     <script type="text/javascript" src="js/bistoury.js?version=2.0.0"></script>
     <script type="text/javascript" src="js/websocket.js?version=2.0.0"></script>
     <script type="text/javascript" src="js/bootstrap.min.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bootstrap-table.js?version=2.0.0"></script>
+    <script type="text/javascript" src="js/bootstrap-table-zh-CN.js"></script>
     <script type="text/javascript" src="js/moment-2.5.1.min.js?version=2.0.0"></script>
     <script type="text/javascript" src="js/daterangepicker-1.3.7.js?version=2.0.0"></script>
     <script type="text/javascript" src="js/chosen.jquery.js?version=2.0.0"></script>
@@ -82,7 +85,13 @@
                     </table>
                 </div>
             </div>
-            <div id="file-tree-panel" class="col-md-12" style="display: none">
+            <div id="jar-debug-panel" class="col-md-12" style="display: none">
+                <div class="back-app-host-panel">
+                    <button class="btn btn-info" style="border-radius: 0px;width: 85px;float: right;height: 37px;">返回</button>
+                </div>
+                <table id="jar-debug-table" class="table table-hover"></table>
+            </div>
+            <!--<div id="file-tree-panel" class="col-md-12" style="display: none">
                 <div id="back-app-host-panel">
                     <button class="btn btn-info" style="border-radius: 0px;width: 85px;float: right;height: 37px;">返回</button>
                 </div>
@@ -100,7 +109,7 @@
                         <tbody></tbody>
                     </table>
                 </div>
-            </div>
+            </div>-->
         </div>
         <div class="col-md-12 content" id="monitor-result-panel"
              style="margin: 0px;padding-top: 10px;overflow: hidden;left: 0px;position: absolute;top: 0px;display: none;">
@@ -183,8 +192,10 @@
         <div class="col-md-7 content file-panel" id="code-panel" style="z-index: 100;left: 0px;display: none">
             <div class="col-md-12">
                 <div class="col-md-12">
-                    <div id="back-file-tree">
-                        <button class="btn btn-info" style="border-radius: 0px;width: 85px;float: right;height: 37px;">返回</button>
+                    <div>
+                        <button id="back-class-table" class="btn btn-info" style="border-radius: 0px;width: 85px;float: right;height: 37px;">返回</button>
+                        <button id="down-source" class="btn btn-info" style="border-radius: 0px;width: 85px;float: right;height: 37px;display: none">下载源码
+                        </button>
                     </div>
                     <div>
                         <ol class="breadcrumb path-tab">

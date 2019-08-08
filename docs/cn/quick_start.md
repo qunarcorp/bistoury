@@ -20,7 +20,7 @@
 - 不占用8080，8081,8899,20880端口，proxy使用8080端口，ui使用8081端口，ui连接proxy使用8899端口，agent连接proxy使用20880端口
 - 在本机启动一个java应用，用于bistoury attach，且这个Java应用需要使用了org.springframework.web.servlet.DispatcherServlet类
 
-如果需要使用debug和动态监控，还需要准备的有：
+在线debug和动态监控代码默认来源为反编译字节码，若需要使用gitlab查看源码，你还需要准备：
 
 - 在bistoury-ui-{proxject.version}-bin/conf/config.properties文件中配置gitlab.endpoint属性，值为gitlab地址，注意，bistoury仅支持gitlab api v3
 - 新建一个/tmp/releaseInfo.properties文件，内容格式如下：
@@ -32,6 +32,10 @@
     #应用运行的版本号/分支/tag
     output=master
 ```
+
+对于依赖的jar包，如果你需要查看其源码
+- 先在bistoury-ui-{proxject.version}-bin/conf/config.properties中配置maven.nexus.url属性
+- 在查看代码的页面点击【下载源码】查看源码
 
 ### 快速开始
 

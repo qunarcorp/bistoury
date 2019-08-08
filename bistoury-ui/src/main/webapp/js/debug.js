@@ -45,7 +45,7 @@ $(document).ready(function () {
         // send(currentHost, 50, command);
     }
 
-    function getCmReleaseInfo() {
+    function getReleaseInfo() {
         var command = "qdebugreleaseinfo " + currentHost.logDir;
         bistouryWS.sendCommand(currentHost, 8, command, stop, handleResult);
         // send(currentHost, 8, command);
@@ -284,6 +284,7 @@ $(document).ready(function () {
                 if (res.status == 0) {
                     buildFilePanel(res.data);
                 } else {
+                    console.log(res.message)
                     if (func) {
                         func.call();
                     } else {
@@ -532,12 +533,12 @@ $(document).ready(function () {
         } else if (resType == "qdebugreleaseinfo") {
             var res = result.data;
             if (res.code == 0) {
-                parseCmInfo(res.data, getAllClass);
-
+                parseCmInfo(res.data);
             } else {
+                bistoury.warning(res.message + "，代码查看仅可通过反编译")
                 console.log(res.message);
-                bistoury.error(res.message);
             }
+            getAllClass();
         } else if (resType == "jardebug") {
             var res = result.data;
             if (res.code == 0) {
@@ -604,7 +605,7 @@ $(document).ready(function () {
         }
     }
 
-    function parseCmInfo(content, fun) {
+    function parseCmInfo(content) {
         $.ajax({
             url: 'api/release/info/parse.do',
             method: 'POST',
@@ -619,13 +620,12 @@ $(document).ready(function () {
                     currentProject = relaeaseInfo.project;
                     currentModule = relaeaseInfo.module;
                     currentBranch = relaeaseInfo.output;
-                    fun.call();
                 } else {
-                    bistoury.error("release info 解析失败，" + res.message + "。无法连接gitlab获取源码")
+                    bistoury.warning("release info 解析失败，" + res.message + "。代码查看仅可通过反编译")
                 }
             },
             error: function (error) {
-                bistoury.error("release info 解析失败，" + error.message + "。无法连接gitlab获取源码")
+                bistoury.warning("release info 解析失败，" + error.message + "。代码查看仅可通过反编译")
             }
         })
     }
@@ -648,9 +648,10 @@ $(document).ready(function () {
         }
         getGitlabPrivateToken(function (res) {
             if (res.status == 0) {
-                getCmReleaseInfo();
+                getReleaseInfo();
             } else {
-                bistoury.error("请先配置private token")
+                bistoury.warning("没有配置private token，代码查看仅可通过反编译")
+                getAllClass();
             }
         })
     });
@@ -850,7 +851,7 @@ $(document).ready(function () {
                 field: "operate",
                 events: operateEvents,
                 formatter: function () {
-                    return "<a id='jar-class-debug'>调试</a>"
+                    return "<a class='jar-class-debug'>调试</a>"
                 }
             }],
             onRefresh: function () {
@@ -861,15 +862,21 @@ $(document).ready(function () {
     }
 
     window.operateEvents = {
-        "click #jar-class-debug": function (e, value, row, index) {
+        "click .jar-class-debug": function (e, value, row, index) {
             currentClass = row.name;
             //每个文件初始化为不可下载
             downSourceAllow = false;
             $("#down-source").hide();
             $("#down-source").unbind("click");
-            getFile(currentProject, currentBranch, currentModule, currentClass, function () {
-                getClassPath(currentClass)
-            })
+
+            if (currentProject && currentBranch) {
+                getFile(currentProject, currentBranch, currentModule, currentClass, function () {
+                    getClassPath(currentClass)
+                })
+            } else {
+                getClassPath(currentClass);
+            }
+
         }
     }
 

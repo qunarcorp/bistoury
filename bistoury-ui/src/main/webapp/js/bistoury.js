@@ -137,14 +137,14 @@
         spop({
             template: warningMsg,
             style: 'warning',
-            autoclose: 4000,
+            autoclose: 5000,
         });
     }
     Bistoury.prototype.error = function (errorMsg) {
         spop({
             template: errorMsg,
             style: 'error',
-            autoclose: 6000,
+            autoclose: 7000,
 
         });
     }

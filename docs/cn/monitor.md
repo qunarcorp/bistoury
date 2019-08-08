@@ -13,10 +13,10 @@
 
 ## 使用步骤
 
-- 进入动态监控页面，初次使用时请先点击下方链接设置gitlab private token，目前仅支持gitlab，点击输入框下方对应链接获取，然后点击保存设置private token。
+- 进入动态监控页面，初次使用时请先点击下方链接设置gitlab private token，若不设置，则添加断点时的代码将会通过反编译产生。目前仅支持gitlab，点击输入框下方对应链接获取，然后点击保存设置private token。
 ![private token](../image/private_token.png)。
-- 选择需要添加监控的应用名，再选择需要在哪台机器上添加监控，然后点击【选择】按钮，进入文件树。
-![gitlab_file_tree](../image/gitlab_file_tree.png)
+- 选择需要添加监控的应用名，再选择需要在哪台机器上添加监控，然后点击【选择】按钮，进入已加载类列表。
+![monitor_class_list](../image/monitor_class_list.png)
 - 找到需要添加监控的类（注：仅支持Java代码添加监控），点击进入监控页面。
 - 找到需要添加监控的方法，在其中任意语句添加标记，点击前方的行号标记所在行。
 ![monitor_panel](../image/monitor_panel.png)
