@@ -69,14 +69,14 @@ START()
   sleep ${SLEEP_TIME}
 
   # qjtop
-  VJTOP_SCRIPT=vjtop.sh
-  which $VJTOP_SCRIPT 2>/dev/null
+  QJTOP_SCRIPT=$BISTOURY_BIN_DIR/qjtop.sh
+  which $QJTOP_SCRIPT 2>/dev/null
   if [[ $? == 0 ]]; then
     VJTOP_DURATION=2
     echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process vjtop."
     echo -e "It will take ${VJTOP_DURATION} seconds, please wait."
     VJTOP_LOG=${LOGDIR}/vjtop-${PID}-${DATE}.log
-    $VJTOP_SCRIPT -n 1 -d $VJTOP_DURATION $PID > ${VJTOP_LOG}
+    $QJTOP_SCRIPT -n 1 -d $VJTOP_DURATION $PID > ${VJTOP_LOG}
     if [[ $? != 0 ]]; then
       echo -e "\033[31mprocess vjtop error.\033[0m"
     fi
