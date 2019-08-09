@@ -19,6 +19,10 @@ BISTOURY_PROXY_BIN_DIR="$BISTOURY_PROXY_DIR/bin"
 BISTOURY_AGENT_DIR="$BISTOURY_BASE_DIR/bistoury-agent-$BISTOURY_PROJECT_VERSION-bin"
 BISTOURY_AGENT_BIN_DIR="$BISTOURY_AGENT_DIR/bin"
 
+
+BISTOURY_PROXY_CONF_DIR="/tmp/bistoury"
+BISTOURY_PROXY_CONF_FILE="$BISTOURY_PROXY_CONF_DIR/proxy.conf"
+
 start(){
 
     cd $H2_DATABASE_DIR
@@ -69,16 +73,22 @@ while getopts p:j: opt;do
     esac
 done
 
+if [[ ! -w "$BISTOURY_PROXY_CONF_DIR" ]] ; then
+    mkdir -p "$BISTOURY_PROXY_CONF_DIR"
+fi
+
 if [[ "start" == $CMD ]] && [[ ! -n $JAVA_HOME ]]; then
     echo "请配置环境变量JAVA_HOME或执行-j参数执行JAVA_HOME"
     exit 0;
 fi
 
 if [[ "start" == $CMD ]] && [[ -n "$APP_PID" &&  -n "$JAVA_HOME" ]]; then
-    ln -s $JAVA_HOME /tmp/java
+    ln -s $JAVA_HOME /tmp/bistoury/java
+    echo "127.0.0.1:8080:8899">$BISTOURY_PROXY_CONF_FILE
     start $APP_PID $JAVA_HOME
 elif [[ "stop" == $CMD ]]; then
     stop
+    rm -rf $BISTOURY_PROXY_CONF_FILE
 else
     echo "命令格式错误，Usage: [$0 -p pid -j java_home start] or [$0 stop]"
     exit 0

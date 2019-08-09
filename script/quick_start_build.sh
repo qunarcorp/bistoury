@@ -50,3 +50,4 @@ cd $SCRIPT_DIR
 echo `pwd`
 echo $BISTOURY_PACKAGE_FILE
 tar -czvf $BISTOURY_PACKAGE_DIR"_quick_start.tar.gz" $BISTOURY_PACKAGE_FILE
+rm -rf $BISTOURY_PACKAGE_FILE

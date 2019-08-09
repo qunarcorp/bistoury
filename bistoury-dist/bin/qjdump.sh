@@ -22,7 +22,7 @@ CLOSE_COMPRESS=0
 NEED_HEAP_DUMP=0
 PID="$1"
 
-BASEDIR=/tmp/qjtools/qjdump
+BASEDIR=/tmp/bistoury/qjtools/qjdump
 LOGDIR=${BASEDIR}/${PID}
 
 while true; do

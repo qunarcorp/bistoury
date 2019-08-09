@@ -35,6 +35,8 @@ start(){
 
     $JAVA -cp h2-1.4.199.jar org.h2.tools.RunScript -url "jdbc:h2:file:$H2_DATA_BASE_URL" -script ./newdata.sql
 
+    rm -rf newdata.sql
+
     echo "Start h2 database"
     nohup $JAVA -cp h2*.jar org.h2.tools.Server -ifNotExists> "$H2_LOG_FILE" 2>&1 < /dev/null &
 
