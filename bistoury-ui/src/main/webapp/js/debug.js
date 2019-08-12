@@ -897,6 +897,10 @@ $(document).ready(function () {
     };
 
     function getData(str) {
+        if (!str) {
+            return "";
+        }
+        str = str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
         var isJson = isJsonData(str);
         if (isJson) {
             return syntaxHighlightJsonData(JSON.parse(str));
