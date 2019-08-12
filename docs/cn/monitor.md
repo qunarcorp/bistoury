@@ -11,10 +11,14 @@
 
 动态监控添加的指标生命周期与应用的的生命周期基本一致，从添加开始一直到应用停止，监控回一直采集监控数据。并存储最近三天的历史数据。
 
-## 使用步骤
+## 实现
+
+动态监控使用asm插桩技术，会将原方法使用try-catch-finally进行包装，catch原方法throw的异常和RuntimeException，并在catch中记录调用错误次数，然后将异常原样抛出，在方法进来时记录方法调用次数和方法执行开始是时间，早finally中记录执行结束时间。
+
+## 使用
 
 - 进入动态监控页面，初次使用时请先点击下方链接设置gitlab private token，若不设置，则添加断点时的代码将会通过反编译产生。目前仅支持gitlab，点击输入框下方对应链接获取，然后点击保存设置private token。
-![private token](../image/private_token.png)。
+![private token](../image/private_token.png)
 - 选择需要添加监控的应用名，再选择需要在哪台机器上添加监控，然后点击【选择】按钮，进入已加载类列表。
 ![monitor_class_list](../image/monitor_class_list.png)
 - 找到需要添加监控的类（注：仅支持Java代码添加监控），点击进入监控页面。
