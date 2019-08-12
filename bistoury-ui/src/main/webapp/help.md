@@ -30,8 +30,12 @@ toc:
 @import "js/header.js"
 
 [在线Debug使用说明](/api/url/redirect.do?name=debug.help.url)
+
 [动态监控使用说明](/api/url/redirect.do?name=monitor.help.url)
-[自动 jstack 及 jmap 使用说明](/api/url/redirect.do?name=jstack.jmap.help.url)
+
+[线程级cpu使用率监控](/api/url/redirect.do?name=jstack.help.url)
+
+[堆内存对象监控](/api/url/redirect.do?name=jmap.help.url)
 # Bistoury
 ## Bistoury是什么？
 > `Bistoury` 去哪网开源的一个对应用透明，无侵入的Java诊断工具，Bistoury在公司内部原有agent的基础上集成Alibaba开源的[Arthas](https://github.com/alibaba/arthas)和唯品会开源的[vjtools](https://github.com/vipshop/vjtools)，提供更加丰富的功能。

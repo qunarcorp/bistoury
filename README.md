@@ -49,7 +49,7 @@ Bistoury提供实时线程dump、线程死锁检测。
 - [在线debug使用文档](docs/cn/debug.md)
 - [动态监控使用文档](docs/cn/monitor.md)
 - [线程级cpu使用率监控](docs/cn/jstack.md)
-- [堆内对象监控](docs/cn/jmap.md)
+- [堆内存对象监控](docs/cn/jmap.md)
 
 ## 即将发布
 
