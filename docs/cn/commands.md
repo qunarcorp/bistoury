@@ -1149,7 +1149,7 @@ PSOldGen [  [0x000000077ff80000,0x0000000782e4d488,0x00000007d5500000]  ]
  Heap traversal took 0.0 seconds.
 ```
 ## qjdump
->qjdump是线上JVM数据紧急收集脚本。它可以在<font color=red>紧急场景</font>下（比如马上要对进程进行重启），一键收集jstack、jmap以及GC日志等相关信息，并以zip包保存(默认在目录/tmp/vjtools/vjdump下)，保证在紧急情况下仍能收集足够的问题排查信息，减轻运维团队的工作量，以及与开发团队的沟通成本。
+>qjdump是线上JVM数据紧急收集脚本。它可以在<font color=red>紧急场景</font>下（比如马上要对进程进行重启），一键收集jstack、jmap以及GC日志等相关信息，并以zip包保存(默认在目录/tmp/bistoury/qjtools/qjdump/${PID}下)，保证在紧急情况下仍能收集足够的问题排查信息，减轻运维团队的工作量，以及与开发团队的沟通成本。
 
 收集数据包括：
 >- thread dump数据：jstack -l \$PID
