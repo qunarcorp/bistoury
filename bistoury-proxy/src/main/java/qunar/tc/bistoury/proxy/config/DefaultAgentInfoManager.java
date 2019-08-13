@@ -26,11 +26,11 @@ import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
 import qunar.tc.bistoury.proxy.generator.IdGenerator;
-import qunar.tc.bistoury.proxy.web.dao.AppServerDao;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
 import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 import qunar.tc.bistoury.serverside.support.AppServer;
+import qunar.tc.bistoury.ui.dao.AppServerDao;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;

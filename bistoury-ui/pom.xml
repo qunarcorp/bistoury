@@ -25,19 +25,7 @@
             <groupId>qunar.tc.bistoury</groupId>
             <artifactId>bistoury-metrics-prometheus</artifactId>
         </dependency>
-        <!-- spring -->
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>qunar.tc.bistoury</groupId>
-            <artifactId>bistoury-ui-service</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>qunar.tc.bistoury</groupId>
             <artifactId>bistoury-ui-service-impl</artifactId>

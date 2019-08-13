@@ -39,9 +39,9 @@ import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommandStore;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.*;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.encryption.DefaultRequestEncryption;
 import qunar.tc.bistoury.proxy.util.AppCenterServerFinder;
-import qunar.tc.bistoury.proxy.web.dao.AppServerDao;
 import qunar.tc.bistoury.serverside.agile.Conf;
 import qunar.tc.bistoury.serverside.common.encryption.RSAEncryption;
+import qunar.tc.bistoury.ui.dao.AppServerDao;
 
 /**
  * @author zhenyu.nie created on 2019 2019/5/16 11:33
