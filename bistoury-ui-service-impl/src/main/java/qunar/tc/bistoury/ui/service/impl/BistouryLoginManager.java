@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.security;
+package qunar.tc.bistoury.ui.service.impl;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -23,6 +23,7 @@ import com.google.common.hash.Hashing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import qunar.tc.bistoury.ui.service.LoginManager;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
@@ -35,7 +36,7 @@ import javax.servlet.http.HttpServletResponse;
  * @describe
  */
 @Service
-public class BistouryLoginManager {
+public class BistouryLoginManager implements LoginManager {
     private final Logger logger = LoggerFactory.getLogger(BistouryLoginManager.class);
 
     private String appCode = "";

@@ -31,6 +31,8 @@
         <module>bistoury-ui</module>
         <module>bistoury-dist</module>
         <module>bistoury-metrics-prometheus</module>
+        <module>bistoury-ui-service</module>
+        <module>bistoury-ui-service-impl</module>
     </modules>
 
     <properties>
@@ -161,6 +163,16 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>bistoury-ui</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>bistoury-ui-service</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>bistoury-ui-service-impl</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
             <dependency>
@@ -504,6 +516,11 @@
                         <groupId>commons-logging</groupId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${org.springframework.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
