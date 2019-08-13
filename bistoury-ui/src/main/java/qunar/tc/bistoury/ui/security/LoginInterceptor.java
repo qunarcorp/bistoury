@@ -23,6 +23,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import qunar.tc.bistoury.serverside.agile.Strings;
+import qunar.tc.bistoury.ui.service.LoginManager;
+import qunar.tc.bistoury.ui.service.impl.BistouryLoginManager;
 import qunar.tc.bistoury.ui.service.impl.UserServiceImpl;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class LoginInterceptor implements HandlerInterceptor, ApplicationContextAware {
 
-    private BistouryLoginManager loginManager;
+    private LoginManager loginManager;
 
     private UserServiceImpl userService;
 

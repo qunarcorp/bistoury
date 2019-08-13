@@ -55,6 +55,14 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
+        <dependency>
+            <groupId>qunar.tc.bistoury</groupId>
+            <artifactId>bistoury-ui-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>qunar.tc.bistoury</groupId>
+            <artifactId>bistoury-ui-service-impl</artifactId>
+        </dependency>
 
         <!-- logging -->
         <dependency>
