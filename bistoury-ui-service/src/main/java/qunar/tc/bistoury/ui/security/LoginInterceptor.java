@@ -15,18 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.service;
+package qunar.tc.bistoury.ui.security;
 
-import qunar.tc.bistoury.serverside.support.Application;
-
-import java.util.Set;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
- * @author zhenyu.nie created on 2018 2018/10/31 13:56
+ * @author leix.xie
+ * @date 2019-08-13 19:46
+ * @describe
  */
-public interface AppService {
-
-    Set<String> getApps(String userCode);
-
-    Application getAppInfo(String appCode);
+public interface LoginInterceptor extends HandlerInterceptor, ApplicationContextAware {
 }

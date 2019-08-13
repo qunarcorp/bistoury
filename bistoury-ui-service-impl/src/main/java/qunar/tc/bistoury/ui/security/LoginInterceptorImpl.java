@@ -19,8 +19,6 @@ package qunar.tc.bistoury.ui.security;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import qunar.tc.bistoury.serverside.agile.Strings;
 import qunar.tc.bistoury.ui.service.LoginManager;
@@ -35,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2019/7/4 11:35
  * @describe
  */
-public class LoginInterceptor implements HandlerInterceptor, ApplicationContextAware {
+public class LoginInterceptorImpl implements LoginInterceptor {
 
     private LoginManager loginManager;
 
