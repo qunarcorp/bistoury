@@ -25,6 +25,7 @@ import org.apache.catalina.util.ServerInfo;
 import org.apache.tomcat.util.res.StringManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.common.FileUtil;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfig;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 import qunar.tc.bistoury.serverside.util.ServerManager;
@@ -36,7 +37,7 @@ import java.util.List;
 /**
  * @author: leix.xie
  * @date: 2019/7/15 11:12
- * @describe：注意：该类仅用于脚本打包启动，本地调试请使用tomcat启动，在启动前，请先将pom文件中的打包方式修改为war
+ * @describe：注意：本地调试启动前请设置bistoury.conf参数
  */
 public class Bootstrap {
     private static final Logger logger = LoggerFactory.getLogger(Bootstrap.class);
@@ -44,6 +45,7 @@ public class Bootstrap {
 
     public static void main(String[] args) {
         try {
+            //System.setProperty("bistoury.conf", "/Users/leix.xie/workspace/opensource/bistoury/bistoury-ui/conf");
             final String confDir = System.getProperty("bistoury.conf");
             if (Strings.isNullOrEmpty(confDir)) {
                 throw new RuntimeException("请在JVM参数中配置项目配置文件目录，即bistoury.conf");
@@ -58,7 +60,8 @@ public class Bootstrap {
             tomcat.setBaseDir(config.getString("tomcat.basedir"));
             tomcat.getHost().setAutoDeploy(false);
 
-            String webappDirLocation = "../webapp/";
+            final String webappDirLocation = getWebappDirLocation();
+
             StandardContext ctx = (StandardContext) tomcat.addWebapp("/", new File(webappDirLocation).getAbsolutePath());
 
             String contextPath = "";
@@ -76,6 +79,14 @@ public class Bootstrap {
         } catch (Exception e) {
             logger.error("Server启动失败...", e);
         }
+    }
+
+    private static String getWebappDirLocation() {
+        final String path = Bootstrap.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        File file = new File(path);
+        String libPath = file.getParentFile().getAbsolutePath();
+        //如果是jar包启动，则file是jar包文件，如果是本地main方法启动，file是target目录下的classes目录
+        return FileUtil.dealPath(libPath, file.isFile() ? "../webapp/" : "webapp/");
     }
 
     public static void log(final String webappDirLocation, final String confDir) {

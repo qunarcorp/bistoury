@@ -74,7 +74,7 @@ public final class FileUtil {
      */
     public static String dealPath(String basePath, String paramPath) {
         Path path = Paths.get(parseUserHomePath(basePath));
-        return path.resolveSibling(parseUserHomePath(paramPath)).normalize().toString();
+        return path.resolve(parseUserHomePath(paramPath)).normalize().toString();
     }
 
     private static String parseUserHomePath(String path) {
