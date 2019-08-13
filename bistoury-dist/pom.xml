@@ -58,7 +58,7 @@
     </dependencies>
     <profiles>
         <profile>
-            <id>bistoury-agent</id>
+            <id>prod</id>
             <build>
                 <plugins>
                     <plugin>
@@ -85,6 +85,9 @@
         </profile>
         <profile>
             <id>local</id>
+            <properties>
+                <deploy.type>local</deploy.type>
+            </properties>
             <build>
                 <plugins>
                     <plugin>

@@ -122,7 +122,7 @@
     </build>
     <profiles>
         <profile>
-            <id>bistoury-proxy</id>
+            <id>prod</id>
             <build>
                 <plugins>
                     <plugin>
