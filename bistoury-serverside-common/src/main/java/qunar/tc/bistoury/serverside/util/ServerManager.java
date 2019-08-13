@@ -58,7 +58,7 @@ public class ServerManager {
     }
 
     private static String getTomcatPortBySystemProperty() {
-        String port = System.getProperty("bistoury.tomcat.pory");
+        String port = System.getProperty("bistoury.tomcat.port");
         if (Strings.isNullOrEmpty(port)) {
             port = getTomcatPortByMxBean();
         }

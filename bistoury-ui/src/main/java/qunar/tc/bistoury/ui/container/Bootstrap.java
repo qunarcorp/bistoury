@@ -53,7 +53,7 @@ public class Bootstrap {
             DynamicConfig config = DynamicConfigLoader.load("server.properties");
 
             int port = config.getInt("tomcat.port");
-            System.setProperty("bistoury.tomcat.pory", String.valueOf(port));
+            System.setProperty("bistoury.tomcat.port", String.valueOf(port));
 
             Tomcat tomcat = new Tomcat();
             tomcat.setPort(port);
