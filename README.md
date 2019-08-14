@@ -43,7 +43,7 @@ Bistoury提供实时线程dump、线程死锁检测。
 
 
 ## Usage
-
+- [快速开始](docs/cn/quick_start.md)
 - [部署](docs/cn/deploy.md)
 - [命令使用文档](docs/cn/commands.md)
 - [在线debug使用文档](docs/cn/debug.md)
