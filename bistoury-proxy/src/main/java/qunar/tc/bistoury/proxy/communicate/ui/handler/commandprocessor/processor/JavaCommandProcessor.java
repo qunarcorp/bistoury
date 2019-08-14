@@ -25,6 +25,7 @@ import qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.AbstractC
 import qunar.tc.bistoury.remoting.command.MachineCommand;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
@@ -45,7 +46,8 @@ public class JavaCommandProcessor extends AbstractCommand<MachineCommand> {
 
     @PostConstruct
     public void init() {
-        DynamicConfigLoader.load("global.properties").addListener(conf -> globalConfig = conf.asMap());
+        DynamicConfigLoader.<LocalDynamicConfig>load("global.properties")
+                .addListener(conf -> globalConfig = conf.asMap());
     }
 
     @Override

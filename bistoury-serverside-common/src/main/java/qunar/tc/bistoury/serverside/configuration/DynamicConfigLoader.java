@@ -42,11 +42,12 @@ public final class DynamicConfigLoader {
     private DynamicConfigLoader() {
     }
 
-    public static DynamicConfig load(final String name) {
+    public static <T> DynamicConfig<T> load(final String name) {
         return load(name, true);
     }
 
-    public static DynamicConfig load(final String name, final boolean failOnNotExist) {
+    @SuppressWarnings("unchecked")
+    public static <T> DynamicConfig<T> load(final String name, final boolean failOnNotExist) {
         return FACTORY.create(name, failOnNotExist);
     }
 }

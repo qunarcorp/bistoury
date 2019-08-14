@@ -21,6 +21,7 @@ import org.gitlab.api.GitlabAPI;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfig;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.ui.model.PrivateToken;
 import qunar.tc.bistoury.ui.security.LoginContext;
 import qunar.tc.bistoury.ui.service.GitlabApiCreateService;
@@ -40,7 +41,7 @@ public class GitlabApiCreateServiceImpl implements GitlabApiCreateService {
 
     @PostConstruct
     public void init() {
-        DynamicConfig config = DynamicConfigLoader.load("config.properties");
+        DynamicConfig<LocalDynamicConfig> config = DynamicConfigLoader.load("config.properties");
         config.addListener(conf -> gitlabEndpoint = conf.getString("gitlab.endpoint"));
     }
 

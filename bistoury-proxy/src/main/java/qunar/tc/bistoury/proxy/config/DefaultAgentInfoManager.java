@@ -29,6 +29,7 @@ import qunar.tc.bistoury.proxy.generator.IdGenerator;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
 import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.serverside.support.AppServer;
 import qunar.tc.bistoury.ui.dao.AppServerDao;
 
@@ -62,7 +63,8 @@ public class DefaultAgentInfoManager implements AgentInfoManager {
 
     @PostConstruct
     public void init() {
-        DynamicConfigLoader.load("agent_config.properties", false).addListener(conf -> agentConfig = conf.asMap());
+        DynamicConfigLoader.<LocalDynamicConfig>load("agent_config.properties", false)
+                .addListener(conf -> agentConfig = conf.asMap());
     }
 
     @Override
