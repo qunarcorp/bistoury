@@ -21,19 +21,4 @@
 		<module>bistoury-application-mysql</module>
 	</modules>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>qunar.tc.bistoury</groupId>
-				<artifactId>bistoury-application-api</artifactId>
-				<version>${project.parent.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>qunar.tc.bistoury</groupId>
-				<artifactId>bistoury-application-mysql</artifactId>
-				<version>${project.parent.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 </project>
