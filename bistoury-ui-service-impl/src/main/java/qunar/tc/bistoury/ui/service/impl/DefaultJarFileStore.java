@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.common.AsyncHttpClientHolder;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfig;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.serverside.metrics.Metrics;
 import qunar.tc.bistoury.serverside.util.BistouryFileStoreUtil;
 import qunar.tc.bistoury.ui.exception.SourceFileNotFoundException;
@@ -86,7 +87,7 @@ public class DefaultJarFileStore implements JarFileStore {
     public void init() {
 
 
-        DynamicConfig dynamicConfig = DynamicConfigLoader.load("config.properties");
+        DynamicConfig<LocalDynamicConfig> dynamicConfig = DynamicConfigLoader.load("config.properties");
         dynamicConfig.addListener(config -> {
             mavenHost = config.getString("maven.nexus.url");
             jarGuaranteePeriodDays = config.getInt("jar.guarantee.period.days", 2);

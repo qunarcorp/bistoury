@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 import qunar.tc.bistoury.ui.model.GitlabFile;
 import qunar.tc.bistoury.ui.service.GitlabApiCreateService;
@@ -53,7 +54,8 @@ public class GitlabRepositoryApiController {
 
     @PostConstruct
     public void init() {
-        DynamicConfigLoader.load("config.properties").addListener(config -> filePathFormat = config.getString("file.path.format", "{0}src/main/java/{1}.java"));
+        DynamicConfigLoader.<LocalDynamicConfig>load("config.properties")
+                .addListener(config -> filePathFormat = config.getString("file.path.format", "{0}src/main/java/{1}.java"));
     }
 
     @RequestMapping("/tree")

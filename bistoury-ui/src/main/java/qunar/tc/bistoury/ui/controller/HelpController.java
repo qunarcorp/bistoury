@@ -20,7 +20,10 @@ package qunar.tc.bistoury.ui.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import qunar.tc.bistoury.serverside.configuration.DynamicConfig;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 
 /**
  * @author: leix.xie
@@ -33,7 +36,8 @@ public class HelpController {
     private static String version;
 
     static {
-        DynamicConfigLoader.load("config.properties").addListener(conf -> version = conf.getString("agent.lastVersion", "1.0"));
+        DynamicConfig<LocalDynamicConfig> dynamicConfig = DynamicConfigLoader.load("config.properties");
+        dynamicConfig.addListener(conf -> version = conf.getString("agent.lastVersion", "1.0"));
     }
 
     @ResponseBody

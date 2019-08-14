@@ -35,6 +35,7 @@ import qunar.tc.bistoury.common.AsyncHttpClientHolder;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 import qunar.tc.bistoury.ui.service.ProxyService;
 
@@ -70,7 +71,7 @@ public class ConfigController {
 
     @PostConstruct
     public void init() {
-        DynamicConfigLoader.load("config.properties").addListener(conf -> proxyAgent = conf.getString("agent.proxy"));
+        DynamicConfigLoader.<LocalDynamicConfig>load("config.properties").addListener(conf -> proxyAgent = conf.getString("agent.proxy"));
     }
 
     @RequestMapping("getProxyWebSocketUrl")

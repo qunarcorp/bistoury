@@ -34,7 +34,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author keli.wang
  * @since 2018-11-23
  */
-public class LocalDynamicConfig implements DynamicConfig {
+public class LocalDynamicConfig implements DynamicConfig<LocalDynamicConfig> {
     private static final Logger LOG = LoggerFactory.getLogger(LocalDynamicConfig.class);
 
     private final String name;
@@ -133,14 +133,14 @@ public class LocalDynamicConfig implements DynamicConfig {
     }
 
     @Override
-    public void addListener(Listener listener) {
+    public void addListener(Listener<LocalDynamicConfig> listener) {
         if (loaded) {
             executeListener(listener);
         }
         listeners.add(listener);
     }
 
-    private void executeListener(Listener listener) {
+    private void executeListener(Listener<LocalDynamicConfig> listener) {
         try {
             listener.onLoad(this);
         } catch (Throwable e) {

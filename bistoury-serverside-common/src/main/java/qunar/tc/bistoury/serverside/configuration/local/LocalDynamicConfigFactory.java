@@ -28,12 +28,12 @@ import java.util.concurrent.ConcurrentMap;
  * @author keli.wang
  * @since 2018-11-27
  */
-public class LocalDynamicConfigFactory implements DynamicConfigFactory {
+public class LocalDynamicConfigFactory implements DynamicConfigFactory<LocalDynamicConfig> {
     private final ConfigWatcher watcher = new ConfigWatcher();
     private final ConcurrentMap<String, LocalDynamicConfig> configs = new ConcurrentHashMap<>();
 
     @Override
-    public DynamicConfig create(final String name, final boolean failOnNotExist) {
+    public DynamicConfig<LocalDynamicConfig> create(final String name, final boolean failOnNotExist) {
         if (configs.containsKey(name)) {
             return configs.get(name);
         }

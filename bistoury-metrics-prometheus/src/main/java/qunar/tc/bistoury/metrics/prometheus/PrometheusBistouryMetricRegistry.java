@@ -26,6 +26,7 @@ import io.prometheus.client.bridge.Graphite;
 import io.prometheus.client.exporter.HTTPServer;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfig;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.serverside.metrics.BistouryCounter;
 import qunar.tc.bistoury.serverside.metrics.BistouryMeter;
 import qunar.tc.bistoury.serverside.metrics.BistouryMetricRegistry;
@@ -52,7 +53,7 @@ public class PrometheusBistouryMetricRegistry implements BistouryMetricRegistry 
 
 
     public PrometheusBistouryMetricRegistry() {
-        DynamicConfig config = DynamicConfigLoader.load("prometheus.properties", false);
+        DynamicConfig<LocalDynamicConfig> config = DynamicConfigLoader.load("prometheus.properties", false);
         String type = config.getString("monitor.type", "prometheus");
         if ("prometheus".equals(type)) {
             String action = config.getString("monitor.action", "metrics");

@@ -29,6 +29,7 @@ import qunar.tc.bistoury.common.AsyncHttpClientHolder;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 import qunar.tc.bistoury.ui.service.ProxyService;
 
@@ -54,7 +55,8 @@ public class AgentMetaController {
 
     @PostConstruct
     public void init() {
-        DynamicConfigLoader.load("config.properties").addListener(conf -> proxyAgentMetaRefresh = conf.getString("agent.meta.refresh"));
+        DynamicConfigLoader.<LocalDynamicConfig>load("config.properties")
+                .addListener(conf -> proxyAgentMetaRefresh = conf.getString("agent.meta.refresh"));
     }
 
     @RequestMapping("agentMetaUpdate")

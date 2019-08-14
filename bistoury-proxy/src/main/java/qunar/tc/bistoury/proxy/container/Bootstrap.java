@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.common.FileUtil;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfig;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.serverside.util.ServerManager;
 
 import java.io.File;
@@ -51,7 +52,7 @@ public class Bootstrap {
                 throw new RuntimeException("请在JVM参数中配置项目配置文件目录，即bistoury.conf");
             }
 
-            DynamicConfig config = DynamicConfigLoader.load("server.properties");
+            DynamicConfig<LocalDynamicConfig> config = DynamicConfigLoader.load("server.properties");
 
             int port = config.getInt("tomcat.port");
             System.setProperty("bistoury.tomcat.port", String.valueOf(port));

@@ -23,8 +23,8 @@ import java.util.Map;
 /**
  * User: zhaohuiyu Date: 12/24/12 Time: 4:12 PM
  */
-public interface DynamicConfig {
-    void addListener(Listener listener);
+public interface DynamicConfig<T> {
+    void addListener(Listener<T> listener);
 
     String getString(String name);
 
