@@ -15,33 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.dao;
+package qunar.tc.bistoury.application.mysql.dao;
 
-import qunar.tc.bistoury.serverside.support.AppServer;
+import qunar.tc.bistoury.application.api.pojo.Application;
 
 import java.util.List;
 
 /**
  * @author leix.xie
- * @date 2019/7/2 14:18
+ * @date 2019/7/2 10:46
  * @describe
  */
-public interface AppServerDao {
-    List<AppServer> getAppServerByAppCode(String appCode);
+public interface ApplicationDao {
+    int updateApplication(Application application);
 
-    AppServer getAppServerByIp(String ip);
+    Application getApplicationByAppCode(String appCode);
 
-    AppServer getAppServerByServerId(String serverId);
+    List<Application> getApplicationsByAppCodes(List<String> appCodes);
 
-    int addAppServer(AppServer appServer);
+    int createApplication(Application application);
 
-    int updateAppServer(AppServer appServer);
+    List<Application> getAllApplications();
 
-    int changeAutoJMapHistoEnable(String serverId, boolean enable);
-
-    int changeAutoJStackEnable(String serverId, boolean enable);
-
-    int deleteAppServerByIp(String ip);
-
-    int deleteAppServerByServerId(String serverId);
+    boolean checkExist(String appCode);
 }

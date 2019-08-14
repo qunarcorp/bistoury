@@ -15,15 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.dao.impl;
+package qunar.tc.bistoury.application.mysql.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import qunar.tc.bistoury.serverside.support.AppServer;
-import qunar.tc.bistoury.ui.dao.AppServerDao;
+
+import qunar.tc.bistoury.application.api.pojo.AppServer;
+import qunar.tc.bistoury.application.mysql.dao.AppServerDao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

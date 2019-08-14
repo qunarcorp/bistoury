@@ -15,23 +15,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.dao;
+package qunar.tc.bistoury.application.api;
+
+import qunar.tc.bistoury.application.api.pojo.AppServer;
 
 import java.util.List;
 
 /**
  * @author leix.xie
- * @date 2019/7/2 11:14
+ * @date 2019/7/2 15:13
  * @describe
  */
-public interface ApplicationUserDao {
-    List<String> getAppCodesByUserCode(String userCode);
+public interface AppServerService {
+    List<AppServer> getAppServerByAppCode(String appCode);
 
-    List<String> getUsersByAppCode(String appCode);
+    int changeAutoJMapHistoEnable(String serverId, boolean enable, String loginUser);
 
-    int addAppUser(String userCode, String appCode);
+    int changeAutoJStackEnable(String serverId, boolean enable, String loginUser);
 
-    void batchAddAppUser(List<String> userCodes, String addCode);
+    int deleteAppServerByServerId(String serverId, String loginUser);
 
-    int removeAppUser(String userCode, String appCode);
+    int saveAppServer(AppServer appServer, String loginUser);
+
+    AppServer getAppServerByIp(String ip);
 }
+

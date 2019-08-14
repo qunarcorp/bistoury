@@ -15,27 +15,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.dao;
+package qunar.tc.bistoury.application.api;
 
-import qunar.tc.bistoury.serverside.support.Application;
 
 import java.util.List;
 
+import qunar.tc.bistoury.application.api.pojo.Application;
+
 /**
  * @author leix.xie
- * @date 2019/7/2 10:46
+ * @date 2019/7/2 20:13
  * @describe
  */
-public interface ApplicationDao {
-    int updateApplication(Application application);
-
-    Application getApplicationByAppCode(String appCode);
-
-    List<Application> getApplicationsByAppCodes(List<String> appCodes);
-
-    int createApplication(Application application);
+public interface ApplicationService {
 
     List<Application> getAllApplications();
 
-    boolean checkExist(String appCode);
+    List<Application> getAllApplications(String userCode);
+
+    List<String> getAppOwner(String appCode);
+
+    int save(Application application, String loginUser, boolean admin);
 }

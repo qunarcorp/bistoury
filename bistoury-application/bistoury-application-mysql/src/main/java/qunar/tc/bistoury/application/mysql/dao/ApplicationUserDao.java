@@ -15,25 +15,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.service;
-
-import qunar.tc.bistoury.serverside.support.AppServer;
+package qunar.tc.bistoury.application.mysql.dao;
 
 import java.util.List;
 
 /**
  * @author leix.xie
- * @date 2019/7/2 15:13
+ * @date 2019/7/2 11:14
  * @describe
  */
-public interface AppServerService {
-    List<AppServer> getAppServerByAppCode(String appCode);
+public interface ApplicationUserDao {
+    List<String> getAppCodesByUserCode(String userCode);
 
-    int changeAutoJMapHistoEnable(String serverId, boolean enable);
+    List<String> getUsersByAppCode(String appCode);
 
-    int changeAutoJStackEnable(String serverId, boolean enable);
+    int addAppUser(String userCode, String appCode);
 
-    int deleteAppServerByServerId(String serverId);
+    void batchAddAppUser(List<String> userCodes, String addCode);
 
-    int saveAppServer(AppServer appServer);
+    int removeAppUser(String userCode, String appCode);
 }

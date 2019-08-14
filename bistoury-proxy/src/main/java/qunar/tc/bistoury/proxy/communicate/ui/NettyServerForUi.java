@@ -32,6 +32,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.application.api.AppServerService;
 import qunar.tc.bistoury.proxy.communicate.NettyServer;
 import qunar.tc.bistoury.proxy.communicate.SessionManager;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
@@ -41,7 +42,6 @@ import qunar.tc.bistoury.proxy.communicate.ui.handler.encryption.DefaultRequestE
 import qunar.tc.bistoury.proxy.util.AppCenterServerFinder;
 import qunar.tc.bistoury.serverside.agile.Conf;
 import qunar.tc.bistoury.serverside.common.encryption.RSAEncryption;
-import qunar.tc.bistoury.ui.dao.AppServerDao;
 
 /**
  * @author zhenyu.nie created on 2019 2019/5/16 11:33
@@ -72,7 +72,7 @@ public class NettyServerForUi implements NettyServer {
 
     private CommunicateCommandStore commandStore;
 
-    private AppServerDao appServerDao;
+    private AppServerService appServerService;
 
     private volatile Channel channel;
 
@@ -80,13 +80,13 @@ public class NettyServerForUi implements NettyServer {
                             CommunicateCommandStore commandStore,
                             UiConnectionStore uiConnectionStore,
                             AgentConnectionStore agentConnectionStore,
-                            SessionManager sessionManager, AppServerDao appServerDao) {
+                            SessionManager sessionManager, AppServerService appServerService) {
         this.port = conf.getInt("server.port", -1);
         this.uiConnectionStore = uiConnectionStore;
         this.agentConnectionStore = agentConnectionStore;
         this.sessionManager = sessionManager;
         this.commandStore = commandStore;
-        this.appServerDao = appServerDao;
+        this.appServerService = appServerService;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class NettyServerForUi implements NettyServer {
                                 .addLast(new RequestDecoder(new DefaultRequestEncryption(new RSAEncryption(RSA_PUBLIC_KEY, RSA_PRIVATE_KEY))))
                                 .addLast(new WebSocketEncoder())
                                 .addLast(new TabHandler())
-                                .addLast(new HostsValidatorHandler(new AppCenterServerFinder(appServerDao)))
+                                .addLast(new HostsValidatorHandler(new AppCenterServerFinder(appServerService)))
                                 .addLast(new UiRequestHandler(commandStore, uiConnectionStore, agentConnectionStore, sessionManager));
                     }
                 });

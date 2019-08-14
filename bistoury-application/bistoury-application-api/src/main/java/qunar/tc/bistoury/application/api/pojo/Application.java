@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.serverside.support;
+package qunar.tc.bistoury.application.api.pojo;
 
 import java.io.Serializable;
 import java.util.Date;

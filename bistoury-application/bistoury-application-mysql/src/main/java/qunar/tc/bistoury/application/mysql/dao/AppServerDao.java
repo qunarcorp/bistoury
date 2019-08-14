@@ -15,13 +15,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.proxy.util;
-
-import java.util.List;
+package qunar.tc.bistoury.application.mysql.dao;
 
 import qunar.tc.bistoury.application.api.pojo.AppServer;
 
-public interface ServerFinder {
+import java.util.List;
 
-    List<AppServer> findAgents(String app);
+/**
+ * @author leix.xie
+ * @date 2019/7/2 14:18
+ * @describe
+ */
+public interface AppServerDao {
+    List<AppServer> getAppServerByAppCode(String appCode);
+
+    AppServer getAppServerByIp(String ip);
+
+    AppServer getAppServerByServerId(String serverId);
+
+    int addAppServer(AppServer appServer);
+
+    int updateAppServer(AppServer appServer);
+
+    int changeAutoJMapHistoEnable(String serverId, boolean enable);
+
+    int changeAutoJStackEnable(String serverId, boolean enable);
+
+    int deleteAppServerByIp(String ip);
+
+    int deleteAppServerByServerId(String serverId);
 }

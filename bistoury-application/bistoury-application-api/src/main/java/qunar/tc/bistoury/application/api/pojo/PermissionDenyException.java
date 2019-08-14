@@ -15,21 +15,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.service;
-
-import qunar.tc.bistoury.serverside.support.Application;
-
-import java.util.List;
+package qunar.tc.bistoury.application.api.pojo;
 
 /**
  * @author leix.xie
- * @date 2019/7/2 20:13
+ * @date 2019/7/4 15:40
  * @describe
  */
-public interface ApplicationService {
-    List<Application> getAllApplications(String userCode);
+public class PermissionDenyException extends RuntimeException {
+    public PermissionDenyException() {
+        super();
+    }
 
-    List<String> getAppOwner(String appCode);
+    public PermissionDenyException(String message) {
+        super(message);
+    }
 
-    int save(Application application);
+    public PermissionDenyException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public PermissionDenyException(Throwable cause) {
+        super(cause);
+    }
+
+    protected PermissionDenyException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

@@ -15,18 +15,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.service;
+package qunar.tc.bistoury.application.mysql.utils;
 
-import qunar.tc.bistoury.serverside.support.Application;
-
-import java.util.Set;
+import java.util.UUID;
 
 /**
- * @author zhenyu.nie created on 2018 2018/10/31 13:56
+ * @author leix.xie
+ * @date 2019/7/2 14:41
+ * @describe
  */
-public interface AppService {
+public class UUIDUtil {
+    public static String generateUniqueId() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
+    }
 
-    Set<String> getApps(String userCode);
-
-    Application getAppInfo(String appCode);
+    public static String generateUniqueId(String name) {
+        return UUID.nameUUIDFromBytes(name.getBytes()).toString().replaceAll("-", "");
+    }
 }

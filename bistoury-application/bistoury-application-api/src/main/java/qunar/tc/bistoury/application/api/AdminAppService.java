@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.service;
+package qunar.tc.bistoury.application.api;
 
 import java.util.List;
 
@@ -26,6 +26,4 @@ import java.util.List;
 public interface AdminAppService {
 
     List<String> searchApps(String searchKey, int size);
-
-    boolean isAdminUser(String userName);
 }

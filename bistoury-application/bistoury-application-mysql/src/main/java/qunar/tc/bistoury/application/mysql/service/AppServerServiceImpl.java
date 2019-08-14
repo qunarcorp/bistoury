@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.service.impl;
+package qunar.tc.bistoury.application.mysql.service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -23,11 +23,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import qunar.tc.bistoury.serverside.common.UUIDUtil;
-import qunar.tc.bistoury.serverside.support.AppServer;
-import qunar.tc.bistoury.ui.dao.AppServerDao;
-import qunar.tc.bistoury.ui.security.LoginContext;
-import qunar.tc.bistoury.ui.service.AppServerService;
+
+import qunar.tc.bistoury.application.api.AppServerService;
+import qunar.tc.bistoury.application.api.pojo.AppServer;
+import qunar.tc.bistoury.application.mysql.dao.AppServerDao;
+import qunar.tc.bistoury.application.mysql.utils.UUIDUtil;
 
 import java.util.List;
 
@@ -51,34 +51,34 @@ public class AppServerServiceImpl implements AppServerService {
     }
 
     @Override
-    public int changeAutoJMapHistoEnable(final String serverId, final boolean enable) {
+    public int changeAutoJMapHistoEnable(final String serverId, final boolean enable, String loginUser) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(serverId), "serverId cannot be null or empty");
-        logger.info("{} change {}'s jmap switch", LoginContext.getLoginContext().getLoginUser(), serverId);
+        logger.info("{} change {}'s jmap switch", loginUser, serverId);
         return this.appServerDao.changeAutoJMapHistoEnable(serverId, enable);
     }
 
     @Override
-    public int changeAutoJStackEnable(final String serverId, final boolean enable) {
+    public int changeAutoJStackEnable(final String serverId, final boolean enable, String loginUser) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(serverId), "serverId cannot be null or empty");
-        logger.info("{} change {}'s jsatck switch", LoginContext.getLoginContext().getLoginUser(), serverId);
+        logger.info("{} change {}'s jsatck switch", loginUser, serverId);
         return this.appServerDao.changeAutoJStackEnable(serverId, enable);
     }
 
     @Override
-    public int deleteAppServerByServerId(final String serverId) {
+    public int deleteAppServerByServerId(final String serverId, String loginUser) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(serverId), "serverId cannot be null or empty");
-        logger.info("{} delete a server, serverId: {}", LoginContext.getLoginContext().getLoginUser(), serverId);
+        logger.info("{} delete a server, serverId: {}", loginUser, serverId);
         return this.appServerDao.deleteAppServerByServerId(serverId);
     }
 
     @Override
-    public int saveAppServer(AppServer appServer) {
+    public int saveAppServer(AppServer appServer, String loginUser) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(appServer.getAppCode()), "app code cannot be null or empty");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(appServer.getIp()), "ip cannot be null or empty");
         Preconditions.checkArgument(appServer.getPort() > 0, "port cannot be less than 0");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(appServer.getLogDir()), "log dir cannot be null or empty");
         if (Strings.isNullOrEmpty(appServer.getServerId())) {
-            logger.info("{} add a server {}", LoginContext.getLoginContext().getLoginUser(), appServer);
+            logger.info("{} add a server {}", loginUser, appServer);
             appServer.setServerId(UUIDUtil.generateUniqueId());
             AppServer oldAppServer = this.appServerDao.getAppServerByIp(appServer.getIp());
             if (null == oldAppServer) {
@@ -87,8 +87,13 @@ public class AppServerServiceImpl implements AppServerService {
                 throw new RuntimeException("IP地址与" + oldAppServer.getAppCode() + "的IP地址冲突，主机添加失败");
             }
         } else {
-            logger.info("{} update appserver {}", LoginContext.getLoginContext().getLoginUser(), appServer);
+            logger.info("{} update appserver {}", loginUser, appServer);
             return this.appServerDao.updateAppServer(appServer);
         }
     }
+
+	@Override
+	public AppServer getAppServerByIp(String ip) {
+		return this.appServerDao.getAppServerByIp(ip);
+	}
 }
