@@ -18,7 +18,7 @@
             <mvc:mapping path="/**"/>
             <mvc:exclude-mapping path="/login.do"/>
             <mvc:exclude-mapping path="/user/register.do"/>
-            <bean class="qunar.tc.bistoury.ui.security.LoginInterceptor"/>
+            <bean class="qunar.tc.bistoury.ui.security.LoginInterceptorImpl"/>
         </mvc:interceptor>
     </mvc:interceptors>
 </beans>

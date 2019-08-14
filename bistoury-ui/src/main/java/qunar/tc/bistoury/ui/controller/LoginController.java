@@ -27,8 +27,8 @@ import org.springframework.web.servlet.view.RedirectView;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 import qunar.tc.bistoury.ui.model.User;
-import qunar.tc.bistoury.ui.security.BistouryLoginManager;
 import qunar.tc.bistoury.ui.security.LoginContext;
+import qunar.tc.bistoury.ui.service.LoginManager;
 import qunar.tc.bistoury.ui.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +44,7 @@ public class LoginController {
     private UserService userService;
 
     @Autowired
-    private BistouryLoginManager loginManager;
+    private LoginManager loginManager;
 
     @RequestMapping("logout")
     public ModelAndView logout(HttpServletRequest request, HttpServletResponse response) {

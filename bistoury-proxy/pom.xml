@@ -27,7 +27,7 @@
         </dependency>
         <dependency>
             <groupId>qunar.tc.bistoury</groupId>
-            <artifactId>bistoury-serverside-common</artifactId>
+            <artifactId>bistoury-ui-service-impl</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
@@ -48,22 +48,6 @@
             <artifactId>commons-cli</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -111,14 +95,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/resources.${deploy.type}</directory>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
     </build>
     <profiles>
         <profile>

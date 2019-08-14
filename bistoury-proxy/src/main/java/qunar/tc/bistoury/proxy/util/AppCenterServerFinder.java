@@ -19,8 +19,8 @@ package qunar.tc.bistoury.proxy.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import qunar.tc.bistoury.proxy.web.dao.AppServerDao;
 import qunar.tc.bistoury.serverside.support.AppServer;
+import qunar.tc.bistoury.ui.dao.AppServerDao;
 
 import java.util.List;
 

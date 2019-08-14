@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.common;
+package qunar.tc.bistoury.serverside.common;
 
 import java.util.UUID;
 

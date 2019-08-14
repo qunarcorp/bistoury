@@ -15,33 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.proxy.web.dao;
+package qunar.tc.bistoury.ui.security;
 
-import qunar.tc.bistoury.serverside.support.AppServer;
-
-import java.util.List;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
  * @author leix.xie
- * @date 2019/7/2 14:18
+ * @date 2019-08-13 19:46
  * @describe
  */
-public interface AppServerDao {
-    List<AppServer> getAppServerByAppCode(String appCode);
-
-    AppServer getAppServerByIp(String ip);
-
-    AppServer getAppServerByServerId(String serverId);
-
-    int addAppServer(AppServer appServer);
-
-    int updateAppServer(AppServer appServer);
-
-    int changeAutoJMapHistoEnable(String serverId, boolean enable);
-
-    int changeAutoJStackEnable(String serverId, boolean enable);
-
-    int deleteAppServerByIp(String ip);
-
-    int deleteAppServerByServerId(String serverId);
+public interface LoginInterceptor extends HandlerInterceptor, ApplicationContextAware {
 }

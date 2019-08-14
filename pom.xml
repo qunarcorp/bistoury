@@ -31,6 +31,8 @@
         <module>bistoury-ui</module>
         <module>bistoury-dist</module>
         <module>bistoury-metrics-prometheus</module>
+        <module>bistoury-ui-service</module>
+        <module>bistoury-ui-service-impl</module>
     </modules>
 
     <properties>
@@ -161,6 +163,16 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>bistoury-ui</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>bistoury-ui-service</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>bistoury-ui-service-impl</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
             <dependency>
@@ -507,6 +519,11 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
                 <artifactId>spring-jdbc</artifactId>
                 <version>${org.springframework.version}</version>
             </dependency>
@@ -586,6 +603,14 @@
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/webapp</directory>
+                <targetPath>${basedir}/target/webapp</targetPath>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+                <filtering>false</filtering>
             </resource>
         </resources>
         <pluginManagement>

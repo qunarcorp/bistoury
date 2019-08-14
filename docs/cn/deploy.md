@@ -97,6 +97,10 @@ Bistoury的ui和proxy需要知道如何连接到在上面创建的数据库，�
 ```shell
 ./bistoury-ui.sh restart
 ```
+
+`bistoury-ui`默认端口为`8081`, 因此启动成功以后可以访问`http://127.0.0.1:8081`访问ui页面，用户名密码默认都为`admin`
+
+
 ### 2.3.3 bistoury-agent部署
 
 Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
@@ -129,6 +133,9 @@ output=master
 + 启动
 
 在启动是可以通过-p指定pid确定agent attach特定的java进程，不指定时会通过jps -l和ps aux|grep java 命令及proxy中配置的参数解析pid，优先级依次降低。
+>- -p    通过-p指定应用进程pid
+>- -j    通过-j指定java home
+
 ```shell
 ./bistoury-agent.sh -p 100 start
 ./bistoury-agent.sh start
@@ -139,7 +146,6 @@ output=master
 ```
 + 重启
 ```shell
-#注意：格式固定
 ./bistoury-agent.sh -p 101 restart
 ./bistoury-agent.sh restart
 ```
