@@ -16,6 +16,7 @@ import qunar.tc.bistoury.application.mysql.dao.ApplicationDao;
 import qunar.tc.bistoury.application.mysql.dao.ApplicationUserDao;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -23,6 +24,7 @@ import org.springframework.util.CollectionUtils;
  * @author xkrivzooh
  * @since 2019/8/14
  */
+@Service
 public class ApplicationServiceImpl implements ApplicationService {
 
 	@Autowired
