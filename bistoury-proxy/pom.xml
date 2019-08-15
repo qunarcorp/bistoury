@@ -27,7 +27,15 @@
         </dependency>
         <dependency>
             <groupId>qunar.tc.bistoury</groupId>
-            <artifactId>bistoury-ui-service-impl</artifactId>
+            <artifactId>bistoury-application-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>qunar.tc.bistoury</groupId>
+            <artifactId>bistoury-application-mysql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>

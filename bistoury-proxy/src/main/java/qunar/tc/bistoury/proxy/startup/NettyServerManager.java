@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import qunar.tc.bistoury.application.api.AppServerService;
 import qunar.tc.bistoury.proxy.communicate.Connection;
 import qunar.tc.bistoury.proxy.communicate.SessionManager;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
@@ -41,7 +43,6 @@ import qunar.tc.bistoury.serverside.common.ZKClientCache;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 import qunar.tc.bistoury.serverside.store.RegistryStore;
 import qunar.tc.bistoury.serverside.util.ServerManager;
-import qunar.tc.bistoury.ui.dao.AppServerDao;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -75,7 +76,7 @@ public class NettyServerManager {
     private SessionManager sessionManager;
 
     @Autowired
-    private AppServerDao appServerDao;
+    private AppServerService appServerService;
 
     @Autowired
     private List<AgentMessageProcessor> agentMessageProcessors;
@@ -114,7 +115,7 @@ public class NettyServerManager {
     }
 
     private NettyServerForUi startUiServer(Conf conf) {
-        NettyServerForUi serverForUi = new NettyServerForUi(conf, commandStore, uiConnectionStore, agentConnectionStore, sessionManager, appServerDao);
+        NettyServerForUi serverForUi = new NettyServerForUi(conf, commandStore, uiConnectionStore, agentConnectionStore, sessionManager, appServerService);
         serverForUi.start();
         return serverForUi;
     }
