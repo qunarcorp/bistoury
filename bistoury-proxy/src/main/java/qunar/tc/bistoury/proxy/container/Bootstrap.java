@@ -46,7 +46,6 @@ public class Bootstrap {
 
     public static void main(String[] args) throws Exception {
         try {
-            //System.setProperty("bistoury.conf", "/Users/leix.xie/workspace/opensource/bistoury/bistoury-proxy/conf");
             final String confDir = System.getProperty("bistoury.conf");
             if (Strings.isNullOrEmpty(confDir)) {
                 throw new RuntimeException("请在JVM参数中配置项目配置文件目录，即bistoury.conf");
