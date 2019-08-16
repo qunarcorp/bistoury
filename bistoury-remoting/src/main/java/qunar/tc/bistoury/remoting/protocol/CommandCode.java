@@ -28,11 +28,12 @@ import java.util.Map;
  * @describe
  */
 public enum CommandCode {
-    REQ_TYPE_AGENT_SERVER_PID_GETTER(0, 0),
     REQ_TYPE_REFRESH_AGENT_INFO(1, 30),
     REQ_TYPE_REFRESH_TIP(2, 31),
+	REQ_TYPE_AGENT_SERVER_PID_GETTER(3, 31),
 
-    REQ_TYPE_COMMAND(101, 1),
+
+	REQ_TYPE_COMMAND(101, 1),
     REQ_TYPE_CANCEL(102, 2),
     REQ_TYPE_TAB(103, 3),
     REQ_TYPE_JAVA(104, 4),
