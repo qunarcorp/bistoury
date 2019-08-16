@@ -30,6 +30,7 @@ import qunar.tc.bistoury.proxy.communicate.Connection;
 import qunar.tc.bistoury.proxy.communicate.SessionManager;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
+import qunar.tc.bistoury.proxy.communicate.agent.AgentRelatedDatagramWrapperService;
 import qunar.tc.bistoury.proxy.communicate.agent.NettyServerForAgent;
 import qunar.tc.bistoury.proxy.communicate.agent.handler.AgentMessageHandler;
 import qunar.tc.bistoury.proxy.communicate.agent.handler.AgentMessageProcessor;
@@ -79,6 +80,9 @@ public class NettyServerManager {
     private AppServerService appServerService;
 
     @Autowired
+    private AgentRelatedDatagramWrapperService agentRelatedDatagramWrapperService;
+
+    @Autowired
     private List<AgentMessageProcessor> agentMessageProcessors;
 
     private volatile String uiNode;
@@ -115,7 +119,8 @@ public class NettyServerManager {
     }
 
     private NettyServerForUi startUiServer(Conf conf) {
-        NettyServerForUi serverForUi = new NettyServerForUi(conf, commandStore, uiConnectionStore, agentConnectionStore, sessionManager, appServerService);
+        NettyServerForUi serverForUi = new NettyServerForUi(conf, commandStore, uiConnectionStore,
+                agentConnectionStore, sessionManager, appServerService, agentRelatedDatagramWrapperService);
         serverForUi.start();
         return serverForUi;
     }

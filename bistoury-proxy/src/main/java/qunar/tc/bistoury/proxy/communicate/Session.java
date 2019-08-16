@@ -19,6 +19,7 @@ package qunar.tc.bistoury.proxy.communicate;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
+import qunar.tc.bistoury.proxy.communicate.agent.AgentRelatedDatagramWrapperService;
 import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.UiConnection;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
@@ -34,7 +35,7 @@ public interface Session {
 
     void writeToUi(Datagram message);
 
-    void writeToAgent(Datagram message);
+    void writeToAgent(AgentRelatedDatagramWrapperService agentRelatedDatagramWrapperService, Datagram message);
 
     String getId();
 

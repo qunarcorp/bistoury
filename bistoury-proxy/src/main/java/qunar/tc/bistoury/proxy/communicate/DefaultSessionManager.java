@@ -26,10 +26,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
+import qunar.tc.bistoury.proxy.communicate.agent.AgentRelatedDatagramWrapperService;
 import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.UiConnection;
 import qunar.tc.bistoury.proxy.generator.IdGenerator;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
+import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
 import qunar.tc.bistoury.remoting.protocol.payloadHolderImpl.RequestPayloadHolder;
 
@@ -48,6 +50,9 @@ public class DefaultSessionManager implements SessionManager {
 
     @Autowired
     private IdGenerator sessionIdGenerator;
+
+    @Autowired
+    private AgentRelatedDatagramWrapperService agentRelatedDatagramWrapperService;
 
     private final ConcurrentMap<String, Session> sessions = Maps.newConcurrentMap();
 
@@ -71,8 +76,9 @@ public class DefaultSessionManager implements SessionManager {
         }, MoreExecutors.directExecutor());
 
         doWithConnectionClose(uiConnection, uiConnectionToSessionsMapping, session, theSession -> {
-            theSession.writeToAgent(RemotingBuilder.buildRequestDatagram(
-                    CommandCode.REQ_TYPE_CANCEL.getCode(), theSession.getId(), new RequestPayloadHolder("")));
+            Datagram datagram = RemotingBuilder.buildRequestDatagram(
+                    CommandCode.REQ_TYPE_CANCEL.getCode(), theSession.getId(), new RequestPayloadHolder(""));
+            theSession.writeToAgent(agentRelatedDatagramWrapperService, datagram);
             theSession.broken();
         });
         doWithConnectionClose(agentConnection, agentConnectionToUiConnectionMapping, uiConnection, Connection::close);

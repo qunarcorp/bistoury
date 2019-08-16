@@ -32,10 +32,12 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.application.api.AppServerPidInfoService;
 import qunar.tc.bistoury.application.api.AppServerService;
 import qunar.tc.bistoury.proxy.communicate.NettyServer;
 import qunar.tc.bistoury.proxy.communicate.SessionManager;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
+import qunar.tc.bistoury.proxy.communicate.agent.AgentRelatedDatagramWrapperService;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommandStore;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.*;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.encryption.DefaultRequestEncryption;
@@ -74,19 +76,24 @@ public class NettyServerForUi implements NettyServer {
 
     private AppServerService appServerService;
 
+    private AgentRelatedDatagramWrapperService agentRelatedDatagramWrapperService;
+
     private volatile Channel channel;
 
     public NettyServerForUi(Conf conf,
                             CommunicateCommandStore commandStore,
                             UiConnectionStore uiConnectionStore,
                             AgentConnectionStore agentConnectionStore,
-                            SessionManager sessionManager, AppServerService appServerService) {
+                            SessionManager sessionManager,
+                            AppServerService appServerService,
+                            AgentRelatedDatagramWrapperService agentRelatedDatagramWrapperService) {
         this.port = conf.getInt("server.port", -1);
         this.uiConnectionStore = uiConnectionStore;
         this.agentConnectionStore = agentConnectionStore;
         this.sessionManager = sessionManager;
         this.commandStore = commandStore;
         this.appServerService = appServerService;
+        this.agentRelatedDatagramWrapperService = agentRelatedDatagramWrapperService;
     }
 
     @Override
@@ -104,6 +111,8 @@ public class NettyServerForUi implements NettyServer {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline pip = ch.pipeline();
+                        UiRequestHandler uiRequestHandler = new UiRequestHandler(commandStore, uiConnectionStore,
+                                agentConnectionStore, sessionManager, agentRelatedDatagramWrapperService);
                         pip.addLast(new IdleStateHandler(0, 0, 30 * 60 * 1000))
                                 .addLast(new HttpServerCodec())
                                 .addLast(new HttpObjectAggregator(1024 * 1024))
@@ -113,7 +122,7 @@ public class NettyServerForUi implements NettyServer {
                                 .addLast(new WebSocketEncoder())
                                 .addLast(new TabHandler())
                                 .addLast(new HostsValidatorHandler(new AppCenterServerFinder(appServerService)))
-                                .addLast(new UiRequestHandler(commandStore, uiConnectionStore, agentConnectionStore, sessionManager));
+                                .addLast(uiRequestHandler);
                     }
                 });
         try {

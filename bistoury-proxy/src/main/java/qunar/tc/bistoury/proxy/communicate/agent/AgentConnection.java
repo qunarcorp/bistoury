@@ -28,4 +28,5 @@ public interface AgentConnection extends Connection {
 
     int getVersion();
 
+    String getAgentServerIp();
 }

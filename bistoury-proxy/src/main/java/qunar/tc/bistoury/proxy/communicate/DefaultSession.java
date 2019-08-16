@@ -21,6 +21,8 @@ import com.google.common.util.concurrent.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
+import qunar.tc.bistoury.proxy.communicate.agent.AgentRelatedDatagramWrapperService;
+import qunar.tc.bistoury.proxy.communicate.agent.AgentRelatedDatagramWrapperService.AgentInfo;
 import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.UiConnection;
 import qunar.tc.bistoury.proxy.communicate.ui.UiResponses;
@@ -70,8 +72,10 @@ public class DefaultSession implements Session {
     }
 
     @Override
-    public void writeToAgent(Datagram message) {
-        ListenableFuture<WriteResult> result = agentConnection.write(message);
+    public void writeToAgent(AgentRelatedDatagramWrapperService agentRelatedDatagramWrapperService, Datagram message) {
+        String agentServerIp = agentConnection.getAgentServerIp();
+        Datagram warpedDatagram = agentRelatedDatagramWrapperService.wrap(message, new AgentInfo(agentServerIp));
+        ListenableFuture<WriteResult> result = agentConnection.write(warpedDatagram);
         Futures.addCallback(result, new FutureCallback<WriteResult>() {
 
             @Override

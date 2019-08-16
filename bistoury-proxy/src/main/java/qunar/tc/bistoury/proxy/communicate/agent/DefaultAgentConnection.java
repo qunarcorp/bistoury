@@ -17,8 +17,10 @@
 
 package qunar.tc.bistoury.proxy.communicate.agent;
 
+import com.google.common.base.Preconditions;
 import io.netty.channel.Channel;
 import qunar.tc.bistoury.proxy.communicate.AbstractConnection;
+import qunar.tc.bistoury.proxy.util.ChannelUtils;
 
 import java.util.Objects;
 
@@ -50,7 +52,13 @@ public class DefaultAgentConnection extends AbstractConnection implements AgentC
         return version;
     }
 
-    @Override
+	@Override
+	public String getAgentServerIp() {
+        Preconditions.checkNotNull(this.channel);
+        return ChannelUtils.getIp(this.channel);
+	}
+
+	@Override
     public boolean isActive() {
         return channel.isActive();
     }

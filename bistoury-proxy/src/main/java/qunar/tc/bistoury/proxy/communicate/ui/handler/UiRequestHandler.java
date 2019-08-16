@@ -28,10 +28,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.application.api.AppServerPidInfoService;
 import qunar.tc.bistoury.proxy.communicate.Session;
 import qunar.tc.bistoury.proxy.communicate.SessionManager;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
+import qunar.tc.bistoury.proxy.communicate.agent.AgentRelatedDatagramWrapperService;
 import qunar.tc.bistoury.proxy.communicate.ui.*;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommand;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommandStore;
@@ -64,14 +66,18 @@ public class UiRequestHandler extends ChannelDuplexHandler {
 
     private final CommunicateCommandStore commandStore;
 
+    private final AgentRelatedDatagramWrapperService agentRelatedDatagramWrapperService;
+
     public UiRequestHandler(CommunicateCommandStore commandStore,
                             UiConnectionStore uiConnectionStore,
                             AgentConnectionStore agentConnectionStore,
-                            SessionManager sessionManager) {
+                            SessionManager sessionManager,
+                            AgentRelatedDatagramWrapperService agentRelatedDatagramWrapperService) {
         this.commandStore = commandStore;
         this.uiConnectionStore = uiConnectionStore;
         this.agentConnectionStore = agentConnectionStore;
         this.sessionManager = sessionManager;
+        this.agentRelatedDatagramWrapperService = agentRelatedDatagramWrapperService;
     }
 
     @Override
@@ -177,7 +183,7 @@ public class UiRequestHandler extends ChannelDuplexHandler {
         Session session = sessionManager.create(requestData, agentConnection, uiConnection);
         @SuppressWarnings("unchecked")
         Datagram datagram = processor.prepareRequest(session.getId(), requestData, agentConnection.getAgentId());
-        session.writeToAgent(datagram);
+        session.writeToAgent(agentRelatedDatagramWrapperService, datagram);
         return session;
     }
 
@@ -186,7 +192,7 @@ public class UiRequestHandler extends ChannelDuplexHandler {
         for (Session session : sessions) {
             String id = session.getId();
             Datagram datagram = RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_CANCEL.getCode(), id + CANCEL_SIGN, new RequestPayloadHolder(id));
-            session.writeToAgent(datagram);
+            session.writeToAgent(agentRelatedDatagramWrapperService, datagram);
             session.finish();
         }
     }
