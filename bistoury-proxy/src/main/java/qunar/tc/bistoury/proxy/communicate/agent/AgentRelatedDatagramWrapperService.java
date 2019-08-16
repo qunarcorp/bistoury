@@ -27,9 +27,9 @@ public class AgentRelatedDatagramWrapperService {
 	//其实此处可以考虑基于datagram的类型来看情况是否需要加pid信息，待优化吧
 	public Datagram wrap(Datagram datagram, AgentInfo agentInfo) {
 		Preconditions.checkNotNull(datagram, "datagram不能为空");
-		Preconditions.checkNotNull(agentInfo, "agentInfo不能为空");
 		RemotingHeader header = datagram.getHeader();
 		Preconditions.checkNotNull(header);
+		Preconditions.checkNotNull(agentInfo, "agentInfo不能为空");
 
 		Map<String, Integer> appPidMapping = appServerPidInfoService.queryPidInfo(agentInfo.getAgentServerIp());
 		if (!CollectionUtils.isEmpty(appPidMapping)) {
