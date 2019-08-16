@@ -35,7 +35,7 @@ public interface Session {
 
     void writeToUi(Datagram message);
 
-    void writeToAgent(AgentRelatedDatagramWrapperService agentRelatedDatagramWrapperService, Datagram message);
+    void writeToAgent(AgentRelatedDatagramWrapperService agentRelatedDatagramWrapperService, String appCode, Datagram message);
 
     String getId();
 

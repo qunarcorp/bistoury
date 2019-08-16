@@ -43,7 +43,7 @@ public class PidByPsHandler extends AbstractPidHandler implements PidHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(PidByPsHandler.class);
 
-    private static final MetaStore META_STORE = MetaStores.getMetaStore();
+    private static final MetaStore META_STORE = MetaStores.getSharedMetaStore();
 
     private static final String TOMCAT_USER = META_STORE.getStringProperty("tomcat.user", "tomcat");
     private static final String TOMCAT_COMMAND = META_STORE.getStringProperty("tomcat.command", "/home/java/default/bin/java");

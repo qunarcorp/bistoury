@@ -17,12 +17,14 @@
 
 package qunar.tc.bistoury.proxy.config;
 
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import qunar.tc.bistoury.application.api.AppServerService;
 import qunar.tc.bistoury.application.api.pojo.AppServer;
@@ -69,17 +71,21 @@ public class DefaultAgentInfoManager implements AgentInfoManager {
     }
 
     @Override
-    public ListenableFuture<Map<String, String>> getAgentInfo(String ip) {
-        SettableFuture<Map<String, String>> resultFuture = SettableFuture.create();
-        AppServer appServer = this.appServerService.getAppServerByIp(ip);
-        Map<String, String> agentInfo = new HashMap<>();
-        if (appServer != null) {
-            agentInfo.put("port", String.valueOf(appServer.getPort()));
-            agentInfo.put("cpuJStackOn", String.valueOf(appServer.isAutoJStackEnable()));
-            agentInfo.put("heapJMapHistoOn", String.valueOf(appServer.isAutoJMapHistoEnable()));
+    public ListenableFuture<Map<String, Map<String, String>>> getAgentInfo(String ip) {
+        SettableFuture<Map<String, Map<String, String>>> resultFuture = SettableFuture.create();
+        List<AppServer> appServers = this.appServerService.getAppServersByIp(ip);
+        Map<String, Map<String, String>> agentInfo = new HashMap<>();
+        if(!CollectionUtils.isEmpty(appServers)) {
+            for (AppServer appServer : appServers) {
+                agentInfo.putIfAbsent(appServer.getAppCode(), Maps.newHashMap());
+                Map<String, String> map = agentInfo.get(appServer.getAppCode());
+                map.put("port", String.valueOf(appServer.getPort()));
+                map.put("cpuJStackOn", String.valueOf(appServer.isAutoJStackEnable()));
+                map.put("heapJMapHistoOn", String.valueOf(appServer.isAutoJMapHistoEnable()));
+                //这里可以覆盖所有版本配置
+                map.putAll(agentConfig);
+            }
         }
-        //这里可以覆盖所有版本配置
-        agentInfo.putAll(agentConfig);
 
         final int version = getVersion(ip);
         //这里可以覆盖版本低于指定版本的配置

@@ -18,8 +18,10 @@
 package qunar.tc.bistoury.agent.common.pid;
 
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.pid.impl.PidByJpsHandler;
@@ -28,7 +30,9 @@ import qunar.tc.bistoury.agent.common.pid.impl.PidBySystemPropertyHandler;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 /**
  * @author: leix.xie
@@ -36,6 +40,9 @@ import java.util.ServiceLoader;
  * @describe：
  */
 public class PidUtils {
+
+    //key:app, value:pid
+    private static Map<String, Integer> MAPPING = Maps.newConcurrentMap();
 
     private static final Logger logger = LoggerFactory.getLogger(PidUtils.class);
 
@@ -59,7 +66,7 @@ public class PidUtils {
         return ImmutableList.copyOf(handlers);
     }
 
-    public static int getPid() {
+    private static int getPid() {
         for (PidHandler handler : PID_HANDLERS) {
             int pid = handler.getPid();
             if (pid > 0) {
@@ -68,5 +75,28 @@ public class PidUtils {
             }
         }
         return -1;
+    }
+
+    /**
+     * 不支持同一个应用在一个机器上部署多个进程...
+     */
+    public static Set<String> getAgentServerAppCodes() {
+        return MAPPING.keySet();
+    }
+
+    public static int getPid(String appCode) {
+        if (Strings.isNullOrEmpty(appCode)) {
+            return getPid();
+        }
+
+        return MAPPING.getOrDefault(appCode, getPid());
+    }
+
+    public static void setPidMapping(Map<String, Integer> pidInfo) {
+        if (pidInfo == null) {
+            pidInfo = Maps.newConcurrentMap();
+        }
+
+        MAPPING = pidInfo;
     }
 }

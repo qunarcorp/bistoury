@@ -120,7 +120,7 @@ public class UiRequestHandler extends ChannelDuplexHandler {
         UiConnection uiConnection = uiConnectionStore.register(ctx.channel());
 
         if (inputData.getType() == CommandCode.REQ_TYPE_CANCEL.getCode()) {
-            cancelRequest(uiConnection);
+            cancelRequest(inputData, uiConnection);
             return;
         }
 
@@ -183,16 +183,16 @@ public class UiRequestHandler extends ChannelDuplexHandler {
         Session session = sessionManager.create(requestData, agentConnection, uiConnection);
         @SuppressWarnings("unchecked")
         Datagram datagram = processor.prepareRequest(session.getId(), requestData, agentConnection.getAgentId());
-        session.writeToAgent(agentRelatedDatagramWrapperService, datagram);
+        session.writeToAgent(agentRelatedDatagramWrapperService, requestData.getApp(), datagram);
         return session;
     }
 
-    private void cancelRequest(UiConnection uiConnection) {
+    private void cancelRequest(RequestData requestData, UiConnection uiConnection) {
         Set<Session> sessions = sessionManager.getSessionByUiConnection(uiConnection);
         for (Session session : sessions) {
             String id = session.getId();
             Datagram datagram = RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_CANCEL.getCode(), id + CANCEL_SIGN, new RequestPayloadHolder(id));
-            session.writeToAgent(agentRelatedDatagramWrapperService, datagram);
+            session.writeToAgent(agentRelatedDatagramWrapperService, requestData.getApp(), datagram);
             session.finish();
         }
     }

@@ -47,7 +47,7 @@ public class DebugJsonWriter {
 
     private static final String DEBUG_JSON_LIMIT_KB = "debug.json.limit.kb";
 
-    private static final MetaStore META_STORE = MetaStores.getMetaStore();
+    private static final MetaStore META_STORE = MetaStores.getSharedMetaStore();
 
     static {
         MAPPER.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);

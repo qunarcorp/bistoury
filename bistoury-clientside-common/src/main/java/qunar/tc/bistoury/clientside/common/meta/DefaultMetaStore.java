@@ -37,6 +37,10 @@ public class DefaultMetaStore implements MetaStore {
     DefaultMetaStore() {
     }
 
+    public DefaultMetaStore(Map<String, String> attrs) {
+        this.attrs = attrs;
+    }
+
     @Override
     public void update(Map<String, String> attrs) {
         logger.debug("update agent info, {}", attrs);

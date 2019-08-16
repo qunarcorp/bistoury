@@ -15,13 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.agent;
+package qunar.tc.bistoury.agent.common.task;
 
 import com.google.common.collect.ImmutableList;
+import qunar.tc.bistoury.agent.common.pid.PidUtils;
 import qunar.tc.bistoury.agent.common.task.AgentGlobalTaskFactory;
 
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 /**
  * @author zhenyu.nie created on 2019 2019/1/8 17:15
@@ -33,8 +35,12 @@ public class AgentGlobalTaskInitializer {
     public static synchronized void init() {
         if (!init) {
             List<AgentGlobalTaskFactory> tasks = ImmutableList.copyOf(ServiceLoader.load(AgentGlobalTaskFactory.class));
-            for (AgentGlobalTaskFactory task : tasks) {
-                task.start();
+
+            Set<String> agentServerAppCodes = PidUtils.getAgentServerAppCodes();
+            for (String appCode : agentServerAppCodes) {
+                for (AgentGlobalTaskFactory task : tasks) {
+                    task.start(appCode);
+                }
             }
             init = true;
         }

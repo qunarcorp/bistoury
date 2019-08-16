@@ -30,11 +30,12 @@ import java.util.concurrent.Executors;
  * @describe：
  */
 public class AgentInfoPushTaskFactory implements AgentGlobalTaskFactory {
-    private static final ListeningScheduledExecutorService executor = MoreExecutors.listeningDecorator(Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("agent-info-push-task", true)));
+    private static final ListeningScheduledExecutorService executor = MoreExecutors.listeningDecorator(
+            Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("agent-info-push-task", true)));
 
     @Override
-    public void start() {
-        TaskRunner taskRunner = new TaskRunner(executor);
+    public void start(String appCode) {
+        TaskRunner taskRunner = new TaskRunner(appCode, executor);
         executor.submit(taskRunner);
     }
 }

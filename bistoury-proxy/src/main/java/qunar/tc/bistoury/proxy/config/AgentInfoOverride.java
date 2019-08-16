@@ -69,10 +69,12 @@ public class AgentInfoOverride {
      * @date 2019/5/6 16:03
      * @describe 覆盖版本低于指定版本的配置
      */
-    public void overrideAgentInfo(Map<String, String> agentInfo, final int version) {
+    public void overrideAgentInfo(Map<String, Map<String, String>> agentInfo, final int version) {
         for (AgentConfigOverride agentConfig : agentConfigOverrides) {
             if (version < agentConfig.getMinVersion()) {
-                agentInfo.put(agentConfig.getKey(), agentConfig.getOverrideValue());
+                for (Map.Entry<String, Map<String, String>> entry : agentInfo.entrySet()) {
+                    entry.getValue().put(agentConfig.getKey(), agentConfig.getOverrideValue());
+                }
             }
         }
     }

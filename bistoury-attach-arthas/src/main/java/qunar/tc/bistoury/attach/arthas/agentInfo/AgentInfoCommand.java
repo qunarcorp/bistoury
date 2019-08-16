@@ -43,7 +43,7 @@ public class AgentInfoCommand extends AnnotatedCommand {
 
     private static final Logger logger = BistouryLoggger.getLogger();
 
-    private static final AgentConfig config = new AgentConfig(MetaStores.getMetaStore());
+    private static final AgentConfig config = new AgentConfig(MetaStores.getSharedMetaStore());
 
     private String agentInfo;
 

@@ -37,6 +37,6 @@ public interface AppServerService {
 
     int saveAppServer(AppServer appServer, String loginUser);
 
-    AppServer getAppServerByIp(String ip);
+    List<AppServer> getAppServersByIp(String ip);
 }
 

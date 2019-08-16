@@ -39,9 +39,17 @@ public class TaskRunner implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskRunner.class);
 
-    private static final AgentConfig agentConfig = new AgentConfig(MetaStores.getMetaStore());
+    private final AgentConfig agentConfig;
 
     private HeapHistoStore heapHistoStore = HeapHistoStore.getInstance();
+
+    private final String appCode;
+
+    public TaskRunner(String appCode) {
+        this.appCode = appCode;
+        this.agentConfig = new AgentConfig(MetaStores.getMetaStore(appCode));
+    }
+
 
     @Override
     public void run() {
@@ -53,7 +61,7 @@ public class TaskRunner implements Runnable {
 
     private void report() {
         try {
-            int pid = PidUtils.getPid();
+            int pid = PidUtils.getPid(appCode);
             HeapHistoBeanHandle heapHistoBeanHandle = new HeapHistoBeanHandle("-all", pid);
             List<HistogramBean> histogramBeans = heapHistoBeanHandle.heapHisto();
 

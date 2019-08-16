@@ -31,11 +31,12 @@ import java.util.concurrent.TimeUnit;
  * @describe：
  */
 public class HeapHistoDumpTaskFactory implements AgentGlobalTaskFactory {
-    private static final ListeningScheduledExecutorService executor = MoreExecutors.listeningDecorator(Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("heaphisto-dump-task", true)));
+    private static final ListeningScheduledExecutorService executor = MoreExecutors.listeningDecorator(
+            Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("heaphisto-dump-task", true)));
 
     @Override
-    public void start() {
-        TaskRunner taskRunner = new TaskRunner();
+    public void start(String appCode) {
+        TaskRunner taskRunner = new TaskRunner(appCode);
         executor.scheduleAtFixedRate(taskRunner, 0, 1, TimeUnit.MINUTES);
     }
 }

@@ -17,14 +17,30 @@
 
 package qunar.tc.bistoury.clientside.common.meta;
 
+import com.google.common.collect.Maps;
+
+import java.util.Map;
+
 /**
  * @author zhenyu.nie created on 2019 2019/1/10 15:40
  */
 public class MetaStores {
 
-    private static final MetaStore metaStore = new DefaultMetaStore();
+    private static final MetaStore sharedMetaStore = new DefaultMetaStore(Maps.newHashMap());
 
-    public static MetaStore getMetaStore() {
-        return metaStore;
+    private static final Map<String, MetaStore> appMetaStores = Maps.newConcurrentMap();
+
+    public static MetaStore getSharedMetaStore() {
+        return sharedMetaStore;
+    }
+
+    public static MetaStore getMetaStore(String appCode) {
+        appMetaStores.put(appCode, new DefaultMetaStore());
+        return appMetaStores.get(appCode);
+    }
+
+    public static void initMetaStores(String appCode, Map<String, String> pidInfoStructured) {
+        DefaultMetaStore defaultMetaStore = new DefaultMetaStore(pidInfoStructured);
+        appMetaStores.put(appCode, defaultMetaStore);
     }
 }

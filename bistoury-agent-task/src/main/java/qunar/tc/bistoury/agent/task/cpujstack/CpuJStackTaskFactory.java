@@ -34,17 +34,17 @@ import java.util.concurrent.TimeUnit;
  */
 public class CpuJStackTaskFactory implements AgentGlobalTaskFactory {
 
-    private static final ListeningScheduledExecutorService executor = MoreExecutors.listeningDecorator(Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("cpu-jstack-task", true)));
+    private static final ListeningScheduledExecutorService executor = MoreExecutors.listeningDecorator(
+            Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("cpu-jstack-task", true)));
 
     private static final KvDb kvDb = KvDbs.getKvDb();
 
-    private static final AgentConfig agentConfig = new AgentConfig(MetaStores.getMetaStore());
-
     @Override
-    public void start() {
+    public void start(String appCode) {
         PidExecutor jstackExecutor = new JStackPidExecutor();
         PidRecordExecutor momentCpuTimePidExecutor = new MomentCpuTimeRecordExecutor(executor);
-        TaskRunner taskRunner = new TaskRunner(agentConfig, kvDb, jstackExecutor, momentCpuTimePidExecutor);
+
+        TaskRunner taskRunner = new TaskRunner(appCode, kvDb, jstackExecutor, momentCpuTimePidExecutor);
         executor.scheduleAtFixedRate(taskRunner, 5, 60, TimeUnit.SECONDS);
     }
 }

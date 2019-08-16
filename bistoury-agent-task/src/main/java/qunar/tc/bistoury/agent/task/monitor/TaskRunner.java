@@ -42,10 +42,13 @@ public class TaskRunner implements Runnable {
 
     private static final String MIN_VERSION = "1.2.5";
 
+    private String appCode;
+
     private static final TypeReference<TypeResponse<MetricsSnapshot>> TYPE_REFERENCE = new TypeReference<TypeResponse<MetricsSnapshot>>() {
     };
 
-    TaskRunner(MonitorReceiver receiver) {
+    TaskRunner(String appCode, MonitorReceiver receiver) {
+        this.appCode = appCode;
         this.receiver = receiver;
     }
 

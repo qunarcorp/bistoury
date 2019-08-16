@@ -43,7 +43,7 @@ import static qunar.tc.bistoury.common.BistouryConstants.REQ_AGENT_INFO;
 public class TaskRunner implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(TaskRunner.class);
 
-    private static final MetaStore META_STORE = MetaStores.getMetaStore();
+    private final MetaStore metaStore;
 
     private static final TelnetStore TELNET_STORE = DebugTelnetStore.getInstance();
 
@@ -56,8 +56,9 @@ public class TaskRunner implements Runnable {
 
     private ListeningScheduledExecutorService executor;
 
-    TaskRunner(ListeningScheduledExecutorService executor) {
+    TaskRunner(String appCode, ListeningScheduledExecutorService executor) {
         this.executor = executor;
+        this.metaStore = MetaStores.getMetaStore(appCode);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class TaskRunner implements Runnable {
         Telnet telnet = tryGetTelnet();
         if (telnet != null) {
             try {
-                Map<String, String> info = META_STORE.getAgentInfo();
+                Map<String, String> info = metaStore.getAgentInfo();
                 push(info, telnet);
             } finally {
                 telnet.close();
@@ -75,7 +76,7 @@ public class TaskRunner implements Runnable {
     }
 
     private int getAgentInfoPushIntervalMinutes() {
-        return META_STORE.getIntProperty(AGENT_PUSH_INTERVAL_MIN, DEFAULT_AGENT_INFO_PUSH_INTERVAL_MINUTES);
+        return metaStore.getIntProperty(AGENT_PUSH_INTERVAL_MIN, DEFAULT_AGENT_INFO_PUSH_INTERVAL_MINUTES);
     }
 
     private void push(Map<String, String> agentInfo, Telnet telnet) {

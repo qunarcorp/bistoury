@@ -7,4 +7,5 @@ package qunar.tc.bistoury.remoting.protocol;
 public class AgentRelatedDatagramConstants {
 
 	public static final String AGENT_SERVER_PID_INFO_HEADER = "AgentServerPidInfo";
+	public static final String APP_CODE_HEADER = "APP_CODE";
 }

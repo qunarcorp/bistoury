@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import qunar.tc.bistoury.application.api.AppServerService;
 import qunar.tc.bistoury.application.api.pojo.AppServer;
@@ -30,6 +31,8 @@ import qunar.tc.bistoury.application.mysql.dao.AppServerDao;
 import qunar.tc.bistoury.application.mysql.utils.UUIDUtil;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author leix.xie
@@ -80,11 +83,12 @@ public class AppServerServiceImpl implements AppServerService {
         if (Strings.isNullOrEmpty(appServer.getServerId())) {
             logger.info("{} add a server {}", loginUser, appServer);
             appServer.setServerId(UUIDUtil.generateUniqueId());
-            AppServer oldAppServer = this.appServerDao.getAppServerByIp(appServer.getIp());
-            if (null == oldAppServer) {
+            List<AppServer> oldAppServers = this.appServerDao.getAppServersByIp(appServer.getIp());
+            if (CollectionUtils.isEmpty(oldAppServers)) {
                 return this.appServerDao.addAppServer(appServer);
             } else {
-                throw new RuntimeException("IP地址与" + oldAppServer.getAppCode() + "的IP地址冲突，主机添加失败");
+                Set<String> appCodes = oldAppServers.stream().map(appServer1 -> appServer1.getAppCode()).collect(Collectors.toSet());
+                throw new RuntimeException("IP地址与" + appCodes + "的IP地址冲突，主机添加失败");
             }
         } else {
             logger.info("{} update appserver {}", loginUser, appServer);
@@ -93,7 +97,7 @@ public class AppServerServiceImpl implements AppServerService {
     }
 
 	@Override
-	public AppServer getAppServerByIp(String ip) {
-		return this.appServerDao.getAppServerByIp(ip);
+	public List<AppServer> getAppServersByIp(String ip) {
+        return this.appServerDao.getAppServersByIp(ip);
 	}
 }

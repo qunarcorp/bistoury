@@ -27,7 +27,7 @@ import java.util.Map;
  */
 public interface AgentInfoManager {
 
-    ListenableFuture<Map<String, String>> getAgentInfo(String ip);
+    ListenableFuture<Map<String, Map<String, String>>> getAgentInfo(String ip);
 
     void updateAgentInfo(List<String> agentIds);
 }

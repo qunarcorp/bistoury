@@ -17,6 +17,7 @@
 
 package qunar.tc.bistoury.remoting.netty;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableMap;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -25,7 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.agent.common.pid.PidUtils;
+import qunar.tc.bistoury.agent.common.task.AgentGlobalTaskInitializer;
+import qunar.tc.bistoury.clientside.common.meta.MetaStores;
 import qunar.tc.bistoury.common.BistouryConstants;
+import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.remoting.command.CommandSerializer;
 import qunar.tc.bistoury.remoting.protocol.*;
 
@@ -42,6 +46,10 @@ public class RequestHandler extends ChannelInboundHandlerAdapter {
 
     private final Map<Integer, Processor> processorMap;
     private final CodeTypeMappingStore codeTypeMappingStore = CodeTypeMappingStores.getInstance();
+
+    private final TypeReference<Map<String, Map<String, String>>> typeReference =
+            new TypeReference<Map<String, Map<String, String>>>() {
+            };
 
     public RequestHandler(List<Processor> processors) {
         ImmutableMap.Builder<Integer, Processor> builder = new ImmutableMap.Builder<>();
@@ -72,10 +80,25 @@ public class RequestHandler extends ChannelInboundHandlerAdapter {
         RemotingHeader header = datagram.getHeader();
         int code = header.getCode();
         String id = header.getId();
+        String appCode = header.getProperties().get(AgentRelatedDatagramConstants.APP_CODE_HEADER);
+
+        if (code == CommandCode.REQ_TYPE_AGENT_SERVER_PID_GETTER.getCode()) {
+            Map<String, String> properties = header.getProperties();
+            String pidInfo = properties.get(AgentRelatedDatagramConstants.AGENT_SERVER_PID_INFO_HEADER);
+            if (pidInfo != null) {
+                Map<String, Map<String, String>> pidInfoStructured = JacksonSerializer.deSerialize(pidInfo, typeReference);
+                //ttd fuck me
+//                PidUtils.setPidMapping(pidInfoStructured);
+//                MetaStores.initMetaStores(pidInfoStructured);
+                AgentGlobalTaskInitializer.init();
+            }
+            return;
+        }
 
         if (code != ResponseCode.RESP_TYPE_HEARTBEAT.getCode()) {
             logger.info("agent receive request: id={}, sourceIp={}, code={}", id, ctx.channel().remoteAddress(), code);
         }
+
         final ResponseHandler handler = NettyExecuteHandler.of(header, ctx);
         ctx.channel().attr(AgentConstants.attributeKey).set(id);
 
@@ -85,11 +108,10 @@ public class RequestHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        //ttd fuckme ...
         String command = CommandSerializer.readCommand(datagram.getBody());
         int index = command.indexOf(BistouryConstants.FILL_PID);
         if (index >= 0) {
-            int pid = PidUtils.getPid();
+            int pid = PidUtils.getPid(appCode);
             if (pid < 0) {
                 handler.handleError(ErrorCode.PID_ERROR.getCode());
                 handler.handleEOF();

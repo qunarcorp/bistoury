@@ -95,7 +95,7 @@ public class JacksonSerializer {
         }
     }
 
-    public static <T> T deSerialize(String content, TypeReference typeReference) {
+    public static <T> T deSerialize(String content, TypeReference<T> typeReference) {
         try {
             return mapper.readValue(content, typeReference);
         } catch (IOException e) {

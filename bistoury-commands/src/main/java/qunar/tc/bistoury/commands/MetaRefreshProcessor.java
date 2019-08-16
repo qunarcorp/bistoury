@@ -39,7 +39,10 @@ public class MetaRefreshProcessor implements Processor<String> {
 
     private static final Logger logger = LoggerFactory.getLogger(MetaRefreshProcessor.class);
 
-    private final MetaStore metaStore = MetaStores.getMetaStore();
+    private static final TypeReference<Map<String, Map<String, String>>> TYPE_REFERENCE =
+            new TypeReference<Map<String, Map<String, String>>>() {
+            };
+
 
     @Override
     public List<Integer> types() {
@@ -49,11 +52,13 @@ public class MetaRefreshProcessor implements Processor<String> {
     @Override
     public void process(RemotingHeader header, String command, ResponseHandler handler) {
         try {
-            Map<String, String> agentInfo = JacksonSerializer.deSerialize(command, new TypeReference<Map<String, String>>() {
-            });
+            Map<String, Map<String, String>> agentInfo = JacksonSerializer.deSerialize(command, TYPE_REFERENCE);
             if (agentInfo != null && agentInfo.size() > 0) {
                 logger.info("meta refresh data receive, {}", agentInfo);
-                metaStore.update(agentInfo);
+
+                for (Map.Entry<String, Map<String, String>> entry : agentInfo.entrySet()) {
+                    MetaStores.getMetaStore(entry.getKey()).update(entry.getValue());
+                }
             }
         } catch (Exception e) {
             logger.error("update meta store error", e);

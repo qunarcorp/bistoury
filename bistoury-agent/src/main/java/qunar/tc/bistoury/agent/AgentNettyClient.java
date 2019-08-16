@@ -109,7 +109,6 @@ class AgentNettyClient {
                         public void operationComplete(ChannelFuture channelFuture) throws Exception {
                             if (channelFuture.isSuccess()) {
                                 running.compareAndSet(false, true);
-                                AgentGlobalTaskInitializer.init();
                                 started.set(null);
                                 heartbeatTask.start(channel, running);
                                 refreshTask.start(channel, running);

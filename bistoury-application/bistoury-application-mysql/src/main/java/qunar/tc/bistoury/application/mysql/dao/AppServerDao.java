@@ -29,7 +29,7 @@ import java.util.List;
 public interface AppServerDao {
     List<AppServer> getAppServerByAppCode(String appCode);
 
-    AppServer getAppServerByIp(String ip);
+    List<AppServer> getAppServersByIp(String ip);
 
     AppServer getAppServerByServerId(String serverId);
 

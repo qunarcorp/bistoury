@@ -17,18 +17,18 @@
 
 package qunar.tc.bistoury.application.mysql.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+import qunar.tc.bistoury.application.api.pojo.AppServer;
+import qunar.tc.bistoury.application.mysql.dao.AppServerDao;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-
-import qunar.tc.bistoury.application.api.pojo.AppServer;
-import qunar.tc.bistoury.application.mysql.dao.AppServerDao;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * @author leix.xie
@@ -63,8 +63,13 @@ public class AppServerDaoImpl implements AppServerDao {
     }
 
     @Override
-    public AppServer getAppServerByIp(final String ip) {
-        return this.jdbcTemplate.query(SELECT_APP_SERVER_BY_IP, APPLICATION_SERVER_MAPPER, ip);
+    public List<AppServer> getAppServersByIp(final String ip) {
+        return this.jdbcTemplate.query(SELECT_APP_SERVER_BY_IP, (rs, rowNum) -> {
+            if (rs.next()) {
+                return getApplicationServerFromRs(rs);
+            }
+            return null;
+        }, ip);
     }
 
     @Override

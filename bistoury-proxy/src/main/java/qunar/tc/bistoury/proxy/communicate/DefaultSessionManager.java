@@ -78,7 +78,7 @@ public class DefaultSessionManager implements SessionManager {
         doWithConnectionClose(uiConnection, uiConnectionToSessionsMapping, session, theSession -> {
             Datagram datagram = RemotingBuilder.buildRequestDatagram(
                     CommandCode.REQ_TYPE_CANCEL.getCode(), theSession.getId(), new RequestPayloadHolder(""));
-            theSession.writeToAgent(agentRelatedDatagramWrapperService, datagram);
+            theSession.writeToAgent(agentRelatedDatagramWrapperService, requestData.getApp(), datagram);
             theSession.broken();
         });
         doWithConnectionClose(agentConnection, agentConnectionToUiConnectionMapping, uiConnection, Connection::close);

@@ -57,7 +57,7 @@ public class AppConfigClient implements InstrumentClient {
     private static final Set<String> DEFAULT_EXCLUSION_FILE_SUFFIX = parseExclusionFileSuffix(DEFAULT_EXCLUSION_SUFFIX_LINE);
 
     private final URI uri;
-    private MetaStore metaStore = MetaStores.getMetaStore();
+    private MetaStore metaStore = MetaStores.getSharedMetaStore();
     private List<String> filesPath = new ArrayList<>();
 
     public AppConfigClient(InstrumentInfo instrumentInfo) {

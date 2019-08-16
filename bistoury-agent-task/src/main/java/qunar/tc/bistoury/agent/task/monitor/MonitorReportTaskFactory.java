@@ -38,8 +38,8 @@ public class MonitorReportTaskFactory implements AgentGlobalTaskFactory {
     private final MonitorReceiver receiver = new MonitorReceiver();
 
     @Override
-    public void start() {
-        TaskRunner taskRunner = new TaskRunner(receiver);
+    public void start(String appCode) {
+        TaskRunner taskRunner = new TaskRunner(appCode, receiver);
         executor.scheduleAtFixedRate(taskRunner, 0, 1, TimeUnit.MINUTES);
     }
 }

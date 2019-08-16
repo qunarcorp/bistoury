@@ -22,5 +22,5 @@ package qunar.tc.bistoury.agent.common.task;
  */
 public interface AgentGlobalTaskFactory {
 
-    void start();
+    void start(String appCode);
 }

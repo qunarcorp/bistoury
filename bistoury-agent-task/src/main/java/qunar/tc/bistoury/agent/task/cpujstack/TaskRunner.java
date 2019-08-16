@@ -38,6 +38,7 @@ import qunar.tc.bistoury.agent.common.pid.PidUtils;
 import qunar.tc.bistoury.agent.common.util.DateUtils;
 import qunar.tc.bistoury.agent.task.proc.ProcUtil;
 import qunar.tc.bistoury.agent.task.proc.ProcessStateCalculator;
+import qunar.tc.bistoury.clientside.common.meta.MetaStores;
 import qunar.tc.bistoury.common.JacksonSerializer;
 
 import java.util.List;
@@ -72,8 +73,11 @@ public class TaskRunner implements Runnable {
 
     private final PidRecordExecutor momentCpuTimeExecutor;
 
-    public TaskRunner(AgentConfig agentConfig, KvDb kvDb, PidExecutor jstackExecutor, PidRecordExecutor momentCpuTimeExecutor) {
-        this.agentConfig = agentConfig;
+    private final String appCode;
+
+    public TaskRunner(String appCode, KvDb kvDb, PidExecutor jstackExecutor, PidRecordExecutor momentCpuTimeExecutor) {
+        this.appCode = appCode;
+        this.agentConfig = new AgentConfig(MetaStores.getMetaStore(appCode));
         this.kvDb = kvDb;
         this.jstackExecutor = jstackExecutor;
         this.momentCpuTimeExecutor = momentCpuTimeExecutor;
@@ -94,7 +98,7 @@ public class TaskRunner implements Runnable {
             return;
         }
 
-        int pid = PidUtils.getPid();
+        int pid = PidUtils.getPid(appCode);
         final String timestamp = DateUtils.TIME_FORMATTER.print(DateTime.now());
         if (pid > 0) {
             logger.info("start cpu jstack task, pid {}, timestamp {}", pid, timestamp);

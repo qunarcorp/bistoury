@@ -42,9 +42,10 @@ public class AgentInfoRefreshTask {
 
     private static final Logger logger = LoggerFactory.getLogger(AgentInfoRefreshTask.class);
 
-    private static final ListeningScheduledExecutorService executor = MoreExecutors.listeningDecorator(Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("bistoury-agent-heartbeat", true)));
+    private static final ListeningScheduledExecutorService executor = MoreExecutors.listeningDecorator(
+            Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("bistoury-agent-heartbeat", true)));
 
-    private static final AgentConfig config = new AgentConfig(MetaStores.getMetaStore());
+    private static final AgentConfig config = new AgentConfig(MetaStores.getSharedMetaStore());
 
     private final Datagram refreshRequest;
 

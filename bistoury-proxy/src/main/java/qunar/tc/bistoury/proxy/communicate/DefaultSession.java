@@ -72,9 +72,9 @@ public class DefaultSession implements Session {
     }
 
     @Override
-    public void writeToAgent(AgentRelatedDatagramWrapperService agentRelatedDatagramWrapperService, Datagram message) {
+    public void writeToAgent(AgentRelatedDatagramWrapperService agentRelatedDatagramWrapperService, String appCode, Datagram message) {
         String agentServerIp = agentConnection.getAgentServerIp();
-        Datagram warpedDatagram = agentRelatedDatagramWrapperService.wrap(message, new AgentInfo(agentServerIp));
+        Datagram warpedDatagram = agentRelatedDatagramWrapperService.wrap(appCode, message, new AgentInfo(agentServerIp));
         ListenableFuture<WriteResult> result = agentConnection.write(warpedDatagram);
         Futures.addCallback(result, new FutureCallback<WriteResult>() {
 

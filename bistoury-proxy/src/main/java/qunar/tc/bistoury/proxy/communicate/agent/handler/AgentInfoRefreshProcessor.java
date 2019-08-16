@@ -60,15 +60,16 @@ public class AgentInfoRefreshProcessor implements AgentMessageProcessor {
     public void process(final ChannelHandlerContext ctx, Datagram message) {
         Metrics.counter("agent_info_refresh").inc();
         String ip = ChannelUtils.getIp(ctx.channel());
-        ListenableFuture<Map<String, String>> agentInfoFuture = agentInfoManager.getAgentInfo(ip);
-        Futures.addCallback(agentInfoFuture, (FutureSuccessCallBack<Map<String, String>>) agentInfo ->
+        ListenableFuture<Map<String, Map<String, String>>> agentInfoFuture = agentInfoManager.getAgentInfo(ip);
+        Futures.addCallback(agentInfoFuture, (FutureSuccessCallBack<Map<String, Map<String, String>>>) agentInfo ->
                 Optional.ofNullable(agentInfo)
                         .map(AgentInfoRefreshProcessor.this::createAgentInfoResponse)
                         .ifPresent((ctx::writeAndFlush)), MoreExecutors.directExecutor());
     }
 
-    private Datagram createAgentInfoResponse(Map<String, String> agentInfo) {
+    private Datagram createAgentInfoResponse(Map<String, Map<String, String>> agentInfo) {
         String data = JacksonSerializer.serialize(agentInfo);
-        return RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_REFRESH_AGENT_INFO.getCode(), generator.generateId(), new RequestPayloadHolder(data));
+        return RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_REFRESH_AGENT_INFO.getCode(),
+                generator.generateId(), new RequestPayloadHolder(data));
     }
 }

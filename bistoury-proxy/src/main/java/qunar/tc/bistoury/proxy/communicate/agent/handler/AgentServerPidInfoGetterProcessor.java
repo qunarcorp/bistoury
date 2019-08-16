@@ -40,7 +40,7 @@ public class AgentServerPidInfoGetterProcessor implements AgentMessageProcessor 
 	@Override
 	public void process(ChannelHandlerContext ctx, Datagram message) {
 		logger.info("receiver agent server pid info get message");
-		Datagram datagram = RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_REFRESH_AGENT_INFO.getCode(),
+		Datagram datagram = RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_AGENT_SERVER_PID_GETTER.getCode(),
 				generator.generateId(), null);
 		agentRelatedDatagramWrapperService.wrap(datagram, new AgentInfo(ChannelUtils.getIp(ctx.channel())));
 		ctx.writeAndFlush(datagram);
