@@ -33,6 +33,9 @@ import qunar.tc.bistoury.commands.MetaRefreshTipProcessor;
 import qunar.tc.bistoury.remoting.coder.AgentDecoder;
 import qunar.tc.bistoury.remoting.coder.AgentEncoder;
 import qunar.tc.bistoury.remoting.netty.*;
+import qunar.tc.bistoury.remoting.protocol.CommandCode;
+import qunar.tc.bistoury.remoting.protocol.Datagram;
+import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
 
 import java.util.List;
 import java.util.ServiceLoader;
@@ -99,10 +102,24 @@ class AgentNettyClient {
                     logger.info("bistoury netty client start success, {}", proxyConfig);
                     channel = future.channel();
                     closeFuture(taskStore);
-                    running.compareAndSet(false, true);
-                    started.set(null);
-                    heartbeatTask.start(channel, running);
-                    refreshTask.start(channel, running);
+
+                    Datagram pidInfoGetterDatagram = RemotingBuilder.buildAgentRequest(CommandCode.REQ_TYPE_AGENT_SERVER_PID_GETTER.getCode(), null);
+                    channel.writeAndFlush(pidInfoGetterDatagram).addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                            if (channelFuture.isSuccess()) {
+                                running.compareAndSet(false, true);
+                                AgentGlobalTaskInitializer.init();
+                                started.set(null);
+                                heartbeatTask.start(channel, running);
+                                refreshTask.start(channel, running);
+                            } else {
+                                started.set(null);
+                                logger.warn("send agent server pid info query message error," +
+                                        " bistoury netty client start fail", future.cause());
+                            }
+                        }
+                    });
                 } else {
                     started.set(null);
                     logger.warn("bistoury netty client start fail, {}", proxyConfig, future.cause());

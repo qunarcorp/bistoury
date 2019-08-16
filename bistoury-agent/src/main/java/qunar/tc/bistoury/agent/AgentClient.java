@@ -80,9 +80,6 @@ public class AgentClient {
             logger.info("finish get bistoury proxy config, {}", proxyConfig);
             if (proxyConfig != null) {
                 nettyClient = initNettyClient(proxyConfig);
-                if (nettyClient.isRunning()) {
-                    AgentGlobalTaskInitializer.init();
-                }
             }
         } catch (Throwable e) {
             logger.info("refresh bistoury netty client fail", e);

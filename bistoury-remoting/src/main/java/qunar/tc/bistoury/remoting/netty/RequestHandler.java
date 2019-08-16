@@ -85,6 +85,7 @@ public class RequestHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
+        //ttd fuckme ...
         String command = CommandSerializer.readCommand(datagram.getBody());
         int index = command.indexOf(BistouryConstants.FILL_PID);
         if (index >= 0) {
