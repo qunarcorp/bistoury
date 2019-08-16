@@ -21,11 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import qunar.tc.bistoury.application.api.ApplicationService;
+import qunar.tc.bistoury.application.api.pojo.Application;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
-import qunar.tc.bistoury.serverside.support.Application;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 import qunar.tc.bistoury.ui.security.LoginContext;
-import qunar.tc.bistoury.ui.service.ApplicationService;
 
 /**
  * @author leix.xie
@@ -55,6 +56,8 @@ public class ApplicationController {
     @ResponseBody
     @RequestMapping("save")
     public ApiResult save(Application application) {
-        return ResultHelper.success(this.applicationService.save(application));
+        String loginUser = LoginContext.getLoginContext().getLoginUser();
+        boolean admin = LoginContext.getLoginContext().isAdmin();
+        return ResultHelper.success(this.applicationService.save(application, loginUser, admin));
     }
 }

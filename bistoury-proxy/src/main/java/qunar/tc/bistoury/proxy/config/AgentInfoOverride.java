@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,8 @@ public class AgentInfoOverride {
     private volatile List<AgentConfigOverride> agentConfigOverrides;
 
     AgentInfoOverride() {
-        DynamicConfigLoader.load("agent_config_override.properties", false).addListener(conf -> parseAgentConfigOverride(conf.asMap()));
+        DynamicConfigLoader.<LocalDynamicConfig>load("agent_config_override.properties", false)
+                .addListener(conf -> parseAgentConfigOverride(conf.asMap()));
     }
 
     private void parseAgentConfigOverride(Map<String, String> configs) {

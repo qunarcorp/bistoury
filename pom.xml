@@ -33,7 +33,8 @@
         <module>bistoury-metrics-prometheus</module>
         <module>bistoury-ui-service</module>
         <module>bistoury-ui-service-impl</module>
-    </modules>
+		<module>bistoury-application</module>
+	</modules>
 
     <properties>
         <maven_compiler_plugin_version>3.2</maven_compiler_plugin_version>
@@ -188,6 +189,16 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>bistoury-metrics-prometheus</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>qunar.tc.bistoury</groupId>
+                <artifactId>bistoury-application-api</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>qunar.tc.bistoury</groupId>
+                <artifactId>bistoury-application-mysql</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
             <dependency>
@@ -537,7 +548,6 @@
                 <groupId>org.apache.tomcat</groupId>
                 <artifactId>tomcat-jdbc</artifactId>
                 <version>${tomcat-jdbc.version}</version>
-                <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>mysql</groupId>

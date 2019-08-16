@@ -23,14 +23,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import qunar.tc.bistoury.application.api.AppServerService;
+import qunar.tc.bistoury.application.api.pojo.AppServer;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
 import qunar.tc.bistoury.proxy.generator.IdGenerator;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
 import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
-import qunar.tc.bistoury.serverside.support.AppServer;
-import qunar.tc.bistoury.ui.dao.AppServerDao;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -58,17 +60,18 @@ public class DefaultAgentInfoManager implements AgentInfoManager {
     private AgentInfoOverride agentInfoOverride;
 
     @Autowired
-    private AppServerDao appServerDao;
+    private AppServerService appServerService;
 
     @PostConstruct
     public void init() {
-        DynamicConfigLoader.load("agent_config.properties", false).addListener(conf -> agentConfig = conf.asMap());
+        DynamicConfigLoader.<LocalDynamicConfig>load("agent_config.properties", false)
+                .addListener(conf -> agentConfig = conf.asMap());
     }
 
     @Override
     public ListenableFuture<Map<String, String>> getAgentInfo(String ip) {
         SettableFuture<Map<String, String>> resultFuture = SettableFuture.create();
-        AppServer appServer = this.appServerDao.getAppServerByIp(ip);
+        AppServer appServer = this.appServerService.getAppServerByIp(ip);
         Map<String, String> agentInfo = new HashMap<>();
         if (appServer != null) {
             agentInfo.put("port", String.valueOf(appServer.getPort()));

@@ -17,9 +17,9 @@
 
 package qunar.tc.bistoury.proxy.util;
 
-import qunar.tc.bistoury.serverside.support.AppServer;
-
 import java.util.List;
+
+import qunar.tc.bistoury.application.api.pojo.AppServer;
 
 public interface ServerFinder {
 

@@ -21,10 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import qunar.tc.bistoury.application.api.AppServerService;
+import qunar.tc.bistoury.application.api.pojo.AppServer;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
-import qunar.tc.bistoury.serverside.support.AppServer;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
-import qunar.tc.bistoury.ui.service.AppServerService;
+import qunar.tc.bistoury.ui.security.LoginContext;
 
 /**
  * @author leix.xie
@@ -47,24 +49,28 @@ public class AppServerController {
     @ResponseBody
     @RequestMapping("autoJMapHistoEnable")
     public ApiResult changeAutoJMapHistoEnable(final String serverId, final boolean enable) {
-        return ResultHelper.success(this.appServerService.changeAutoJMapHistoEnable(serverId, enable));
+        String loginUser = LoginContext.getLoginContext().getLoginUser();
+        return ResultHelper.success(this.appServerService.changeAutoJMapHistoEnable(serverId, enable, loginUser));
     }
 
     @ResponseBody
     @RequestMapping("autoJStackEnable")
     public ApiResult changeAutoJStackEnable(final String serverId, final boolean enable) {
-        return ResultHelper.success(this.appServerService.changeAutoJStackEnable(serverId, enable));
+        String loginUser = LoginContext.getLoginContext().getLoginUser();
+        return ResultHelper.success(this.appServerService.changeAutoJStackEnable(serverId, enable, loginUser));
     }
 
     @ResponseBody
     @RequestMapping("delete")
     public ApiResult deleteAppServerByServerId(final String serverId) {
-        return ResultHelper.success(this.appServerService.deleteAppServerByServerId(serverId));
+        String loginUser = LoginContext.getLoginContext().getLoginUser();
+        return ResultHelper.success(this.appServerService.deleteAppServerByServerId(serverId, loginUser));
     }
 
     @ResponseBody
     @RequestMapping("save")
     public ApiResult saveAppServer(final AppServer appServer) {
-        return ResultHelper.success(this.appServerService.saveAppServer(appServer));
+        String loginUser = LoginContext.getLoginContext().getLoginUser();
+        return ResultHelper.success(this.appServerService.saveAppServer(appServer, loginUser));
     }
 }

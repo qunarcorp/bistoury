@@ -22,7 +22,10 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import qunar.tc.bistoury.serverside.configuration.DynamicConfig;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.ui.dao.UserDao;
 import qunar.tc.bistoury.ui.model.User;
 import qunar.tc.bistoury.ui.service.AESCryptService;
@@ -51,7 +54,8 @@ public class UserServiceImpl implements UserService {
 
     @PostConstruct
     public void init() {
-        DynamicConfigLoader.load("config.properties").addListener(conf -> admins = SPLITTER.splitToList(conf.getString("admins", "")));
+        DynamicConfig<LocalDynamicConfig> dynamicConfig = DynamicConfigLoader.load("config.properties");
+        dynamicConfig.addListener(conf -> admins = SPLITTER.splitToList(conf.getString("admins", "")));
     }
 
     @Override

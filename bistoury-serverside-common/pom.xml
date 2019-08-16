@@ -19,6 +19,10 @@
     <dependencies>
         <dependency>
             <groupId>qunar.tc.bistoury</groupId>
+            <artifactId>bistoury-application-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>qunar.tc.bistoury</groupId>
             <artifactId>bistoury-remoting</artifactId>
             <exclusions>
                 <exclusion>
@@ -34,6 +38,14 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jdbc</artifactId>
         </dependency>
     </dependencies>
 

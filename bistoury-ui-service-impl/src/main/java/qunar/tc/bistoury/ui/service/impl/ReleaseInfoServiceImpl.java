@@ -18,7 +18,10 @@
 package qunar.tc.bistoury.ui.service.impl;
 
 import org.springframework.stereotype.Service;
+
+import qunar.tc.bistoury.serverside.configuration.DynamicConfig;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.ui.model.ReleaseInfo;
 import qunar.tc.bistoury.ui.service.ReleaseInfoService;
 import qunar.tc.bistoury.ui.util.PropertiesReleaseInfoParse;
@@ -42,8 +45,9 @@ public class ReleaseInfoServiceImpl implements ReleaseInfoService {
 
     @PostConstruct
     public void init() {
-        DynamicConfigLoader.load("releaseInfo_config.properties", false).addListener(dynamicConfig -> {
-            defaultReleaseInfoPath = dynamicConfig.getString(DEFAULT, DEFAULT_RELEASE_INFO_PATH);
+        DynamicConfig<LocalDynamicConfig> dynamicConfig = DynamicConfigLoader.load("releaseInfo_config.properties", false);
+        dynamicConfig.addListener(aDynamicConfig -> {
+            defaultReleaseInfoPath = aDynamicConfig.getString(DEFAULT, DEFAULT_RELEASE_INFO_PATH);
         });
     }
 

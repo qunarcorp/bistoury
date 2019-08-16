@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfig;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.ui.service.URLRedirectService;
 
 import javax.annotation.PostConstruct;
@@ -38,7 +39,8 @@ public class LinkRedirectServiceImpl implements URLRedirectService {
 
     @PostConstruct
     public void init() {
-        DynamicConfigLoader.load("url_redirect.properties").addListener(config -> dynamicConfig = config);
+        DynamicConfig<LocalDynamicConfig> dynamicConfig = DynamicConfigLoader.load("url_redirect.properties");
+        dynamicConfig.addListener(config -> this.dynamicConfig = config);
     }
 
     @Override

@@ -19,8 +19,8 @@ package qunar.tc.bistoury.proxy.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import qunar.tc.bistoury.serverside.support.AppServer;
-import qunar.tc.bistoury.ui.dao.AppServerDao;
+import qunar.tc.bistoury.application.api.AppServerService;
+import qunar.tc.bistoury.application.api.pojo.AppServer;
 
 import java.util.List;
 
@@ -28,14 +28,14 @@ public class AppCenterServerFinder implements ServerFinder {
 
     private static final Logger logger = LoggerFactory.getLogger(AppCenterServerFinder.class);
 
-    private final AppServerDao appServerDao;
+    private final AppServerService appServerService;
 
-    public AppCenterServerFinder(AppServerDao appServerDao) {
-        this.appServerDao = appServerDao;
+    public AppCenterServerFinder(AppServerService appServerService) {
+        this.appServerService = appServerService;
     }
 
     @Override
     public List<AppServer> findAgents(String app) {
-        return appServerDao.getAppServerByAppCode(app);
+        return appServerService.getAppServerByAppCode(app);
     }
 }

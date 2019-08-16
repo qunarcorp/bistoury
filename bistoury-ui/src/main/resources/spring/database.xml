@@ -1,33 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:comtext="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-    <bean id="jdbcPathUtil" class="qunar.tc.bistoury.serverside.util.JDBCPathUtil"></bean>
-    <comtext:property-placeholder location="#{jdbcPathUtil.getJdbcPath()}"/>
+    <bean id="dataSource" class="qunar.tc.bistoury.serverside.jdbc.JdbcTemplateHolder"
+          factory-method="getOrCreateDataSource"/>
 
-    <bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource">
-        <property name="driverClassName" value="${jdbc.driverClassName}"/>
-        <property name="url" value="${jdbc.url}"/>
-        <property name="username" value="${jdbc.username}"/>
-        <property name="password" value="${jdbc.password}"/>
-        <property name="maxActive" value="30"/>
-        <property name="maxIdle" value="20"/>
-        <property name="maxWait" value="3000"/>
-        <property name="validationQuery" value="select 1"/>
-        <property name="testOnBorrow" value="true"/>
-        <property name="testOnReturn" value="true"/>
-    </bean>
+    <bean id="jdbcTemplate" class="qunar.tc.bistoury.serverside.jdbc.JdbcTemplateHolder"
+          factory-method="getOrCreateJdbcTemplate"/>
 
-    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
-    <bean id="namedParameterJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
-        <constructor-arg name="dataSource" ref="dataSource"/>
-    </bean>
+    <bean id="namedParameterJdbcTemplate" class="qunar.tc.bistoury.serverside.jdbc.JdbcTemplateHolder"
+          factory-method="getOrCreateNamedParameterJdbcTemplate"/>
 
     <bean id="transactionManager"
           class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
