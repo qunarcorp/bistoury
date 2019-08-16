@@ -2,44 +2,35 @@
 
 ![GitHub](https://img.shields.io/github/license/qunarcorp/bistoury) 
 
-`Bistoury` 是去哪儿网开源的一个对应用透明，无侵入的Java诊断工具，Bistoury在公司内部原有agent的基础上集成Alibaba开源的[Arthas](https://github.com/alibaba/arthas)和唯品会开源的[vjtools](https://github.com/vipshop/vjtools)，提供更加丰富的功能。
+`Bistoury` 是去哪儿网开源的一个对应用透明，无侵入的java应用诊断工具，用于提升开发人员的诊断效率和能力。
+  
+Bistoury在公司内部原有agent的基础上集成Alibaba开源的[Arthas](https://github.com/alibaba/arthas)和唯品会开源的[vjtools](https://github.com/vipshop/vjtools)，提供了更加丰富的功能。
 
-## 背景
+## 简介
 
-在已经有arthas和vjtools的情况下，我们为什么还要开发Bistoury？
+Arthas和vjtools已经是很优秀的工具，我们为什么还要开发Bistoury？
 
-Arthas和vjtools提供了很多的功能，可以有效的进行java问题诊断，但是，二者均依赖于命令行，也就说使用这个工具需要登录上主机上才能使用，尽管arthas提供了ide插件及web console，但是使用时也需要提供主机的ip及端口，这给我们使用带来了很大的不便；部分命令的参数复杂；Arthas提供的watch命令观测方法执行数据仅可观测返回值、抛出异常、入参，无法获取方法执行的中间状态。monitor命令对方法的监控数据在命令退出后就监控数据就消失了。
+Arthas和vjtools通过命令行或类似的方式使用，不可否认命令行在很多时候具有比较高的效率；但图形化界面也有自身的优点，特别是在参数复杂时使用起来更加简单，效率更高。Bistoury在保留命令行界面的基础上，还对很多命令提供了图形化界面，方面用户使用。
 
-基于以上问题，Bistoury除了兼容arthas和vjtools的所有命令外，还对arthas和vitools进行优化和扩展，
+Arthas和vjtools针对单台机器，从机器的维度对系统进行诊断；但在线应用往往部署在多台机器，Bistoury可以和使用方应用中心整合，从应用的维度对系统进行诊断，提供了更多的可能。
 
-Bistoury为所有主机提供统一的入口，在主机上安装好bistoury-agent后就可以通过web页面使用所有功能。
+Arthas和vjtools在使用上，要么登录机器，要么需要使用者提供相应的ip和端口；Bistoury去掉各种设置，提供统一的web入口，从页面上选择应用和机器即可使用。
 
-Bistoury在线debug功能去掉了复杂的参数，只需要在页面进行点击即可完成在线debug，bistoury debug可以收集到断点处的运行情况，能收集到的范围为：成员变量、局部变量、静态变量和方法调用栈，体验媲美IDE的在先debug。
+除了这些针对性优化，Bistoury在保留arthas和vjtools的所有功能之外，还提供了更加丰富的功能。
 
-Bistoury动态监控可以监控方法的调用次数、异常次数及执行时间，并且保留最近三天的监控数据。
+Bistoury的[在线debug功能](docs/cn/debug.md)去掉了各种复杂参数，模拟ide调试体验，通过web界面提供断点调试的功能，可以在不阻塞应用的情况下捕获断点处的所有信息（包括本地变量、成员变量、静态变量和方法调用栈）。
 
-Bistoury可以针对统一应用下的多台主机进行操作，支持多机的命令有ls、head、tail、grep、zgrep。
+Bistoury提供了[线程级cpu使用率监控](docs/cn/jstack.md)，可以监控系统每个线程的分钟级cpu使用率，并提供最近几天的历史数据查询。
 
-Bistoury提供了线程级cpu使用率监控，可监控jvm进程下每个线程的cpu使用率，并且提供最近三天的历史数据查询。
+Bistoury可以[动态对方法添加监控](docs/cn/monitor.md)，监控方法的调用次数、异常次数和执行时间，同时也保留最近几天的监控数据。
 
-Bistoury提供可视化页面实时查看主机信息和jvm监控，查看范围为：主机内存及磁盘使用情况、cpu load、应用使用的配置文件、应用依赖的jar包、JVM版本信息、JVM参数、jvm内存使用情况和GC情况等。
+Bistoury提供了日志查看功能，可以使用tail、grep等命令对单台或多台机器的日志进行查看。
 
-Bistoury提供实时线程dump、线程死锁检测。
+Bistoury提供可视化页面实时查看机器和应用的各种信息，包括主机内存和磁盘使用、cpu load和使用率、系统配置文件、jar包信息、jvm信息、内存使用和gc等等。
 
-使用`Bistoury`你可以
-- 查看应用日志
-- 查看主机运行状态
-- 在线debug
-- 动态监控
-- 线程级cpu使用率监控
-- JVM运行状态监控
-- thread dump
-- jstack
-- jmap
-- JVM数据紧急收集，一键收集jstack、jmap以及GC日志等相关信息
-- 能查看这个类从哪个 jar 包加载的，为什么会报各种类相关的 Exception。
-- 从全局视角来查看系统的运行状况。
-- 觉得代码和想的不一样？反编译class试试
+上述功能只是Bistoury所有功能的一部分，各项功能的使用和说明请参考具体的使用文档。
+
+Bistoury的目标是一站式的java应用诊断方案，让开发人员无需登录机器，就可以从日志、机器和系统属性、内存、线程、类信息、调试等各个方面对应用进行诊断，提升开发人员诊断问题的效率和能力。
 
 
 ## Usage
