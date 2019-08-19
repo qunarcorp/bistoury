@@ -37,10 +37,10 @@ Bistoury提供可视化页面实时查看机器和应用的各种信息，包括
 ## 使用文档
 - [快速开始](docs/cn/quick_start.md)
 - [部署](docs/cn/deploy.md)
-- [在线debug使用文档](docs/cn/debug.md)
+- [在线debug](docs/cn/debug.md)
 - [线程级cpu使用率监控](docs/cn/jstack.md)
 - [命令使用文档](docs/cn/commands.md)
-- [动态监控使用文档](docs/cn/monitor.md)
+- [动态监控](docs/cn/monitor.md)
 
 ## java版本要求
 
@@ -48,9 +48,13 @@ jdk1.8+
 
 因为在公司内部使用1.7的jdk，开源版本中Bistoury代码实现1.7和1.8混杂，1.7的代码会逐渐修改为1.8的实现。
 
-## 前端有的地方似乎有点不那么好看，实现的也不太棒
+## 前端有的地方似乎有点不那么好看，实现的似乎也不太棒
 
 所有的前端代码都是后端同学兼职完成，欢迎各位前端大牛贡献相关代码
+
+## project
+
+欢迎大家各种star，fork，提issue，pull request，感觉还可以就点个star先吧！
 
 ## Screenshots
 
