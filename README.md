@@ -3,14 +3,16 @@
 ![GitHub](https://img.shields.io/github/license/qunarcorp/bistoury) 
 
 `Bistoury` 是去哪儿网开源的一个对应用透明，无侵入的java应用诊断工具，用于提升开发人员的诊断效率和能力。
-  
-Bistoury在公司内部原有agent的基础上集成Alibaba开源的[Arthas](https://github.com/alibaba/arthas)和唯品会开源的[vjtools](https://github.com/vipshop/vjtools)，提供了更加丰富的功能。
+
+`Bistoury` 的目标是一站式java应用诊断解决方案，让开发人员无需登录机器或修改系统，就可以从日志、内存、线程、类信息、调试、机器和系统属性等各个方面对应用进行诊断，提升开发人员诊断问题的效率和能力。
+
+`Bistoury` 在公司内部原有agent的基础上集成Alibaba开源的[arthas](https://github.com/alibaba/arthas)和唯品会开源的[vjtools](https://github.com/vipshop/vjtools)，提供了更加丰富的功能，感谢他们做出的优秀工作。
 
 ## 简介
 
 Arthas和vjtools已经是很优秀的工具，我们为什么还要开发Bistoury？
 
-Arthas和vjtools通过命令行或类似的方式使用，不可否认命令行在很多时候具有比较高的效率；但图形化界面也有自身的优点，特别是在参数复杂时使用起来更加简单，效率更高。Bistoury在保留命令行界面的基础上，还对很多命令提供了图形化界面，方面用户使用。
+Arthas和vjtools通过命令行或类似的方式使用，不可否认命令行在很多时候具有比较高的效率；但图形化界面也有其自身的优点，特别是在参数复杂时使用起来更加简单，效率更高。Bistoury在保留命令行界面的基础上，还对很多命令提供了图形化界面，方面用户使用。
 
 Arthas和vjtools针对单台机器，从机器的维度对系统进行诊断；但在线应用往往部署在多台机器，Bistoury可以和使用方应用中心整合，从应用的维度对系统进行诊断，提供了更多的可能。
 
@@ -24,22 +26,31 @@ Bistoury提供了[线程级cpu使用率监控](docs/cn/jstack.md)，可以监控
 
 Bistoury可以[动态对方法添加监控](docs/cn/monitor.md)，监控方法的调用次数、异常次数和执行时间，同时也保留最近几天的监控数据。
 
-Bistoury提供了日志查看功能，可以使用tail、grep等命令对单台或多台机器的日志进行查看。
+Bistoury提供了日志查看功能，可以使用tail、grep等命令对单台或同时对多台机器的日志进行查看。
 
 Bistoury提供可视化页面实时查看机器和应用的各种信息，包括主机内存和磁盘使用、cpu load和使用率、系统配置文件、jar包信息、jvm信息、内存使用和gc等等。
 
-上述功能只是Bistoury所有功能的一部分，各项功能的使用和说明请参考具体的使用文档。
+## 快速上手
 
-Bistoury的目标是一站式的java应用诊断方案，让开发人员无需登录机器，就可以从日志、机器和系统属性、内存、线程、类信息、调试等各个方面对应用进行诊断，提升开发人员诊断问题的效率和能力。
+也许你正面对一个难以捉摸的线上问题束手无策，来试试Bistoury的[快捷部署脚本](docs/cn/quick_start.md)，在一分钟内启动Bistoury然后[插入断点开始调试](docs/cn/debug.md)吧！ 
 
-## Usage
+## 使用文档
 - [快速开始](docs/cn/quick_start.md)
 - [部署](docs/cn/deploy.md)
-- [命令使用文档](docs/cn/commands.md)
 - [在线debug使用文档](docs/cn/debug.md)
-- [动态监控使用文档](docs/cn/monitor.md)
 - [线程级cpu使用率监控](docs/cn/jstack.md)
-- [堆内存对象监控](docs/cn/jmap.md)
+- [命令使用文档](docs/cn/commands.md)
+- [动态监控使用文档](docs/cn/monitor.md)
+
+## java版本要求
+
+jdk1.8
+
+Bistoury的代码实现中1.7和1.8混杂，是因为公司内部很多地方没有升级版本，1.7的代码会逐渐修改为1.8的实现。
+
+## 前端有的地方似乎有点不那么好看，实现的也不太棒
+
+所有的前端代码都是后端同学兼职完成，欢迎各位前端大牛贡献相关代码
 
 ## 即将发布
 
