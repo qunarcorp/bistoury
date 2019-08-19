@@ -46,34 +46,28 @@ Bistoury提供可视化页面实时查看机器和应用的各种信息，包括
 
 jdk1.8+
 
-Bistoury的代码实现中1.7和1.8混杂，是因为公司内部很多地方没有升级版本，1.7的代码会逐渐修改为1.8的实现。
+因为在公司内部使用1.7的jdk，开源版本中Bistoury代码实现1.7和1.8混杂，1.7的代码会逐渐修改为1.8的实现。
 
 ## 前端有的地方似乎有点不那么好看，实现的也不太棒
 
 所有的前端代码都是后端同学兼职完成，欢迎各位前端大牛贡献相关代码
 
-## 即将发布
-
-更完善的文档
-
-通过一个脚本在单机部署整套Bistoury服务
-
 ## Screenshots
 
-命令行交互
+通过命令行界面查看日志，使用arthas和vjtools的各项功能
 ![console](docs/image/console.png)
 
-JVM运行信息
-![jvm](docs/image/jvm.png)
-
-在线debug
+在线debug，在线应用调试神器
 ![debug](docs/image/debug_panel.png)
 
-动态监控
+线程级cpu监控，帮助你掌握线程级cpu使用率
+![jstack_dump](docs/image/jstack.png)
+
+在web界面查看JVM运行信息，以及各种其它信息
+![jvm](docs/image/jvm.png)
+
+动态给方法添加监控
 ![monitor](docs/image/monitor.png)
 
 线程dump
 ![thread_dump](docs/image/thread_dump.png)
-
-线程级cpu监控
-![jstack_dump](docs/image/jstack.png)
