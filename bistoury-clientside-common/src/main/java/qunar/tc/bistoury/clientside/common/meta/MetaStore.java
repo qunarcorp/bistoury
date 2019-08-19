@@ -27,6 +27,8 @@ public interface MetaStore {
 
     void update(Map<String, String> attrs);
 
+    void put(String key, String value);
+
     Map<String, String> getAgentInfo();
 
     String getStringProperty(String name);
@@ -38,6 +40,8 @@ public interface MetaStore {
     boolean getBooleanProperty(String name, boolean def);
 
     Date getDateProperty(String name);
+
+    Integer getIntegerProperty(String name);
 
     int getIntProperty(String name);
 

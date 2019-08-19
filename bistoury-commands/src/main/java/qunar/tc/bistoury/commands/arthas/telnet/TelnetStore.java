@@ -22,7 +22,7 @@ package qunar.tc.bistoury.commands.arthas.telnet;
  */
 public interface TelnetStore {
 
-    Telnet getTelnet(int pid) throws Exception;
+    Telnet getTelnet(String nullableAppCode, int pid) throws Exception;
 
-    Telnet tryGetTelnet() throws Exception;
+    Telnet tryGetTelnet(String nullableAppCode) throws Exception;
 }

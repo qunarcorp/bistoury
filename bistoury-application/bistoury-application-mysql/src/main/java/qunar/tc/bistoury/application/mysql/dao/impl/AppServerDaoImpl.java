@@ -64,12 +64,7 @@ public class AppServerDaoImpl implements AppServerDao {
 
     @Override
     public List<AppServer> getAppServersByIp(final String ip) {
-        return this.jdbcTemplate.query(SELECT_APP_SERVER_BY_IP, (rs, rowNum) -> {
-            if (rs.next()) {
-                return getApplicationServerFromRs(rs);
-            }
-            return null;
-        }, ip);
+        return this.jdbcTemplate.query(SELECT_APP_SERVER_BY_IP, APPLICATION_SERVER_ROW_MAPPER, ip);
     }
 
     @Override

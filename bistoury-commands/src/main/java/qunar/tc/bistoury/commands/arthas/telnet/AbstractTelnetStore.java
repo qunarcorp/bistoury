@@ -17,10 +17,18 @@
 
 package qunar.tc.bistoury.commands.arthas.telnet;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.agent.common.AgentConstants;
+import qunar.tc.bistoury.agent.common.util.AgentUtils;
+import qunar.tc.bistoury.agent.common.util.NetWorkUtils;
+import qunar.tc.bistoury.clientside.common.meta.MetaStore;
+import qunar.tc.bistoury.clientside.common.meta.MetaStores;
 import qunar.tc.bistoury.commands.arthas.ArthasEntity;
+import qunar.tc.bistoury.commands.arthas.ArthasTelnetPortHelper;
 import qunar.tc.bistoury.commands.arthas.TelnetConstants;
 import qunar.tc.bistoury.common.BistouryConstants;
 
@@ -42,15 +50,14 @@ public abstract class AbstractTelnetStore implements TelnetStore {
     private ArthasEntity arthasEntity;
 
     protected AbstractTelnetStore() {
-
     }
 
     @Override
-    public Telnet getTelnet(int pid) throws Exception {
+    public Telnet getTelnet(String nullableAppCode, int pid) throws Exception {
         int illegalVersionCount = 0;
         while (illegalVersionCount < MAX_ILLEGAL_VERSION_COUNT) {
             try {
-                TelnetClient client = doGetTelnet(pid);
+                TelnetClient client = doGetTelnet(nullableAppCode, pid);
                 return createTelnet(client, CheckVersion.check);
             } catch (IllegalVersionException e) {
                 sleepSec(3);
@@ -97,17 +104,17 @@ public abstract class AbstractTelnetStore implements TelnetStore {
 
     protected abstract Telnet doCreateTelnet(TelnetClient client) throws IOException;
 
-    private synchronized TelnetClient doGetTelnet(int pid) {
-        TelnetClient client = tryGetClient();
+    private synchronized TelnetClient doGetTelnet(String nullableAppCode, int pid) {
+        TelnetClient client = tryGetClient(nullableAppCode);
         if (client != null) {
             return client;
         }
 
         try {
             try {
-                return createClient(pid);
+                return createClient(nullableAppCode, pid);
             } catch (Exception e) {
-                return forceCreateClient(pid);
+                return forceCreateClient(nullableAppCode, pid);
             }
         } catch (Exception e) {
             resetClient();
@@ -115,17 +122,17 @@ public abstract class AbstractTelnetStore implements TelnetStore {
         }
     }
 
-    private TelnetClient tryGetClient() {
+    private TelnetClient tryGetClient(String nullableAppCode) {
         try {
-            return createClient();
+            return createClient(nullableAppCode);
         } catch (Exception e) {
             return null;
         }
     }
 
     @Override
-    public Telnet tryGetTelnet() throws Exception {
-        TelnetClient client = tryGetClient();
+    public Telnet tryGetTelnet(String nullableAppCode) throws Exception {
+        TelnetClient client = tryGetClient(nullableAppCode);
         if (client != null) {
             return createTelnet(client, CheckVersion.notCheck);
         }
@@ -136,26 +143,26 @@ public abstract class AbstractTelnetStore implements TelnetStore {
         this.arthasEntity = null;
     }
 
-    private TelnetClient createClient(int pid) throws IOException {
+    private TelnetClient createClient(String nullableAppCode, int pid) throws IOException {
         if (arthasEntity == null || arthasEntity.getPid() != pid) {
-            return forceCreateClient(pid);
+            return forceCreateClient(nullableAppCode, pid);
         } else {
-            return createClient();
+            return createClient(nullableAppCode);
         }
     }
 
-    private TelnetClient forceCreateClient(int pid) throws IOException {
-        ArthasEntity arthasEntity = new ArthasEntity(pid);
+    private TelnetClient forceCreateClient(String nullableAppCode, int pid) throws IOException {
+        ArthasEntity arthasEntity = new ArthasEntity(nullableAppCode, pid);
         arthasEntity.start();
-        TelnetClient client = createClient();
+        TelnetClient client = createClient(nullableAppCode);
         this.arthasEntity = arthasEntity;
         return client;
     }
 
-    private TelnetClient createClient() throws IOException {
+    private TelnetClient createClient(String nullableAppCode) throws IOException {
         TelnetClient client = new TelnetClient();
         client.setConnectTimeout(TelnetConstants.TELNET_CONNECT_TIMEOUT);
-        client.connect(TelnetConstants.TELNET_CONNECTION_IP, TelnetConstants.TELNET_CONNECTION_PORT);
+        client.connect(TelnetConstants.TELNET_CONNECTION_IP, ArthasTelnetPortHelper.getTelnetPort(nullableAppCode));
         return client;
     }
 }

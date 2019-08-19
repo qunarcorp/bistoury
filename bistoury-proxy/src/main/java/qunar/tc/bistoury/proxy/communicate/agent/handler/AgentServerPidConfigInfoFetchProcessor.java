@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
  * @since 2019/8/16
  */
 @Service
-public class AgentServerPidInfoGetterProcessor implements AgentMessageProcessor {
+public class AgentServerPidConfigInfoFetchProcessor implements AgentMessageProcessor {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -34,15 +34,15 @@ public class AgentServerPidInfoGetterProcessor implements AgentMessageProcessor 
 
 	@Override
 	public Set<Integer> codes() {
-		return ImmutableSet.of(CommandCode.REQ_TYPE_AGENT_SERVER_PID_GETTER.getCode());
+		return ImmutableSet.of(CommandCode.REQ_TYPE_AGENT_SERVER_PID_CONFIG_INFO_FETCH.getCode());
 	}
 
 	@Override
 	public void process(ChannelHandlerContext ctx, Datagram message) {
-		logger.info("receiver agent server pid info get message");
-		Datagram datagram = RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_AGENT_SERVER_PID_GETTER.getCode(),
+		logger.info("receiver agent server pid config info get message");
+		Datagram datagram = RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_AGENT_SERVER_PID_CONFIG_INFO_FETCH.getCode(),
 				generator.generateId(), null);
-		agentRelatedDatagramWrapperService.wrap(datagram, new AgentInfo(ChannelUtils.getIp(ctx.channel())));
+		agentRelatedDatagramWrapperService.addPidRelatedConfigToHeader(datagram, new AgentInfo(ChannelUtils.getIp(ctx.channel())));
 		ctx.writeAndFlush(datagram);
 	}
 }

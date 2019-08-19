@@ -29,13 +29,16 @@ public class ArthasEntity {
 
     private volatile int pid;
 
-    public ArthasEntity(int pid) {
+    private volatile String nullableAppCode;
+
+    public ArthasEntity(String nullableAppCode, int pid) {
         this.pid = pid;
+        this.nullableAppCode = nullableAppCode;
     }
 
     public void start() {
         try {
-            ArthasStarter.start(pid);
+            ArthasStarter.start(nullableAppCode, pid);
         } catch (Exception e) {
             logger.error("start arthas error, pid [{}]", pid, e);
             throw new RuntimeException("start arthas error, pid [" + pid + "]," + e.getMessage());
@@ -44,5 +47,9 @@ public class ArthasEntity {
 
     public int getPid() {
         return pid;
+    }
+
+    public String getNullableAppCode() {
+        return nullableAppCode;
     }
 }

@@ -102,23 +102,7 @@ class AgentNettyClient {
                     logger.info("bistoury netty client start success, {}", proxyConfig);
                     channel = future.channel();
                     closeFuture(taskStore);
-
-                    Datagram pidInfoGetterDatagram = RemotingBuilder.buildAgentRequest(CommandCode.REQ_TYPE_AGENT_SERVER_PID_GETTER.getCode(), null);
-                    channel.writeAndFlush(pidInfoGetterDatagram).addListener(new ChannelFutureListener() {
-                        @Override
-                        public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                            if (channelFuture.isSuccess()) {
-                                running.compareAndSet(false, true);
-                                started.set(null);
-                                heartbeatTask.start(channel, running);
-                                refreshTask.start(channel, running);
-                            } else {
-                                started.set(null);
-                                logger.warn("send agent server pid info query message error," +
-                                        " bistoury netty client start fail", future.cause());
-                            }
-                        }
-                    });
+                    sendAgentServerPidConfigFetchMessage(future, heartbeatTask, refreshTask);
                 } else {
                     started.set(null);
                     logger.warn("bistoury netty client start fail, {}", proxyConfig, future.cause());
@@ -135,6 +119,27 @@ class AgentNettyClient {
         } catch (Exception e) {
             logger.error("start bistoury netty client error", e);
         }
+    }
+
+    private void sendAgentServerPidConfigFetchMessage(
+            ChannelFuture future, HeartbeatTask heartbeatTask, AgentInfoRefreshTask refreshTask) {
+        Datagram pidInfoGetterDatagram = RemotingBuilder.buildAgentRequest(
+                CommandCode.REQ_TYPE_AGENT_SERVER_PID_CONFIG_INFO_FETCH.getCode(), null);
+        channel.writeAndFlush(pidInfoGetterDatagram).addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                if (channelFuture.isSuccess()) {
+                    running.compareAndSet(false, true);
+                    started.set(null);
+                    heartbeatTask.start(channel, running);
+                    refreshTask.start(channel, running);
+                } else {
+                    started.set(null);
+                    logger.warn("send agent server pid info query message error," +
+                            " bistoury netty client start fail", future.cause());
+                }
+            }
+        });
     }
 
     public boolean isRunning() {

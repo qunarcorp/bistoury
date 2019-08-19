@@ -20,6 +20,7 @@ package qunar.tc.bistoury.agent.task.monitor;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.agent.common.util.AgentUtils;
 import qunar.tc.bistoury.clientside.common.monitor.MetricsSnapshot;
 import qunar.tc.bistoury.commands.arthas.telnet.DebugTelnetStore;
 import qunar.tc.bistoury.commands.arthas.telnet.Telnet;
@@ -35,21 +36,26 @@ import qunar.tc.bistoury.remoting.netty.MonitorReceiver;
  */
 public class TaskRunner implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(TaskRunner.class);
-    private static QMonitorStore MONITOR_STORE = QMonitorStore.getInstance();
-    private static final TelnetStore TELNET_STORE = DebugTelnetStore.getInstance();
+    private final QMonitorStore qMonitorStore;
+    private final TelnetStore TELNET_STORE = DebugTelnetStore.getInstance();
     private MonitorReceiver receiver;
     private static final String COMMAND = BistouryConstants.REQ_MONITOR_SNAPSHOT;
 
     private static final String MIN_VERSION = "1.2.5";
 
-    private String appCode;
+    private String nullableAppCode;
 
     private static final TypeReference<TypeResponse<MetricsSnapshot>> TYPE_REFERENCE = new TypeReference<TypeResponse<MetricsSnapshot>>() {
     };
 
-    TaskRunner(String appCode, MonitorReceiver receiver) {
-        this.appCode = appCode;
+    TaskRunner(String nullableAppCode, MonitorReceiver receiver) {
+        this.nullableAppCode = nullableAppCode;
         this.receiver = receiver;
+        if (AgentUtils.supporGetPidFromProxy()) {
+            this.qMonitorStore = QMonitorStore.getInstance(this.nullableAppCode);
+        } else {
+            this.qMonitorStore = QMonitorStore.getInstance(null);
+        }
     }
 
     @Override
@@ -86,12 +92,12 @@ public class TaskRunner implements Runnable {
             return;
         }
         MetricsSnapshot snapshot = responseData.getData();
-        MONITOR_STORE.store(snapshot);
+        qMonitorStore.store(snapshot);
     }
 
     private Telnet tryGetTelnet() {
         try {
-            return TELNET_STORE.tryGetTelnet();
+            return TELNET_STORE.tryGetTelnet(this.nullableAppCode);
         } catch (Exception e) {
             logger.error("try get telnet fail", e);
             return null;

@@ -24,17 +24,18 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author zhenyu.nie created on 2019 2019/1/10 16:18
  */
 public class DefaultMetaStore implements MetaStore {
 
-    private volatile Map<String, String> attrs = new HashMap<>();
+    private volatile Map<String, String> attrs = new ConcurrentHashMap<>();
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultMetaStore.class);
 
-    DefaultMetaStore() {
+    public DefaultMetaStore() {
     }
 
     public DefaultMetaStore(Map<String, String> attrs) {
@@ -45,6 +46,11 @@ public class DefaultMetaStore implements MetaStore {
     public void update(Map<String, String> attrs) {
         logger.debug("update agent info, {}", attrs);
         this.attrs = attrs;
+    }
+
+    @Override
+    public void put(String key, String value) {
+        this.attrs.put(key, value);
     }
 
     @Override
@@ -88,6 +94,15 @@ public class DefaultMetaStore implements MetaStore {
         }
         Long v = Long.valueOf(o);
         return new Date(v);
+    }
+
+    @Override
+    public Integer getIntegerProperty(String name) {
+        String value = attrs.get(name);
+        if (value == null) {
+            return null;
+        }
+        return Integer.parseInt(value);
     }
 
     @Override

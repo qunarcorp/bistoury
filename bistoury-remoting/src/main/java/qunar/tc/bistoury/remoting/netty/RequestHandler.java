@@ -18,15 +18,18 @@
 package qunar.tc.bistoury.remoting.netty;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.agent.common.AgentConstants;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.agent.common.pid.PidUtils;
 import qunar.tc.bistoury.agent.common.task.AgentGlobalTaskInitializer;
+import qunar.tc.bistoury.clientside.common.meta.MetaStore;
 import qunar.tc.bistoury.clientside.common.meta.MetaStores;
 import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.JacksonSerializer;
@@ -35,6 +38,7 @@ import qunar.tc.bistoury.remoting.protocol.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author zhenyu.nie created on 2018 2018/10/22 17:30
@@ -44,12 +48,13 @@ public class RequestHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
 
+    private static final TypeReference<Map<String, String>> PID_RELATED_TYPE_REFERENCE =
+            new TypeReference<Map<String, String>>() {
+            };
+
     private final Map<Integer, Processor> processorMap;
     private final CodeTypeMappingStore codeTypeMappingStore = CodeTypeMappingStores.getInstance();
 
-    private final TypeReference<Map<String, Map<String, String>>> typeReference =
-            new TypeReference<Map<String, Map<String, String>>>() {
-            };
 
     public RequestHandler(List<Processor> processors) {
         ImmutableMap.Builder<Integer, Processor> builder = new ImmutableMap.Builder<>();
@@ -80,23 +85,16 @@ public class RequestHandler extends ChannelInboundHandlerAdapter {
         RemotingHeader header = datagram.getHeader();
         int code = header.getCode();
         String id = header.getId();
-        String appCode = header.getProperties().get(AgentRelatedDatagramConstants.APP_CODE_HEADER);
-
-        if (code == CommandCode.REQ_TYPE_AGENT_SERVER_PID_GETTER.getCode()) {
-            Map<String, String> properties = header.getProperties();
-            String pidInfo = properties.get(AgentRelatedDatagramConstants.AGENT_SERVER_PID_INFO_HEADER);
-            if (pidInfo != null) {
-                Map<String, Map<String, String>> pidInfoStructured = JacksonSerializer.deSerialize(pidInfo, typeReference);
-                //ttd fuck me
-//                PidUtils.setPidMapping(pidInfoStructured);
-//                MetaStores.initMetaStores(pidInfoStructured);
-                AgentGlobalTaskInitializer.init();
-            }
-            return;
-        }
+        String appCode = header.getProperties().get(AgentConstants.APP_CODE);
 
         if (code != ResponseCode.RESP_TYPE_HEARTBEAT.getCode()) {
             logger.info("agent receive request: id={}, sourceIp={}, code={}", id, ctx.channel().remoteAddress(), code);
+
+            updateMetaStore(header);
+            if (code == CommandCode.REQ_TYPE_AGENT_SERVER_PID_CONFIG_INFO_FETCH.getCode()) {
+                AgentGlobalTaskInitializer.init();
+                return;
+            }
         }
 
         final ResponseHandler handler = NettyExecuteHandler.of(header, ctx);
@@ -123,5 +121,28 @@ public class RequestHandler extends ChannelInboundHandlerAdapter {
         Class<?> commandType = codeTypeMappingStore.getMappingType(code);
 
         processor.process(header, commandType.cast(CommandSerializer.deserializeCommand(command, commandType)), handler);
+    }
+
+    private static void updateMetaStore(RemotingHeader header) {
+        MetaStore sharedMetaStore = MetaStores.getSharedMetaStore();
+
+        Map<String, String> properties = header.getProperties();
+        String supportGetPidFromProxy = properties.get(AgentConstants.SUPPORT_GET_PID_FROM_PROXY);
+        if (Strings.isNullOrEmpty(supportGetPidFromProxy) || supportGetPidFromProxy.equalsIgnoreCase(Boolean.FALSE.toString())) {
+            sharedMetaStore.put(AgentConstants.SUPPORT_GET_PID_FROM_PROXY, Boolean.FALSE.toString());
+        } else {
+            sharedMetaStore.put(AgentConstants.SUPPORT_GET_PID_FROM_PROXY, Boolean.TRUE.toString());
+            String pidInfoInJson = properties.get(AgentConstants.AGENT_SERVER_PID_INFO);
+            Map<String, String> pidInfo = JacksonSerializer.deSerialize(pidInfoInJson, PID_RELATED_TYPE_REFERENCE);
+            if (pidInfo != null && pidInfo.size() > 0) {
+                for (Map.Entry<String, String> entry : pidInfo.entrySet()) {
+                    MetaStore appMetaStore = MetaStores.getAppMetaStore(entry.getKey());
+                    appMetaStore.put(AgentConstants.PID, entry.getValue());
+                }
+                Set<String> appCodes = pidInfo.keySet();
+                String appCodesDeployOnAgentServer = AgentConstants.COMMA_JOINER.join(appCodes);
+                sharedMetaStore.put(AgentConstants.APP_CODES_DEPLOY_ON_AGENT_SERVER_COMMA_SPLIT, appCodesDeployOnAgentServer);
+            }
+        }
     }
 }

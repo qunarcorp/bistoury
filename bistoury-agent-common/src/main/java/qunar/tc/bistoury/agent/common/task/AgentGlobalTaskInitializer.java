@@ -19,7 +19,7 @@ package qunar.tc.bistoury.agent.common.task;
 
 import com.google.common.collect.ImmutableList;
 import qunar.tc.bistoury.agent.common.pid.PidUtils;
-import qunar.tc.bistoury.agent.common.task.AgentGlobalTaskFactory;
+import qunar.tc.bistoury.agent.common.util.AgentUtils;
 
 import java.util.List;
 import java.util.ServiceLoader;
@@ -32,17 +32,27 @@ public class AgentGlobalTaskInitializer {
 
     private static boolean init = false;
 
+    //ttd 此处可能需要一个定时check的task
     public static synchronized void init() {
         if (!init) {
             List<AgentGlobalTaskFactory> tasks = ImmutableList.copyOf(ServiceLoader.load(AgentGlobalTaskFactory.class));
-
-            Set<String> agentServerAppCodes = PidUtils.getAgentServerAppCodes();
-            for (String appCode : agentServerAppCodes) {
-                for (AgentGlobalTaskFactory task : tasks) {
-                    task.start(appCode);
+            if (AgentUtils.supporGetPidFromProxy()) {
+                Set<String> appCodesDeployOnAgentServer = AgentUtils.getAppCodesDeployOnAgentServer();
+                if (appCodesDeployOnAgentServer != null && appCodesDeployOnAgentServer.size() > 0) {
+                    for (String appCode : appCodesDeployOnAgentServer) {
+                        startTask(tasks, appCode);
+                    }
                 }
+            } else {
+                startTask(tasks, null);
             }
             init = true;
+        }
+    }
+
+    private static void startTask(List<AgentGlobalTaskFactory> tasks, String nullableAppCode) {
+        for (AgentGlobalTaskFactory task : tasks) {
+            task.start(nullableAppCode);
         }
     }
 }

@@ -20,6 +20,7 @@ package qunar.tc.bistoury.agent.task.agentInfo;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.agent.common.util.AgentUtils;
 import qunar.tc.bistoury.clientside.common.meta.MetaStore;
 import qunar.tc.bistoury.clientside.common.meta.MetaStores;
 import qunar.tc.bistoury.commands.arthas.telnet.DebugTelnetStore;
@@ -56,9 +57,16 @@ public class TaskRunner implements Runnable {
 
     private ListeningScheduledExecutorService executor;
 
+    private final String nullableAppCode;
+
     TaskRunner(String appCode, ListeningScheduledExecutorService executor) {
         this.executor = executor;
-        this.metaStore = MetaStores.getMetaStore(appCode);
+        this.nullableAppCode = appCode;
+        if (AgentUtils.supporGetPidFromProxy()) {
+            this.metaStore = MetaStores.getAppMetaStore(appCode);
+        } else {
+            this.metaStore = MetaStores.getSharedMetaStore();
+        }
     }
 
     @Override
@@ -100,7 +108,7 @@ public class TaskRunner implements Runnable {
 
     private Telnet tryGetTelnet() {
         try {
-            return TELNET_STORE.tryGetTelnet();
+            return TELNET_STORE.tryGetTelnet(this.nullableAppCode);
         } catch (Exception e) {
             logger.error("try get telnet fail", e);
             return null;

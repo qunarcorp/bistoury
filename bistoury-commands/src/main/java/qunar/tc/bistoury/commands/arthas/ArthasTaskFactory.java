@@ -19,6 +19,7 @@ package qunar.tc.bistoury.commands.arthas;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import qunar.tc.bistoury.agent.common.AgentConstants;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.commands.arthas.telnet.ArthasTelnetStore;
 import qunar.tc.bistoury.commands.arthas.telnet.DebugTelnetStore;
@@ -97,6 +98,8 @@ public class ArthasTaskFactory implements TaskFactory<String> {
             return null;
         }
 
-        return new ArthasTask(storeMapping.get(header.getCode()), header.getId(), header.getMaxRunningMs(), pid, realCommand, handler);
+        String nullableAppCode = header.getProperties().get(AgentConstants.APP_CODE);
+        return new ArthasTask(storeMapping.get(header.getCode()), header.getId(),
+                header.getMaxRunningMs(), pid, realCommand, handler, nullableAppCode);
     }
 }

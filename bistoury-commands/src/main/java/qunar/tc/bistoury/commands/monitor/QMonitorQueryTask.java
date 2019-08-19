@@ -40,7 +40,7 @@ import java.util.concurrent.Callable;
 public class QMonitorQueryTask implements Task {
     private static final Logger logger = LoggerFactory.getLogger(QMonitorQueryTask.class);
     private static final ListeningExecutorService agentExecutor = AgentRemotingExecutor.getExecutor();
-    private static final QMonitorStore Q_MONITOR_STORE = QMonitorStore.getInstance();
+    private final QMonitorStore qMonitorStore;
     private static final String TYPE_LIST = "list";
     private static final String TYPE_LATEST = "latest";
     private String id;
@@ -48,12 +48,15 @@ public class QMonitorQueryTask implements Task {
     private ResponseHandler handler;
     private long maxRunningMs;
     private volatile ListenableFuture<Integer> future;
+    private final String nullableAppCode;
 
-    public QMonitorQueryTask(String id, MonitorCommand command, ResponseHandler handler, long maxRunningMs) {
+    public QMonitorQueryTask(String id, MonitorCommand command, ResponseHandler handler, long maxRunningMs, String nullableAppCode) {
         this.id = id;
         this.command = command;
         this.handler = handler;
         this.maxRunningMs = maxRunningMs;
+        this.nullableAppCode = nullableAppCode;
+        this.qMonitorStore = QMonitorStore.getInstance(this.nullableAppCode);
     }
 
     @Override
@@ -76,10 +79,10 @@ public class QMonitorQueryTask implements Task {
     private void queryMonitor() {
         final String type = command.getType();
         if (TYPE_LIST.equals(type)) {
-            Response response = Q_MONITOR_STORE.reportList(command.getName(), command.getStartTime(), command.getEndTime());
+            Response response = qMonitorStore.reportList(command.getName(), command.getStartTime(), command.getEndTime());
             handlerSuccess(response);
         } else if (TYPE_LATEST.equals(type)) {
-            Response response = Q_MONITOR_STORE.reportLatest(command.getName(), command.getQuery());
+            Response response = qMonitorStore.reportLatest(command.getName(), command.getQuery());
             handlerSuccess(response);
         } else {
             throw new IllegalArgumentException("illegal type: " + type);

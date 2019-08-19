@@ -1,11 +1,9 @@
 package qunar.tc.bistoury.application.mysql.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.application.api.AppServerPidInfoService;
 
-import org.springframework.stereotype.Service;
+import java.util.Map;
 
 /**
  * @author xkrivzooh
@@ -16,6 +14,6 @@ public class AppServerPidInfoServiceImpl implements AppServerPidInfoService {
 
 	@Override
 	public Map<String, Integer> queryPidInfo(String serverIp) {
-		return new HashMap<>();
+		throw new UnsupportedOperationException("默认不支持从proxy获取PID信息");
 	}
 }

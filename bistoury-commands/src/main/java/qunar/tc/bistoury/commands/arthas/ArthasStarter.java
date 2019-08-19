@@ -51,8 +51,8 @@ public class ArthasStarter {
         DEFAULT_CORE_JAR_PATH = new File(libDir, "arthas-core.jar").getPath();
     }
 
-    public synchronized static void start(int pid) throws Exception {
-        Configure configure = getConfigure(pid);
+    public synchronized static void start(String nullableAppCode, int pid) throws Exception {
+        Configure configure = getConfigure(nullableAppCode, pid);
         attachAgent(configure);
     }
 
@@ -116,7 +116,7 @@ public class ArthasStarter {
         return files[0];
     }
 
-    private static Configure getConfigure(int pid) {
+    private static Configure getConfigure(String nullableAppCode, int pid) {
         String agentJar = System.getProperty("bistoury.agent.jar.path", DEFAULT_AGENT_JAR_PATH);
         String coreJar = System.getProperty("bistoury.arthas.core.jar.path", DEFAULT_CORE_JAR_PATH);
 
@@ -125,8 +125,8 @@ public class ArthasStarter {
         configure.setArthasAgent(agentJar);
         configure.setArthasCore(coreJar);
         configure.setIp(TelnetConstants.TELNET_CONNECTION_IP);
-        //ttd fuckme  此处需要修改
-        configure.setTelnetPort(TelnetConstants.TELNET_CONNECTION_PORT);
+        configure.setTelnetPort(ArthasTelnetPortHelper.getTelnetPort(nullableAppCode));
+
         configure.setHttpPort(TelnetConstants.DEFAULT_HTTP_PORT);
         return configure;
     }

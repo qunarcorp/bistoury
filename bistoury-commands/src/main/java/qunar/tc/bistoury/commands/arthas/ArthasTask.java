@@ -53,13 +53,17 @@ public class ArthasTask implements Task {
 
     private volatile ListenableFuture<Integer> future;
 
-    public ArthasTask(TelnetStore telnetStore, String id, long maxRunningMs, int pid, String command, ResponseHandler handler) {
+    private final String nullableCode;
+
+    public ArthasTask(TelnetStore telnetStore, String id, long maxRunningMs,
+                      int pid, String command, ResponseHandler handler, String nullableAppCode) {
         this.telnetStore = telnetStore;
         this.id = id;
         this.maxRunningMs = maxRunningMs;
         this.pid = pid;
         this.command = command;
         this.handler = handler;
+        this.nullableCode = nullableAppCode;
     }
 
     @Override
@@ -81,7 +85,7 @@ public class ArthasTask implements Task {
                     return 0;
                 }
 
-                Telnet telnet = telnetStore.getTelnet(pid);
+                Telnet telnet = telnetStore.getTelnet(nullableCode, pid);
                 try {
                     telnet.write(command);
                     telnet.read(command, handler);
@@ -113,7 +117,7 @@ public class ArthasTask implements Task {
 
         Telnet client = null;
         try {
-            client = telnetStore.tryGetTelnet();
+            client = telnetStore.tryGetTelnet(nullableCode);
             if (client != null) {
                 client.write(BistouryConstants.SHUTDOWN_COMMAND);
             }

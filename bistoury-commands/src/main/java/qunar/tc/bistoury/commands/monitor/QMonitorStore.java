@@ -19,6 +19,9 @@ package qunar.tc.bistoury.commands.monitor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.kv.KvDb;
@@ -40,10 +43,9 @@ import java.util.concurrent.TimeUnit;
 public class QMonitorStore {
     private static final Logger logger = LoggerFactory.getLogger(QMonitorStore.class);
 
-    private static final QMonitorStore INSTANCE = new QMonitorStore();
     private static final KvDb KV_DB = KvDbs.getKvDb();
     private static final String PREFIX = "qm-";
-    private static final String LATEST_TIME = PREFIX + "latest_time";
+    private final String latestTime;
     private static final String MERTICS_SNAPSHOT_FORMAT = "{\"name\":\"%s\",\"timestamp\":%d,\"metricsData\":[]}";
     private static final String EMPTY_STRING = "";
     private static final String EMPTY_CHAR = "''";
@@ -57,19 +59,33 @@ public class QMonitorStore {
 
     private static final long MINUTE = TimeUnit.MINUTES.toMillis(1);
 
-    private QMonitorStore() {
+    private String identify;
 
+    private static final LoadingCache<String, QMonitorStore> CACHE = CacheBuilder.newBuilder()
+            .build(new CacheLoader<String, QMonitorStore>() {
+                @Override
+                public QMonitorStore load(String identify) throws Exception {
+                    return new QMonitorStore(identify);
+                }
+            });
+
+    private QMonitorStore(String identify) {
+        this.identify = identify;
+        this.latestTime = Strings.nullToEmpty(identify) + PREFIX + "latest_time";
     }
 
-    public static QMonitorStore getInstance() {
-        return INSTANCE;
+    public static QMonitorStore getInstance(String identify) {
+        if (Strings.isNullOrEmpty(identify)) {
+            identify = "";
+        }
+        return CACHE.getUnchecked(identify);
     }
 
     public void store(MetricsSnapshot snapshot) {
         try {
             String currentMinute = String.valueOf(DateUtil.transformToMinute(snapshot.getTimestamp()));
             if (!isEmpty(snapshot.getMetricsData())) {
-                KV_DB.put(LATEST_TIME, currentMinute);
+                KV_DB.put(latestTime, currentMinute);
                 KV_DB.put(addPrefix(currentMinute), MAPPER.writeValueAsString(snapshot));
             }
         } catch (Throwable e) {
@@ -78,7 +94,7 @@ public class QMonitorStore {
     }
 
     public Response reportLatest(final String name, Long queryTime) {
-        String latestTime = KV_DB.get(LATEST_TIME);
+        String latestTime = KV_DB.get(this.latestTime);
         if (Strings.isNullOrEmpty(latestTime)) {
             return handlerError("latest", -2, "目前没有监控数据");
         }
@@ -108,7 +124,7 @@ public class QMonitorStore {
             return handlerError("list", -1, "监控数据不能查询三天前的数据，请修改查询条件");
         }
         try {
-            String latestTime = KV_DB.get(LATEST_TIME);
+            String latestTime = KV_DB.get(this.latestTime);
             if (Strings.isNullOrEmpty(latestTime)) {
                 return handlerError("list", -2, "没有查询到监控数据");
             }
@@ -254,11 +270,11 @@ public class QMonitorStore {
     }
 
     private String addPrefix(final String key) {
-        return PREFIX + key;
+        return Strings.nullToEmpty(identify) + PREFIX + key;
     }
 
     private String addPrefix(final long key) {
-        return PREFIX + key;
+        return Strings.nullToEmpty(identify) + PREFIX + key;
     }
 
     private long computeInterval(final long start, final long end) {

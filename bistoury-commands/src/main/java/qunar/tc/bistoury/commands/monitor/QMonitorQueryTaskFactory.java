@@ -20,6 +20,7 @@ package qunar.tc.bistoury.commands.monitor;
 import com.google.common.collect.ImmutableSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.agent.common.AgentConstants;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.remoting.command.MonitorCommand;
 import qunar.tc.bistoury.remoting.netty.Task;
@@ -51,6 +52,7 @@ public class QMonitorQueryTaskFactory implements TaskFactory<MonitorCommand> {
 
     @Override
     public Task create(RemotingHeader header, MonitorCommand command, ResponseHandler handler) {
-        return new QMonitorQueryTask(header.getId(), command, handler, header.getMaxRunningMs());
+        String nullableAppCode = header.getProperties().get(AgentConstants.APP_CODE);
+        return new QMonitorQueryTask(header.getId(), command, handler, header.getMaxRunningMs(), nullableAppCode);
     }
 }

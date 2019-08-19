@@ -22,7 +22,6 @@ import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
-import qunar.tc.bistoury.clientside.common.meta.MetaStore;
 import qunar.tc.bistoury.clientside.common.meta.MetaStores;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.remoting.netty.Processor;
@@ -57,7 +56,7 @@ public class MetaRefreshProcessor implements Processor<String> {
                 logger.info("meta refresh data receive, {}", agentInfo);
 
                 for (Map.Entry<String, Map<String, String>> entry : agentInfo.entrySet()) {
-                    MetaStores.getMetaStore(entry.getKey()).update(entry.getValue());
+                    MetaStores.getAppMetaStore(entry.getKey()).update(entry.getValue());
                 }
             }
         } catch (Exception e) {

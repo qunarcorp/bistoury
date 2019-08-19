@@ -17,6 +17,8 @@
 
 package qunar.tc.bistoury.clientside.common.meta;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
@@ -26,7 +28,7 @@ import java.util.Map;
  */
 public class MetaStores {
 
-    private static final MetaStore sharedMetaStore = new DefaultMetaStore(Maps.newHashMap());
+    private static final MetaStore sharedMetaStore = new DefaultMetaStore(Maps.newConcurrentMap());
 
     private static final Map<String, MetaStore> appMetaStores = Maps.newConcurrentMap();
 
@@ -34,13 +36,11 @@ public class MetaStores {
         return sharedMetaStore;
     }
 
-    public static MetaStore getMetaStore(String appCode) {
-        appMetaStores.put(appCode, new DefaultMetaStore());
+    public static MetaStore getAppMetaStore(String appCode) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(appCode), "appCode不能为空");
+        appMetaStores.putIfAbsent(appCode, new DefaultMetaStore());
         return appMetaStores.get(appCode);
     }
 
-    public static void initMetaStores(String appCode, Map<String, String> pidInfoStructured) {
-        DefaultMetaStore defaultMetaStore = new DefaultMetaStore(pidInfoStructured);
-        appMetaStores.put(appCode, defaultMetaStore);
-    }
+
 }

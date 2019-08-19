@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.config.AgentConfig;
 import qunar.tc.bistoury.agent.common.pid.PidUtils;
+import qunar.tc.bistoury.agent.common.util.AgentUtils;
 import qunar.tc.bistoury.clientside.common.meta.MetaStores;
 import qunar.tc.bistoury.commands.heapHisto.HeapHistoBeanHandle;
 import qunar.tc.bistoury.commands.heapHisto.HeapHistoStore;
@@ -47,7 +48,11 @@ public class TaskRunner implements Runnable {
 
     public TaskRunner(String appCode) {
         this.appCode = appCode;
-        this.agentConfig = new AgentConfig(MetaStores.getMetaStore(appCode));
+        if (AgentUtils.supporGetPidFromProxy()) {
+            this.agentConfig = new AgentConfig(MetaStores.getAppMetaStore(appCode));
+        } else {
+            this.agentConfig = new AgentConfig(MetaStores.getSharedMetaStore());
+        }
     }
 
 

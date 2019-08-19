@@ -35,9 +35,11 @@ import qunar.tc.bistoury.agent.common.cpujstack.KvUtils;
 import qunar.tc.bistoury.agent.common.cpujstack.ThreadInfo;
 import qunar.tc.bistoury.agent.common.kv.KvDb;
 import qunar.tc.bistoury.agent.common.pid.PidUtils;
+import qunar.tc.bistoury.agent.common.util.AgentUtils;
 import qunar.tc.bistoury.agent.common.util.DateUtils;
 import qunar.tc.bistoury.agent.task.proc.ProcUtil;
 import qunar.tc.bistoury.agent.task.proc.ProcessStateCalculator;
+import qunar.tc.bistoury.clientside.common.meta.MetaStore;
 import qunar.tc.bistoury.clientside.common.meta.MetaStores;
 import qunar.tc.bistoury.common.JacksonSerializer;
 
@@ -77,7 +79,11 @@ public class TaskRunner implements Runnable {
 
     public TaskRunner(String appCode, KvDb kvDb, PidExecutor jstackExecutor, PidRecordExecutor momentCpuTimeExecutor) {
         this.appCode = appCode;
-        this.agentConfig = new AgentConfig(MetaStores.getMetaStore(appCode));
+        if (AgentUtils.supporGetPidFromProxy()) {
+            this.agentConfig = new AgentConfig(MetaStores.getAppMetaStore(appCode));
+        } else {
+            this.agentConfig = new AgentConfig(MetaStores.getSharedMetaStore());
+        }
         this.kvDb = kvDb;
         this.jstackExecutor = jstackExecutor;
         this.momentCpuTimeExecutor = momentCpuTimeExecutor;

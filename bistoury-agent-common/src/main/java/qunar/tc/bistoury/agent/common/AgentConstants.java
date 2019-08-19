@@ -15,8 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.remoting.netty;
+package qunar.tc.bistoury.agent.common;
 
+import com.google.common.base.Joiner;
 import io.netty.util.AttributeKey;
 
 /**
@@ -33,6 +34,27 @@ public class AgentConstants {
     public static final AttributeKey<String> attributeKey = AttributeKey.valueOf(CHANNEL_REQUEST_ID_KEY);
 
     public static final int VERSION = 10;
+
+
+    public static final Joiner COMMA_JOINER = Joiner.on(",").skipNulls();
+
+    //////// agent shared meta store key
+    public static final String AGENT_SERVER_CONFIG_INFO = "_AGENT_SERVER_CONFIG_INFO";
+
+    public static final String SUPPORT_GET_PID_FROM_PROXY = "_SUPPORT_GET_PID_FROM_PROXY";
+
+    public static final String AGENT_SERVER_PID_INFO = "_AGENT_SERVER_PID_INFO";
+
+    public static final String APP_CODES_DEPLOY_ON_AGENT_SERVER_COMMA_SPLIT = "_APP_CODES_DEPLOY_ON_AGENT_SERVER_COMMA_SPLIT";
+
+
+    /////// app level meta store key
+    public static final String APP_CODE = "_APP_CODE";
+
+    public static final String PID = "_PID";
+
+    public static final String TELNET_CONNECT_PORT = "_TELNET_CONNECT_PORT";
+
 }
 
     
