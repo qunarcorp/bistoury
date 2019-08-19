@@ -22,6 +22,8 @@ import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
+import qunar.tc.bistoury.agent.common.util.AgentUtils;
+import qunar.tc.bistoury.clientside.common.meta.MetaStore;
 import qunar.tc.bistoury.clientside.common.meta.MetaStores;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.remoting.netty.Processor;
@@ -55,9 +57,17 @@ public class MetaRefreshProcessor implements Processor<String> {
             if (agentInfo != null && agentInfo.size() > 0) {
                 logger.info("meta refresh data receive, {}", agentInfo);
 
-                for (Map.Entry<String, Map<String, String>> entry : agentInfo.entrySet()) {
-                    MetaStores.getAppMetaStore(entry.getKey()).update(entry.getValue());
+                if (AgentUtils.supporGetPidFromProxy()) {
+                    for (Map.Entry<String, Map<String, String>> entry : agentInfo.entrySet()) {
+                        MetaStores.getAppMetaStore(entry.getKey()).update(entry.getValue());
+                    }
+                } else {
+                    for (Map.Entry<String, Map<String, String>> entry : agentInfo.entrySet()) {
+                        MetaStores.getSharedMetaStore().update(entry.getValue());
+                        break;
+                    }
                 }
+
             }
         } catch (Exception e) {
             logger.error("update meta store error", e);
