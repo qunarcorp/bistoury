@@ -12,6 +12,9 @@ ui、proxy和agent均使用Java1.8+，同时由于agent会attach到应用中，�
 ## 1.2 Zookeeper
 ui依赖zk发现存活的proxy，所以需要部署zk集群。
 >注：如果没有zk集群，可以覆盖实现qunar.tc.bistoury.ui.service.impl.ProxyServiceImpl#getAllProxyUrls方法返回proxy信息，返回数据格式为：ip:tomcatPort:websocketPort
+- ip: proxy的ip地址
+- tomcatPort: proxy暴露的tomcat端口
+- websocketPort：proxy暴露给ui的netty端口，ui使用websocket连接
 # 二、部署步骤
 部署步骤共分为三步：
 + 1、初始化数据库

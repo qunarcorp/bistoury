@@ -18,6 +18,7 @@ Arthas的watch命令让我们可以观察函数的入参、返回值、异常等
 ![private token](../image/private_token.png)
 
 - 选择需要调试的应用名，再选择需要调试的机器，然后点击【debug】按钮，进入已加载类列表。
+![debug](../image/debug-main.png)
 - 找到需要调试的类（支持搜索），点击【调试】按钮进入调试页面
 ![debug class list](../image/debug_class_list.png)
 
@@ -50,6 +51,7 @@ Arthas的watch命令让我们可以观察函数的入参、返回值、异常等
 
 **警告：**
 为了防止用户调用自定义方法执行业务逻辑方法，条件断点中仅支持调用如下方法：
+
 ==白名单==: equals, length, valueOf, toString, hashCode, compareTo, size, count
 
 ### DEMO
@@ -123,6 +125,12 @@ public class ForTest {
         int a5 = f + g;
         int a6 = g + h;
         int a7 = g + h;
+
+        Map<String,String> map=new HashMap<>();
+        map.put("key","value");
+        List<String> list=new ArrayList<>();
+        list.add("tcdev")
+
         System.out.println(a1 + a2);
     }
   
@@ -237,7 +245,9 @@ public class Address {
 针对上面的测试类，如果我们的断点打在 public void arguments(int a, int b, int c, int d, int f, int g, int h, UserForTest user) 方法的最后一行的println语句上的话，那么下面的Spring EL表达式为true：
 
 ```java
-String el = "localVariables[a] == 1 && " +
+String el ="localVariables[list][0].equals('tcdev') &&" +
+        "localVariables[map]['key'].equals('value') && " +
+        "localVariables[a] == 1 && " +
         "localVariables[b] == 2 && " +
         "localVariables[c] == 3 && " +
         "localVariables[d] == 4 && " +
