@@ -88,7 +88,7 @@ if [[ ! -w "$BISTOURY_PROXY_CONF_DIR" ]] ; then
 fi
 
 if [[ "start" == $CMD ]] && [[ ! -n $JAVA_HOME ]]; then
-    echo "请配置环境变量JAVA_HOME或执行-j参数指定JAVA_HOME"
+    echo "请配置环境变量JAVA_HOME或通过-j参数指定JAVA_HOME"
     exit 0;
 fi
 
