@@ -353,7 +353,7 @@ $(document).ready(function () {
                 sortable: true,
                 searchable: false
             }, {
-                title: '自动JStack',
+                title: '线程级cpu监控',
                 field: 'autoJStackEnable',
                 sortable: true,
                 searchable: true,
@@ -366,7 +366,7 @@ $(document).ready(function () {
                     }
                 }
             }, {
-                title: '自动JMap',
+                title: '堆对象概览监控',
                 field: 'autoJMapHistoEnable',
                 sortable: true,
                 searchable: true,
@@ -447,7 +447,7 @@ $(document).ready(function () {
         "change .autoJStackEnable": function (e, value, row, index) {
             if (value) {
                 changeAutoJStackEnable(row.serverId, value);
-            } else if (confirm("bistoury将每分钟对应用进行jstack和top操作，监控应用每分钟线程信息")) {
+            } else if (confirm("bistoury将每分钟对进行线程级cpu监控")) {
                 changeAutoJStackEnable(row.serverId, value);
             } else {
                 e.currentTarget.checked = value
@@ -456,7 +456,7 @@ $(document).ready(function () {
         "change .autoJMapHistoEnable": function (e, value, row, index) {
             if (value) {
                 changeAutoJMapHistoEnable(row.serverId, value)
-            } else if (confirm("bistoury将每分钟对应用进行 jmap -histo 操作，保存应用每分钟堆栈信息")) {
+            } else if (confirm("bistoury将每分钟监控堆对象概览，执行jmap -histo操作")) {
                 changeAutoJMapHistoEnable(row.serverId, value)
             } else {
                 e.currentTarget.checked = value
