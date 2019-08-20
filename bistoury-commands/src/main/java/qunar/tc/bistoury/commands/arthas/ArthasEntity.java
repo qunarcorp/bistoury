@@ -17,6 +17,7 @@
 
 package qunar.tc.bistoury.commands.arthas;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +41,9 @@ public class ArthasEntity {
         try {
             ArthasStarter.start(nullableAppCode, pid);
         } catch (Exception e) {
-            logger.error("start arthas error, pid [{}]", pid, e);
-            throw new RuntimeException("start arthas error, pid [" + pid + "]," + e.getMessage());
+            logger.error("start arthas error, nullableAppCode [{}], pid [{}]", nullableAppCode, pid, e);
+            throw new RuntimeException("start arthas error, nullableAppCode [" + Strings.nullToEmpty(nullableAppCode)
+                    + " ] " + "pid [" + pid + "]," + e.getMessage());
         }
     }
 
