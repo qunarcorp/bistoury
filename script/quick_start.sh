@@ -84,7 +84,7 @@ fi
 
 if [[ "start" == $CMD ]] && [[ -n "$APP_PID" &&  -n "$JAVA_HOME" ]]; then
     ln -s $JAVA_HOME /tmp/bistoury/java
-    echo "127.0.0.1:8080:8899">$BISTOURY_PROXY_CONF_FILE
+    echo "127.0.0.1:9090:9999">$BISTOURY_PROXY_CONF_FILE
     start $APP_PID $JAVA_HOME
 elif [[ "stop" == $CMD ]]; then
     stop

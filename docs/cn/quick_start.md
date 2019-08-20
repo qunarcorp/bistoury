@@ -8,7 +8,7 @@
  
  ### 准备
 - 目前仅支持linux或unix环境，所以需要一个linux或unix环境
-- 不占用8080，8081，20880，8899端口，proxy使用8080端口，ui使用8081端口，agent和proxy通信使用20880端口，ui和proxy通信使用8899端口
+- 不占用9090，9091，9880，9999端口，proxy使用9090端口，ui使用9091端口，agent和proxy通信使用9880端口，ui和proxy通信使用9999端口
 - 在本机启动一个java应用，用于bistoury attach，且这个Java应用需要使用了org.springframework.web.servlet.DispatcherServlet类
 
  ### 快速开始
@@ -31,4 +31,4 @@
 ```
 
  ### 访问
-通过[http://localhost:8081/](http://localhost:8081/)访问
+通过[http://127.0.0.1:9091/](http://127.0.0.1:9091/)访问
