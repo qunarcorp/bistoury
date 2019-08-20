@@ -36,7 +36,7 @@ start(){
 
     cd $BISTOURY_AGENT_BIN_DIR
     if [[ -n $BISTOURY_AGENT_APP_LIB_CLASS ]]; then
-        ./bistoury-agent.sh -p $1 -j $2 -c $BISTOURY_AGENT_APP_LIB_CLASS start
+        ./bistoury-agent.sh -p $1 -j $2 -c "$BISTOURY_AGENT_APP_LIB_CLASS" start
     else
         ./bistoury-agent.sh -p $1 -j $2 start
     fi
