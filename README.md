@@ -54,7 +54,7 @@ jdk1.8+
 
 ## project
 
-欢迎大家各种star，fork，提issue，pull request，感觉还可以就点个star先吧！
+欢迎大家各种star，fork，提issue，pull request，感觉还可以就点个star吧！
 
 ## Screenshots
 

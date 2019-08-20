@@ -100,7 +100,7 @@ public class TaskProcessor implements Processor<Object> {
                 handler.handleError(t);
                 logger.error("{} command error, id [{}], command [{}]", factory.name(), id, command, t);
             }
-        }, MoreExecutors.directExecutor());
+        }, AgentRemotingExecutor.getExecutor());
     }
 
     @SuppressWarnings("unchecked")
