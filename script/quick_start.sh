@@ -10,6 +10,8 @@ fi
 
 H2_DATABASE_DIR="$BISTOURY_BASE_DIR/h2"
 
+APP_LOG_DIR="/tmp"
+
 BISTOURY_UI_DIR="$BISTOURY_BASE_DIR/bistoury-ui-$BISTOURY_PROJECT_VERSION-bin"
 BISTOURY_UI_BIN_DIR="$BISTOURY_UI_DIR/bin"
 
@@ -26,7 +28,7 @@ BISTOURY_PROXY_CONF_FILE="$BISTOURY_PROXY_CONF_DIR/proxy.conf"
 start(){
 
     cd $H2_DATABASE_DIR
-    ./h2.sh -j $2 start
+    ./h2.sh -j $2 -l $APP_LOG_DIR start
     sleep 5
 
     cd $BISTOURY_PROXY_BIN_DIR
@@ -66,13 +68,15 @@ stop(){
 
 CMD=${!#}
 
-while getopts p:j:c:h opt;do
+while getopts p:j:l:c:h opt;do
     case $opt in
         p) APP_PID=$OPTARG;;
         j) JAVA_HOME=$OPTARG;;
+        l) APP_LOG_DIR=$OPTARG;;
         c) BISTOURY_AGENT_APP_LIB_CLASS=$OPTARG;;
         h|*) echo "-p    通过-p指定应用进程pid"
            echo "-j    通过-j指定java home"
+           echo "-l    通过-l参数指定应用日志目录，不指定时使用/tmp目录"
            echo "-c    通过-c指定应用依赖的jar包中的一个类（推荐使用公司内部中间件的jar包或Spring相关包中的类，如org.springframework.web.servlet.DispatcherServlet）"
            echo "-h    通过-h查看命令帮助"
            exit 0
