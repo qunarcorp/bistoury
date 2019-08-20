@@ -32,7 +32,7 @@ Bistoury提供可视化页面实时查看机器和应用的各种信息，包括
 
 ## 快速上手
 
-也许你正面对一个难以捉摸的线上问题束手无策，来试试Bistoury的[快捷部署脚本](docs/cn/quick_start.md)，在一分钟内启动Bistoury然后[插入断点开始调试](docs/cn/debug.md)吧！ 
+也许你正面对一个难以捉摸的线上问题束手无策，不妨来试试Bistoury的[快捷部署脚本](docs/cn/quick_start.md)，在一分钟内启动Bistoury然后[插入断点开始调试](docs/cn/debug.md)吧！ 
 
 ## 使用文档
 - [快速开始](docs/cn/quick_start.md)
