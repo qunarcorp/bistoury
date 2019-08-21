@@ -365,7 +365,7 @@ $(document).ready(function () {
                         return '<input type="checkbox" class="auto-enable autoJStackEnable" id="autoJStackEnable-' + index + '" name="autoJStackEnable"><label for="autoJStackEnable-' + index + '"></label>'
                     }
                 }
-            }, {
+            }, /*{
                 title: '堆对象概览监控',
                 field: 'autoJMapHistoEnable',
                 sortable: true,
@@ -378,7 +378,7 @@ $(document).ready(function () {
                         return '<input type="checkbox" class="auto-enable autoJMapHistoEnable" id="autoJMapHistoEnable-' + index + '" name="autoJMapHistoEnable"><label for="autoJMapHistoEnable-' + index + '"></label>'
                     }
                 }
-            }, {
+            },*/ {
                 title: '操作',
                 field: 'operate',
                 events: operateEvents,

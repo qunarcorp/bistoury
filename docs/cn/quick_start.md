@@ -6,10 +6,10 @@ Bistoury具有多个模块，并且和公司自身环境有一定的关联，想
 
 >使用快速部署脚本，会在本机部署一整套Bistoury服务，其中包括ui、proxy、agent。
 
-快速启动依赖与h2数据库，会在启动时依赖初始化以下数据 
+快速启动依赖于h2数据库，会在启动时依赖初始化以下数据 
 - 一个用户名密码均为admin的用户
-- 在admin用户下初始化一个tc_demo_app应用
-- 将本机注册到tc_demo_app应用下作为一台服务器，如需要修改应用或服务器信息可以到[应用中心](application.md)修改
+- 在admin用户下初始化一个bistoury_demo_app应用
+- 将本机注册到bistoury_demo_app应用下作为一台服务器，如需要修改应用或服务器信息可以到[应用中心](application.md)修改
 
  ### 构建
 
