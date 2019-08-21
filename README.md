@@ -49,7 +49,7 @@ jdk1.8+
 
 ## 系统要求
 
-目前只支持linux/unix系统
+目前只支持linux系统（支持mac os）
 
 ## project
 
