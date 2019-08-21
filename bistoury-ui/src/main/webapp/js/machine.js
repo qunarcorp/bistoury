@@ -931,7 +931,7 @@ $(document).ready(function () {
         } else {
             firstIn.heapHisto = false;
             $("#heap-histo-time").val("")
-            bistoury.info("自动查询已关闭，点击刷新图标查询数据");
+            bistoury.info("点击刷新图标查询数据");
             //getHeapHisto();
         }
     });
