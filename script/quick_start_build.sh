@@ -30,10 +30,6 @@ if [[ ! -w "$BISTOURY_PACKAGE_DIR" ]] ; then
 mkdir -p "$BISTOURY_PACKAGE_DIR"
 fi
 
-if [[ ! -w "$BISTOURY_MAVEN_VERSION_DIR" ]] ; then
-mkdir -p "$BISTOURY_MAVEN_VERSION_DIR"
-fi
-
 mv bistoury-ui/target/bistoury-ui-bin $BISTOURY_PACKAGE_DIR
 mv bistoury-proxy/target/bistoury-proxy-bin $BISTOURY_PACKAGE_DIR
 mv bistoury-dist/target/bistoury-agent-bin $BISTOURY_PACKAGE_DIR
