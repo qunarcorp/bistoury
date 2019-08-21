@@ -28,7 +28,7 @@ Bistoury可以[动态对方法添加监控](docs/cn/monitor.md)，监控方法�
 
 Bistoury提供了日志查看功能，可以使用tail、grep等命令对单台或同时对多台机器的日志进行查看。
 
-Bistoury提供可视化页面实时查看机器和应用的各种信息，包括主机内存和磁盘使用、cpu load和使用率、系统配置文件、jar包信息、jvm信息、内存使用和gc等等。
+Bistoury提供可视化页面实时查看机器和应用的各种信息，包括主机内存和磁盘使用、cpu使用率和load、系统配置文件、jar包信息、jvm信息、内存使用和gc等等。
 
 ## 快速上手
 
@@ -36,12 +36,12 @@ Bistoury提供可视化页面实时查看机器和应用的各种信息，包括
 
 ## 使用文档
 - [快速开始](docs/cn/quick_start.md)
-- [部署](docs/cn/deploy.md)
 - [在线debug](docs/cn/debug.md)
 - [线程级cpu使用率监控](docs/cn/jstack.md)
 - [命令使用文档](docs/cn/commands.md)
 - [动态监控](docs/cn/monitor.md)
 - [应用中心](docs/cn/application.md)
+- [生产部署](docs/cn/deploy.md)
 
 ## java版本要求
 

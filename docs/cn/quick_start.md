@@ -65,7 +65,7 @@ quick_start.sh可以设置一些启动参数，
 |-j    |选填|环境变量JAVA_HOME|指定jdk路径|
 |-l    |选填|/tmp|应用的日志目录，Bistoury命令执行的目录，比如ls，tail等都会默认在此目录下执行|
 |-p    |必填|    |应用进程id，因为是脚本快速启动，所以需要使用该参数指定对哪个java进程进行诊断|
-|-c    |选填|org.springframework.web.servlet.DispatcherServlet|用于获取应用lib目录，应该填写为应用自身代码中或依赖的jar包中的一个类（不能使用Bistoury agent中用到的类，推荐使用公司内部中间件的jar包或Spring相关包中的类，如org.springframework.web.servlet.DispatcherServlet）|
+|-c    |选填|org.springframework.web.servlet.DispatcherServlet|用于获取一些应用信息，应填写为应用自身代码或依赖的jar包中的一个类（不能使用Bistoury agent中用到的类，推荐使用公司内部中间件的jar包或Spring相关包中的，agent不可能使用到的类，如org.springframework.web.servlet.DispatcherServlet）|
 |-h   | 选填||查看帮助文档
 
 ### 问题解决
