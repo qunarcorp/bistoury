@@ -6,12 +6,8 @@ SCRIPT_DIR=`pwd`
 
 cd ..
 
-BISTOURY_PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout`
-
 BISTOURY_PACKAGE_FILE=bistoury
 BISTOURY_PACKAGE_DIR="$SCRIPT_DIR/$BISTOURY_PACKAGE_FILE"
-BISTOURY_MAVEN_VERSION_DIR=$BISTOURY_PACKAGE_DIR/maven
-BISTOURY_MAVEN_VERSION_FILE=$BISTOURY_MAVEN_VERSION_DIR/project.version
 
 #打包agent
 echo "================ starting to build bistoury agent ================"
@@ -38,11 +34,9 @@ if [[ ! -w "$BISTOURY_MAVEN_VERSION_DIR" ]] ; then
 mkdir -p "$BISTOURY_MAVEN_VERSION_DIR"
 fi
 
-echo -n $BISTOURY_PROJECT_VERSION > "$BISTOURY_MAVEN_VERSION_FILE"
-
-mv bistoury-ui/target/bistoury-ui-$BISTOURY_PROJECT_VERSION-bin $BISTOURY_PACKAGE_DIR
-mv bistoury-proxy/target/bistoury-proxy-$BISTOURY_PROJECT_VERSION-bin $BISTOURY_PACKAGE_DIR
-mv bistoury-dist/target/bistoury-agent-$BISTOURY_PROJECT_VERSION-bin $BISTOURY_PACKAGE_DIR
+mv bistoury-ui/target/bistoury-ui-bin $BISTOURY_PACKAGE_DIR
+mv bistoury-proxy/target/bistoury-proxy-bin $BISTOURY_PACKAGE_DIR
+mv bistoury-dist/target/bistoury-agent-bin $BISTOURY_PACKAGE_DIR
 cp $SCRIPT_DIR/quick_start.sh $BISTOURY_PACKAGE_DIR
 cp -R $SCRIPT_DIR/h2 $BISTOURY_PACKAGE_DIR
 

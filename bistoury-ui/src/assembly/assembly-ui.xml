@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <assembly>
     <id>bin</id>
-    <baseDirectory>bistoury-ui-${project.version}-bin</baseDirectory>
+    <baseDirectory>bistoury-ui-bin</baseDirectory>
 
     <formats>
         <format>dir</format>

@@ -119,7 +119,7 @@
                                     <goal>single</goal>
                                 </goals>
                                 <configuration>
-                                    <finalName>${project.artifactId}-${project.version}</finalName>
+                                    <finalName>${project.artifactId}</finalName>
                                     <descriptors>
                                         <descriptor>src/assembly/assembly-proxy.xml</descriptor>
                                     </descriptors>
@@ -154,7 +154,7 @@
                                     <goal>single</goal>
                                 </goals>
                                 <configuration>
-                                    <finalName>${project.artifactId}-${project.version}</finalName>
+                                    <finalName>${project.artifactId}</finalName>
                                     <descriptors>
                                         <descriptor>src/assembly/assembly-proxy.xml</descriptor>
                                     </descriptors>

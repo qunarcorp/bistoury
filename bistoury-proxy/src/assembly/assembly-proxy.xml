@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <assembly>
     <id>bin</id>
-    <baseDirectory>bistoury-proxy-${project.version}-bin</baseDirectory>
+    <baseDirectory>bistoury-proxy-bin</baseDirectory>
 
     <formats>
         <format>dir</format>
