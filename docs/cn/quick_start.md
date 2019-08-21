@@ -25,7 +25,7 @@ Bistoury具有多个模块，并且和公司自身环境有一定的关联，想
    - 9090端口占用修改位置：`bistoury-proxy-1.4.0-SNAPSHOT-bin/conf/server.properties`中的`tomcat.port`值和quick_start.sh中`PROXY_TOMCAT_PORT`的值
    - 9091端口占用修改位置：`bistoury-ui-1.4.0-SNAPSHOT-bin/conf/server.properties`中的`tomcat.port`值
    - 9880端口占用修改位置：`bistoury-proxy-1.4.0-SNAPSHOT-bin/conf/global.properties`中的`agent.newport`值
-   - 9999端口占用修改位置：`bistoury-proxy-1.4.0-SNAPSHOT-bin/conf/global.properties`中的`server.port`值和quick_start.sh中`PROXY_WEBSOCKET_PORT`的值
+   - 9881端口占用修改位置：`bistoury-proxy-1.4.0-SNAPSHOT-bin/conf/global.properties`中的`server.port`值和quick_start.sh中`PROXY_WEBSOCKET_PORT`的值
 
 - 提示not find proxy for agent
    - 到agent启动日志中检查agent是否启动成功，检查日志中是否存在`bistoury netty client start success`字样日志，如果没有，检查jvm参数`bistoury.proxy.host`是否配置为正确的proxy域名或ip:prot，如果存在这样的日志（`bistoury netty client start success, ProxyConfig{ip='192.168.2.22', port=9880, heartbeatSec=30}`），按照日志后面的ip到对应的proxy上进行后续检查

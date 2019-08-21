@@ -8,10 +8,10 @@ cd ..
 
 BISTOURY_PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout`
 
-BISTOURY_PACKAGE_FILE=bistoury-$BISTOURY_PROJECT_VERSION
+BISTOURY_PACKAGE_FILE=bistoury
 BISTOURY_PACKAGE_DIR="$SCRIPT_DIR/$BISTOURY_PACKAGE_FILE"
-BISTOURY_MAEN_VERSION_DIR=$BISTOURY_PACKAGE_DIR/maven
-BISTOURY_MAEN_VERSION_FILE=$BISTOURY_MAEN_VERSION_DIR/maven.version
+BISTOURY_MAVEN_VERSION_DIR=$BISTOURY_PACKAGE_DIR/maven
+BISTOURY_MAVEN_VERSION_FILE=$BISTOURY_MAVEN_VERSION_DIR/project.version
 
 #打包agent
 echo "================ starting to build bistoury agent ================"
@@ -34,11 +34,11 @@ if [[ ! -w "$BISTOURY_PACKAGE_DIR" ]] ; then
 mkdir -p "$BISTOURY_PACKAGE_DIR"
 fi
 
-if [[ ! -w "$BISTOURY_MAEN_VERSION_DIR" ]] ; then
-mkdir -p "$BISTOURY_MAEN_VERSION_DIR"
+if [[ ! -w "$BISTOURY_MAVEN_VERSION_DIR" ]] ; then
+mkdir -p "$BISTOURY_MAVEN_VERSION_DIR"
 fi
 
-echo -n $BISTOURY_PROJECT_VERSION > "$BISTOURY_MAEN_VERSION_FILE"
+echo -n $BISTOURY_PROJECT_VERSION > "$BISTOURY_MAVEN_VERSION_FILE"
 
 mv bistoury-ui/target/bistoury-ui-$BISTOURY_PROJECT_VERSION-bin $BISTOURY_PACKAGE_DIR
 mv bistoury-proxy/target/bistoury-proxy-$BISTOURY_PROJECT_VERSION-bin $BISTOURY_PACKAGE_DIR
