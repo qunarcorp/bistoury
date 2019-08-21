@@ -41,7 +41,7 @@ Bistoury提供可视化页面实时查看机器和应用的各种信息，包括
 - [线程级cpu使用率监控](docs/cn/jstack.md)
 - [命令使用文档](docs/cn/commands.md)
 - [动态监控](docs/cn/monitor.md)
-- [应用中心使用文档](docs/cn/application.md)
+- [应用中心](docs/cn/application.md)
 
 ## java版本要求
 
