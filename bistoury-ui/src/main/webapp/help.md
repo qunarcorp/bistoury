@@ -30,8 +30,12 @@ toc:
 @import "js/header.js"
 
 [在线Debug使用说明](/api/url/redirect.do?name=debug.help.url)
+
 [动态监控使用说明](/api/url/redirect.do?name=monitor.help.url)
-[自动 jstack 及 jmap 使用说明](/api/url/redirect.do?name=jstack.jmap.help.url)
+
+[线程级cpu使用率监控](/api/url/redirect.do?name=jstack.help.url)
+
+[堆内存对象监控](/api/url/redirect.do?name=jmap.help.url)
 # Bistoury
 ## Bistoury是什么？
 > `Bistoury` 去哪网开源的一个对应用透明，无侵入的Java诊断工具，Bistoury在公司内部原有agent的基础上集成Alibaba开源的[Arthas](https://github.com/alibaba/arthas)和唯品会开源的[vjtools](https://github.com/vipshop/vjtools)，提供更加丰富的功能。
@@ -40,11 +44,16 @@ toc:
 - 查看主机运行状态
 - 在线debug
 - 动态监控
+- 线程级cpu使用率监控
 - JVM运行状态监控
 - thread dump
 - jstack
+- jmap
+- JVM数据紧急收集，一键收集jstack、jmap以及GC日志等相关信息
 - 能查看这个类从哪个 jar 包加载的，为什么会报各种类相关的 Exception。
-- 能查看的代码中的方法有没有执行到。
+- 从全局视角来查看系统的运行状况。
+- 觉得代码和想的不一样？反编译class试试
+
 
 Bistoury采用命令行交互模式，同时提供丰富的自动补全功能，进一步方便进行问题的定位和诊断。
 
@@ -1255,7 +1264,7 @@ PSOldGen [  [0x000000077ff80000,0x0000000782e4d488,0x00000007d5500000]  ]
  Heap traversal took 0.0 seconds.
 ```
 ## qjdump
->qjdump是线上JVM数据紧急收集脚本。它可以在<font color=red>紧急场景</font>下（比如马上要对进程进行重启），一键收集jstack、jmap以及GC日志等相关信息，并以zip包保存(默认在目录/tmp/vjtools/vjdump下)，保证在紧急情况下仍能收集足够的问题排查信息，减轻运维团队的工作量，以及与开发团队的沟通成本。
+>qjdump是线上JVM数据紧急收集脚本。它可以在<font color=red>紧急场景</font>下（比如马上要对进程进行重启），一键收集jstack、jmap以及GC日志等相关信息，并以zip包保存(默认在目录/tmp/bistoury/qjtools/qjdump/${PID}下)，保证在紧急情况下仍能收集足够的问题排查信息，减轻运维团队的工作量，以及与开发团队的沟通成本。
 
 收集数据包括：
 >- thread dump数据：jstack -l \$PID

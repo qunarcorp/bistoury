@@ -106,6 +106,7 @@ $(document).ready(function () {
                 _monitor.quotas.add(metric.name);
             })
         })
+        _monitor.quotas = new Set(Array.from(_monitor.quotas).sort());
     }
 
     function parseData() {

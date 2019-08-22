@@ -3,8 +3,15 @@
 曾经在微博上流传着这么一个程序员才懂的笑话：
 > NASA要发射一个新型火箭，火箭发射升空后发现不行，NASA把火箭拖回来加了两行log，再次发射，发现又不行，又加了两行log发射，发现又不行....
 
-当然这只是一个笑话，但是这样的场景在我们的实际开发中却屡见不鲜，多少次我们解决故障的时间就在不断地加log，发布，加log，发布的过程中溜走...
-这样的日子一去不复返了，我们实现了在线Debug的功能，不再需要你的应用依赖其他组件即可使用，而且他还支持条件断点。
+当然这只是一个笑话，但这样的场景在我们的实际开发中却屡见不鲜，多少次系统重启后问题复现失败，多少次我们解决故障的时间就在不断地加log，发布，加log，发布的过程中溜走...
+
+Arthas的watch命令让我们可以观察函数的入参、返回值、异常等等，然而似乎每次watch都需要看看文档里参数该如何设置，面对函数中的本地变量也是无能为力，特别是行数较多的方法，方法内部的情况还是难以明了。
+
+不过这样的日子已经一去不复返了，Bistoury实现了在线Debug功能，它模拟了ide的调试体验，可以直接在代码上添加断点，甚至还支持条件断点。
+
+断点触发后，Bistoury会捕捉断点处的局部变量，成员变量，静态变量以及调用栈，内部状态一览无余。
+
+用过后你会发现，它就是在调试时你真正想要的那一个！
 
 ![debug](../image/debug.png)
   
@@ -13,11 +20,20 @@
 - 进入在线debug页面，初次使用时请先点击下方链接设置gitlab private token，若不设置，则添加断点时的代码将会通过反编译产生。目前仅支持gitlab，点击输入框下方对应链接获取，然后点击保存设置private token
 ![private token](../image/private_token.png)
 
-- 选择需要调试的应用名，再选择需要调试的机器，然后点击【debug】按钮。然后进入已加载类列表。
+- 选择需要调试的应用名，再选择需要调试的机器，然后点击【debug】按钮，进入已加载类列表。
+![debug](../image/debug-main.png)
 - 找到需要调试的类（支持搜索），点击【调试】按钮进入调试页面
 ![debug class list](../image/debug_class_list.png)
--找到需要调试的那行代码，点击前方的行号标记设置断点
+
+- 找到需要调试的那行代码，点击前方的行号标记设置断点
+
 ![debug panel](../image/deug_panel.png)
+
+## 一些说明
+
+在线debug模拟了ide的debug功能，但又有所不同。因为是针对在线应用，在线debug的断点只会触发一次，并且不会暂停系统，阻断系统的正常运行。
+
+对于触发了断点的那一次调用，方法的执行会因为需要打印内部状态多出相应的损耗；没有触发断点的调用可以说在时间上没有任何影响。
 
 ## 条件断点使用说明
 
@@ -38,6 +54,7 @@
 
 **警告：**
 为了防止用户调用自定义方法执行业务逻辑方法，条件断点中仅支持调用如下方法：
+
 ==白名单==: equals, length, valueOf, toString, hashCode, compareTo, size, count
 
 ### DEMO
@@ -111,6 +128,12 @@ public class ForTest {
         int a5 = f + g;
         int a6 = g + h;
         int a7 = g + h;
+
+        Map<String,String> map=new HashMap<>();
+        map.put("key","value");
+        List<String> list=new ArrayList<>();
+        list.add("tcdev")
+
         System.out.println(a1 + a2);
     }
   
@@ -225,7 +248,9 @@ public class Address {
 针对上面的测试类，如果我们的断点打在 public void arguments(int a, int b, int c, int d, int f, int g, int h, UserForTest user) 方法的最后一行的println语句上的话，那么下面的Spring EL表达式为true：
 
 ```java
-String el = "localVariables[a] == 1 && " +
+String el ="localVariables[list][0].equals('tcdev') &&" +
+        "localVariables[map]['key'].equals('value') && " +
+        "localVariables[a] == 1 && " +
         "localVariables[b] == 2 && " +
         "localVariables[c] == 3 && " +
         "localVariables[d] == 4 && " +

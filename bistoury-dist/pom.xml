@@ -58,7 +58,7 @@
     </dependencies>
     <profiles>
         <profile>
-            <id>bistoury-agent</id>
+            <id>prod</id>
             <build>
                 <plugins>
                     <plugin>
@@ -71,7 +71,7 @@
                                     <goal>single</goal>
                                 </goals>
                                 <configuration>
-                                    <finalName>bistoury-agent-${project.version}</finalName>
+                                    <finalName>bistoury-agent</finalName>
                                     <descriptors>
                                         <descriptor>assembly/assembly-agent.xml</descriptor>
                                     </descriptors>
@@ -85,6 +85,9 @@
         </profile>
         <profile>
             <id>local</id>
+            <properties>
+                <deploy.type>local</deploy.type>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -97,7 +100,7 @@
                                     <goal>single</goal>
                                 </goals>
                                 <configuration>
-                                    <finalName>bistoury-agent-${project.version}</finalName>
+                                    <finalName>bistoury-agent</finalName>
                                     <descriptors>
                                         <descriptor>assembly/assembly-agent.xml</descriptor>
                                     </descriptors>

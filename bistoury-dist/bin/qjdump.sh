@@ -22,8 +22,12 @@ CLOSE_COMPRESS=0
 NEED_HEAP_DUMP=0
 PID="$1"
 
-BASEDIR=/tmp/qjtools/qjdump
+BASEDIR=/tmp/bistoury/qjtools/qjdump
 LOGDIR=${BASEDIR}/${PID}
+
+if [[ ! -w "$LOGDIR" ]] ; then
+   mkdir -p "$LOGDIR"
+fi
 
 while true; do
   case "$1" in
@@ -42,18 +46,18 @@ START()
   if [[ x"$PID" == x ]]; then
      echo -e "The pid is empty, please enter pid".
      exit -1
-  else 
+  else
      echo -e "The pid is ${PID}"
   fi
 
   # clean all history logs
   rm -rf ${LOGDIR}/*.log ${LOGDIR}/*jmap_dump_live-*.bin
   mkdir -p ${LOGDIR}
-    
+
   DATE=$(date "+%Y%m%d%H%M%S")
-  
+
   echo -e "\033[34m$(date '+%Y-%m-%d %H:%M:%S') qjdump begin. command interval is ${SLEEP_TIME}s.\033[0m"
-  
+
   # jstack
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jstack."
   JSTACK_LOG=${LOGDIR}/jstack-${PID}-${DATE}.log
@@ -62,18 +66,17 @@ START()
     echo -e "\033[31mprocess jstack error.\033[0m"
   fi
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jstack."
-  echo -e "$(date '+%Y-%m-%d %H:%M:%S') You can download the jstack log in ${JSTACK_LOG}"
   sleep ${SLEEP_TIME}
-  
+
   # qjtop
-  VJTOP_SCRIPT=vjtop.sh
-  which $VJTOP_SCRIPT 2>/dev/null
+  QJTOP_SCRIPT=$BISTOURY_BIN_DIR/qjtop.sh
+  which $QJTOP_SCRIPT 2>/dev/null
   if [[ $? == 0 ]]; then
     VJTOP_DURATION=2
     echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process vjtop."
     echo -e "It will take ${VJTOP_DURATION} seconds, please wait."
     VJTOP_LOG=${LOGDIR}/vjtop-${PID}-${DATE}.log
-    $VJTOP_SCRIPT -n 1 -d $VJTOP_DURATION $PID > ${VJTOP_LOG}
+    $QJTOP_SCRIPT -n 1 -d $VJTOP_DURATION $PID > ${VJTOP_LOG}
     if [[ $? != 0 ]]; then
       echo -e "\033[31mprocess vjtop error.\033[0m"
     fi
@@ -88,7 +91,7 @@ START()
       echo -e "\033[31mprocess jinfo -flags error.\033[0m"
     fi
     echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jinfo -flags."
-  
+
     #jmap -heap
     echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jmap -heap."
     JMAP_HEAP_LOG=${LOGDIR}/jmap_heap-${PID}-${DATE}.log
@@ -98,7 +101,7 @@ START()
     fi
     echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jmap -heap."
   fi
-  
+
   # jmap -histo
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jmap -histo."
   JMAP_HISTO_LOG=${LOGDIR}/jmap_histo-${PID}-${DATE}.log
@@ -108,7 +111,7 @@ START()
   fi
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jmap -histo."
   sleep ${SLEEP_TIME}
-  
+
   # jmap -histo:live
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jmap -histo:live."
   JMAP_HISTO_LIVE_LOG=${LOGDIR}/jmap_histo_live-${PID}-${DATE}.log
@@ -118,7 +121,7 @@ START()
   fi
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jmap -histo:live."
   sleep ${SLEEP_TIME}
-  
+
   # jmap -dump:live
   if [[ $NEED_HEAP_DUMP == 1 ]]; then
     JMAP_DUMP_FILE=${LOGDIR}/jmap_dump_live-${PID}-${DATE}.bin
@@ -128,10 +131,9 @@ START()
       echo -e "\033[31mprocess jmap -dump:live error.\033[0m"
     fi
     echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jmap -dump:live."
-     
+
     sleep ${SLEEP_TIME}
   fi
-  
 
   # gc log
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process gc log."
@@ -140,7 +142,7 @@ START()
     echo -e "No GC log existing."
   else
     # "\cp" means unalias cp, it can cover files without prompting
-    \cp -rf $GCLOG ${LOGDIR}/
+    \cp -rf $GCLOG ${LOGDIR}/gc-${PID}-${DATE}.log
     if [[ $? != 0 ]]; then
       echo -e "copy gc log error."
     fi
@@ -152,7 +154,7 @@ START()
     echo -e "The zip option is closed, no zip package will be generated."
   else
     echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to zip all files."
-    # zip files without heap dump 
+    # zip files without heap dump
     ZIP_FILE=${BASEDIR}/qjdump-${PID}-${DATE}.zip
     zip -j ${ZIP_FILE} ${LOGDIR}/*.log
     if [[ $? != 0 ]]; then

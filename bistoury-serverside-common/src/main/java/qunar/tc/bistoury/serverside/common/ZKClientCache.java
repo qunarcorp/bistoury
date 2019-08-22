@@ -20,6 +20,7 @@ package qunar.tc.bistoury.serverside.common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,19 +31,36 @@ import java.util.Map;
  */
 public class ZKClientCache {
     private static final Logger logger = LoggerFactory.getLogger(ZKClientCache.class);
+
     private static final Map<String, ZKClient> CACHE = new HashMap<>();
 
+    private static final String LOCAL_ZK_TAG_FILE = "/tmp/bistoury/proxy.conf";
+
     public synchronized static ZKClient get(String address) {
+
         logger.info("get zkclient for {}", address);
         ZKClient client = CACHE.get(address);
         if (client == null) {
-            client = new ZKClient(address);
+            client = getZkClient(address);
             CACHE.put(address, client);
         } else {
             client = CACHE.get(address);
         }
         client.incrementReference();
         return client;
+    }
+
+
+    private static ZKClient getZkClient(final String address) {
+        if (isLocal()) {
+            return new MockZkClientImpl(LOCAL_ZK_TAG_FILE);
+        }
+        return new ZKClientImpl(address);
+    }
+
+    private static boolean isLocal() {
+        File file = new File(LOCAL_ZK_TAG_FILE);
+        return file.exists() && file.isFile();
     }
 
 }

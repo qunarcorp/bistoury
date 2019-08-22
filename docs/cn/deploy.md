@@ -1,5 +1,4 @@
-
-本文档介绍了如何编译、打包、部署Bistoury。
+本文档介绍了如何编译、打包、部署Bistoury，Bistoury的部署较为复杂，如果想先简单体验Bistoury可以使用[快捷部署脚本](docs/cn/quick_start.md)在一分钟内进行简易部署。
 # 一、准备工作
 ## 1.1 说明
 Bistoury一共分为ui、proxy、agent三个部分，ui是所有操作的入口、agent是部署在所有主机上来对ui请求进行处理，proxy是连接ui和中间连接层。
@@ -13,6 +12,9 @@ ui、proxy和agent均使用Java1.8+，同时由于agent会attach到应用中，�
 ## 1.2 Zookeeper
 ui依赖zk发现存活的proxy，所以需要部署zk集群。
 >注：如果没有zk集群，可以覆盖实现qunar.tc.bistoury.ui.service.impl.ProxyServiceImpl#getAllProxyUrls方法返回proxy信息，返回数据格式为：ip:tomcatPort:websocketPort
+- ip: proxy的ip地址
+- tomcatPort: proxy暴露的tomcat端口
+- websocketPort：proxy暴露给ui的netty端口，ui使用websocket连接
 # 二、部署步骤
 部署步骤共分为三步：
 + 1、初始化数据库
@@ -98,7 +100,7 @@ Bistoury的ui和proxy需要知道如何连接到在上面创建的数据库，�
 ./bistoury-ui.sh restart
 ```
 
-`bistoury-ui`默认端口为`8081`, 因此启动成功以后可以访问`http://127.0.0.1:8081`访问ui页面，用户名密码默认都为`admin`
+`bistoury-ui`默认端口为`9091`, 因此启动成功以后可以访问`http://127.0.0.1:9091`访问ui页面，用户名密码默认都为`admin`
 
 
 ### 2.3.3 bistoury-agent部署
@@ -109,7 +111,7 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 |-------|---|---|----|
 |bistoury.store.path|否|/home/bistoury/store|bistoury agent数据存放路径，包括rocksdb存放的监控、jstack及jmap数据和反编译代码临时文件的存放|
 |bistoury.proxy.host|是||proxy的域名，具体值请联系管理员，agent依赖该值获取proxy的连接配置信息|
-|bistoury.app.lib.class|是||应用依赖的jar包中的一个类（推荐使用公司内部中间件的jar包或Spring相关包中的类，如org.springframework.web.servlet.DispatcherServlet），agent通过该类获取加载应用类的classloader|
+|bistoury.app.lib.class|是||应用依赖的jar包中的一个类（推荐使用公司内部中间件的jar包或Spring相关包中的类，如org.springframework.web.servlet.DispatcherServlet），agent通过该类获取应用jar包路径|
 |bistoury.pid.handler.jps.symbol.class|否|org.apache.catalina.startup.Bootstrap|attach的应用入口类，用于使用jps -l命令获取应用pid|
 |bistoury.pid.handler.jps.enable|否|true|是否打开通过jps -l获取pid的开关|
 |bistoury.pid.handler.ps.enable|否|true|是否打开通过ps aux|grep java 获取pid的开关|

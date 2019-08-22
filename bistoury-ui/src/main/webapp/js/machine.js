@@ -931,27 +931,29 @@ $(document).ready(function () {
         } else {
             firstIn.heapHisto = false;
             $("#heap-histo-time").val("")
-            getHeapHisto();
+            bistoury.info("点击刷新图标查询数据");
+            //getHeapHisto();
         }
     });
 
     $("#heap-histo-search").click(function () {
-        var now = new Date(dateFormat(new Date())).getTime();
-        var dateStr = $("#heap-histo-time").val()
-        if (dateStr) {
-            var timestamp = new Date(dateStr).getTime();
-            if (now <= timestamp) {
-                bistoury.warning("查询时间不能超过当前时间");
-                return;
-            }
-            if (now - storeDays > timestamp) {
-                bistoury.warning("不能查询三天前的数据");
-                return;
-            }
-            getHeapHisto(timestamp);
-        } else {
-            bistoury.warning("请选择查询查询时间");
-        }
+        /* var now = new Date(dateFormat(new Date())).getTime();
+         var dateStr = $("#heap-histo-time").val()
+         if (dateStr) {
+             var timestamp = new Date(dateStr).getTime();
+             if (now <= timestamp) {
+                 bistoury.warning("查询时间不能超过当前时间");
+                 return;
+             }
+             if (now - storeDays > timestamp) {
+                 bistoury.warning("不能查询三天前的数据");
+                 return;
+             }
+             getHeapHisto(timestamp);
+         } else {
+             bistoury.warning("请选择查询查询时间");
+         }*/
+        bistoury.warning("该功能暂时不可用")
     })
 
     $("#thread-info-menu").click(function () {

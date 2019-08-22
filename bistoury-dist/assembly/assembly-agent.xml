@@ -3,7 +3,7 @@
 <assembly>
     <id>bin</id>
 
-    <baseDirectory>bistoury-agent-${project.version}-bin</baseDirectory>
+    <baseDirectory>bistoury-agent-bin</baseDirectory>
 
     <formats>
         <format>dir</format>

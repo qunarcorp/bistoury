@@ -43,7 +43,6 @@ $(document).ready(function () {
             "sysenv",
             "ognl",
             "mc",
-            "pwd",
             "mbean"
         ];
 
@@ -326,7 +325,7 @@ $(document).ready(function () {
                     if (hosts.length == 0) {
                         placeholder = "应用中心未查询到属于该应用的机器";
                     } else {
-                        placeholder = "请选择机器，不选则表示选中所有机器（tail、grep、ls命令支持多机操作，其余命令均需要选择一台机器）";
+                        placeholder = "请选择机器，不选则表示选中所有机器（tail、grep、zgrep、ls、head命令支持多机操作，其余命令均需要选择一台机器）";
 
                     }
                     var select = $("<select multiple  tabindex='2'></select>").attr("data-placeholder", placeholder).attr("id", "host-select-" + tid).attr("class", "chosen-select");
