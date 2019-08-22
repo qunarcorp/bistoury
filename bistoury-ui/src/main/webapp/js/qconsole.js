@@ -43,7 +43,6 @@ $(document).ready(function () {
             "sysenv",
             "ognl",
             "mc",
-            "pwd",
             "mbean"
         ];
 
