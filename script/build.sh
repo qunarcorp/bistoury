@@ -3,6 +3,12 @@
 cd "${0%/*}"
 cd ..
 
+mvn -v
+if [ $? -ne 0 ]; then
+    echo "command mvn not found, Install the maven before executing the script！"
+    exit 0;
+fi
+
 #打包agent
 echo "================ starting to build bistoury agent ================"
 mvn clean package -am -pl bistoury-dist -Pprod -Dmaven.test.skip -Denforcer.skip=true

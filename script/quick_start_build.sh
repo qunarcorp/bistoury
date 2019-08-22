@@ -9,6 +9,14 @@ cd ..
 BISTOURY_PACKAGE_FILE=bistoury
 BISTOURY_PACKAGE_DIR="$SCRIPT_DIR/$BISTOURY_PACKAGE_FILE"
 
+
+mvn -v
+if [ $? -ne 0 ]; then
+    echo "command mvn not found, Install the maven before executing the script！"
+    exit 0;
+fi
+
+
 #打包agent
 echo "================ starting to build bistoury agent ================"
 mvn clean package -am -pl bistoury-dist -Plocal -Dmaven.test.skip -Denforcer.skip=true
