@@ -145,7 +145,7 @@
                                 Monitor
                             </button>
                             <button type="button" class="btn btn-default" id="jvm-visua-gc-menu">Visua GC</button>
-                            <button type="button" class="btn btn-default" id="jvm-heap-histo-menu">Heap Histo</button>
+                            <button type="button" class="btn btn-default" id="jvm-heap-histo-menu">堆对象统计</button>
                         </div>
                         <div class="second-tab-container">
                             <div id="jvm-outline" class="jvm-tab">
@@ -377,8 +377,8 @@
                             </div>
                             <div id="jvm-heap-histo" class="jvm-tab">
                                 <div class="col-md-12">
-                                    <p>查询 heap histo 可以选择参数，默认使用 -all。选择后可点击 <i class="glyphicon glyphicon-refresh"></i>（刷新图标）重新查询</p>
-                                    <p>可以通过选择查询时间，查询最近三天中的 heap histo，采用的参数为 -all，选择时间后点击查询按钮查询历史 heap histo</p>
+                                    <p>查询堆对象统计可以选择参数，默认使用 -all。选择后可点击 <i class="glyphicon glyphicon-refresh"></i>（刷新图标）重新查询</p>
+                                    <!--<p>可以通过选择查询时间，查询最近三天中的 heap histo，采用的参数为 -all，选择时间后点击查询按钮查询历史 heap histo</p>-->
                                     <p style="color: red">注意：-live 参数会导致应用进行一次 full gc，请谨慎使用。</p>
                                     <p><a target="_blank"
                                           href="/api/url/redirect.do?name=jmap.help.url">点此</a> 查看说明文档
@@ -386,12 +386,12 @@
                                 </div>
                                 <div id="toolbar" style="margin-right: 12px;">
                                     <form class="form-inline">
-                                        <div class="form-group">
+                                        <!--<div class="form-group">
                                             <label for="heap-histo-time">查询时间</label>
                                             <input type="text" id="heap-histo-time" class="form_datetime" data-date-format="yyyy-mm-dd hh:ii"
                                                    placeholder="请输入需要查询的时间" style="width: 180px">
                                         </div>
-                                        <button type="button" id="heap-histo-search" class="btn btn-info">查询</button>
+                                        <button type="button" id="heap-histo-search" class="btn btn-info">查询</button>-->
                                         <select class="form-control" id="heap-histo-param" style="border-radius: 0px;">
                                             <option value="-all">-all</option>
                                             <option value="-live">-live</option>

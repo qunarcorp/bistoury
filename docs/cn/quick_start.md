@@ -42,22 +42,22 @@ cd bistoury
 - 如果应用以本人用户启动，可以直接运行
 
 ```bash
-bistoury/script/quick_start.sh -p 1024 start
+./quick_start.sh -p 1024 start
 ```
 
 - 如果应用以其它帐号启动，比如tomcat，需要指定一下用户然后运行
 ```bash
-sudo -u tomcat bistoury/script/quick_start.sh -p 1024 start
+sudo -u tomcat ./quick_start.sh -p 1024 start
 ```
 
 - 停止运行
 
 ```bash
-bistoury/script/quick_start.sh stop
+./quick_start.sh stop
 ```
 
 ### 访问
-通过[http://127.0.0.1:9091/](http://127.0.0.1:9091/)访问，初始化用户名密码均为admin
+假设使用快速启动脚本的服务器ip为192.168.1.20，则可以通过[http://192.168.1.20:9091/](http://192.168.1.20:9091/)访问，初始化用户名密码均为admin
 
 ### 启动参数
 
