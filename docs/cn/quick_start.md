@@ -32,7 +32,7 @@ Bistoury具有多个模块，并且和公司自身环境有一定的关联，想
 
 ```bash
 tar -zxvf bistoury-quick-start.tar.gz
-cd bistoury-quick-start
+cd bistoury
 ```
 
 最后是启动Bistoury，因为Bistoury会用到jstack等操作，为了保证所有功能可用，需要使用和待诊断java应用相同的用户启动。
@@ -42,19 +42,22 @@ cd bistoury-quick-start
 - 如果应用以本人用户启动，可以直接运行
 
 ```bash
-bistoury-quick-start/script/quick_start.sh -p 1024 start
+bistoury/script/quick_start.sh -p 1024 start
 ```
 
 - 如果应用以其它帐号启动，比如tomcat，需要指定一下用户然后运行
 ```bash
-sudo -u tomcat bistoury-quick-start/script/quick_start.sh -p 1024 start
+sudo -u tomcat bistoury/script/quick_start.sh -p 1024 start
 ```
 
 - 停止运行
 
 ```bash
-bistoury-quick-start/script/quick_start.sh stop
+bistoury/script/quick_start.sh stop
 ```
+
+### 访问
+通过[http://127.0.0.1:9091/](http://127.0.0.1:9091/)访问，初始化用户名密码均为admin
 
 ### 启动参数
 
@@ -86,10 +89,6 @@ Bistoury快捷部署脚本默认会占用一些端口，其中proxy默认使用9
    
 - 应用重启，进程id变了怎么办
    - 需要先使用quick_start.sh脚本先stop，然后更改-p参数start
-
-
-### 访问
-通过[http://127.0.0.1:9091/](http://127.0.0.1:9091/)访问，初始化用户名密码均为admin
 
 ### 快速启动脚本做了什么
 
