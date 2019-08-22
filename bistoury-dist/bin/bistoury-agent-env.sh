@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 set -euo pipefail
 
 BISTOURY_STORY_PATH="$BISTOURY_STORE_DIR"

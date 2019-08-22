@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 set -euo pipefail
 
 BISTOURY_BIN="${BASH_SOURCE-$0}"
