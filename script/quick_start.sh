@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 BISTOURY_BASE_DIR=`pwd`
 
