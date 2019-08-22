@@ -40,7 +40,7 @@ gitlab peivate token配置表，存放每个用户对应的private token
 ## 2.2 获取安装包
 可以通过两种方式获取安装包
 + 直接下载按转包
-    + 直接冲itHub Release页面下载预先打好的安装包
+    + 直接从GitHub Release页面下载预先打好的安装包
     + 如果对Bistoury没有定制需求，推荐使用这种方式，可以省去本地打包的过程
 + 通过源码构建
     + 从GitHub Release页面下载Source code包或直接clone源码后在本地构建
@@ -137,6 +137,8 @@ output=master
 在启动是可以通过-p指定pid确定agent attach特定的java进程，不指定时会通过jps -l和ps aux|grep java 命令及proxy中配置的参数解析pid，优先级依次降低。
 >- -p    通过-p指定应用进程pid
 >- -j    通过-j指定java home
+>- -c    通过-c指定应用依赖的jar包中的一个类（推荐使用公司内部中间件的jar包或Spring相关包中的类，如org.springframework.web.servlet.DispatcherServlet），agent通过该类获取应用jar包路径
+>- -h    通过-h查看命令帮助
 
 ```shell
 ./bistoury-agent.sh -p 100 start
