@@ -12,7 +12,7 @@ BISTOURY_PACKAGE_DIR="$SCRIPT_DIR/$BISTOURY_PACKAGE_FILE"
 
 mvn -v
 if [ $? -ne 0 ]; then
-    echo "command mvn not found, Install the maven before executing the script！"
+    echo "command mvn not found, install the maven first！"
     exit 0;
 fi
 
