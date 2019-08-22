@@ -28,7 +28,7 @@ Bistoury具有多个模块，并且和公司自身环境有一定的关联，想
 
 首先我们将快速启动包bistoury-quick-start.tar.gz拷贝到想要安装的位置。
 
-然后解压启动报：
+然后解压启动包：
 
 ```bash
 tar -zxvf bistoury-quick-start.tar.gz
