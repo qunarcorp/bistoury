@@ -60,7 +60,7 @@ stop(){
     cd $BISTOURY_BASE_DIR
 }
 
-CMD=${!#}
+for CMD in "$@";do true; done
 
 while getopts p:j:l:c:h opt;do
     case $opt in

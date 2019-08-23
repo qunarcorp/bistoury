@@ -9,7 +9,7 @@ BISTOURY_MAIN="qunar.tc.bistoury.indpendent.agent.Main"
 . "$BISTOURY_BIN_DIR/base.sh"
 . "$BISTOURY_BIN_DIR/bistoury-agent-env.sh"
 
-CMD=${!#}
+for CMD in "$@";do true; done
 APP_PID=""
 
 while getopts p:j:c:h opt;do
