@@ -66,7 +66,7 @@ jdk1.8+
     所有的前端代码都是后端同学兼职完成，欢迎各位前端大牛贡献相关代码。
     
 ## QQ群
-![QQ](docs/image//bistoury_qq.png)
+![QQ](docs/image//bistoury_qq_small.png)
 
 ## Screenshots
 
