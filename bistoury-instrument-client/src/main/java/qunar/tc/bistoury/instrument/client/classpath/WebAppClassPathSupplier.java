@@ -18,6 +18,7 @@
 package qunar.tc.bistoury.instrument.client.classpath;
 
 import com.google.common.collect.ImmutableList;
+import qunar.tc.bistoury.attach.file.JarStorePathUtil;
 
 import java.io.File;
 import java.util.List;
@@ -43,6 +44,11 @@ public class WebAppClassPathSupplier implements AppClassPathSupplier {
         final File webRoot = libFile.getParentFile();
         String sourcePath = new File(webRoot, "classes").getAbsolutePath();
         String libPath = libFile.getAbsolutePath();
-        return ImmutableList.of(sourcePath, libPath);
+
+        //这两个路径用于spring boot，springboot会先将文件解压后放在缓存文件夹下，读取时可以从里面读取
+        String jarLibPath = JarStorePathUtil.getJarLibPath();
+        String jarSourcePath = JarStorePathUtil.getJarSourcePath();
+
+        return ImmutableList.of(sourcePath, libPath, jarLibPath, jarSourcePath);
     }
 }
