@@ -8,7 +8,7 @@ BISTOURY_MAIN="qunar.tc.bistoury.proxy.container.Bootstrap"
 . "$BISTOURY_BIN_DIR/base.sh"
 . "$BISTOURY_BIN_DIR/bistoury-proxy-env.sh"
 
-CMD=${!#}
+for CMD in "$@";do true; done
 
 while getopts j: opt;do
     case $opt in

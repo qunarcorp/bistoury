@@ -5,7 +5,7 @@ H2_LOG_FILE=$H2_DIR/h2.log
 H2_PID_FILE=$H2_DIR/h2.pid
 H2_DATA_BASE_URL="/tmp/bistoury/h2/bistoury;MODE=MYSQL;TRACE_LEVEL_SYSTEM_OUT=2;AUTO_SERVER=TRUE;"
 APP_LOG_DIR="\/tmp"
-CMD=${!#}
+for CMD in "$@";do true; done
 
 while getopts j:l:h opt;do
     case $opt in
