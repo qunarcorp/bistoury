@@ -70,6 +70,19 @@ public class InstrumentClientStore {
 
         ImmutableList.Builder<InstrumentClient> builder = new ImmutableList.Builder<>();
 
+        //jar debug放在最前面，因为在里面会对jar包启动的项目进行解压
+        try {
+            builder.add(JarDebugClients.create(instrumentInfo));
+        } catch (Exception e) {
+            logger.error("", "jar decompiler init error", e);
+        }
+
+        try {
+            builder.add(AppConfigClients.create(instrumentInfo));
+        } catch (Exception e) {
+            logger.error("", "app config client init error", e);
+        }
+
         try {
             builder.add(QDebugClients.create(instrumentInfo));
         } catch (Exception e) {
@@ -87,17 +100,6 @@ public class InstrumentClientStore {
             logger.error("", "jar info client init error", e);
         }
 
-        try {
-            builder.add(AppConfigClients.create(instrumentInfo));
-        } catch (Exception e) {
-            logger.error("", "app config client init error", e);
-        }
-
-        try {
-            builder.add(JarDebugClients.create(instrumentInfo));
-        } catch (Exception e) {
-            logger.error("", "jar decompiler init error", e);
-        }
         clients = builder.build();
     }
 

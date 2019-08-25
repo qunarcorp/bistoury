@@ -21,8 +21,8 @@ import com.google.common.io.ByteSink;
 import com.google.common.io.Files;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
+import qunar.tc.bistoury.attach.file.JarStorePathUtil;
 import qunar.tc.bistoury.attach.file.URLUtil;
-import qunar.tc.bistoury.clientside.common.store.BistouryStore;
 
 import java.io.File;
 import java.io.InputStream;
@@ -40,15 +40,10 @@ public class JarFileServiceWrapper {
 
     private static final Logger logger = BistouryLoggger.getLogger();
 
-    private static final String STORE_PATH = BistouryStore.getStorePath("tomcat_webapp");
-
     private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
     public JarFileServiceWrapper() {
-        File file = new File(STORE_PATH);
-        if (!file.exists() || !file.isDirectory()) {
-            file.mkdirs();
-        }
+
     }
 
     /**
@@ -58,8 +53,7 @@ public class JarFileServiceWrapper {
      * @return
      */
     public String getJarPath(final String jarFile) {
-        final String jarFilePath = jarFile.substring(jarFile.lastIndexOf(File.separatorChar) + 1).replace(".jar", "");
-        File file = new File(STORE_PATH, jarFilePath);
+        File file = new File(JarStorePathUtil.getJarStorePath());
         if (!file.exists() || !file.isDirectory() || !STARTED.get()) {
             deleteDirectory(file);
             unPackJar(jarFile, file);

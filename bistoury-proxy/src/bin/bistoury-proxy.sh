@@ -25,7 +25,7 @@ else
     JAVA=java;
 fi
 CLASSPATH="$CLASSPATH:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/sa-jdi.jar"
-JAVA_OPTS="$JAVA_OPTS -Xloggc:${BISTOURY_LOG_DIR}/bistoury-gc-${TIMESTAMP}.log -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${BISTOURY_LOG_DIR}"
+JAVA_OPTS="$JAVA_OPTS -Xloggc:${BISTOURY_LOG_DIR}/bistoury-gc-${TIMESTAMP}.log -XX:+PrintGC -XX:+PrintGCDetails -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${BISTOURY_LOG_DIR}"
 BISTOURY_PID_FILE="$BISTOURY_PID_DIR/bistoury-proxy.pid"
 BISTOURY_DAEMON_OUT="$BISTOURY_LOG_DIR/bistoury-proxy.out"
 
