@@ -41,7 +41,7 @@ if [[ -n $APP_PID ]]; then
 fi
 
 CLASSPATH="$CLASSPATH:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/sa-jdi.jar"
-JAVA_OPTS="$JAVA_OPTS -Dbistoury.app.lib.class=$BISTOURY_APP_LIB_CLASS -Xmx80m -Xmn50m -XX:+UseParallelGC -XX:+UseParallelOldGC -XX:+UseCodeCacheFlushing -Xloggc:${BISTOURY_LOG_DIR}/bistoury-gc-${TIMESTAMP}.log -XX:+PrintGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${BISTOURY_LOG_DIR}"
+JAVA_OPTS="$JAVA_OPTS -Dbistoury.app.lib.class=$BISTOURY_APP_LIB_CLASS -Xmx80m -Xmn50m -XX:+UseParallelGC -XX:+UseParallelOldGC -XX:+UseCodeCacheFlushing -Xloggc:${BISTOURY_LOG_DIR}/bistoury-gc-${TIMESTAMP}.log -XX:+PrintGC -XX:+PrintGCDetails -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${BISTOURY_LOG_DIR}"
 BISTOURY_PID_FILE="$BISTOURY_PID_DIR/bistoury-agent.pid"
 BISTOURY_DAEMON_OUT="$BISTOURY_LOG_DIR/bistoury-agent.out"
 

@@ -76,7 +76,6 @@ public class Bootstrap {
 
             logger.info("Server配置加载完成，正在启动中...");
             tomcat.start();
-            logger.info("Server启动成功");
             tomcat.getServer().await();
         } catch (Exception e) {
             logger.error("Server启动失败...", e);
