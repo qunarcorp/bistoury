@@ -91,7 +91,6 @@ if [[ "start" == $CMD ]] && [[ ! -n $BISTOURY_AGENT_APP_LIB_CLASS ]]; then
 fi
 
 if [[ "start" == $CMD ]] && [[ -n "$APP_PID" &&  -n "$JAVA_HOME" ]]; then
-    ln -s $JAVA_HOME /tmp/bistoury/java
     PROXY_TOMCAT_PORT=9090
     PROXY_WEBSOCKET_PORT=9881;
     LOCAL_IP=`/sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"|tail -1`
