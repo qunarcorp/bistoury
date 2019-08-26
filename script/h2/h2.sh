@@ -3,8 +3,15 @@
 H2_DIR=`pwd`
 H2_LOG_FILE=$H2_DIR/h2.log
 H2_PID_FILE=$H2_DIR/h2.pid
+BISTOURY_TMP_DIR="/tmp/bistoury"
+H2_PORT_FILE="$BISTOURY_TMP_DIR/h2port.conf"
+
 H2_DATA_BASE_URL="/tmp/bistoury/h2/bistoury;MODE=MYSQL;TRACE_LEVEL_SYSTEM_OUT=2;AUTO_SERVER=TRUE;"
 APP_LOG_DIR="\/tmp"
+
+H2_PORT=9092;
+echo "$H2_PORT">$H2_PORT_FILE
+
 for CMD in "$@";do true; done
 
 while getopts j:l:h opt;do
@@ -41,7 +48,7 @@ start(){
     #rm -rf newdata.sql
 
     echo "Start h2 database"
-    nohup $JAVA -cp h2*.jar org.h2.tools.Server -ifNotExists> "$H2_LOG_FILE" 2>&1 < /dev/null &
+    nohup $JAVA -cp h2*.jar org.h2.tools.Server  -tcp -tcpPort $H2_PORT -tcpAllowOthers -ifNotExists> "$H2_LOG_FILE" 2>&1 < /dev/null &
 
     if [[ $? -eq 0 ]]
     then
@@ -67,6 +74,7 @@ stop(){
     else
       kill -9 $(cat "$H2_PID_FILE")
       rm "$H2_PID_FILE"
+      rm "$H2_PORT_FILE"
       echo "STOPPED"
     fi
 }

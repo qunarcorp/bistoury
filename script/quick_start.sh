@@ -16,8 +16,8 @@ BISTOURY_AGENT_DIR="$BISTOURY_BASE_DIR/bistoury-agent-bin"
 BISTOURY_AGENT_BIN_DIR="$BISTOURY_AGENT_DIR/bin"
 BISTOURY_AGENT_APP_LIB_CLASS="";
 
-BISTOURY_PROXY_CONF_DIR="/tmp/bistoury"
-BISTOURY_PROXY_CONF_FILE="$BISTOURY_PROXY_CONF_DIR/proxy.conf"
+BISTOURY_TMP_DIR="/tmp/bistoury"
+BISTOURY_PROXY_CONF_FILE="$BISTOURY_TMP_DIR/proxy.conf"
 
 start(){
 
@@ -77,8 +77,8 @@ while getopts p:j:l:c:h opt;do
     esac
 done
 
-if [[ ! -w "$BISTOURY_PROXY_CONF_DIR" ]] ; then
-    mkdir -p "$BISTOURY_PROXY_CONF_DIR"
+if [[ ! -w "$BISTOURY_TMP_DIR" ]] ; then
+    mkdir -p "$BISTOURY_TMP_DIR"
 fi
 
 if [[ "start" == $CMD ]] && [[ ! -n $JAVA_HOME ]]; then
