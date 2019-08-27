@@ -64,25 +64,10 @@ public class RocksDBStoreImpl implements KvDb {
             this.rocksDB = TtlDB.open(options, path, ttl, false);
             LOG.info("open rocks db success, path:{}, ttl:{}", path, ttl);
 
-            startCompactRange();
         } catch (Exception e) {
             LOG.error("open rocks db error, path:{}, ttl:{}", path, ttl, e);
             throw new RuntimeException(e);
         }
-    }
-
-    private void startCompactRange() {
-        executor.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    LOG.debug("compact range rocks db");
-                    rocksDB.compactRange();
-                } catch (RocksDBException e) {
-                    LOG.error("rocks db compact range error", e);
-                }
-            }
-        }, 30, 30, TimeUnit.MINUTES);
     }
 
     private void ensureDirectoryExists(final String path) {

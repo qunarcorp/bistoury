@@ -41,15 +41,15 @@ public class DefaultAppLibClassSupplier implements AppLibClassSupplier {
         Class[] allLoadedClasses = instrumentation.getAllLoadedClasses();
         final String libClass = System.getProperty("bistoury.app.lib.class");
         if (Strings.isNullOrEmpty(libClass)) {
-            System.err.println("can not find lib class");
-            throw new IllegalStateException("can not find lib class");
+            System.err.println("can not find lib class, [" + libClass + "]");
+            throw new IllegalStateException("can not find lib class, [" + libClass + "]");
         }
         for (Class clazz : allLoadedClasses) {
             if (libClass.equals(clazz.getName())) {
                 return clazz;
             }
         }
-        System.err.println("can not find lib class");
-        throw new IllegalStateException("can not find lib class");
+        System.err.println("can not find lib class, [" + libClass + "]");
+        throw new IllegalStateException("can not find lib class, [" + libClass + "]");
     }
 }

@@ -130,8 +130,8 @@ public class AgentBootstrap2 {
     // 这个方法和DefaultDebugger里面是一样的，但是这个地方不应该有依赖，所以两边都要写
     private static Class<?> findLibClass(Instrumentation inst, final String libClass) {
         if (libClass == null || "".equals(libClass)) {
-            ps.println("can not find lib class");
-            throw new IllegalStateException("can not find lib class");
+            ps.println("can not find lib class, [" + libClass + "]");
+            throw new IllegalStateException("can not find lib class, [" + libClass + "]");
         }
 
         Class[] allLoadedClasses = inst.getAllLoadedClasses();
@@ -140,8 +140,13 @@ public class AgentBootstrap2 {
                 return clazz;
             }
         }
-        ps.println("can not find lib class");
-        throw new IllegalStateException("can not find lib class");
+        ps.println("can not find lib class, [" + libClass + "]");
+        ps.println("begin print all loaded classes");
+        for (Class allLoadedClass : allLoadedClasses) {
+            ps.println("[" + allLoadedClass.getName() + "]");
+        }
+        ps.println("end print all loaded classes");
+        throw new IllegalStateException("can not find lib class, [" + libClass + "]");
     }
 
     private static File[] getNonSpyJarFiles(File dir, final List<File> spyJarFiles) {

@@ -63,44 +63,49 @@ public class TaskProcessor implements Processor<Object> {
 
     @Override
     public void process(RemotingHeader header, final Object command, final ResponseHandler handler) {
-        final int code = header.getCode();
-        final String id = header.getId();
-        final TaskFactory<?> factory = taskFactories.get(code);
-        Preconditions.checkState(factory != null);
-        logger.info("receive {} command, id [{}], command [{}]", factory.name(), id, command);
+        try {
+            final int code = header.getCode();
+            final String id = header.getId();
+            final TaskFactory<?> factory = taskFactories.get(code);
+            Preconditions.checkState(factory != null);
+            logger.info("receive {} command, id [{}], command [{}]", factory.name(), id, command);
 
-        Task task = createTask(factory, header, command, handler);
-        if (task == null) {
-            return;
-        }
-
-        ListenableFuture<Integer> future = task.execute();
-        future.addListener(new Runnable() {
-            @Override
-            public void run() {
-                taskStore.finish(id);
-            }
-        }, MoreExecutors.directExecutor());
-
-        Futures.addCallback(future, new FutureCallback<Integer>() {
-            @Override
-            public void onSuccess(Integer result) {
-                int eof = result == null ? 0 : result;
-                handler.handleEOF(eof);
-                logger.info("{} command finish, id [{}], command [{}]", factory.name(), id, command);
+            Task task = createTask(factory, header, command, handler);
+            if (task == null) {
+                return;
             }
 
-            @Override
-            public void onFailure(Throwable t) {
-                if (t instanceof CancellationException) {
-                    logger.info("{} command canceled, id [{}]", factory.name(), id);
-                    return;
+            ListenableFuture<Integer> future = task.execute();
+            future.addListener(new Runnable() {
+                @Override
+                public void run() {
+                    taskStore.finish(id);
+                }
+            }, MoreExecutors.directExecutor());
+
+            Futures.addCallback(future, new FutureCallback<Integer>() {
+                @Override
+                public void onSuccess(Integer result) {
+                    int eof = result == null ? 0 : result;
+                    handler.handleEOF(eof);
+                    logger.info("{} command finish, id [{}], command [{}]", factory.name(), id, command);
                 }
 
-                handler.handleError(t);
-                logger.error("{} command error, id [{}], command [{}]", factory.name(), id, command, t);
-            }
-        }, AgentRemotingExecutor.getExecutor());
+                @Override
+                public void onFailure(Throwable t) {
+                    if (t instanceof CancellationException) {
+                        logger.info("{} command canceled, id [{}]", factory.name(), id);
+                        return;
+                    }
+
+                    handler.handleError(t);
+                    logger.error("{} command error, id [{}], command [{}]", factory.name(), id, command, t);
+                }
+            }, AgentRemotingExecutor.getExecutor());
+        } catch (Exception e) {
+            handler.handleError(e);
+            logger.error("task process error", e);
+        }
     }
 
     @SuppressWarnings("unchecked")

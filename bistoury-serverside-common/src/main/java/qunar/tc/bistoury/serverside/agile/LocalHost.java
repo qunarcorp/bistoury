@@ -17,6 +17,7 @@
 
 package qunar.tc.bistoury.serverside.agile;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -208,8 +209,13 @@ public class LocalHost {
 
 
     public static String getLocalHost() {
-        final InetAddress address = getLocalAddress();
-        return address == null ? LOCALHOST : address.getHostAddress();
+        String localHost = System.getProperty("bistoury.local.host");
+        if (!Strings.isNullOrEmpty(localHost)) {
+            return localHost;
+        } else {
+            final InetAddress address = getLocalAddress();
+            return address == null ? LOCALHOST : address.getHostAddress();
+        }
     }
 
 }

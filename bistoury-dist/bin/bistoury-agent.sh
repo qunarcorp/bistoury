@@ -10,14 +10,18 @@ BISTOURY_MAIN="qunar.tc.bistoury.indpendent.agent.Main"
 . "$BISTOURY_BIN_DIR/bistoury-agent-env.sh"
 
 for CMD in "$@";do true; done
-APP_PID=""
 
-while getopts p:j:c:h opt;do
+APP_PID=""
+LOCAL_IP=""
+
+while getopts p:i:j:c:h opt;do
     case $opt in
         p) APP_PID=$OPTARG;;
+        i) LOCAL_IP=$OPTARG;;
         j) JAVA_HOME=$OPTARG;;
         c) BISTOURY_APP_LIB_CLASS=$OPTARG;;
         h|*) echo "-p    通过-p指定应用进程pid"
+           echo "-i    通过-i参数指定本机ip"
            echo "-j    通过-j指定java home"
            echo "-c    通过-c指定应用依赖的jar包中的一个类（推荐使用公司内部中间件的jar包或Spring相关包中的类，如org.springframework.web.servlet.DispatcherServlet），agent通过该类获取应用jar包路径"
            echo "-h    通过-h查看命令帮助"
@@ -34,6 +38,10 @@ fi
 if [[ ! -n $BISTOURY_APP_LIB_CLASS ]]; then
     echo "请通过-c参数指定应用依赖的jar包中的一个类（推荐使用公司内部中间件的jar包或Spring相关包中的类，如org.springframework.web.servlet.DispatcherServlet），agent通过该类获取应用jar包路径"
     exit 0
+fi
+
+if [[ -n $LOCAL_IP ]]; then
+    JAVA_OPTS="$JAVA_OPTS -Dbistoury.local.host=$LOCAL_IP"
 fi
 
 if [[ -n $APP_PID ]]; then
