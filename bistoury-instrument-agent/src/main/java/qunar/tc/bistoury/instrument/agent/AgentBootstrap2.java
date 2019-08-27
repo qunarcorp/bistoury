@@ -141,6 +141,11 @@ public class AgentBootstrap2 {
             }
         }
         ps.println("can not find lib class, [" + libClass + "]");
+        ps.println("begin print all loaded classes");
+        for (Class allLoadedClass : allLoadedClasses) {
+            ps.println("[" + allLoadedClass.getName() + "]");
+        }
+        ps.println("end print all loaded classes");
         throw new IllegalStateException("can not find lib class, [" + libClass + "]");
     }
 
