@@ -6,7 +6,7 @@
 
     <groupId>qunar.tc.bistoury</groupId>
     <artifactId>bistoury</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.2</version>
     <packaging>pom</packaging>
 
     <modules>
