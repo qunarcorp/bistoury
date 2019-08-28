@@ -17,9 +17,11 @@
 
 package qunar.tc.bistoury.attach.arthas.debug;
 
+import com.google.common.base.Strings;
 import com.taobao.arthas.core.shell.command.AnnotatedCommand;
 import com.taobao.arthas.core.shell.command.CommandProcess;
 import com.taobao.middleware.cli.annotations.Name;
+import com.taobao.middleware.cli.annotations.Option;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.common.*;
@@ -35,15 +37,31 @@ import java.util.Set;
 public class JarDebugCommand extends AnnotatedCommand {
     private static final Logger logger = BistouryLoggger.getLogger();
 
+    private static final String RELOAD_ALL = "all";
+    private String reload;
+
+    @Option(shortName = "r", longName = "reload")
+    public void setReload(String reload) {
+        this.reload = reload;
+    }
+
     @Override
     public void process(CommandProcess process) {
-        logger.info("receive jar debug command");
+        logger.info("", "receive jar debug command, reload: {}", reload);
         CodeProcessResponse<Set<String>> codeResponse = new CodeProcessResponse<>();
         TypeResponse<Set<String>> typeResponse = new TypeResponse<>();
         typeResponse.setType(BistouryConstants.REQ_JAR_DEBUG);
         typeResponse.setData(codeResponse);
         try {
             JarDebugClient client = JarDebugClients.getInstance();
+
+            if (!Strings.isNullOrEmpty(reload)) {
+                boolean success = reloadClasses(client);
+                if (success) {
+                    logger.info("", "reload class success, reload: {}", reload);
+                }
+            }
+
             Set<String> classPaths = client.getAllClass();
             codeResponse.setCode(0);
             codeResponse.setData(classPaths);
@@ -54,6 +72,19 @@ public class JarDebugCommand extends AnnotatedCommand {
         } finally {
             process.write(URLCoder.encode(JacksonSerializer.serialize(typeResponse)));
             process.end();
+        }
+    }
+
+    private boolean reloadClasses(JarDebugClient client) {
+        try {
+            if (RELOAD_ALL.equalsIgnoreCase(reload)) {
+                return client.reloadAllClass();
+            } else {
+                return client.reLoadNewClass();
+            }
+        } catch (Throwable t) {
+            logger.error("", "reload classes error", t);
+            return false;
         }
     }
 }
