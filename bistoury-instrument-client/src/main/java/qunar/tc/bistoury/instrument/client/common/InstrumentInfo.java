@@ -26,7 +26,9 @@ import qunar.tc.bistoury.instrument.client.classpath.AppClassPathSupplier;
 import qunar.tc.bistoury.instrument.client.classpath.AppLibClassSupplier;
 
 import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
+import java.security.ProtectionDomain;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -132,5 +134,10 @@ public class InstrumentInfo {
         }
     }
 
-    private static final ClassFileTransformer resetTransformer = (loader, className, classBeingRedefined, protectionDomain, classfileBuffer) -> null;
+    private static final ClassFileTransformer resetTransformer = new ClassFileTransformer() {
+        @Override
+        public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+            return null;
+        }
+    };
 }

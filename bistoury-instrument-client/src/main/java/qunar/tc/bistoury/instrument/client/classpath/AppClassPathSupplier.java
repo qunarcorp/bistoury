@@ -17,8 +17,9 @@
 
 package qunar.tc.bistoury.instrument.client.classpath;
 
+import com.google.common.base.Supplier;
+
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * @author zhenyu.nie created on 2019 2019/7/18 13:34

@@ -17,6 +17,7 @@
 
 package qunar.tc.bistoury.attach.arthas.jar;
 
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.taobao.middleware.logger.Logger;
@@ -66,9 +67,12 @@ public class JarInfoClient implements InstrumentClient {
         File jarDir = new File(serverManagerJarPath).getParentFile();
         List<FileBean> fileBeans = FileOperateFactory.listFiles(jarDir.getPath());
         logger.info("agent 扫描 jar 完成");
-        List<String> result = Lists.transform(fileBeans, file -> {
-            String name = file.getName();
-            return name.substring(name.lastIndexOf(File.separatorChar) + 1);
+        List<String> result = Lists.transform(fileBeans, new Function<FileBean, String>() {
+            @Override
+            public String apply(FileBean file) {
+                String name = file.getName();
+                return name.substring(name.lastIndexOf(File.separatorChar) + 1);
+            }
         });
         return result;
     }

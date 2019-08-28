@@ -9,7 +9,10 @@ import com.taobao.arthas.core.util.LogUtil;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.common.NamedThreadFactory;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -65,7 +68,13 @@ public class QGlobalJobControllerImpl extends QJobControllerImpl {
         /*
          * 达到超时时间将会停止job
          */
-        ScheduledFuture<?> timoutTaskFuture = timeoutExecutor.schedule(job::terminate, getJobTimeoutInSecond(), TimeUnit.SECONDS);
+        ScheduledFuture<?> timoutTaskFuture = timeoutExecutor.schedule(new Runnable() {
+            @Override
+            public void run() {
+                job.terminate();
+            }
+        }, getJobTimeoutInSecond(), TimeUnit.SECONDS);
+
         jobTimeoutTaskMap.put(job.id(), timoutTaskFuture);
         Date timeoutDate = new Date(System.currentTimeMillis() + (getJobTimeoutInSecond() * 1000));
         job.setTimeoutDate(timeoutDate);

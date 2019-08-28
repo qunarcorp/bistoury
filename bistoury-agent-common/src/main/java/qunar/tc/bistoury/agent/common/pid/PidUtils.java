@@ -26,6 +26,7 @@ import qunar.tc.bistoury.agent.common.pid.impl.PidByJpsHandler;
 import qunar.tc.bistoury.agent.common.pid.impl.PidByPsHandler;
 import qunar.tc.bistoury.agent.common.pid.impl.PidBySystemPropertyHandler;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -54,8 +55,16 @@ public class PidUtils {
             handlers.add(new PidByPsHandler());
         }
 
-        ServiceLoader.load(PidHandlerFactory.class).forEach(factory -> handlers.add(factory.create()));
-        handlers.sort(Comparator.comparingInt(PidHandler::priority));
+        ServiceLoader<PidHandlerFactory> handlerFactories = ServiceLoader.load(PidHandlerFactory.class);
+        for (PidHandlerFactory factory : handlerFactories) {
+            handlers.add(factory.create());
+        }
+        Collections.sort(handlers, new Comparator<PidHandler>() {
+            @Override
+            public int compare(PidHandler o1, PidHandler o2) {
+                return o1.priority() - o2.priority();
+            }
+        });
         return ImmutableList.copyOf(handlers);
     }
 
