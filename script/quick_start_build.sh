@@ -6,9 +6,6 @@ SCRIPT_DIR=`pwd`
 
 cd ..
 
-BISTOURY_PACKAGE_FILE=bistoury
-BISTOURY_PACKAGE_DIR="$SCRIPT_DIR/$BISTOURY_PACKAGE_FILE"
-
 
 mvn -v
 if [ $? -ne 0 ]; then
@@ -16,6 +13,9 @@ if [ $? -ne 0 ]; then
     exit 0;
 fi
 
+BISTOURY_PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout`
+BISTOURY_PACKAGE_FILE="bistoury-$BISTOURY_PROJECT_VERSION"
+BISTOURY_PACKAGE_DIR="$SCRIPT_DIR/$BISTOURY_PACKAGE_FILE"
 
 #打包agent
 echo "================ starting to build bistoury agent ================"
