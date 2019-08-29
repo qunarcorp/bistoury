@@ -2,7 +2,7 @@
 * [agent attach时加载初始化类失败](#agent-attach时加载初始化类失败)
 * [windows 环境暂时不支持](#windows-环境暂时不支持)
 * [日志目录](#日志目录)
-* [github仓库暂时不支持查看源码](#github仓库暂时不支持查看源码)
+* [在线debug暂时不支持github仓库的源码调试](#在线debug暂时不支持github仓库的源码调试)
 * [jdk版本](#jdk版本)
     * [应用jdk版本要求](#应用jdk版本要求)
     * [bistoury自带模块最低的jdk版本要求](#bistoury自带模块最低的jdk版本要求)
@@ -64,10 +64,10 @@
 | 3. ui             | 解压缩目录/bistoury-ui-bin/logs    |
 | 4. attach到应用中的部分 | 应用进程所属用户的主目录/logs/               |
 
-### github仓库暂时不支持查看源码
+### 在线debug暂时不支持github仓库的源码调试
 
 ---
-暂时只支持 gitlab 仓库的源代码查看，github 仓库源码暂不支持。
+在线debug,是支持gitlab仓库的源码查看和调试,但是github仓库的源码暂不支持。
 
 ### jdk版本
 
@@ -115,6 +115,6 @@
 
 ---
 
-序列化有大小限制(默认10240kb)，超过阈值的对象会停止序列化，在界面上对象值显示为`object size greater than ***kb`
+序列化有大小限制(默认10240kb)，超过阈值的对象会停止序列化，在前端界面上对象值显示为`object size greater than ***kb`
 
 > 解压缩目录/conf/agent_config.properties中debug.json.limit.kb属性可以配置其阈值
