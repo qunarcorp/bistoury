@@ -9,7 +9,7 @@
 * [端口问题](#端口问题)
     * [默认占用端口](#默认占用端口)
     * [修改默认端口](#修改默认端口)
-* [在线debug对象值显示 `object size greater than ***kb`](#在线debug对象值显示-object-size-greater-than-***kb)
+* [在线debug对象值显示 `object size greater than ***kb`](#在线debug对象值显示-object-size-greater-than-kb)
 
 ### 获取ip错误
 
