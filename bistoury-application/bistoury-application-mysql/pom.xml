@@ -1,46 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<artifactId>bistoury-application</artifactId>
-		<groupId>qunar.tc.bistoury</groupId>
-		<version>2.0.2</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>bistoury-application</artifactId>
+        <groupId>qunar.tc.bistoury</groupId>
+        <version>2.0.3</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>bistoury-application-mysql</artifactId>
+    <artifactId>bistoury-application-mysql</artifactId>
 
-	<dependencies>
-		<dependency>
-			<groupId>qunar.tc.bistoury</groupId>
-			<artifactId>bistoury-application-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>qunar.tc.bistoury</groupId>
-			<artifactId>bistoury-common</artifactId>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>qunar.tc.bistoury</groupId>
+            <artifactId>bistoury-application-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>qunar.tc.bistoury</groupId>
+            <artifactId>bistoury-common</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat</groupId>
-			<artifactId>tomcat-jdbc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-		</dependency>
-	</dependencies>
-
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

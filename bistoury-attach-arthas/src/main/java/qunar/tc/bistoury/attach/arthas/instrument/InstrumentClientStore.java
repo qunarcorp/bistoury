@@ -17,6 +17,7 @@
 
 package qunar.tc.bistoury.attach.arthas.instrument;
 
+import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.taobao.middleware.logger.Logger;
@@ -51,14 +52,22 @@ public class InstrumentClientStore {
 
     private static InstrumentInfo instrumentInfo;
 
-    public static synchronized void init(Instrumentation instrumentation) {
+    public static synchronized void init(final Instrumentation instrumentation) {
         if (init) {
             return;
         }
 
         init = true;
 
-        AppLibClassSupplier appLibClassSupplier = Suppliers.memoize(new DefaultAppLibClassSupplier(instrumentation)::get)::get;
+        AppLibClassSupplier appLibClassSupplier = new AppLibClassSupplier() {
+            private final Supplier<Class<?>> memoize = Suppliers.memoize(new DefaultAppLibClassSupplier(instrumentation));
+
+            @Override
+            public Class<?> get() {
+                return memoize.get();
+            }
+        };
+
         AppClassPathSupplier appClassPathSupplier = new DefaultAppClassPathSupplier(appLibClassSupplier);
 
         instrumentInfo = new InstrumentInfo(

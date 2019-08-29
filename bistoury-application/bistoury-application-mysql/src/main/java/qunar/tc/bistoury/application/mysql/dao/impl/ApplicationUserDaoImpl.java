@@ -38,7 +38,7 @@ import qunar.tc.bistoury.application.mysql.dao.ApplicationUserDao;
 public class ApplicationUserDaoImpl implements ApplicationUserDao {
     private static final String SELECT_APP_BY_USER_CODE = "select app_code from bistoury_user_app where user_code=?";
 
-    private static final String ADD_USER_FOR_APP = "insert ignore bistoury_user_app (app_code, user_code) values (?, ?)";
+    private static final String ADD_USER_FOR_APP = "insert ignore into bistoury_user_app (app_code, user_code) values (?, ?)";
 
     private static final String REMOVE_USER_FROM_APP = "delete from bistoury_user_app where user_code = ? and app_code = ?";
 

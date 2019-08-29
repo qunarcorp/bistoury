@@ -26,6 +26,11 @@ $(document).ready(function () {
     }, interval);
 
 
+    function relaodClasses() {
+        var command = "jardebug -r " + $("#reload-params").val();
+        bistouryWS.sendCommand(currentHost, 9, command, stop, handleResult);
+    }
+
     function getAllClass() {
         var command = "jardebug";
         bistouryWS.sendCommand(currentHost, 9, command, stop, handleResult);
@@ -692,6 +697,11 @@ $(document).ready(function () {
         $("#jar-debug-panel").show();
     })
 
+    $("#classes-reload").click(function () {
+        $('#jar-debug-table').bootstrapTable('removeAll');
+        relaodClasses();
+    })
+
     $("#add-breakpoint").click(function () {
         if ($("#add-breakpoint").attr("disabled") == "disabled") {
             return;
@@ -844,6 +854,7 @@ $(document).ready(function () {
             pageList: [10, 20, 50, 100],//可选择单页记录数
             showRefresh: true,//刷新按钮
             search: true,
+            toolbar: "#toolbar",
             searchAlign: "left",
             buttonsAlign: "left",
             columns: [{

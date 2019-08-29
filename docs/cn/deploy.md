@@ -17,7 +17,7 @@ Bistoury一共分为ui、proxy、agent三个部分，ui是所有操作的入口�
 ### 1.1.1 OS
 ui、proxy、agent脚本理论上能在所有linux发行版上运行。
 ### 1.1.2 Java
-ui、proxy和agent均使用Java1.8+，同时由于agent会attach到应用中，所以应用也需要使用Java1.8+
+ui、proxy使用Java1.8，agent使用java1.7或java1.8，由于agent会attach到应用中，所以应用也需要使用Java1.7或Java1.8。Java9及后续版本由于改动较大，会在以后陆续支持。
 ## 1.2 Zookeeper
 ui依赖zk发现存活的proxy，所以需要部署zk集群。
 >注：如果没有zk集群，可以覆盖实现qunar.tc.bistoury.ui.service.impl.ProxyServiceImpl#getAllProxyUrls方法返回proxy信息，返回数据格式为：ip:tomcatPort:websocketPort

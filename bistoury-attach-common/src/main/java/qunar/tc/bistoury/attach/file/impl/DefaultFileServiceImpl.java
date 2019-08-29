@@ -68,7 +68,7 @@ public class DefaultFileServiceImpl extends AbstractFileService {
 
     @Override
     public List<FileBean> listFiles(final URL url) {
-        return listFiles(Collections.emptySet(), Collections.emptySet(), url);
+        return listFiles(Collections.<String>emptySet(), Collections.<String>emptySet(), url);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class DefaultFileServiceImpl extends AbstractFileService {
         if (Strings.isNullOrEmpty(filePath)) {
             return Collections.emptyList();
         }
-        List<FileBean> result = new ArrayList<>();
+        final List<FileBean> result = new ArrayList<>();
         Path path = Paths.get(filePath);
         SimpleFileVisitor<Path> finder = new SimpleFileVisitor<Path>() {
             @Override

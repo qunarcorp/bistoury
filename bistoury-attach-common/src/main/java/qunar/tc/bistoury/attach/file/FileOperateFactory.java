@@ -17,6 +17,7 @@
 
 package qunar.tc.bistoury.attach.file;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -30,7 +31,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -71,7 +71,7 @@ public class FileOperateFactory {
     }
 
     public static List<FileBean> listFiles(String path) {
-        return listFiles(Collections.emptySet(), Collections.emptySet(), path);
+        return listFiles(Collections.<String>emptySet(), Collections.<String>emptySet(), path);
     }
 
     public static List<FileBean> listFiles(Set<String> exclusionFileSuffix, Set<String> exclusionFile, String path) {
@@ -114,7 +114,7 @@ public class FileOperateFactory {
             }
         } catch (Exception e) {
             logger.error("", "", "convert path to url error, path: {}", path, e);
-            return Optional.empty();
+            return Optional.absent();
         }
     }
 }

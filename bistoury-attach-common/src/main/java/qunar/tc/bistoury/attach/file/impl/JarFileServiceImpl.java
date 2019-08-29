@@ -112,7 +112,7 @@ public class JarFileServiceImpl extends AbstractFileService {
 
     @Override
     public List<FileBean> listFiles(URL url) {
-        return listFiles(Collections.emptySet(), Collections.emptySet(), url);
+        return listFiles(Collections.<String>emptySet(), Collections.<String>emptySet(), url);
     }
 
     @Override
@@ -127,7 +127,7 @@ public class JarFileServiceImpl extends AbstractFileService {
             while (entries.hasMoreElements()) {
                 JarEntry element = entries.nextElement();
                 if (!element.isDirectory() && element.getName().startsWith(libPath) && !isExclusionFile(exclusionFileSuffix, exclusionFile, element.getName())) {
-                    result.add(new FileBean(jarPath + JAR_FILE_PATH_SPLITTER + element.getName(), element.getLastModifiedTime().to(TimeUnit.MILLISECONDS), element.getSize()));
+                    result.add(new FileBean(jarPath + JAR_FILE_PATH_SPLITTER + element.getName(), element.getTime(), element.getSize()));
                 }
             }
         } catch (Exception e) {

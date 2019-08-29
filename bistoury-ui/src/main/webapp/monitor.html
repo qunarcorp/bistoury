@@ -89,6 +89,17 @@
                 <div class="back-app-host-panel">
                     <button class="btn btn-info" style="border-radius: 0px;width: 85px;float: right;height: 37px;">返回</button>
                 </div>
+                <div id="toolbar" style="margin-right: 12px;">
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <select class="form-control" id="reload-params">
+                                <option value="new">只加载新加载的类</option>
+                                <option value="all">全部重新加载</option>
+                            </select>
+                        </div>
+                        <button type="button" id="classes-reload" class="btn btn-default">重新加载</button>
+                    </form>
+                </div>
                 <table id="jar-debug-table" class="table table-hover"></table>
             </div>
             <!--<div id="file-tree-panel" class="col-md-12" style="display: none">
