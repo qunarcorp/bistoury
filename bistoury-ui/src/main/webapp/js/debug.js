@@ -871,8 +871,12 @@ $(document).ready(function () {
                 }
             }],
             onRefresh: function () {
+                $("button[name='refresh']").attr('disabled', true);
                 $('#jar-debug-table').bootstrapTable('removeAll');
                 getAllClass();
+                setTimeout(function () {
+                    $("button[name='refresh']").attr('disabled', false);
+                }, 3000);
             }
         });
     }
