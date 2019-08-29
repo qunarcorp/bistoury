@@ -7,7 +7,7 @@
 * [端口问题](#7)
     * [默认占用端口](#7-1)
     * [修改默认端口](#7-2)
-* [在线debug显示object size greater than ***kb](#8)
+* [在线debug显示 `object size greater than ***kb`](#8)
 
 <h3 id="1">获取ip错误</h3>
 
@@ -23,7 +23,7 @@
 
 ---
 
- agent 需要根据应用内部加载的类获取一些应用相关的信息( 默认:org.springframework.web.servlet.DispatcherServlet ),但不是每个项目都会用到spring mvc,此时需要用户手动指定这个类（不能使用Bistoury agent中用到的类，推荐使用公司内部中间件的jar包或Spring相关包中的，agent不可能使用到的类)
+ agent 需要根据应用内部加载的类获取一些应用相关的信息( 默认:org.springframework.web.servlet.DispatcherServlet ),但不是每个项目都会用到spring mvc,此时需要用户手动指定这个类（不能使用Bistoury agent中用到的类，推荐使用公司内部中间件的jar包或Spring相关包中的类)
 
  例子 :
  ```
@@ -34,7 +34,7 @@
 
 ---
 
-暂时不包含windows下的一键启动脚本,但是支持通过ide来启动.
+暂时不包含windows下的一键启动脚本, 但是支持通过ide来启动.
 
 <h3 id="4">日志目录</h3>
 
@@ -56,7 +56,7 @@
 <h3 id="6">jdk版本</h3>
 
 ---
-暂时只支持包括jdk7\jdk8在内的版本,没有测试过低于jdk7的版本,jdk9以上改动比较大,暂时不支持.
+暂时只支持包括jdk7\jdk8在内的版本, 没有测试过低于jdk7的版本, jdk9以上改动比较大, 暂时不支持.
 
 <h3 id="7">端口问题</h3>
 
@@ -77,7 +77,7 @@
 - 9092 -> `解压缩目录/h2/h2.sh`中的H2_PORT值(h2数据库默认使用9092端口)
 
 
-<h3 id="8">在线debug显示object size greater than ***kb</h3>
+<h3 id="8">在线debug显示 object size greater than ***kb</h3>
 
 ---
 序列化有大小限制，超过`10m`的对象会停止序列化，直接抛出异常.（解压缩目录/conf/agent_config.properties中debug.json.limit.kb属性可有配置其阈值）
