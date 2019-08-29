@@ -14,24 +14,38 @@
 ### 获取ip错误
 
 ---
-本机可能存在多个ip，导致获取的ip不是当前正在使用的ip，从而出错，可以通过`quick_start.sh`脚本中的-i参数指定当前的ip。
+
+在使用快速脚本时出现的情况较多，往往表现为在ui上调用命令时
+
+- websocket连接失败
+
+- no proxy for agent
+
+原因是本机可能存在多个ip，导致获取的ip不是当前正在使用的ip（获取到的ip可以在各个日志中查看，也可以在应用中心查看），从而出错，
+
+可以通过`quick_start.sh`脚本中的-i参数指定当前的ip。
 
 例子 :
 ```
 ./quick_start.sh -i 127.0.0.1 -p 1024 start
 ```
 
-# can not find lib class
+# agent attach时加载初始化类失败
 
 ---
 
- agent 需要根据应用内部加载的类获取一些应用相关的信息( 默认:org.springframework.web.servlet.DispatcherServlet ),但不是每个项目都会用到spring mvc,此时需要用户手动指定这个类
- > 不能使用Bistoury agent中用到的类，推荐使用公司内部中间件的jar包或Spring相关包中的类
+往往表现为在ui上调用命令时报"can not init bistoury, start arthas error"，"Agent JAR loaded but agent failed to initialize"，同时在agent的log中也会有一样的错误日志。
 
- 例子 :
- ```
- ./quick_start.sh -c org.springframework.web.servlet.DispatcherServlet -p 1024 start
- ```
+这时去脚本启动用户（agent运行用户）的用户目录下logs/arthas/arthas.log中查找日志，如果发现错误"can not find lib class"，那么可以确定是这个问题。
+
+原因是agent在初始化时需要加载一个初始化类，也就是快速启动脚本-c所指定的类。这个类应当是应用已加载的依赖的jar包中的类，默认是spring的org.springframework.web.servlet.DispatcherServlet，往往非spring应用没有特殊指定会报这个错。
+
+解决办法就是指定一下相应的类名，因为不能是agent使用到的类，推荐使用用户自身中间件jar包或者spring中类，如果使用业务类，可能导致小部分功能不可用。
+
+例子 :
+```
+./quick_start.sh -c org.springframework.web.servlet.DispatcherServlet -p 1024 start
+```
 
  ### windows 环境暂时不支持
 
