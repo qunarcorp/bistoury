@@ -10,6 +10,7 @@
     * [默认占用端口](#默认占用端口)
     * [修改默认端口](#修改默认端口)
 * [在线debug时,前端界面上对象值显示 `object size greater than ***kb`](#在线debug时前端界面上对象值显示-object-size-greater-than-kb)
+* [在线debug时 前端界面右上角提示 *** 代码查看仅可通过反编译](#在线debug时-前端界面右上角提示-***-代码查看仅可通过反编译)
 
 ### 获取ip错误
 
@@ -118,3 +119,11 @@
 序列化有大小限制(默认10240kb)，超过阈值的对象会停止序列化，在前端界面上对象值显示为`object size greater than ***kb`
 
 > 解压缩目录/conf/agent_config.properties中debug.json.limit.kb属性可以配置其阈值
+
+### 在线debug时 前端界面右上角提示 *** 代码查看仅可通过反编译
+*只是一个警告，代表不能查看应用对应的源码*
+- 没有配置private token，代码查看仅可通过反编译
+  > 代表没有配置gitlab仓库源码的私有token，不能通过gitlab仓库直接查看源码，只能通过反编译查看代码
+
+- release info 解析失败，*** ,代码查看仅可通过反编译
+  > 代表没有读取到releaseInfo.properties文件，不能根据此文件，找到应用对应的源码信息。
