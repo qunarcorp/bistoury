@@ -71,7 +71,7 @@ public class ThreadInfoTask implements Task {
 
     private volatile ListenableFuture<Integer> future;
 
-    private VirtualMachineUtil.VMConnector connect;
+    private volatile VirtualMachineUtil.VMConnector connect;
 
     public ThreadInfoTask(String id, int pid, long threadId, int commandType, int maxDepth, ResponseHandler handler, long maxRunningMs) {
         this.id = id;
@@ -110,9 +110,10 @@ public class ThreadInfoTask implements Task {
                         result.put(THREADS, threads);
                     }
                     handler.handle(JacksonSerializer.serializeToBytes(result));
+                    return null;
                 } catch (Exception e) {
                     logger.error("get thread info error", e);
-                    return null;
+                    throw new RuntimeException(e);
                 } finally {
                     try {
                         if (connect != null) {
@@ -122,7 +123,6 @@ public class ThreadInfoTask implements Task {
                         logger.error("disconnect vm error ", e);
                     }
                 }
-                return null;
             }
         });
         return future;
@@ -204,10 +204,18 @@ public class ThreadInfoTask implements Task {
     @Override
     public void cancel() {
         try {
-            connect.disconnect();
             if (future != null) {
                 future.cancel(true);
                 future = null;
+            }
+        } catch (Exception e) {
+            logger.error("cancel host thread info task error", e);
+        }
+
+        try {
+            VirtualMachineUtil.VMConnector connect = this.connect;
+            if (connect != null) {
+                connect.disconnect();
             }
         } catch (Exception e) {
             logger.error("cancel host thread info task error", e);
