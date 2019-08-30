@@ -59,7 +59,8 @@ public class HostTask implements Task {
 
     private final ResponseHandler handler;
     private final long maxRunningMs;
-    private VirtualMachineUtil.VMConnector connect;
+
+    private volatile VirtualMachineUtil.VMConnector connect;
     private Map<String, Counter> counters;
     private RuntimeMXBean runtimeBean;
     private OperatingSystemMXBean osBean;
@@ -75,26 +76,20 @@ public class HostTask implements Task {
         this.pid = pid;
         this.handler = handler;
         this.maxRunningMs = maxRunningMs;
-        connect = VirtualMachineUtil.connect(pid);
-        init();
     }
 
-    private void init() {
-        try {
-            PerfData prefData = PerfData.connect(pid);
-            counters = prefData.getAllCounters();
+    private void init() throws Exception {
+        connect = VirtualMachineUtil.connect(pid);
+        PerfData prefData = PerfData.connect(pid);
+        counters = prefData.getAllCounters();
 
-            this.runtimeBean = connect.getRuntimeMXBean();
-            this.osBean = connect.getOperatingSystemMXBean();
-            this.memoryMXBean = connect.getMemoryMXBean();
-            this.threadBean = connect.getThreadMXBean();
-            this.classLoadingBean = connect.getClassLoadingMXBean();
-            this.gcMxBeans = connect.getGarbageCollectorMXBeans();
-            this.memoryPoolMXBeans = connect.getMemoryPoolMXBeans();
-        } catch (Exception e) {
-            logger.error("get MXBean error ", e);
-            throw new RuntimeException(e);
-        }
+        this.runtimeBean = connect.getRuntimeMXBean();
+        this.osBean = connect.getOperatingSystemMXBean();
+        this.memoryMXBean = connect.getMemoryMXBean();
+        this.threadBean = connect.getThreadMXBean();
+        this.classLoadingBean = connect.getClassLoadingMXBean();
+        this.gcMxBeans = connect.getGarbageCollectorMXBeans();
+        this.memoryPoolMXBeans = connect.getMemoryPoolMXBeans();
     }
 
     @Override
@@ -112,9 +107,9 @@ public class HostTask implements Task {
         this.future = agentExecutor.submit(new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
-
-                Map<String, Object> result = new HashMap<>();
                 try {
+                    init();
+                    Map<String, Object> result = new HashMap<>();
                     result.put("type", "hostInfo");
                     result.put("jvm", getJvmInfo());
                     result.put("host", getHostInfo());
@@ -122,6 +117,10 @@ public class HostTask implements Task {
                     result.put("visuaGC", getVisuaGCInfo());
                     String jsonString = JacksonSerializer.serialize(result);
                     handler.handle(jsonString);
+                    return null;
+                } catch (Exception e) {
+                    logger.error("get MXBean error", e);
+                    throw new RuntimeException(e);
                 } finally {
                     try {
                         if (connect != null) {
@@ -131,7 +130,6 @@ public class HostTask implements Task {
                         logger.error("disconnect vm error ", e);
                     }
                 }
-                return null;
             }
         });
         return future;
@@ -371,10 +369,18 @@ public class HostTask implements Task {
     @Override
     public void cancel() {
         try {
-            connect.disconnect();
             if (future != null) {
                 future.cancel(true);
                 future = null;
+            }
+        } catch (Exception e) {
+            logger.error("destroy host task error", e);
+        }
+
+        try {
+            VirtualMachineUtil.VMConnector connect = this.connect;
+            if (connect != null) {
+                connect.disconnect();
             }
         } catch (Exception e) {
             logger.error("destroy host task error", e);

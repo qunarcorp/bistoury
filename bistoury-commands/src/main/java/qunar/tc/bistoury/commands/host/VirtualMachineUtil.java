@@ -130,7 +130,7 @@ public class VirtualMachineUtil {
     }
 
     static class VMConnector {
-        private JMXConnector connector;
+        private final JMXConnector connector;
 
         VMConnector(JMXConnector connector) {
             this.connector = connector;
