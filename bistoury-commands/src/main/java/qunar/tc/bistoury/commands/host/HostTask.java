@@ -75,12 +75,11 @@ public class HostTask implements Task {
         this.pid = pid;
         this.handler = handler;
         this.maxRunningMs = maxRunningMs;
-        connect = VirtualMachineUtil.connect(pid);
-        init();
     }
 
     private void init() {
         try {
+            connect = VirtualMachineUtil.connect(pid);
             PerfData prefData = PerfData.connect(pid);
             counters = prefData.getAllCounters();
 
@@ -112,7 +111,7 @@ public class HostTask implements Task {
         this.future = agentExecutor.submit(new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
-
+                init();
                 Map<String, Object> result = new HashMap<>();
                 try {
                     result.put("type", "hostInfo");
