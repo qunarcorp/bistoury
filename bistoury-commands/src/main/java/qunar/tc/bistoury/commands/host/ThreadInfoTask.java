@@ -81,7 +81,6 @@ public class ThreadInfoTask implements Task {
         this.maxDepth = maxDepth;
         this.handler = handler;
         this.maxRunningMs = maxRunningMs;
-        connect = VirtualMachineUtil.connect(pid);
     }
 
 
@@ -91,6 +90,7 @@ public class ThreadInfoTask implements Task {
             @Override
             public Integer call() throws Exception {
                 try {
+                    connect = VirtualMachineUtil.connect(pid);
                     Map<String, Object> result = new HashMap<>();
                     if (ALL_THREADS_INFO == commandType) {
                         result.put(TYPE, "allThreadInfo");
