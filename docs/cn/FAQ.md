@@ -52,12 +52,16 @@
 
 原因是agent在初始化时需要加载一个初始化类，也就是快速启动脚本-c所指定的类。这个类应当是应用已加载的依赖的jar包中的类，默认是spring的org.springframework.web.servlet.DispatcherServlet，往往非spring应用没有特殊指定会报这个错。
 
-解决办法就是指定一下相应的类名，因为不能是agent使用到的类，推荐使用用户自身中间件jar包或者spring中类，如果使用业务类，可能导致小部分功能不可用。
+解决办法就是指定一下相应的类名，因为不能是agent使用到的类，推荐使用用户自身中间件jar包或者spring中类（注意要是已加载的类），如果使用业务类，可能导致小部分功能不可用。
 
 例子 :
 ```
 ./quick_start.sh -c org.springframework.web.servlet.DispatcherServlet(不要照抄) -p 1024 start
 ```
+
+如果自身依赖中有相应的类，但是还是报"can not find lib class"，这种情况应该是类没有加载。
+
+"can not find lib class"下面一行从“begin print all loaded classes”开始，会打印所有已加载的类名，可以从这里进行确认。
 
  ### windows 环境暂时不支持
 
