@@ -62,7 +62,7 @@ public class PidUtils {
         Collections.sort(handlers, new Comparator<PidHandler>() {
             @Override
             public int compare(PidHandler o1, PidHandler o2) {
-                return o1.priority() - o2.priority();
+                return Integer.compare(o1.priority(), o2.priority());
             }
         });
         return ImmutableList.copyOf(handlers);
