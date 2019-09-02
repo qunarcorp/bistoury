@@ -21,6 +21,10 @@
             <groupId>qunar.tc.bistoury</groupId>
             <artifactId>bistoury-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit-dep</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
