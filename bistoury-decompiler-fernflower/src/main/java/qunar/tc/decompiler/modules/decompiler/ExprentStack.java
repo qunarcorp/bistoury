@@ -14,11 +14,13 @@ public class ExprentStack extends ListStack<Exprent> {
         pointer = list.getPointer();
     }
 
+    @Override
     public Exprent pop() {
 
         return this.remove(--pointer);
     }
 
+    @Override
     public ExprentStack clone() {
         return new ExprentStack(this);
     }

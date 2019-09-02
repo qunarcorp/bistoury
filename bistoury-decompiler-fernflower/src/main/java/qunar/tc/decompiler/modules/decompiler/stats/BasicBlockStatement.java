@@ -27,7 +27,7 @@ public class BasicBlockStatement extends Statement {
 
     public BasicBlockStatement(BasicBlock block) {
 
-        type = TYPE_BASICBLOCK;
+        type = Statement.TYPE_BASICBLOCK;
 
         this.block = block;
 
@@ -54,12 +54,14 @@ public class BasicBlockStatement extends Statement {
     // public methods
     // *****************************************************************************
 
+    @Override
     public TextBuffer toJava(int indent, BytecodeMappingTracer tracer) {
         TextBuffer tb = ExprProcessor.listToJava(varDefinitions, indent, tracer);
         tb.append(ExprProcessor.listToJava(exprents, indent, tracer));
         return tb;
     }
 
+    @Override
     public Statement getSimpleCopy() {
 
         BasicBlock newblock = new BasicBlock(

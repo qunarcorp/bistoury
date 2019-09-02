@@ -181,6 +181,7 @@ public class IfStatement extends Statement {
         return null;
     }
 
+    @Override
     public TextBuffer toJava(int indent, BytecodeMappingTracer tracer) {
         TextBuffer buf = new TextBuffer();
 
@@ -196,23 +197,25 @@ public class IfStatement extends Statement {
         tracer.incrementCurrentSourceLine();
 
         if (ifstat == null) {
-            buf.appendIndent(indent + 1);
-
+            boolean semicolon = false;
             if (ifedge.explicit) {
+                semicolon = true;
                 if (ifedge.getType() == StatEdge.TYPE_BREAK) {
                     // break
-                    buf.append("break");
+                    buf.appendIndent(indent + 1).append("break");
                 } else {
                     // continue
-                    buf.append("continue");
+                    buf.appendIndent(indent + 1).append("continue");
                 }
 
                 if (ifedge.labeled) {
                     buf.append(" label").append(ifedge.closure.id.toString());
                 }
             }
-            buf.append(";").appendLineSeparator();
-            tracer.incrementCurrentSourceLine();
+            if (semicolon) {
+                buf.append(";").appendLineSeparator();
+                tracer.incrementCurrentSourceLine();
+            }
         } else {
             buf.append(ExprProcessor.jmpWrapper(ifstat, indent + 1, true, tracer));
         }
@@ -220,7 +223,7 @@ public class IfStatement extends Statement {
         boolean elseif = false;
 
         if (elsestat != null) {
-            if (elsestat.type == Statement.TYPE_IF
+            if (elsestat.type == TYPE_IF
                     && elsestat.varDefinitions.isEmpty() && elsestat.getFirst().getExprents().isEmpty() &&
                     !elsestat.isLabeled() &&
                     (elsestat.getSuccessorEdges(STATEDGE_DIRECT_ALL).isEmpty()
@@ -255,6 +258,7 @@ public class IfStatement extends Statement {
         return buf;
     }
 
+    @Override
     public void initExprents() {
 
         IfExprent ifexpr = (IfExprent) first.getExprents().remove(first.getExprents().size() - 1);
@@ -267,6 +271,7 @@ public class IfStatement extends Statement {
         headexprent.set(0, ifexpr);
     }
 
+    @Override
     public List<Object> getSequentialObjects() {
 
         List<Object> lst = new ArrayList<Object>(stats);
@@ -275,12 +280,14 @@ public class IfStatement extends Statement {
         return lst;
     }
 
+    @Override
     public void replaceExprent(Exprent oldexpr, Exprent newexpr) {
         if (headexprent.get(0) == oldexpr) {
             headexprent.set(0, newexpr);
         }
     }
 
+    @Override
     public void replaceStatement(Statement oldstat, Statement newstat) {
 
         super.replaceStatement(oldstat, newstat);
@@ -311,6 +318,7 @@ public class IfStatement extends Statement {
         }
     }
 
+    @Override
     public Statement getSimpleCopy() {
 
         IfStatement is = new IfStatement();
@@ -320,6 +328,7 @@ public class IfStatement extends Statement {
         return is;
     }
 
+    @Override
     public void initSimpleCopy() {
 
         first = stats.get(0);

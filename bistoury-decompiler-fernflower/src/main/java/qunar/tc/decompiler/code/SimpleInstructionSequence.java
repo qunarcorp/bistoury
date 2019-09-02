@@ -12,6 +12,7 @@ public class SimpleInstructionSequence extends InstructionSequence {
         super(collinstr);
     }
 
+    @Override
     public SimpleInstructionSequence clone() {
         SimpleInstructionSequence newseq = new SimpleInstructionSequence(collinstr.clone());
         newseq.setPointer(this.getPointer());

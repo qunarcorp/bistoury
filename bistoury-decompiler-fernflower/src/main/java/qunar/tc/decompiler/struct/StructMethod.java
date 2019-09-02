@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static qunar.tc.decompiler.code.CodeConstants.*;
-
 /*
   method_info {
     u2 access_flags;
@@ -27,8 +25,8 @@ import static qunar.tc.decompiler.code.CodeConstants.*;
 public class StructMethod extends StructMember {
     private static final int[] opr_iconst = {-1, 0, 1, 2, 3, 4, 5};
     private static final int[] opr_loadstore = {0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3};
-    private static final int[] opcs_load = {opc_iload, opc_lload, opc_fload, opc_dload, opc_aload};
-    private static final int[] opcs_store = {opc_istore, opc_lstore, opc_fstore, opc_dstore, opc_astore};
+    private static final int[] opcs_load = {CodeConstants.opc_iload, CodeConstants.opc_lload, CodeConstants.opc_fload, CodeConstants.opc_dload, CodeConstants.opc_aload};
+    private static final int[] opcs_store = {CodeConstants.opc_istore, CodeConstants.opc_lstore, CodeConstants.opc_fstore, CodeConstants.opc_dstore, CodeConstants.opc_astore};
 
     private final StructClass classStruct;
     private final String name;
@@ -63,7 +61,7 @@ public class StructMethod extends StructMember {
 
     @Override
     protected StructGeneralAttribute readAttribute(DataInputFullStream in, ConstantPool pool, String name) throws IOException {
-        if (StructGeneralAttribute.ATTRIBUTE_CODE.equals(name)) {
+        if (StructGeneralAttribute.ATTRIBUTE_CODE.getName().equals(name)) {
             if (!classStruct.isOwn()) {
                 // skip code in foreign classes
                 in.discard(8);
@@ -114,9 +112,9 @@ public class StructMethod extends StructMember {
             int offset = i;
 
             int opcode = in.readUnsignedByte();
-            int group = GROUP_GENERAL;
+            int group = CodeConstants.GROUP_GENERAL;
 
-            boolean wide = (opcode == opc_wide);
+            boolean wide = (opcode == CodeConstants.opc_wide);
 
             if (wide) {
                 i++;
@@ -125,91 +123,91 @@ public class StructMethod extends StructMember {
 
             List<Integer> operands = new ArrayList<>();
 
-            if (opcode >= opc_iconst_m1 && opcode <= opc_iconst_5) {
-                operands.add(opr_iconst[opcode - opc_iconst_m1]);
-                opcode = opc_bipush;
-            } else if (opcode >= opc_iload_0 && opcode <= opc_aload_3) {
-                operands.add(opr_loadstore[opcode - opc_iload_0]);
-                opcode = opcs_load[(opcode - opc_iload_0) / 4];
-            } else if (opcode >= opc_istore_0 && opcode <= opc_astore_3) {
-                operands.add(opr_loadstore[opcode - opc_istore_0]);
-                opcode = opcs_store[(opcode - opc_istore_0) / 4];
+            if (opcode >= CodeConstants.opc_iconst_m1 && opcode <= CodeConstants.opc_iconst_5) {
+                operands.add(opr_iconst[opcode - CodeConstants.opc_iconst_m1]);
+                opcode = CodeConstants.opc_bipush;
+            } else if (opcode >= CodeConstants.opc_iload_0 && opcode <= CodeConstants.opc_aload_3) {
+                operands.add(opr_loadstore[opcode - CodeConstants.opc_iload_0]);
+                opcode = opcs_load[(opcode - CodeConstants.opc_iload_0) / 4];
+            } else if (opcode >= CodeConstants.opc_istore_0 && opcode <= CodeConstants.opc_astore_3) {
+                operands.add(opr_loadstore[opcode - CodeConstants.opc_istore_0]);
+                opcode = opcs_store[(opcode - CodeConstants.opc_istore_0) / 4];
             } else {
                 switch (opcode) {
-                    case opc_bipush:
+                    case CodeConstants.opc_bipush:
                         operands.add((int) in.readByte());
                         i++;
                         break;
-                    case opc_ldc:
-                    case opc_newarray:
+                    case CodeConstants.opc_ldc:
+                    case CodeConstants.opc_newarray:
                         operands.add(in.readUnsignedByte());
                         i++;
                         break;
-                    case opc_sipush:
-                    case opc_ifeq:
-                    case opc_ifne:
-                    case opc_iflt:
-                    case opc_ifge:
-                    case opc_ifgt:
-                    case opc_ifle:
-                    case opc_if_icmpeq:
-                    case opc_if_icmpne:
-                    case opc_if_icmplt:
-                    case opc_if_icmpge:
-                    case opc_if_icmpgt:
-                    case opc_if_icmple:
-                    case opc_if_acmpeq:
-                    case opc_if_acmpne:
-                    case opc_goto:
-                    case opc_jsr:
-                    case opc_ifnull:
-                    case opc_ifnonnull:
-                        if (opcode != opc_sipush) {
-                            group = GROUP_JUMP;
+                    case CodeConstants.opc_sipush:
+                    case CodeConstants.opc_ifeq:
+                    case CodeConstants.opc_ifne:
+                    case CodeConstants.opc_iflt:
+                    case CodeConstants.opc_ifge:
+                    case CodeConstants.opc_ifgt:
+                    case CodeConstants.opc_ifle:
+                    case CodeConstants.opc_if_icmpeq:
+                    case CodeConstants.opc_if_icmpne:
+                    case CodeConstants.opc_if_icmplt:
+                    case CodeConstants.opc_if_icmpge:
+                    case CodeConstants.opc_if_icmpgt:
+                    case CodeConstants.opc_if_icmple:
+                    case CodeConstants.opc_if_acmpeq:
+                    case CodeConstants.opc_if_acmpne:
+                    case CodeConstants.opc_goto:
+                    case CodeConstants.opc_jsr:
+                    case CodeConstants.opc_ifnull:
+                    case CodeConstants.opc_ifnonnull:
+                        if (opcode != CodeConstants.opc_sipush) {
+                            group = CodeConstants.GROUP_JUMP;
                         }
                         operands.add((int) in.readShort());
                         i += 2;
                         break;
-                    case opc_ldc_w:
-                    case opc_ldc2_w:
-                    case opc_getstatic:
-                    case opc_putstatic:
-                    case opc_getfield:
-                    case opc_putfield:
-                    case opc_invokevirtual:
-                    case opc_invokespecial:
-                    case opc_invokestatic:
-                    case opc_new:
-                    case opc_anewarray:
-                    case opc_checkcast:
-                    case opc_instanceof:
+                    case CodeConstants.opc_ldc_w:
+                    case CodeConstants.opc_ldc2_w:
+                    case CodeConstants.opc_getstatic:
+                    case CodeConstants.opc_putstatic:
+                    case CodeConstants.opc_getfield:
+                    case CodeConstants.opc_putfield:
+                    case CodeConstants.opc_invokevirtual:
+                    case CodeConstants.opc_invokespecial:
+                    case CodeConstants.opc_invokestatic:
+                    case CodeConstants.opc_new:
+                    case CodeConstants.opc_anewarray:
+                    case CodeConstants.opc_checkcast:
+                    case CodeConstants.opc_instanceof:
                         operands.add(in.readUnsignedShort());
                         i += 2;
-                        if (opcode >= opc_getstatic && opcode <= opc_putfield) {
-                            group = GROUP_FIELDACCESS;
-                        } else if (opcode >= opc_invokevirtual && opcode <= opc_invokestatic) {
-                            group = GROUP_INVOCATION;
+                        if (opcode >= CodeConstants.opc_getstatic && opcode <= CodeConstants.opc_putfield) {
+                            group = CodeConstants.GROUP_FIELDACCESS;
+                        } else if (opcode >= CodeConstants.opc_invokevirtual && opcode <= CodeConstants.opc_invokestatic) {
+                            group = CodeConstants.GROUP_INVOCATION;
                         }
                         break;
-                    case opc_invokedynamic:
+                    case CodeConstants.opc_invokedynamic:
                         if (classStruct.isVersionGE_1_7()) { // instruction unused in Java 6 and before
                             operands.add(in.readUnsignedShort());
                             in.discard(2);
-                            group = GROUP_INVOCATION;
+                            group = CodeConstants.GROUP_INVOCATION;
                             i += 4;
                         }
                         break;
-                    case opc_iload:
-                    case opc_lload:
-                    case opc_fload:
-                    case opc_dload:
-                    case opc_aload:
-                    case opc_istore:
-                    case opc_lstore:
-                    case opc_fstore:
-                    case opc_dstore:
-                    case opc_astore:
-                    case opc_ret:
+                    case CodeConstants.opc_iload:
+                    case CodeConstants.opc_lload:
+                    case CodeConstants.opc_fload:
+                    case CodeConstants.opc_dload:
+                    case CodeConstants.opc_aload:
+                    case CodeConstants.opc_istore:
+                    case CodeConstants.opc_lstore:
+                    case CodeConstants.opc_fstore:
+                    case CodeConstants.opc_dstore:
+                    case CodeConstants.opc_astore:
+                    case CodeConstants.opc_ret:
                         if (wide) {
                             operands.add(in.readUnsignedShort());
                             i += 2;
@@ -217,11 +215,11 @@ public class StructMethod extends StructMember {
                             operands.add(in.readUnsignedByte());
                             i++;
                         }
-                        if (opcode == opc_ret) {
-                            group = GROUP_RETURN;
+                        if (opcode == CodeConstants.opc_ret) {
+                            group = CodeConstants.GROUP_RETURN;
                         }
                         break;
-                    case opc_iinc:
+                    case CodeConstants.opc_iinc:
                         if (wide) {
                             operands.add(in.readUnsignedShort());
                             operands.add((int) in.readShort());
@@ -232,26 +230,26 @@ public class StructMethod extends StructMember {
                             i += 2;
                         }
                         break;
-                    case opc_goto_w:
-                    case opc_jsr_w:
-                        opcode = opcode == opc_jsr_w ? opc_jsr : opc_goto;
+                    case CodeConstants.opc_goto_w:
+                    case CodeConstants.opc_jsr_w:
+                        opcode = opcode == CodeConstants.opc_jsr_w ? CodeConstants.opc_jsr : CodeConstants.opc_goto;
                         operands.add(in.readInt());
-                        group = GROUP_JUMP;
+                        group = CodeConstants.GROUP_JUMP;
                         i += 4;
                         break;
-                    case opc_invokeinterface:
+                    case CodeConstants.opc_invokeinterface:
                         operands.add(in.readUnsignedShort());
                         operands.add(in.readUnsignedByte());
                         in.discard(1);
-                        group = GROUP_INVOCATION;
+                        group = CodeConstants.GROUP_INVOCATION;
                         i += 4;
                         break;
-                    case opc_multianewarray:
+                    case CodeConstants.opc_multianewarray:
                         operands.add(in.readUnsignedShort());
                         operands.add(in.readUnsignedByte());
                         i += 3;
                         break;
-                    case opc_tableswitch:
+                    case CodeConstants.opc_tableswitch:
                         in.discard((4 - (i + 1) % 4) % 4);
                         i += ((4 - (i + 1) % 4) % 4); // padding
                         operands.add(in.readInt());
@@ -267,10 +265,10 @@ public class StructMethod extends StructMember {
                             operands.add(in.readInt());
                             i += 4;
                         }
-                        group = GROUP_SWITCH;
+                        group = CodeConstants.GROUP_SWITCH;
 
                         break;
-                    case opc_lookupswitch:
+                    case CodeConstants.opc_lookupswitch:
                         in.discard((4 - (i + 1) % 4) % 4);
                         i += ((4 - (i + 1) % 4) % 4); // padding
                         operands.add(in.readInt());
@@ -285,16 +283,16 @@ public class StructMethod extends StructMember {
                             operands.add(in.readInt());
                             i += 4;
                         }
-                        group = GROUP_SWITCH;
+                        group = CodeConstants.GROUP_SWITCH;
                         break;
-                    case opc_ireturn:
-                    case opc_lreturn:
-                    case opc_freturn:
-                    case opc_dreturn:
-                    case opc_areturn:
-                    case opc_return:
-                    case opc_athrow:
-                        group = GROUP_RETURN;
+                    case CodeConstants.opc_ireturn:
+                    case CodeConstants.opc_lreturn:
+                    case CodeConstants.opc_freturn:
+                    case CodeConstants.opc_dreturn:
+                    case CodeConstants.opc_areturn:
+                    case CodeConstants.opc_return:
+                    case CodeConstants.opc_athrow:
+                        group = CodeConstants.GROUP_RETURN;
                 }
             }
 
@@ -339,7 +337,7 @@ public class StructMethod extends StructMember {
 
         while (i >= 0) {
             Instruction instr = seq.getInstr(i--);
-            if (instr.group != GROUP_GENERAL) {
+            if (instr.group != CodeConstants.GROUP_GENERAL) {
                 instr.initInstruction(seq);
             }
             seq.addToPointer(-1);
@@ -373,7 +371,7 @@ public class StructMethod extends StructMember {
     }
 
     public StructLocalVariableTableAttribute getLocalVariableAttr() {
-        return (StructLocalVariableTableAttribute) getAttribute(StructGeneralAttribute.ATTRIBUTE_LOCAL_VARIABLE_TABLE);
+        return getAttribute(StructGeneralAttribute.ATTRIBUTE_LOCAL_VARIABLE_TABLE);
     }
 
     @Override

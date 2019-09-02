@@ -19,8 +19,7 @@ public class BytecodeSourceMapper {
     private final Set<Integer> unmappedLines = new TreeSet<>();
 
     public void addMapping(String className, String methodName, int bytecodeOffset, int sourceLine) {
-        // need to preserve order
-        //Map<String, Map<Integer, Integer>> class_mapping = mapping.computeIfAbsent(className, k -> new LinkedHashMap<>());
+        //Map<String, Map<Integer, Integer>> class_mapping = mapping.computeIfAbsent(className, k -> new LinkedHashMap<>()); // need to preserve order
         Map<String, Map<Integer, Integer>> class_mapping = Map827.computeIfAbsent(mapping, className, new Function<String, Map<String, Map<Integer, Integer>>>() {
             @Override
             public Map<String, Map<Integer, Integer>> apply(String input) {
@@ -53,7 +52,7 @@ public class BytecodeSourceMapper {
             return;
         }
 
-        //todo 文件末尾的方法信息
+        //todo 反编译是去除文件末尾的方法信息
         /*String lineSeparator = DecompilerContext.getNewLineSeparator();
 
         for (Entry<String, Map<String, Map<Integer, Integer>>> class_entry : mapping.entrySet()) {
@@ -94,7 +93,7 @@ public class BytecodeSourceMapper {
             buffer.append(entry.getKey()).append(" <-> ").append(entry.getValue() + offset_total + 1).appendLineSeparator();
         }
 
-        //todo 文件末尾的 Not mapped:
+        //todo 反编译文件末尾的 Not mapped:
         /*if (!unmappedLines.isEmpty()) {
             buffer.append("Not mapped:").appendLineSeparator();
             for (Integer line : unmappedLines) {

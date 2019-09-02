@@ -11,7 +11,7 @@ public class RootStatement extends Statement {
     private final DummyExitStatement dummyExit;
 
     public RootStatement(Statement head, DummyExitStatement dummyExit) {
-        type = TYPE_ROOT;
+        type = Statement.TYPE_ROOT;
 
         first = head;
         this.dummyExit = dummyExit;
@@ -20,6 +20,7 @@ public class RootStatement extends Statement {
         first.setParent(this);
     }
 
+    @Override
     public TextBuffer toJava(int indent, BytecodeMappingTracer tracer) {
         return ExprProcessor.listToJava(varDefinitions, indent, tracer).append(first.toJava(indent, tracer));
     }

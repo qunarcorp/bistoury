@@ -10,10 +10,11 @@ public class ListStack<T> extends ArrayList<T> {
         super();
     }
 
-    public ListStack(ArrayList<T> list) {
+    public ListStack(ArrayList<? extends T> list) {
         super(list);
     }
 
+    @Override
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     public ListStack<T> clone() {
         ListStack<T> copy = new ListStack<>(this);
@@ -62,6 +63,7 @@ public class ListStack<T> extends ArrayList<T> {
         pointer++;
     }
 
+    @Override
     public void clear() {
         super.clear();
         pointer = 0;

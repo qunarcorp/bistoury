@@ -5,7 +5,7 @@ package qunar.tc.decompiler.modules.decompiler.exps;
 
 import qunar.tc.decompiler.code.CodeConstants;
 import qunar.tc.decompiler.main.ClassWriter;
-import qunar.tc.decompiler.main.ClassesProcessor;
+import qunar.tc.decompiler.main.ClassesProcessor.ClassNode;
 import qunar.tc.decompiler.main.DecompilerContext;
 import qunar.tc.decompiler.main.collectors.BytecodeMappingTracer;
 import qunar.tc.decompiler.main.extern.IFernflowerPreferences;
@@ -21,7 +21,6 @@ import qunar.tc.decompiler.struct.attr.StructLocalVariableTypeTableAttribute;
 import qunar.tc.decompiler.struct.gen.VarType;
 import qunar.tc.decompiler.struct.gen.generics.GenericFieldDescriptor;
 import qunar.tc.decompiler.struct.gen.generics.GenericMain;
-import qunar.tc.decompiler.struct.match.IMatchable;
 import qunar.tc.decompiler.struct.match.MatchEngine;
 import qunar.tc.decompiler.struct.match.MatchNode;
 import qunar.tc.decompiler.util.InterpreterUtil;
@@ -89,7 +88,7 @@ public class VarExprent extends Exprent {
         tracer.addMapping(bytecode);
 
         if (classDef) {
-            ClassesProcessor.ClassNode child = DecompilerContext.getClassProcessor().getMapRootClasses().get(varType.value);
+            ClassNode child = DecompilerContext.getClassProcessor().getMapRootClasses().get(varType.value);
             new ClassWriter().classToJava(child, buffer, indent, tracer);
             tracer.incrementCurrentSourceLine(buffer.countLines());
         } else {
@@ -142,8 +141,8 @@ public class VarExprent extends Exprent {
                 if (originalIndex != null) {
                     // first try from signature
                     if (DecompilerContext.getOption(IFernflowerPreferences.DECOMPILE_GENERIC_SIGNATURES)) {
-                        StructLocalVariableTypeTableAttribute attr = (StructLocalVariableTypeTableAttribute) method.methodStruct
-                                .getAttribute(StructGeneralAttribute.ATTRIBUTE_LOCAL_VARIABLE_TYPE_TABLE);
+                        StructLocalVariableTypeTableAttribute attr =
+                                method.methodStruct.getAttribute(StructGeneralAttribute.ATTRIBUTE_LOCAL_VARIABLE_TYPE_TABLE);
                         if (attr != null) {
                             String signature = attr.getSignature(originalIndex, visibleOffset);
                             if (signature != null) {
@@ -254,7 +253,7 @@ public class VarExprent extends Exprent {
             return false;
         }
 
-        MatchNode.RuleValue rule = matchNode.getRules().get(IMatchable.MatchProperties.EXPRENT_VAR_INDEX);
+        MatchNode.RuleValue rule = matchNode.getRules().get(MatchProperties.EXPRENT_VAR_INDEX);
         if (rule != null) {
             if (rule.isVariable()) {
                 return engine.checkAndSetVariableValue((String) rule.value, this.index);

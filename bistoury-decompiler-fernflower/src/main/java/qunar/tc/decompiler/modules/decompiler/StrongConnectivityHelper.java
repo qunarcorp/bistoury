@@ -84,7 +84,7 @@ public class StrongConnectivityHelper {
         }
     }
 
-    public static boolean isExitComponent(List<Statement> lst) {
+    public static boolean isExitComponent(List<? extends Statement> lst) {
         Set<Statement> set = new HashSet<>();
         for (Statement stat : lst) {
             set.addAll(stat.getNeighbours(StatEdge.TYPE_REGULAR, Statement.DIRECTION_FORWARD));
@@ -94,7 +94,7 @@ public class StrongConnectivityHelper {
         return (set.size() == 0);
     }
 
-    public static List<Statement> getExitReps(List<List<Statement>> lst) {
+    public static List<Statement> getExitReps(List<? extends List<Statement>> lst) {
         List<Statement> res = new ArrayList<>();
 
         for (List<Statement> comp : lst) {

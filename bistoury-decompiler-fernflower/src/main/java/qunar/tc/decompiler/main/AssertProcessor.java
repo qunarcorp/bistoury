@@ -314,14 +314,13 @@ public class AssertProcessor {
                             key.equals(InterpreterUtil.makeUniqueKey(fdparam.getName(), fdparam.getDescriptor().descriptorString));
                 }
             }
-            return false;
         } else {
             if (exprent.type == Exprent.EXPRENT_FIELD) {
                 FieldExprent fdparam = (FieldExprent) exprent;
                 return classname.equals(fdparam.getClassname()) &&
                         key.equals(InterpreterUtil.makeUniqueKey(fdparam.getName(), fdparam.getDescriptor().descriptorString));
             }
-            return false;
         }
+        return false;
     }
 }

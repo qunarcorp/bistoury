@@ -20,7 +20,7 @@ public class GeneralStatement extends Statement {
         type = Statement.TYPE_GENERAL;
     }
 
-    public GeneralStatement(Statement head, Collection<Statement> statements, Statement post) {
+    public GeneralStatement(Statement head, Collection<? extends Statement> statements, Statement post) {
 
         this();
 
@@ -41,6 +41,7 @@ public class GeneralStatement extends Statement {
     // public methods
     // *****************************************************************************
 
+    @Override
     public TextBuffer toJava(int indent, BytecodeMappingTracer tracer) {
         TextBuffer buf = new TextBuffer();
 

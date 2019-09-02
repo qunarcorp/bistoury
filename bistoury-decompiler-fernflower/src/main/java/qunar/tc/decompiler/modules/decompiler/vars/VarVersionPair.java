@@ -5,45 +5,45 @@ import qunar.tc.decompiler.modules.decompiler.exps.VarExprent;
 
 public class VarVersionPair {
 
-  public final int var;
-  public final int version;
+    public final int var;
+    public final int version;
 
-  private int hashCode = -1;
+    private int hashCode = -1;
 
-  public VarVersionPair(int var, int version) {
-    this.var = var;
-    this.version = version;
-  }
-
-  public VarVersionPair(Integer var, Integer version) {
-    this.var = var;
-    this.version = version;
-  }
-
-  public VarVersionPair(VarExprent var) {
-    this.var = var.getIndex();
-    this.version = var.getVersion();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (o == this) return true;
-    if (!(o instanceof VarVersionPair)) return false;
-
-    VarVersionPair paar = (VarVersionPair)o;
-    return var == paar.var && version == paar.version;
-  }
-
-  @Override
-  public int hashCode() {
-    if (hashCode == -1) {
-      hashCode = this.var * 3 + this.version;
+    public VarVersionPair(int var, int version) {
+        this.var = var;
+        this.version = version;
     }
-    return hashCode;
-  }
 
-  @Override
-  public String toString() {
-    return "(" + var + "," + version + ")";
-  }
+    public VarVersionPair(Integer var, Integer version) {
+        this.var = var;
+        this.version = version;
+    }
+
+    public VarVersionPair(VarExprent var) {
+        this.var = var.getIndex();
+        this.version = var.getVersion();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof VarVersionPair)) return false;
+
+        VarVersionPair paar = (VarVersionPair) o;
+        return var == paar.var && version == paar.version;
+    }
+
+    @Override
+    public int hashCode() {
+        if (hashCode == -1) {
+            hashCode = this.var * 3 + this.version;
+        }
+        return hashCode;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + var + "," + version + ")";
+    }
 }

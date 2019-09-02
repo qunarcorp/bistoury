@@ -33,7 +33,7 @@ public class Fernflower implements IDecompiledData {
         String level = (String) properties.get(IFernflowerPreferences.LOG_LEVEL);
         if (level != null) {
             try {
-                logger.setSeverity(IFernflowerLogger.Severity.valueOf(level.toUpperCase(Locale.US)));
+                logger.setSeverity(IFernflowerLogger.Severity.valueOf(level.toUpperCase(Locale.ENGLISH)));
             } catch (IllegalArgumentException ignore) {
             }
         }
@@ -72,6 +72,13 @@ public class Fernflower implements IDecompiledData {
         structContext.addSpace(source, true);
     }
 
+    /**
+     * 提供使用文件流反编译的方法
+     *
+     * @param in
+     * @param filename
+     * @param absolutePath
+     */
     public void addStream(InputStream in, final String filename, final String absolutePath) {
         structContext.addStream(in, filename, absolutePath);
     }

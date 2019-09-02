@@ -5,6 +5,7 @@ import qunar.tc.decompiler.code.CodeConstants;
 import qunar.tc.decompiler.code.Instruction;
 import qunar.tc.decompiler.code.InstructionSequence;
 import qunar.tc.decompiler.main.ClassesProcessor;
+import qunar.tc.decompiler.main.ClassesProcessor.ClassNode;
 import qunar.tc.decompiler.main.DecompilerContext;
 import qunar.tc.decompiler.struct.StructClass;
 import qunar.tc.decompiler.struct.StructMethod;
@@ -30,8 +31,8 @@ public class LambdaProcessor {
     @SuppressWarnings("SpellCheckingInspection")
     private static final String JAVAC_LAMBDA_ALT_METHOD = "altMetafactory";
 
-    public void processClass(ClassesProcessor.ClassNode node) throws IOException {
-        for (ClassesProcessor.ClassNode child : node.nested) {
+    public void processClass(ClassNode node) throws IOException {
+        for (ClassNode child : node.nested) {
             processClass(child);
         }
 
@@ -43,7 +44,7 @@ public class LambdaProcessor {
         }
 
         StructBootstrapMethodsAttribute bootstrap =
-                (StructBootstrapMethodsAttribute) cl.getAttribute(StructGeneralAttribute.ATTRIBUTE_BOOTSTRAP_METHODS);
+                cl.getAttribute(StructGeneralAttribute.ATTRIBUTE_BOOTSTRAP_METHODS);
         if (bootstrap == null || bootstrap.getMethodsNumber() == 0) {
             return; // no bootstrap constants in pool
         }
@@ -92,7 +93,7 @@ public class LambdaProcessor {
 
                             LinkConstant content_method_handle = (LinkConstant) bootstrap_arguments.get(1);
 
-                            ClassesProcessor.ClassNode node_lambda = new ClassesProcessor.ClassNode(content_method_handle.classname, content_method_handle.elementname,
+                            ClassNode node_lambda = new ClassNode(content_method_handle.classname, content_method_handle.elementname,
                                     content_method_handle.descriptor, content_method_handle.index1,
                                     lambda_class_name, lambda_method_name, lambda_method_descriptor, cl);
                             node_lambda.simpleName = cl.qualifiedName + "##Lambda_" + invoke_dynamic.index1 + "_" + invoke_dynamic.index2;
@@ -114,11 +115,11 @@ public class LambdaProcessor {
         }
 
         // build class hierarchy on lambda
-        for (ClassesProcessor.ClassNode nd : node.nested) {
-            if (nd.type == ClassesProcessor.ClassNode.CLASS_LAMBDA) {
+        for (ClassNode nd : node.nested) {
+            if (nd.type == ClassNode.CLASS_LAMBDA) {
                 String parent_class_name = mapMethodsLambda.get(nd.enclosingMethod);
                 if (parent_class_name != null) {
-                    ClassesProcessor.ClassNode parent_class = clProcessor.getMapRootClasses().get(parent_class_name);
+                    ClassNode parent_class = clProcessor.getMapRootClasses().get(parent_class_name);
 
                     parent_class.nested.add(nd);
                     nd.parent = parent_class;

@@ -3,6 +3,7 @@ package qunar.tc.decompiler.code.cfg;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
+import qunar.tc.decompiler.main.DecompilerContext;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,6 +26,27 @@ public class ExceptionRangeCFG {
 
     public boolean isCircular() {
         return protectedRange.contains(handler);
+    }
+
+    @Override
+    public String toString() {
+        String new_line_separator = DecompilerContext.getNewLineSeparator();
+        StringBuilder buf = new StringBuilder();
+
+        buf.append("exceptionType:");
+        for (String exception_type : exceptionTypes) {
+            buf.append(" ").append(exception_type);
+        }
+        buf.append(new_line_separator);
+
+        buf.append("handler: ").append(handler.id).append(new_line_separator);
+        buf.append("range: ");
+        for (BasicBlock block : protectedRange) {
+            buf.append(block.id).append(" ");
+        }
+        buf.append(new_line_separator);
+
+        return buf.toString();
     }
 
     public BasicBlock getHandler() {

@@ -2,7 +2,7 @@
 package qunar.tc.decompiler.main.rels;
 
 import qunar.tc.decompiler.code.CodeConstants;
-import qunar.tc.decompiler.main.ClassesProcessor;
+import qunar.tc.decompiler.main.ClassesProcessor.ClassNode;
 import qunar.tc.decompiler.main.DecompilerContext;
 import qunar.tc.decompiler.main.collectors.CounterContainer;
 import qunar.tc.decompiler.main.collectors.VarNamesCollector;
@@ -20,6 +20,7 @@ import qunar.tc.decompiler.struct.StructClass;
 import qunar.tc.decompiler.struct.StructField;
 import qunar.tc.decompiler.struct.StructMethod;
 import qunar.tc.decompiler.struct.attr.StructEnclosingMethodAttribute;
+import qunar.tc.decompiler.struct.attr.StructGeneralAttribute;
 import qunar.tc.decompiler.struct.gen.MethodDescriptor;
 import qunar.tc.decompiler.struct.gen.VarType;
 import qunar.tc.decompiler.util.InterpreterUtil;
@@ -28,10 +29,10 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class NestedClassProcessor {
-    public void processClass(ClassesProcessor.ClassNode root, ClassesProcessor.ClassNode node) {
+    public void processClass(ClassNode root, ClassNode node) {
         // hide synthetic lambda content methods
-        if (node.type == ClassesProcessor.ClassNode.CLASS_LAMBDA && !node.lambdaInformation.is_method_reference) {
-            ClassesProcessor.ClassNode node_content = DecompilerContext.getClassProcessor().getMapRootClasses().get(node.classStruct.qualifiedName);
+        if (node.type == ClassNode.CLASS_LAMBDA && !node.lambdaInformation.is_method_reference) {
+            ClassNode node_content = DecompilerContext.getClassProcessor().getMapRootClasses().get(node.classStruct.qualifiedName);
             if (node_content != null && node_content.getWrapper() != null) {
                 node_content.getWrapper().getHiddenMembers().add(node.lambdaInformation.content_method_key);
             }
@@ -41,7 +42,7 @@ public class NestedClassProcessor {
             return;
         }
 
-        if (node.type != ClassesProcessor.ClassNode.CLASS_LAMBDA) {
+        if (node.type != ClassNode.CLASS_LAMBDA) {
             computeLocalVarsAndDefinitions(node);
 
             // for each local or anonymous class ensure not empty enclosing method
@@ -49,10 +50,10 @@ public class NestedClassProcessor {
         }
 
         int nameless = 0, synthetics = 0;
-        for (ClassesProcessor.ClassNode child : node.nested) {
+        for (ClassNode child : node.nested) {
             StructClass cl = child.classStruct;
             // ensure not-empty class name
-            if ((child.type == ClassesProcessor.ClassNode.CLASS_LOCAL || child.type == ClassesProcessor.ClassNode.CLASS_MEMBER) && child.simpleName == null) {
+            if ((child.type == ClassNode.CLASS_LOCAL || child.type == ClassNode.CLASS_MEMBER) && child.simpleName == null) {
                 if ((child.access & CodeConstants.ACC_SYNTHETIC) != 0 || cl.isSynthetic()) {
                     child.simpleName = "SyntheticClass_" + (++synthetics);
                 } else {
@@ -63,24 +64,27 @@ public class NestedClassProcessor {
             }
         }
 
-        for (ClassesProcessor.ClassNode child : node.nested) {
-            if (child.type == ClassesProcessor.ClassNode.CLASS_LAMBDA) {
+        for (ClassNode child : node.nested) {
+            if (child.type == ClassNode.CLASS_LAMBDA) {
                 setLambdaVars(node, child);
-            } else if (child.type != ClassesProcessor.ClassNode.CLASS_MEMBER || (child.access & CodeConstants.ACC_STATIC) == 0) {
+            } else if (child.type != ClassNode.CLASS_MEMBER || (child.access & CodeConstants.ACC_STATIC) == 0) {
                 insertLocalVars(node, child);
 
-                if (child.type == ClassesProcessor.ClassNode.CLASS_LOCAL) {
-                    setLocalClassDefinition(node.getWrapper().getMethods().getWithKey(child.enclosingMethod), child);
+                if (child.type == ClassNode.CLASS_LOCAL && child.enclosingMethod != null) {
+                    MethodWrapper enclosingMethodWrapper = node.getWrapper().getMethods().getWithKey(child.enclosingMethod);
+                    if (enclosingMethodWrapper != null) { // e.g. in case of switch-on-enum. FIXME: some proper handling of multiple enclosing classes
+                        setLocalClassDefinition(enclosingMethodWrapper, child);
+                    }
                 }
             }
         }
 
-        for (ClassesProcessor.ClassNode child : node.nested) {
+        for (ClassNode child : node.nested) {
             processClass(root, child);
         }
     }
 
-    private static void setLambdaVars(ClassesProcessor.ClassNode parent, ClassesProcessor.ClassNode child) {
+    private static void setLambdaVars(ClassNode parent, ClassNode child) {
         if (child.lambdaInformation.is_method_reference) { // method reference, no code and no parameters
             return;
         }
@@ -159,20 +163,19 @@ public class NestedClassProcessor {
         }
     }
 
-    private static void checkNotFoundClasses(ClassesProcessor.ClassNode root, ClassesProcessor.ClassNode node) {
-        List<ClassesProcessor.ClassNode> copy = new ArrayList<>(node.nested);
+    private static void checkNotFoundClasses(ClassNode root, ClassNode node) {
+        List<ClassNode> copy = new ArrayList<>(node.nested);
 
-        for (ClassesProcessor.ClassNode child : copy) {
+        for (ClassNode child : copy) {
             if (child.classStruct.isSynthetic()) {
                 continue;
             }
 
-            if ((child.type == ClassesProcessor.ClassNode.CLASS_LOCAL || child.type == ClassesProcessor.ClassNode.CLASS_ANONYMOUS) && child.enclosingMethod == null) {
+            if ((child.type == ClassNode.CLASS_LOCAL || child.type == ClassNode.CLASS_ANONYMOUS) && child.enclosingMethod == null) {
                 Set<String> setEnclosing = child.enclosingClasses;
 
                 if (!setEnclosing.isEmpty()) {
-                    StructEnclosingMethodAttribute attr =
-                            (StructEnclosingMethodAttribute) child.classStruct.getAttribute("EnclosingMethod");
+                    StructEnclosingMethodAttribute attr = child.classStruct.getAttribute(StructGeneralAttribute.ATTRIBUTE_ENCLOSING_METHOD);
                     if (attr != null &&
                             attr.getMethodName() != null &&
                             node.classStruct.qualifiedName.equals(attr.getClassName()) &&
@@ -189,10 +192,10 @@ public class NestedClassProcessor {
                 boolean hasEnclosing = !setEnclosing.isEmpty() && insertNestedClass(root, child);
 
                 if (!hasEnclosing) {
-                    if (child.type == ClassesProcessor.ClassNode.CLASS_ANONYMOUS) {
+                    if (child.type == ClassNode.CLASS_ANONYMOUS) {
                         String message = "Unreferenced anonymous class " + child.classStruct.qualifiedName + "!";
                         DecompilerContext.getLogger().writeMessage(message, IFernflowerLogger.Severity.WARN);
-                    } else if (child.type == ClassesProcessor.ClassNode.CLASS_LOCAL) {
+                    } else if (child.type == ClassNode.CLASS_LOCAL) {
                         String message = "Unreferenced local class " + child.classStruct.qualifiedName + "!";
                         DecompilerContext.getLogger().writeMessage(message, IFernflowerLogger.Severity.WARN);
                     }
@@ -201,14 +204,14 @@ public class NestedClassProcessor {
         }
     }
 
-    private static boolean insertNestedClass(ClassesProcessor.ClassNode root, ClassesProcessor.ClassNode child) {
+    private static boolean insertNestedClass(ClassNode root, ClassNode child) {
         Set<String> setEnclosing = child.enclosingClasses;
 
-        LinkedList<ClassesProcessor.ClassNode> stack = new LinkedList<>();
+        LinkedList<ClassNode> stack = new LinkedList<>();
         stack.add(root);
 
         while (!stack.isEmpty()) {
-            ClassesProcessor.ClassNode node = stack.removeFirst();
+            ClassNode node = stack.removeFirst();
 
             if (setEnclosing.contains(node.classStruct.qualifiedName)) {
                 node.nested.add(child);
@@ -224,14 +227,14 @@ public class NestedClassProcessor {
         return false;
     }
 
-    private static void computeLocalVarsAndDefinitions(final ClassesProcessor.ClassNode node) {
+    private static void computeLocalVarsAndDefinitions(final ClassNode node) {
         // class name -> constructor descriptor -> var to field link
         final Map<String, Map<String, List<VarFieldPair>>> mapVarMasks = new HashMap<>();
 
         int clTypes = 0;
 
-        for (ClassesProcessor.ClassNode nd : node.nested) {
-            if (nd.type != ClassesProcessor.ClassNode.CLASS_LAMBDA &&
+        for (ClassNode nd : node.nested) {
+            if (nd.type != ClassNode.CLASS_LAMBDA &&
                     !nd.classStruct.isSynthetic() &&
                     (nd.access & CodeConstants.ACC_STATIC) == 0 &&
                     (nd.access & CodeConstants.ACC_INTERFACE) == 0) {
@@ -250,7 +253,7 @@ public class NestedClassProcessor {
         // local var masks
         final Map<String, Map<String, List<VarFieldPair>>> mapVarFieldPairs = new HashMap<>();
 
-        if (clTypes != ClassesProcessor.ClassNode.CLASS_MEMBER) {
+        if (clTypes != ClassNode.CLASS_MEMBER) {
             // iterate enclosing class
             for (final MethodWrapper method : node.getWrapper().getMethods()) {
                 if (method.root != null) { // neither abstract, nor native
@@ -266,9 +269,9 @@ public class NestedClassProcessor {
 
                                     if (constructor != null && mapVarMasks.containsKey(constructor.getClassname())) { // non-static inner class constructor
                                         String refClassName = constructor.getClassname();
-                                        ClassesProcessor.ClassNode nestedClassNode = node.getClassNode(refClassName);
+                                        ClassNode nestedClassNode = node.getClassNode(refClassName);
 
-                                        if (nestedClassNode.type != ClassesProcessor.ClassNode.CLASS_MEMBER) {
+                                        if (nestedClassNode.type != ClassNode.CLASS_MEMBER) {
                                             List<VarFieldPair> mask = mapVarMasks.get(refClassName).get(constructor.getStringDescriptor());
 
                                             if (!mapVarFieldPairs.containsKey(refClassName)) {
@@ -321,7 +324,7 @@ public class NestedClassProcessor {
 
         // merge var masks
         for (Entry<String, Map<String, List<VarFieldPair>>> enclosing : mapVarMasks.entrySet()) {
-            ClassesProcessor.ClassNode nestedNode = node.getClassNode(enclosing.getKey());
+            ClassNode nestedNode = node.getClassNode(enclosing.getKey());
 
             // intersection
             List<VarFieldPair> interPairMask = null;
@@ -382,7 +385,7 @@ public class NestedClassProcessor {
         }
     }
 
-    private static void insertLocalVars(ClassesProcessor.ClassNode parent, final ClassesProcessor.ClassNode child) {
+    private static void insertLocalVars(ClassNode parent, final ClassNode child) {
         // enclosing method, is null iff member class
         MethodWrapper enclosingMethod = parent.getWrapper().getMethods().getWithKey(child.enclosingMethod);
 
@@ -406,7 +409,7 @@ public class NestedClassProcessor {
                             String varName = null;
                             VarType varType = null;
 
-                            if (child.type != ClassesProcessor.ClassNode.CLASS_MEMBER) {
+                            if (child.type != ClassNode.CLASS_MEMBER) {
                                 varName = enclosingMethod.varproc.getVarName(pair);
                                 varType = enclosingMethod.varproc.getVarType(pair);
 
@@ -432,7 +435,7 @@ public class NestedClassProcessor {
                 }
 
                 final Map<String, VarVersionPair> mapFieldsToNewVars = new HashMap<>();
-                for (ClassesProcessor.ClassNode classNode = child; classNode != null; classNode = classNode.parent) {
+                for (ClassNode classNode = child; classNode != null; classNode = classNode.parent) {
                     for (Entry<String, VarVersionPair> entry : classNode.mapFieldsToVars.entrySet()) {
                         VarVersionPair newVar = new VarVersionPair(method.counter.getCounterAndIncrement(CounterContainer.VAR_COUNTER), 0);
 
@@ -441,7 +444,7 @@ public class NestedClassProcessor {
                         String varName = null;
                         VarType varType = null;
 
-                        if (classNode.type != ClassesProcessor.ClassNode.CLASS_MEMBER) {
+                        if (classNode.type != ClassNode.CLASS_MEMBER) {
                             MethodWrapper enclosing_method = classNode.parent.getWrapper().getMethods().getWithKey(classNode.enclosingMethod);
 
                             varName = enclosing_method.varproc.getVarName(entry.getValue());
@@ -502,7 +505,7 @@ public class NestedClassProcessor {
                             }
                         }
 
-                        if (child.type == ClassesProcessor.ClassNode.CLASS_ANONYMOUS &&
+                        if (child.type == ClassNode.CLASS_ANONYMOUS &&
                                 CodeConstants.INIT_NAME.equals(method.methodStruct.getName()) &&
                                 exprent.type == Exprent.EXPRENT_INVOCATION) {
                             InvocationExprent invokeExpr = (InvocationExprent) exprent;
@@ -633,11 +636,7 @@ public class NestedClassProcessor {
     private static void mergeListSignatures(List<VarFieldPair> first, List<VarFieldPair> second, boolean both) {
         int i = 1;
 
-        while (true) {
-            if (first.size() <= i || second.size() <= i) {
-                break;
-            }
-
+        while (first.size() > i && second.size() > i) {
             VarFieldPair fObj = first.get(first.size() - i);
             VarFieldPair sObj = second.get(second.size() - i);
 
@@ -712,7 +711,7 @@ public class NestedClassProcessor {
         return eq;
     }
 
-    private static void setLocalClassDefinition(MethodWrapper method, ClassesProcessor.ClassNode node) {
+    private static void setLocalClassDefinition(MethodWrapper method, ClassNode node) {
         RootStatement root = method.root;
 
         Set<Statement> setStats = new HashSet<>();
@@ -727,7 +726,6 @@ public class NestedClassProcessor {
         Statement first = findFirstBlock(statement, setStats);
 
         List<Exprent> lst;
-        //noinspection Duplicates
         if (first == null) {
             lst = statement.getVarDefinitions();
         } else if (first.getExprents() == null) {
@@ -765,7 +763,6 @@ public class NestedClassProcessor {
 
                 stack.clear();
 
-                //noinspection Duplicates
                 switch (st.type) {
                     case Statement.TYPE_SEQUENCE:
                         stack.addAll(0, st.getStats());
@@ -785,7 +782,7 @@ public class NestedClassProcessor {
         return null;
     }
 
-    private static Statement getDefStatement(Statement stat, VarType classType, Set<Statement> setStats) {
+    private static Statement getDefStatement(Statement stat, VarType classType, Set<? super Statement> setStats) {
         List<Exprent> lst = new ArrayList<>();
         Statement retStat = null;
 
@@ -884,7 +881,7 @@ public class NestedClassProcessor {
         public String fieldKey;
         public VarVersionPair varPair;
 
-        public VarFieldPair(String field, VarVersionPair varPair) {
+        VarFieldPair(String field, VarVersionPair varPair) {
             this.fieldKey = field;
             this.varPair = varPair;
         }

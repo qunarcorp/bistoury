@@ -11,6 +11,7 @@ import qunar.tc.decompiler.main.rels.MethodWrapper;
 import qunar.tc.decompiler.modules.decompiler.ExprProcessor;
 import qunar.tc.decompiler.modules.decompiler.vars.CheckTypesResult;
 import qunar.tc.decompiler.struct.attr.StructExceptionsAttribute;
+import qunar.tc.decompiler.struct.attr.StructGeneralAttribute;
 import qunar.tc.decompiler.struct.gen.VarType;
 import qunar.tc.decompiler.struct.match.IMatchable;
 import qunar.tc.decompiler.struct.match.MatchEngine;
@@ -84,7 +85,7 @@ public class ExitExprent extends Exprent {
             ClassesProcessor.ClassNode node = ((ClassesProcessor.ClassNode) DecompilerContext.getProperty(DecompilerContext.CURRENT_CLASS_NODE));
 
             if (method != null && node != null) {
-                StructExceptionsAttribute attr = (StructExceptionsAttribute) method.methodStruct.getAttribute("Exceptions");
+                StructExceptionsAttribute attr = method.methodStruct.getAttribute(StructGeneralAttribute.ATTRIBUTE_EXCEPTIONS);
 
                 if (attr != null) {
                     String classname = null;

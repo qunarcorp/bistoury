@@ -82,7 +82,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
     }
 
     @SuppressWarnings("UseOfSystemOutOrSystemErr")
-    private static void addPath(List<File> list, String path) {
+    private static void addPath(List<? super File> list, String path) {
         File file = new File(path);
         if (file.exists()) {
             list.add(file);
@@ -171,7 +171,7 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
     @Override
     public void saveClassFile(String path, String qualifiedName, String entryName, String content, int[] mapping) {
         File file = new File(getAbsolutePath(path), entryName);
-        try (Writer out = new OutputStreamWriter(new FileOutputStream(file), "UTF8")) {
+        try (Writer out = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
             out.write(content);
         } catch (IOException ex) {
             DecompilerContext.getLogger().writeMessage("Cannot write class file " + file, ex);
@@ -187,7 +187,6 @@ public class ConsoleDecompiler implements IBytecodeProvider, IResultSaver {
             }
 
             FileOutputStream fileStream = new FileOutputStream(file);
-            @SuppressWarnings("IOResourceOpenedButNotSafelyClosed")
             ZipOutputStream zipStream = manifest != null ? new JarOutputStream(fileStream, manifest) : new ZipOutputStream(fileStream);
             mapArchiveStreams.put(file.getPath(), zipStream);
         } catch (IOException ex) {

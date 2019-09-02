@@ -28,6 +28,13 @@ public class GenericType {
         this.value = value;
     }
 
+    private GenericType(GenericType other, int arrayDim) {
+        this(other.type, arrayDim, other.value);
+        enclosingClasses.addAll(other.enclosingClasses);
+        arguments.addAll(other.arguments);
+        wildcards.addAll(other.wildcards);
+    }
+
     public GenericType(String signature) {
         int type = 0;
         int arrayDim = 0;
@@ -196,7 +203,7 @@ public class GenericType {
 
     public GenericType decreaseArrayDim() {
         assert arrayDim > 0 : this;
-        return new GenericType(type, arrayDim - 1, value);
+        return new GenericType(this, arrayDim - 1);
     }
 
     public List<GenericType> getArguments() {

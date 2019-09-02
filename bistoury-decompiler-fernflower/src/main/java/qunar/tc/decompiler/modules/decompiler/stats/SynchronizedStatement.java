@@ -58,6 +58,7 @@ public class SynchronizedStatement extends Statement {
     // public methods
     // *****************************************************************************
 
+    @Override
     public TextBuffer toJava(int indent, BytecodeMappingTracer tracer) {
         TextBuffer buf = new TextBuffer();
         buf.append(ExprProcessor.listToJava(varDefinitions, indent, tracer));
@@ -88,10 +89,12 @@ public class SynchronizedStatement extends Statement {
         }
     }
 
+    @Override
     public void initExprents() {
         headexprent.set(0, first.getExprents().remove(first.getExprents().size() - 1));
     }
 
+    @Override
     public List<Object> getSequentialObjects() {
 
         List<Object> lst = new ArrayList<Object>(stats);
@@ -100,12 +103,14 @@ public class SynchronizedStatement extends Statement {
         return lst;
     }
 
+    @Override
     public void replaceExprent(Exprent oldexpr, Exprent newexpr) {
         if (headexprent.get(0) == oldexpr) {
             headexprent.set(0, newexpr);
         }
     }
 
+    @Override
     public void replaceStatement(Statement oldstat, Statement newstat) {
 
         if (body == oldstat) {
@@ -122,10 +127,12 @@ public class SynchronizedStatement extends Statement {
         stats.removeWithKey(exc.id);
     }
 
+    @Override
     public Statement getSimpleCopy() {
         return new SynchronizedStatement();
     }
 
+    @Override
     public void initSimpleCopy() {
         first = stats.get(0);
         body = stats.get(1);

@@ -73,7 +73,10 @@ public class SwitchHelper {
     private static boolean isEnumArray(Exprent exprent) {
         if (exprent instanceof ArrayExprent) {
             Exprent field = ((ArrayExprent) exprent).getArray();
-            return field instanceof FieldExprent && ((FieldExprent) field).getName().startsWith("$SwitchMap");
+            Exprent index = ((ArrayExprent) exprent).getIndex();
+            return field instanceof FieldExprent &&
+                    (((FieldExprent) field).getName().startsWith("$SwitchMap") ||
+                            (index instanceof InvocationExprent && ((InvocationExprent) index).getName().equals("ordinal")));
         }
         return false;
     }

@@ -15,6 +15,7 @@ import qunar.tc.decompiler.modules.decompiler.exps.*;
 import qunar.tc.decompiler.modules.decompiler.sforms.DirectGraph;
 import qunar.tc.decompiler.modules.decompiler.sforms.DirectNode;
 import qunar.tc.decompiler.modules.decompiler.sforms.FlattenStatementsHelper;
+import qunar.tc.decompiler.modules.decompiler.sforms.FlattenStatementsHelper.FinallyPathWrapper;
 import qunar.tc.decompiler.modules.decompiler.stats.*;
 import qunar.tc.decompiler.modules.decompiler.vars.VarProcessor;
 import qunar.tc.decompiler.struct.StructClass;
@@ -86,8 +87,8 @@ public class ExprProcessor implements CodeConstants {
     private static final int[] func8 = {MonitorExprent.MONITOR_ENTER, MonitorExprent.MONITOR_EXIT};
 
     private static final int[] arrTypeIds = {
-            CodeConstants.TYPE_BOOLEAN, CodeConstants.TYPE_CHAR, CodeConstants.TYPE_FLOAT, CodeConstants.TYPE_DOUBLE,
-            CodeConstants.TYPE_BYTE, CodeConstants.TYPE_SHORT, CodeConstants.TYPE_INT, CodeConstants.TYPE_LONG
+            TYPE_BOOLEAN, TYPE_CHAR, TYPE_FLOAT, TYPE_DOUBLE,
+            TYPE_BYTE, TYPE_SHORT, TYPE_INT, TYPE_LONG
     };
 
     private static final int[] negIfs = {
@@ -112,15 +113,15 @@ public class ExprProcessor implements CodeConstants {
 
         // collect finally entry points
         Set<String> setFinallyShortRangeEntryPoints = new HashSet<>();
-        for (List<FlattenStatementsHelper.FinallyPathWrapper> lst : dgraph.mapShortRangeFinallyPaths.values()) {
-            for (FlattenStatementsHelper.FinallyPathWrapper finwrap : lst) {
+        for (List<FinallyPathWrapper> lst : dgraph.mapShortRangeFinallyPaths.values()) {
+            for (FinallyPathWrapper finwrap : lst) {
                 setFinallyShortRangeEntryPoints.add(finwrap.entry);
             }
         }
 
         Set<String> setFinallyLongRangeEntryPaths = new HashSet<>();
-        for (List<FlattenStatementsHelper.FinallyPathWrapper> lst : dgraph.mapLongRangeFinallyPaths.values()) {
-            for (FlattenStatementsHelper.FinallyPathWrapper finwrap : lst) {
+        for (List<FinallyPathWrapper> lst : dgraph.mapLongRangeFinallyPaths.values()) {
+            for (FinallyPathWrapper finwrap : lst) {
                 setFinallyLongRangeEntryPaths.add(finwrap.source + "##" + finwrap.entry);
             }
         }
@@ -165,7 +166,7 @@ public class ExprProcessor implements CodeConstants {
                 boolean isSuccessor = true;
                 if (currentEntrypoint != null && dgraph.mapLongRangeFinallyPaths.containsKey(node.id)) {
                     isSuccessor = false;
-                    for (FlattenStatementsHelper.FinallyPathWrapper finwraplong : dgraph.mapLongRangeFinallyPaths.get(node.id)) {
+                    for (FinallyPathWrapper finwraplong : dgraph.mapLongRangeFinallyPaths.get(node.id)) {
                         if (finwraplong.source.equals(currentEntrypoint) && finwraplong.destination.equals(nd.id)) {
                             isSuccessor = true;
                             break;
@@ -275,8 +276,7 @@ public class ExprProcessor implements CodeConstants {
     public void processBlock(BasicBlockStatement stat, PrimitiveExprsList data, StructClass cl) {
 
         ConstantPool pool = cl.getPool();
-        StructBootstrapMethodsAttribute bootstrap =
-                (StructBootstrapMethodsAttribute) cl.getAttribute(StructGeneralAttribute.ATTRIBUTE_BOOTSTRAP_METHODS);
+        StructBootstrapMethodsAttribute bootstrap = cl.getAttribute(StructGeneralAttribute.ATTRIBUTE_BOOTSTRAP_METHODS);
 
         BasicBlock block = stat.getBlock();
 
@@ -518,7 +518,7 @@ public class ExprProcessor implements CodeConstants {
                 case opc_invokestatic:
                 case opc_invokeinterface:
                 case opc_invokedynamic:
-                    if (instr.opcode != opc_invokedynamic || instr.bytecodeVersion >= CodeConstants.BYTECODE_JAVA_7) {
+                    if (instr.opcode != opc_invokedynamic || instr.bytecodeVersion >= BYTECODE_JAVA_7) {
                         LinkConstant invoke_constant = pool.getLinkConstant(instr.operand(0));
 
                         List<PooledConstant> bootstrap_arguments = null;
@@ -527,7 +527,7 @@ public class ExprProcessor implements CodeConstants {
                         }
 
                         InvocationExprent exprinv = new InvocationExprent(instr.opcode, invoke_constant, bootstrap_arguments, stack, bytecode_offsets);
-                        if (exprinv.getDescriptor().ret.type == CodeConstants.TYPE_VOID) {
+                        if (exprinv.getDescriptor().ret.type == TYPE_VOID) {
                             exprlist.add(exprinv);
                         } else {
                             pushEx(stack, exprlist, exprinv);
@@ -674,15 +674,15 @@ public class ExprProcessor implements CodeConstants {
 
     public static String getTypeName(VarType type, boolean getShort) {
         int tp = type.type;
-        if (tp <= CodeConstants.TYPE_BOOLEAN) {
+        if (tp <= TYPE_BOOLEAN) {
             return typeNames[tp];
-        } else if (tp == CodeConstants.TYPE_UNKNOWN) {
+        } else if (tp == TYPE_UNKNOWN) {
             return UNKNOWN_TYPE_STRING; // INFO: should not occur
-        } else if (tp == CodeConstants.TYPE_NULL) {
+        } else if (tp == TYPE_NULL) {
             return NULL_TYPE_STRING; // INFO: should not occur
-        } else if (tp == CodeConstants.TYPE_VOID) {
+        } else if (tp == TYPE_VOID) {
             return "void";
-        } else if (tp == CodeConstants.TYPE_OBJECT) {
+        } else if (tp == TYPE_OBJECT) {
             String ret = buildJavaClassName(type.value);
             if (getShort) {
                 ret = DecompilerContext.getImportCollector().getShortName(ret);
@@ -786,7 +786,7 @@ public class ExprProcessor implements CodeConstants {
         return res;
     }
 
-    public static TextBuffer listToJava(List<Exprent> lst, int indent, BytecodeMappingTracer tracer) {
+    public static TextBuffer listToJava(List<? extends Exprent> lst, int indent, BytecodeMappingTracer tracer) {
         if (lst == null || lst.isEmpty()) {
             return new TextBuffer();
         }
@@ -823,13 +823,13 @@ public class ExprProcessor implements CodeConstants {
 
     public static ConstExprent getDefaultArrayValue(VarType arrType) {
         ConstExprent defaultVal;
-        if (arrType.type == CodeConstants.TYPE_OBJECT || arrType.arrayDim > 0) {
+        if (arrType.type == TYPE_OBJECT || arrType.arrayDim > 0) {
             defaultVal = new ConstExprent(VarType.VARTYPE_NULL, null, null);
-        } else if (arrType.type == CodeConstants.TYPE_FLOAT) {
+        } else if (arrType.type == TYPE_FLOAT) {
             defaultVal = new ConstExprent(VarType.VARTYPE_FLOAT, 0f, null);
-        } else if (arrType.type == CodeConstants.TYPE_LONG) {
+        } else if (arrType.type == TYPE_LONG) {
             defaultVal = new ConstExprent(VarType.VARTYPE_LONG, 0L, null);
-        } else if (arrType.type == CodeConstants.TYPE_DOUBLE) {
+        } else if (arrType.type == TYPE_DOUBLE) {
             defaultVal = new ConstExprent(VarType.VARTYPE_DOUBLE, 0d, null);
         } else { // integer types
             defaultVal = new ConstExprent(0, true, null);
@@ -843,7 +843,7 @@ public class ExprProcessor implements CodeConstants {
                                            int indent,
                                            boolean castNull,
                                            BytecodeMappingTracer tracer) {
-        return getCastedExprent(exprent, leftType, buffer, indent, castNull, false, false, tracer);
+        return getCastedExprent(exprent, leftType, buffer, indent, castNull, false, false, false, tracer);
     }
 
     public static boolean getCastedExprent(Exprent exprent,
@@ -853,13 +853,27 @@ public class ExprProcessor implements CodeConstants {
                                            boolean castNull,
                                            boolean castAlways,
                                            boolean castNarrowing,
+                                           boolean unbox,
                                            BytecodeMappingTracer tracer) {
+
+        if (unbox) {
+            // "unbox" invocation parameters, e.g. 'byteSet.add((byte)123)' or 'new ShortContainer((short)813)'
+            if (exprent.type == Exprent.EXPRENT_INVOCATION && ((InvocationExprent) exprent).isBoxingCall()) {
+                InvocationExprent invocationExprent = (InvocationExprent) exprent;
+                exprent = invocationExprent.getLstParameters().get(0);
+                int paramType = invocationExprent.getDescriptor().params[0].type;
+                if (exprent.type == Exprent.EXPRENT_CONST && ((ConstExprent) exprent).getConstType().type != paramType) {
+                    leftType = new VarType(paramType);
+                }
+            }
+        }
+
         VarType rightType = exprent.getExprType();
 
         boolean cast =
                 castAlways ||
-                        (!leftType.isSuperset(rightType) && (rightType.equals(VarType.VARTYPE_OBJECT) || leftType.type != CodeConstants.TYPE_OBJECT)) ||
-                        (castNull && rightType.type == CodeConstants.TYPE_NULL && !UNDEFINED_TYPE_STRING.equals(getTypeName(leftType))) ||
+                        (!leftType.isSuperset(rightType) && (rightType.equals(VarType.VARTYPE_OBJECT) || leftType.type != TYPE_OBJECT)) ||
+                        (castNull && rightType.type == TYPE_NULL && !UNDEFINED_TYPE_STRING.equals(getTypeName(leftType))) ||
                         (castNarrowing && isIntConstant(exprent) && isNarrowedIntType(leftType));
 
         boolean quote = cast && exprent.getPrecedence() >= FunctionExprent.getPrecedence(FunctionExprent.FUNCTION_CAST);
@@ -891,11 +905,11 @@ public class ExprProcessor implements CodeConstants {
     private static boolean isIntConstant(Exprent exprent) {
         if (exprent.type == Exprent.EXPRENT_CONST) {
             switch (((ConstExprent) exprent).getConstType().type) {
-                case CodeConstants.TYPE_BYTE:
-                case CodeConstants.TYPE_BYTECHAR:
-                case CodeConstants.TYPE_SHORT:
-                case CodeConstants.TYPE_SHORTCHAR:
-                case CodeConstants.TYPE_INT:
+                case TYPE_BYTE:
+                case TYPE_BYTECHAR:
+                case TYPE_SHORT:
+                case TYPE_SHORTCHAR:
+                case TYPE_INT:
                     return true;
             }
         }
