@@ -110,7 +110,7 @@
 |      端口          | 端口定义的位置                         |
 |:---------------------|:------------------------------|
 | 9880 | `解压缩目录/bistoury-proxy-bin/conf/global.properties`中的`agent.newport`值|
-| 9881 | `解压缩目录/bistoury-proxy-bin/conf/global.properties`中的`server.port`值和`quick_start.sh`中|`PROXY_WEBSOCKET_PORT`的值|
+| 9881 | `解压缩目录/bistoury-proxy-bin/conf/global.properties`中的`server.port`值和`quick_start.sh`中`PROXY_WEBSOCKET_PORT`的值|
 | 9090 | `解压缩目录/bistoury-proxy-bin/conf/server.properties`中的`tomcat.port`值和`quick_start.sh`中`PROXY_TOMCAT_PORT`的值|
 | 9091 | `解压缩目录/bistoury-ui-bin/conf/server.properties`中的`tomcat.port`值|
 | 9092 | `解压缩目录/h2/h2.sh`中的H2_PORT值|
