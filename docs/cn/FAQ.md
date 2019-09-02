@@ -131,3 +131,5 @@
 
 - release info 解析失败，*** ,代码查看仅可通过反编译
   > 代表没有读取到releaseInfo.properties文件，不能根据此文件，找到应用对应的源码信息。
+
+- [源代码查看详细介绍](https://github.com/qunarcorp/bistoury/blob/master/docs/cn/gitlab_maven.md)
