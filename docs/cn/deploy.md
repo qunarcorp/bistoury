@@ -48,7 +48,7 @@ gitlab peivate token配置表，存放每个用户对应的private token
 存放应用owner表，存放每个用户用的哪些应用
 
 ## 2.2 获取安装包
-项目通过选择不同的profile使用不同的配置
+项目通过选择不同的profile使用不同的配置，profile一共有local和prod两种，local是快速启动专用的，使用h2数据库；prod使用的是mysql数据库
 ### 2.2.1 通过源码构建
 #### 2.2.1.1 配置数据库连接信息
 Bistoury的ui和proxy需要知道如何连接到在上面创建的数据库，数据库连接信息配置位于解压后的ui和proxy的conf/jdbc.properties中，ui和proxy的jdbc连接需要保持一致。
