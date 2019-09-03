@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.serverside.common;
+package qunar.tc.bistoury.serverside.common.registry.zk;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;

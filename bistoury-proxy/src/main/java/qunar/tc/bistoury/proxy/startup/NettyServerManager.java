@@ -17,14 +17,10 @@
 
 package qunar.tc.bistoury.proxy.startup;
 
-import org.apache.curator.framework.state.ConnectionState;
-import org.apache.curator.utils.ZKPaths;
-import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import qunar.tc.bistoury.application.api.AppServerService;
 import qunar.tc.bistoury.proxy.communicate.Connection;
 import qunar.tc.bistoury.proxy.communicate.SessionManager;
@@ -37,12 +33,8 @@ import qunar.tc.bistoury.proxy.communicate.ui.NettyServerForUi;
 import qunar.tc.bistoury.proxy.communicate.ui.UiConnectionStore;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommandStore;
 import qunar.tc.bistoury.serverside.agile.Conf;
-import qunar.tc.bistoury.serverside.agile.LocalHost;
-import qunar.tc.bistoury.serverside.common.ZKClient;
-import qunar.tc.bistoury.serverside.common.ZKClientCache;
+import qunar.tc.bistoury.serverside.common.registry.RegistryService;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
-import qunar.tc.bistoury.serverside.store.RegistryStore;
-import qunar.tc.bistoury.serverside.util.ServerManager;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -59,9 +51,6 @@ import java.util.Map;
 public class NettyServerManager {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServerManager.class);
-
-    @Autowired
-    private RegistryStore registryStore;
 
     @Autowired
     private CommunicateCommandStore commandStore;
@@ -81,12 +70,10 @@ public class NettyServerManager {
     @Autowired
     private List<AgentMessageProcessor> agentMessageProcessors;
 
-    private volatile String uiNode;
-    private ZKClient zkClient;
-    private Conf conf;
+    @Autowired
+    private RegistryService registryService;
 
-    int websocketPort = -1;
-    int tomcatPort = -1;
+    private Conf conf;
 
     private NettyServerForAgent nettyServerForAgent;
 
@@ -94,24 +81,19 @@ public class NettyServerManager {
 
     @PostConstruct
     public void start() {
-        zkClient = ZKClientCache.get(registryStore.getZkAddress());
         conf = Conf.fromMap(DynamicConfigLoader.load("global.properties").asMap());
-
-        websocketPort = conf.getInt("server.port", -1);
-        tomcatPort = ServerManager.getTomcatPort();
-
         nettyServerForAgent = startAgentServer(conf);
         nettyServerForUi = startUiServer(conf);
 
-        online();
+        registryService.online();
     }
 
     @PreDestroy
     public void stop() {
-        offline();
+        closeAgentConnections();
         nettyServerForUi.stop();
         nettyServerForAgent.stop();
-        zkClient.close();
+        registryService.offline();
     }
 
     private NettyServerForUi startUiServer(Conf conf) {
@@ -133,72 +115,5 @@ public class NettyServerManager {
         for (Connection connection : connections) {
             connection.close();
         }
-    }
-
-    private boolean deleteSelf() {
-        return deleteNode(uiNode);
-    }
-
-    private boolean deleteNode(String... nodes) {
-        boolean ret = true;
-        for (String node : nodes) {
-            if (node != null) {
-                try {
-                    zkClient.deletePath(node);
-                    logger.info("zk delete successfully, node {}", node);
-                } catch (KeeperException.NoNodeException e) {
-                    // ignore
-                } catch (Exception e) {
-                    logger.error("zk delete path error", e);
-                    ret = false;
-                }
-            }
-        }
-        return ret;
-    }
-
-    private void register() {
-        registerUiNode();
-        zkClient.addConnectionChangeListener((sender, state) -> {
-            if (state == ConnectionState.RECONNECTED) {
-                deleteSelf();
-                registerUiNode();
-            }
-        });
-    }
-
-    private String doRegister(String basePath, String node) {
-        try {
-            if (!zkClient.checkExist(basePath)) {
-                zkClient.addPersistentNode(basePath);
-            }
-            node = ZKPaths.makePath(basePath, node);
-            deleteNode(node);
-            zkClient.addEphemeralNode(node);
-            logger.info("zk register successfully, node {}", node);
-        } catch (Exception e) {
-            logger.error("zk register failed", e);
-        }
-        return node;
-    }
-
-    private void registerUiNode() {
-        this.uiNode = doRegister(registryStore.getProxyZkPathForNewUi(), getIp() + ":" + tomcatPort + ":" + websocketPort);
-    }
-
-    private static String getIp() {
-        return LocalHost.getLocalHost();
-    }
-
-    public boolean offline() {
-        deleteSelf();
-        closeAgentConnections();
-        return true;
-    }
-
-    public boolean online() {
-        deleteSelf();
-        register();
-        return true;
     }
 }

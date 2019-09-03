@@ -15,8 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.serverside.common;
+package qunar.tc.bistoury.serverside.common.registry.zk;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
@@ -57,7 +58,12 @@ public class ZKClientImpl implements ZKClient {
 
     @Override
     public List<String> getChildren(String path) throws Exception {
-        return client.getChildren().forPath(path);
+        try {
+            return client.getChildren().forPath(path);
+        } catch (KeeperException.NoNodeException e) {
+            //ignore
+            return ImmutableList.of();
+        }
     }
 
     @Override

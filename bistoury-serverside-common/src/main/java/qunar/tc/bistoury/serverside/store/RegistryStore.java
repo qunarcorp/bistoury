@@ -17,6 +17,8 @@
 
 package qunar.tc.bistoury.serverside.store;
 
+import org.apache.curator.utils.ZKPaths;
+import qunar.tc.bistoury.serverside.common.registry.RegistryType;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 
 import javax.annotation.PostConstruct;
@@ -27,7 +29,7 @@ import java.util.Map;
  */
 public class RegistryStore {
 
-    private static final String DEFAULT_ZK = "default";
+    private static final String DEFAULT_ZK = "register.address";
 
     private static final String REGISTRY_CONFIG = "registry.properties";
 
@@ -37,12 +39,15 @@ public class RegistryStore {
 
     private String pathForNewUi;
 
+    private int registryTypeCode = 0;
 
     @PostConstruct
     public void init() {
         Map<String, String> registries = DynamicConfigLoader.load(REGISTRY_CONFIG).asMap();
+        newBaseRoot = registries.getOrDefault("register.namespace", newBaseRoot);
         zkAddress = registries.get(DEFAULT_ZK);
-        pathForNewUi = newBaseRoot + "ui";
+        pathForNewUi = ZKPaths.makePath(newBaseRoot, "ui");
+        registryTypeCode = Integer.parseInt(registries.getOrDefault("register.type", "0"));
     }
 
 
@@ -52,5 +57,9 @@ public class RegistryStore {
 
     public String getProxyZkPathForNewUi() {
         return pathForNewUi;
+    }
+
+    public RegistryType getRegistryType() {
+        return RegistryType.fromCode(registryTypeCode);
     }
 }

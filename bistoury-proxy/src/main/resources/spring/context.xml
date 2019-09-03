@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns:context="http://www.springframework.org/schema/context"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<import resource="database.xml"/>
+    <import resource="database.xml"/>
 
-	<context:component-scan base-package="qunar.tc.bistoury.proxy,
+    <context:component-scan base-package="qunar.tc.bistoury.proxy,
     qunar.tc.bistoury.application.mysql.service,
      qunar.tc.bistoury.application.mysql.dao">
-		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
-	</context:component-scan>
-	<bean id="registryStore" class="qunar.tc.bistoury.serverside.store.RegistryStore"></bean>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+    <bean id="registryStore" class="qunar.tc.bistoury.serverside.store.RegistryStore"/>
+
+    <bean id="registryType" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="registryStore"/>
+        <property name="targetMethod" value="getRegistryType"/>
+    </bean>
+    <bean id="registryService" class="qunar.tc.bistoury.serverside.common.registry.RegistryServiceHolder"
+          factory-method="getRegistryService">
+        <constructor-arg ref="registryType"/>
+    </bean>
 </beans>
