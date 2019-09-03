@@ -1,16 +1,13 @@
 package qunar.tc.bistoury.serverside.common.registry.zk;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.curator.utils.ZKPaths;
-import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import qunar.tc.bistoury.serverside.agile.Conf;
-import qunar.tc.bistoury.serverside.agile.LocalHost;
+import qunar.tc.bistoury.serverside.common.registry.RegistryClient;
+import qunar.tc.bistoury.serverside.common.registry.RegistryClientHolder;
 import qunar.tc.bistoury.serverside.common.registry.RegistryService;
-import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
+import qunar.tc.bistoury.serverside.store.GlobalConfigStore;
 import qunar.tc.bistoury.serverside.store.RegistryStore;
-import qunar.tc.bistoury.serverside.util.ServerManager;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -23,76 +20,54 @@ public class ZkRegistryServiceImpl implements RegistryService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZkRegistryServiceImpl.class);
 
-    private ZKClient zkClient;
+    private RegistryClient registryClient;
 
     @Resource
     private RegistryStore registryStore;
 
     @PostConstruct
     public void init() {
-        this.zkClient = ZKClientCache.get(registryStore.getZkAddress());
+        this.registryClient = RegistryClientHolder.getRegistryClient(registryStore);
     }
 
     @Override
     public void online() {
-        deletePath(getProxyNode());
+        deleteNode(GlobalConfigStore.getProxyNode());
         doOnline();
     }
 
     private void doOnline() {
-        ZKPaths.PathAndNode proxyNode = getProxyNode();
-        String fullPath = ZKPaths.makePath(proxyNode.getPath(), proxyNode.getNode());
+        String node = GlobalConfigStore.getProxyNode();
         try {
-            zkClient.addPersistentNode(proxyNode.getPath());
-            zkClient.addEphemeralNode(fullPath);
+            registryClient.addEphemeralNode(node);
         } catch (Exception e) {
-            LOGGER.error("online proxy error. path: {}", fullPath, e);
+            LOGGER.error("online proxy error. node: {}", node, e);
         }
     }
 
     @Override
     public void offline() {
-        deletePath(getProxyNode());
+        deleteNode(GlobalConfigStore.getProxyNode());
     }
 
     @Override
     public List<String> getAllProxyUrls() {
         try {
-            return zkClient.getChildren(registryStore.getProxyZkPathForNewUi());
+            return registryClient.getChildren();
         } catch (Exception e) {
             LOGGER.error("get all proxy urls error.", e);
             return ImmutableList.of();
         }
     }
 
-    private void deletePath(ZKPaths.PathAndNode pathAndNode) {
-        String path = ZKPaths.makePath(pathAndNode.getPath(), pathAndNode.getNode());
+    private void deleteNode(String node) {
         try {
-            zkClient.deletePath(path);
-            LOGGER.info("zk delete successfully, path {}", path);
-        } catch (KeeperException.NoNodeException e) {
-            // ignore
+            registryClient.deleteNode(node);
+            LOGGER.info("zk delete successfully, node {}", node);
         } catch (Exception e) {
-            LOGGER.error("zk delete path: {} error", path, e);
-            throw new RuntimeException("zk delete path: " + path + " error", e);
+            LOGGER.error("zk delete node: {} error", node, e);
+            throw new RuntimeException("zk delete node: " + node + " error", e);
         }
     }
 
-
-    private int websocketPort = -1;
-    private int tomcatPort = -1;
-
-    private ZKPaths.PathAndNode getProxyNode() {
-        initProxyPort();
-        String node = LocalHost.getLocalHost() + ":" + tomcatPort + ":" + websocketPort;
-        return new ZKPaths.PathAndNode(registryStore.getProxyZkPathForNewUi(), node);
-    }
-
-    private synchronized void initProxyPort() {
-        if (tomcatPort == -1) {
-            Conf conf = Conf.fromMap(DynamicConfigLoader.load("global.properties").asMap());
-            websocketPort = conf.getInt("server.port", -1);
-            tomcatPort = ServerManager.getTomcatPort();
-        }
-    }
 }

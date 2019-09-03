@@ -23,62 +23,59 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.RetryNTimes;
+import org.apache.curator.utils.ZKPaths;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.serverside.common.registry.RegistryClient;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author leix.xie
  * @date 2019/7/4 18:28
  * @describe
  */
-public class ZKClientImpl implements ZKClient {
-    private static final Logger logger = LoggerFactory.getLogger(ZKClientImpl.class);
-    private final AtomicInteger REFERENCE_COUNT = new AtomicInteger(0);
-    private final CuratorFramework client;
+public class ZKClientImpl implements RegistryClient {
 
-    public ZKClientImpl(final String address) {
+    private static final Logger logger = LoggerFactory.getLogger(ZKClientImpl.class);
+    private final CuratorFramework client;
+    private final String namespace;
+
+    public ZKClientImpl(final String address, String namespace) {
+        this.namespace = namespace;
         client = CuratorFrameworkFactory.builder()
                 .connectString(address)
                 .retryPolicy(new RetryNTimes(Integer.MAX_VALUE, 1000))
                 .connectionTimeoutMs(5000).build();
         waitUntilZkStart();
+        addPersistentNode(namespace);
     }
 
     @Override
-    public void deletePath(String path) throws Exception {
-        client.delete().forPath(path);
-    }
-
-    @Override
-    public List<String> getChildren(String path) throws Exception {
+    public void deleteNode(String node) throws Exception {
         try {
-            return client.getChildren().forPath(path);
+            client.delete().forPath(ZKPaths.makePath(namespace, node));
         } catch (KeeperException.NoNodeException e) {
             //ignore
+            logger.warn("nonode for namespace: {}, node: {}", namespace, node);
+        }
+    }
+
+    @Override
+    public List<String> getChildren() throws Exception {
+        try {
+            return client.getChildren().forPath(namespace);
+        } catch (KeeperException.NoNodeException e) {
+            //ignore
+            logger.warn("nonode for namespace: {}", namespace);
             return ImmutableList.of();
         }
     }
 
-    @Override
-    public boolean checkExist(String path) {
-        try {
-            Stat stat = client.checkExists().forPath(path);
-            return stat != null;
-        } catch (Exception e) {
-            logger.error("check exist error", e);
-            return false;
-        }
-    }
-
-    @Override
-    public void addPersistentNode(String path) throws Exception {
+    private void addPersistentNode(String path) {
         try {
             client.create()
                     .creatingParentsIfNeeded()
@@ -87,17 +84,20 @@ public class ZKClientImpl implements ZKClient {
         } catch (KeeperException.NodeExistsException e) {
             logger.warn("Node already exists: {}", path);
         } catch (Exception e) {
-            throw new Exception("addPersistentNode error", e);
+            throw new RuntimeException("addPersistentNode error", e);
         }
     }
 
     @Override
-    public String addEphemeralNode(String path) throws Exception {
-        return client.create().withMode(CreateMode.EPHEMERAL).forPath(path);
+    public void addEphemeralNode(String path) throws Exception {
+        try {
+            client.create().withMode(CreateMode.EPHEMERAL).forPath(path);
+        } catch (KeeperException.NodeExistsException e) {
+            logger.warn("Node already exists: {}", path);
+        }
     }
 
-    @Override
-    public void addConnectionChangeListener(final ConnectionStateListener listener) {
+    private void addConnectionChangeListener(final ConnectionStateListener listener) {
         if (listener != null) {
             client.getConnectionStateListenable().addListener(listener);
         }
@@ -105,12 +105,9 @@ public class ZKClientImpl implements ZKClient {
 
     private void waitUntilZkStart() {
         final CountDownLatch latch = new CountDownLatch(1);
-        addConnectionChangeListener(new ConnectionStateListener() {
-            @Override
-            public void stateChanged(CuratorFramework client, ConnectionState newState) {
-                if (newState == ConnectionState.CONNECTED) {
-                    latch.countDown();
-                }
+        addConnectionChangeListener((client, newState) -> {
+            if (newState == ConnectionState.CONNECTED) {
+                latch.countDown();
             }
         });
         client.start();
@@ -123,16 +120,8 @@ public class ZKClientImpl implements ZKClient {
     }
 
     @Override
-    public void incrementReference() {
-        REFERENCE_COUNT.incrementAndGet();
-    }
-
-    @Override
     public void close() {
-        logger.info("Call close of ZKClient, reference count is: {}", REFERENCE_COUNT.get());
-        if (REFERENCE_COUNT.decrementAndGet() == 0) {
-            client.close();
-            logger.info("zk client close");
-        }
+        client.close();
+        logger.info("zk client close");
     }
 }

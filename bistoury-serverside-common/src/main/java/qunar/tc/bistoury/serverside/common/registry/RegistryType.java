@@ -5,7 +5,7 @@ package qunar.tc.bistoury.serverside.common.registry;
  */
 public enum RegistryType {
 
-    ZOOKEEPER(0), ETCD_V2(1);
+    MOCK(-1), ZOOKEEPER(0), ETCD_V2(1);
 
     public final int code;
 

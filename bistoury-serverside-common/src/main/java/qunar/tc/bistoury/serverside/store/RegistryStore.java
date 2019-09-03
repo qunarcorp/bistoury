@@ -17,11 +17,14 @@
 
 package qunar.tc.bistoury.serverside.store;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import org.apache.curator.utils.ZKPaths;
 import qunar.tc.bistoury.serverside.common.registry.RegistryType;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,11 +32,11 @@ import java.util.Map;
  */
 public class RegistryStore {
 
-    private static final String DEFAULT_ZK = "register.address";
-
     private static final String REGISTRY_CONFIG = "registry.properties";
 
-    private String newBaseRoot = "/bistoury/proxy/new/group/";
+    private static final String defaultNamespace = "/bistoury/proxy/new/group/";
+
+    private static final String LOCAL_ZK_TAG_FILE = "/tmp/bistoury/proxy.conf";
 
     private String zkAddress;
 
@@ -41,13 +44,20 @@ public class RegistryStore {
 
     private int registryTypeCode = 0;
 
+    private Iterable<String> etcdServerUrls;
+
+    private String namespace;
+
+    private static final Splitter LIST_SPLITTER = Splitter.on(";").omitEmptyStrings().trimResults();
+
     @PostConstruct
     public void init() {
         Map<String, String> registries = DynamicConfigLoader.load(REGISTRY_CONFIG).asMap();
-        newBaseRoot = registries.getOrDefault("register.namespace", newBaseRoot);
-        zkAddress = registries.get(DEFAULT_ZK);
-        pathForNewUi = ZKPaths.makePath(newBaseRoot, "ui");
-        registryTypeCode = Integer.parseInt(registries.getOrDefault("register.type", "0"));
+        zkAddress = registries.get("register.zk.address");
+        pathForNewUi = ZKPaths.makePath(defaultNamespace, "ui");
+        registryTypeCode = Integer.parseInt(registries.getOrDefault("register.type", "-1"));
+        etcdServerUrls = LIST_SPLITTER.split(registries.getOrDefault(("register.etcd.uri"), "http://localhost:2379"));
+        namespace = registries.getOrDefault("register.namespace", defaultNamespace);
     }
 
 
@@ -61,5 +71,17 @@ public class RegistryStore {
 
     public RegistryType getRegistryType() {
         return RegistryType.fromCode(registryTypeCode);
+    }
+
+    public List<String> getEtcdUris() {
+        return ImmutableList.copyOf(etcdServerUrls);
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public  String getLocalZkTagFile() {
+        return LOCAL_ZK_TAG_FILE;
     }
 }

@@ -13,12 +13,8 @@
     </context:component-scan>
     <bean id="registryStore" class="qunar.tc.bistoury.serverside.store.RegistryStore"/>
 
-    <bean id="registryType" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetObject" ref="registryStore"/>
-        <property name="targetMethod" value="getRegistryType"/>
-    </bean>
     <bean id="registryService" class="qunar.tc.bistoury.serverside.common.registry.RegistryServiceHolder"
           factory-method="getRegistryService">
-        <constructor-arg ref="registryType"/>
+        <constructor-arg ref="registryStore"/>
     </bean>
 </beans>
