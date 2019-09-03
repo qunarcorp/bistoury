@@ -17,6 +17,7 @@
 
 package qunar.tc.bistoury.commands.decompiler;
 
+import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -112,7 +113,15 @@ public class DecompilerTask implements Task {
             decompilerJar(classFileName, className, url);
         } else {
             classFileName = simpleName;
-            decompiler.addSource(new File(url.getFile()));
+
+            //处理内部类
+            File source = new File(url.getFile());
+            List<File> innerClasses = findInnerClasses(source);
+            for (File innerClass : innerClasses) {
+                decompiler.addSource(innerClass);
+            }
+
+            decompiler.addSource(source);
             decompiler.decompileContext();
         }
 
@@ -168,6 +177,22 @@ public class DecompilerTask implements Task {
                 }
             }
         }
+    }
+
+
+    private List<File> findInnerClasses(File source) {
+        final String fileName = source.getName();
+        int endIndex = fileName.lastIndexOf(".");
+        if (endIndex < 0) {
+            endIndex = fileName.length();
+        }
+        final String className = fileName.substring(0, endIndex);
+        return FileUtil.listFile(source.getParentFile(), new Predicate<File>() {
+            @Override
+            public boolean apply(File file) {
+                return file != null && file.getName() != null && file.getName().startsWith(className + "$");
+            }
+        });
     }
 
     private static class PathInfo {
