@@ -70,6 +70,11 @@ public class DefaultSessionManager implements SessionManager {
             uiSessions.remove(session);
         }, MoreExecutors.directExecutor());
 
+        uiConnection.closeFuture().addListener(() -> agentConnectionToUiConnectionMapping
+                .getOrDefault(agentConnection, Collections.emptySet())
+                .remove(uiConnection),
+                MoreExecutors.directExecutor());
+
         doWithConnectionClose(uiConnection, uiConnectionToSessionsMapping, session, theSession -> {
             theSession.writeToAgent(RemotingBuilder.buildRequestDatagram(
                     CommandCode.REQ_TYPE_CANCEL.getCode(), theSession.getId(), new RequestPayloadHolder("")));
