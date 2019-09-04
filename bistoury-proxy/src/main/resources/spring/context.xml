@@ -14,7 +14,7 @@
     <bean id="registryStore" class="qunar.tc.bistoury.serverside.store.RegistryStore"/>
 
     <bean id="registryService" class="qunar.tc.bistoury.serverside.common.registry.RegistryServiceHolder"
-          factory-method="getRegistryService">
+          factory-method="getRegistryService" destroy-method="offline">
         <constructor-arg ref="registryStore"/>
     </bean>
 </beans>
