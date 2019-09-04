@@ -1,7 +1,7 @@
+* [日志目录](#日志目录)
 * [获取ip错误](#获取ip错误)
 * [agent attach时加载初始化类失败](#agent-attach时加载初始化类失败)
 * [windows 环境暂时不支持](#windows-环境暂时不支持)
-* [日志目录](#日志目录)
 * [在线debug暂时不支持github仓库的源码调试](#在线debug暂时不支持github仓库的源码调试)
 * [jdk版本](#jdk版本)
     * [应用jdk版本要求](#应用jdk版本要求)
@@ -11,6 +11,17 @@
     * [修改默认端口](#修改默认端口)
 * [在线debug时,前端界面上对象值显示 `object size greater than ***kb`](#在线debug时前端界面上对象值显示-object-size-greater-than-kb)
 * [在线debug时 前端界面右上角提示 *** 代码查看仅可通过反编译](#在线debug时-前端界面右上角提示--代码查看仅可通过反编译)
+
+### 日志目录
+
+---
+
+|      模块            | 输出的具体文件夹                         |
+|:---------------------|:------------------------------|
+| 1. agent          | 解压缩目录/bistoury-agent-bin/logs |
+| 2. proxy         | 解压缩目录/bistoury-proxy-bin/logs |
+| 3. ui             | 解压缩目录/bistoury-ui-bin/logs    |
+| 4. attach到应用中的部分 | 应用进程所属用户的主目录/logs/   |
 
 ### 获取ip错误
 
@@ -37,16 +48,20 @@
 
 往往表现为在ui上调用命令时报"can not init bistoury, start arthas error"，"Agent JAR loaded but agent failed to initialize"，同时在agent的log中也会有一样的错误日志。
 
-这时去脚本启动用户（agent运行用户）的用户目录下logs/arthas/arthas.log中查找日志，如果发现错误"can not find lib class"，那么可以确定是这个问题。
+这时去“应用进程所属用户的主目录/logslogs/arthas/arthas.log”中查找日志，如果发现错误"can not find lib class"，那么可以确定是这个问题。
 
 原因是agent在初始化时需要加载一个初始化类，也就是快速启动脚本-c所指定的类。这个类应当是应用已加载的依赖的jar包中的类，默认是spring的org.springframework.web.servlet.DispatcherServlet，往往非spring应用没有特殊指定会报这个错。
 
-解决办法就是指定一下相应的类名，因为不能是agent使用到的类，推荐使用用户自身中间件jar包或者spring中类，如果使用业务类，可能导致小部分功能不可用。
+解决办法就是指定一下相应的类名，因为不能是agent使用到的类，推荐使用用户自身中间件jar包或者spring中类（注意要是已加载的类），如果使用业务类，可能导致小部分功能不可用。
 
 例子 :
 ```
-./quick_start.sh -c org.springframework.web.servlet.DispatcherServlet -p 1024 start
+./quick_start.sh -c org.springframework.web.servlet.DispatcherServlet(不要照抄) -p 1024 start
 ```
+
+如果自身依赖中有相应的类，但是还是报"can not find lib class"，这种情况应该是类没有加载。
+
+"can not find lib class"下面一行从“begin print all loaded classes”开始，会打印所有已加载的类名，可以从这里进行确认。
 
  ### windows 环境暂时不支持
 
@@ -54,21 +69,10 @@
 
 暂时不包含windows下的一键启动脚本, 但是支持通过ide来启动.
 
-### 日志目录
-
----
-
-|      模块            | 输出的具体文件夹                         |
-|:---------------------|:------------------------------|
-| 1. agent          | 解压缩目录/bistoury-agent-bin/logs |
-| 2. proxy         | 解压缩目录/bistoury-proxy-bin/logs |
-| 3. ui             | 解压缩目录/bistoury-ui-bin/logs    |
-| 4. attach到应用中的部分 | 应用进程所属用户的主目录/logs/               |
-
 ### 在线debug暂时不支持github仓库的源码调试
 
 ---
-在线debug,是支持gitlab仓库的源码查看和调试,但是github仓库的源码暂不支持。
+在线debug默认对反编译后代码进行debug，可以通过关联代码仓库使用源码，目前仅支持gitlab，github暂不支持。
 
 ### jdk版本
 
@@ -83,7 +87,7 @@
 | 2. proxy         | jdk8 |
 | 3. ui             | jdk8   |
 
-> 使用快速启动脚本，需使用JDK8
+> 如果是使用快速启动脚本，需使用JDK8
 
 > 手动指定JDK目录(例如目录为`/bin/jdk`) : `./quick_start.sh -j /bin/jdk -p 1024 start`
 

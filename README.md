@@ -42,6 +42,7 @@ Bistoury提供可视化页面实时查看机器和应用的各种信息，包括
 - [动态监控](docs/cn/monitor.md)
 - [应用中心](docs/cn/application.md)
 - [生产部署](docs/cn/deploy.md)
+- [常见问题汇总](docs/cn/FAQ.md)
 
 ## java版本要求
 
@@ -60,6 +61,10 @@ ui、proxy使用Java1.8，agent使用java1.7或java1.8，由于agent会attach到
 - 前端有的地方似乎有点不那么好看，实现的似乎也不太棒 
 
     所有的前端代码都是后端同学兼职完成，欢迎各位前端大牛贡献相关代码。
+    
+## 常见问题汇总
+
+使用Bistoury出现各种问题请先点[这里](docs/cn/FAQ.md)
     
 ## 技术支持
 

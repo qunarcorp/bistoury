@@ -1,4 +1,4 @@
-本文档介绍了如何编译、打包、部署Bistoury，Bistoury的部署较为复杂，如果想先简单体验Bistoury可以使用[快捷部署脚本](docs/cn/quick_start.md)在一分钟内进行简易部署。
+本文档介绍了如何编译、打包、部署Bistoury，Bistoury的部署较为复杂，如果想先简单体验Bistoury可以使用[快捷部署脚本](/docs/cn/quick_start.md)在一分钟内进行简易部署。
 # 一、准备工作
 ## 1.1 说明
 Bistoury一共分为ui、proxy、agent三个部分，ui是所有操作的入口、agent是部署在所有主机上来对ui请求进行处理，proxy是连接ui和中间连接层。
@@ -7,7 +7,7 @@ Bistoury一共分为ui、proxy、agent三个部分，ui是所有操作的入口�
 
 - ui独立多机部署，并提供独立的域名
 
-- proxy独立多机部署
+- proxy独立多机部署，并提供独立的域名
 
 - agent在测试环境全环境自动部署，线上环境提供单机一键部署，以及应用下所有机器一键部署
 
