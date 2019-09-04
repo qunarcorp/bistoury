@@ -8,7 +8,7 @@ import qunar.tc.bistoury.serverside.util.ServerManager;
 /**
  * @author cai.wen created on 2019/9/3 17:39
  */
-public class GlobalConfigStore {
+public class ProxyConfigStore {
 
     private static int websocketPort = -1;
     private static int tomcatPort = -1;

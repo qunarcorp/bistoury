@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.serverside.common.registry.RegistryClient;
 import qunar.tc.bistoury.serverside.common.registry.RegistryClientHolder;
 import qunar.tc.bistoury.serverside.common.registry.RegistryService;
-import qunar.tc.bistoury.serverside.store.GlobalConfigStore;
+import qunar.tc.bistoury.serverside.store.ProxyConfigStore;
 import qunar.tc.bistoury.serverside.store.RegistryStore;
 
 import javax.annotation.PostConstruct;
@@ -32,12 +32,12 @@ public class ZkRegistryServiceImpl implements RegistryService {
 
     @Override
     public void online() {
-        deleteNode(GlobalConfigStore.getProxyNode());
+        deleteNode(ProxyConfigStore.getProxyNode());
         doOnline();
     }
 
     private void doOnline() {
-        String node = GlobalConfigStore.getProxyNode();
+        String node = ProxyConfigStore.getProxyNode();
         try {
             registryClient.addEphemeralNode(node);
         } catch (Exception e) {
@@ -47,7 +47,7 @@ public class ZkRegistryServiceImpl implements RegistryService {
 
     @Override
     public void offline() {
-        deleteNode(GlobalConfigStore.getProxyNode());
+        deleteNode(ProxyConfigStore.getProxyNode());
     }
 
     @Override

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.serverside.common.registry.RegistryClient;
 import qunar.tc.bistoury.serverside.common.registry.RegistryClientHolder;
 import qunar.tc.bistoury.serverside.common.registry.RegistryService;
-import qunar.tc.bistoury.serverside.store.GlobalConfigStore;
+import qunar.tc.bistoury.serverside.store.ProxyConfigStore;
 import qunar.tc.bistoury.serverside.store.RegistryStore;
 
 import javax.annotation.PostConstruct;
@@ -33,7 +33,7 @@ public class EtcdV2RegistryServiceImpl implements RegistryService {
     @Override
     public void online() {
         try {
-            etcdV2Client.addEphemeralNode(GlobalConfigStore.getProxyNode());
+            etcdV2Client.addEphemeralNode(ProxyConfigStore.getProxyNode());
         } catch (Exception e) {
             throw new RuntimeException("online proxy error.", e);
         }
@@ -42,7 +42,7 @@ public class EtcdV2RegistryServiceImpl implements RegistryService {
     @Override
     public void offline() {
         try {
-            etcdV2Client.deleteNode(GlobalConfigStore.getProxyNode());
+            etcdV2Client.deleteNode(ProxyConfigStore.getProxyNode());
         } catch (Exception e) {
             throw new RuntimeException("offline proxy error.", e);
         }
