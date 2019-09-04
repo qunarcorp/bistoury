@@ -34,7 +34,7 @@ public class RegistryStore {
 
     private static final String REGISTRY_CONFIG = "registry.properties";
 
-    private static final String defaultNamespace = "/bistoury/proxy/new/group/";
+    private static final String defaultNamespace = "/bistoury/proxy/new/group";
 
     private static final String LOCAL_ZK_TAG_FILE = "/tmp/bistoury/proxy.conf";
 
@@ -53,11 +53,11 @@ public class RegistryStore {
     @PostConstruct
     public void init() {
         Map<String, String> registries = DynamicConfigLoader.load(REGISTRY_CONFIG).asMap();
-        zkAddress = registries.get("register.zk.address");
-        pathForNewUi = ZKPaths.makePath(defaultNamespace, "ui");
-        registryTypeCode = Integer.parseInt(registries.getOrDefault("register.type", "-1"));
-        etcdServerUrls = LIST_SPLITTER.split(registries.getOrDefault(("register.etcd.uri"), "http://localhost:2379"));
+        zkAddress = registries.getOrDefault("register.zk.address", "127.0.0.1:2181");
         namespace = registries.getOrDefault("register.namespace", defaultNamespace);
+        pathForNewUi = ZKPaths.makePath(namespace, "ui");
+        registryTypeCode = Integer.parseInt(registries.getOrDefault("register.type", "0"));
+        etcdServerUrls = LIST_SPLITTER.split(registries.getOrDefault(("register.etcd.uri"), "http://localhost:2379"));
     }
 
 
@@ -81,7 +81,7 @@ public class RegistryStore {
         return namespace;
     }
 
-    public  String getLocalZkTagFile() {
+    public String getLocalZkTagFile() {
         return LOCAL_ZK_TAG_FILE;
     }
 }

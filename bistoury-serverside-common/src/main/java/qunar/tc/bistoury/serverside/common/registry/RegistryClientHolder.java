@@ -21,10 +21,10 @@ public class RegistryClientHolder {
         if (INSTANCE == null) {
             switch (registryStore.getRegistryType()) {
                 case ETCD_V2:
-                    INSTANCE = new EtcdV2ClientImpl(registryStore.getEtcdUris(), registryStore.getNamespace());
+                    INSTANCE = new EtcdV2ClientImpl(registryStore.getEtcdUris(), registryStore.getProxyZkPathForNewUi());
                     break;
                 case ZOOKEEPER:
-                    INSTANCE = new ZKClientImpl(registryStore.getZkAddress(), registryStore.getNamespace());
+                    INSTANCE = new ZKClientImpl(registryStore.getZkAddress(), registryStore.getProxyZkPathForNewUi());
                     break;
                 case MOCK:
                     INSTANCE = new MockRegistryClient(registryStore.getLocalZkTagFile());
@@ -36,4 +36,5 @@ public class RegistryClientHolder {
         registryType = registryStore.getRegistryType();
         return INSTANCE;
     }
+
 }

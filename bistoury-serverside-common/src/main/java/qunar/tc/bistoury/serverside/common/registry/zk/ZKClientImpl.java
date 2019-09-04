@@ -57,7 +57,8 @@ public class ZKClientImpl implements RegistryClient {
     @Override
     public void deleteNode(String node) throws Exception {
         try {
-            client.delete().forPath(ZKPaths.makePath(namespace, node));
+            client.delete()
+                    .forPath(ZKPaths.makePath(namespace, node));
         } catch (KeeperException.NoNodeException e) {
             //ignore
             logger.warn("nonode for namespace: {}, node: {}", namespace, node);
@@ -82,18 +83,38 @@ public class ZKClientImpl implements RegistryClient {
                     .withMode(CreateMode.PERSISTENT)
                     .forPath(path);
         } catch (KeeperException.NodeExistsException e) {
-            logger.warn("Node already exists: {}", path);
+            //ignore
         } catch (Exception e) {
             throw new RuntimeException("addPersistentNode error", e);
         }
     }
 
     @Override
-    public void addEphemeralNode(String path) throws Exception {
+    public void addEphemeralNode(String node) throws Exception {
+        doAddEphemeralNode(node);
+        addConnectionChangeListener((sender, state) -> {
+            if (state == ConnectionState.RECONNECTED) {
+                resetNode(node);
+            }
+        });
+    }
+
+    private void doAddEphemeralNode(String node) throws Exception {
         try {
-            client.create().withMode(CreateMode.EPHEMERAL).forPath(path);
+            client.create()
+                    .withMode(CreateMode.EPHEMERAL)
+                    .forPath(ZKPaths.makePath(namespace, node));
         } catch (KeeperException.NodeExistsException e) {
-            logger.warn("Node already exists: {}", path);
+            logger.warn("Node already exists: {}", node);
+        }
+    }
+
+    private void resetNode(String node) {
+        try {
+            deleteNode(node);
+            doAddEphemeralNode(node);
+        } catch (Exception e) {
+            throw new RuntimeException("reset zk node error. node: " + node, e);
         }
     }
 
