@@ -57,7 +57,7 @@ public class RegistryStore {
         namespace = registries.getOrDefault("register.namespace", defaultNamespace);
         pathForNewUi = ZKPaths.makePath(namespace, "ui");
         registryTypeCode = Integer.parseInt(registries.getOrDefault("register.type", "0"));
-        etcdServerUrls = LIST_SPLITTER.split(registries.getOrDefault(("register.etcd.uri"), "http://localhost:2379"));
+        etcdServerUrls = LIST_SPLITTER.split(registries.getOrDefault(("register.etcd.url"), "http://localhost:2379"));
     }
 
 
