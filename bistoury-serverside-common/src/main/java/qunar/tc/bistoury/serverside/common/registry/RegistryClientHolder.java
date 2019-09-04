@@ -15,11 +15,11 @@ public class RegistryClientHolder {
     private static RegistryType registryType;
 
     public synchronized static RegistryClient getRegistryClient(RegistryStore registryStore) {
-        if (registryType != null && registryType != registryStore.getRegistryType()) {
-            throw new IllegalStateException("不可以定义多种注册中心");
-        }
+        checkRegistryType(registryStore.getRegistryType());
+        registryType = registryStore.getRegistryType();
+
         if (INSTANCE == null) {
-            switch (registryStore.getRegistryType()) {
+            switch (registryType) {
                 case ETCD_V2:
                     INSTANCE = new EtcdV2ClientImpl(registryStore.getEtcdUris(), registryStore.getProxyZkPathForNewUi());
                     break;
@@ -33,8 +33,12 @@ public class RegistryClientHolder {
                     throw new IllegalStateException("请指定相应的注册中心类型.");
             }
         }
-        registryType = registryStore.getRegistryType();
         return INSTANCE;
     }
 
+    private static void checkRegistryType(RegistryType registryType) {
+        if (RegistryClientHolder.registryType != null && registryType != RegistryClientHolder.registryType) {
+            throw new IllegalStateException("不可以指定多种注册中心");
+        }
+    }
 }

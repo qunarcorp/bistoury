@@ -1,7 +1,6 @@
 package qunar.tc.bistoury.serverside.common.registry;
 
 import qunar.tc.bistoury.serverside.common.registry.etcd2.EtcdV2RegistryServiceImpl;
-import qunar.tc.bistoury.serverside.common.registry.mock.MockRegistryClient;
 import qunar.tc.bistoury.serverside.common.registry.mock.MockRegistryServiceImpl;
 import qunar.tc.bistoury.serverside.common.registry.zk.ZkRegistryServiceImpl;
 import qunar.tc.bistoury.serverside.store.RegistryStore;
