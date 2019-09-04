@@ -608,6 +608,24 @@
                 <groupId>org.mousio</groupId>
                 <artifactId>etcd4j</artifactId>
                 <version>${etcd4j.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.netty</groupId>
+                        <artifactId>netty-codec-dns</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.netty</groupId>
+                        <artifactId>netty-codec-http</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.netty</groupId>
+                        <artifactId>netty-handler</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.netty</groupId>
+                        <artifactId>netty-resolver-dns</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
 
