@@ -1,44 +1,44 @@
 # 快速开始
 
-Bistoury具有多个模块，并且和公司自身环境有一定的关联，想要合理部署需要进行一些相关的配置。
+Bistoury 具有多个模块，并且和公司自身环境有一定的关联，想要合理部署需要进行一些相关的配置。
 
-为了能够快速启动和体验Bistoury，我们提供快速部署脚本在单机部署整套Bistoury服务。
+为了能够快速启动和体验 Bistoury，我们提供快速部署脚本在单机部署整套 Bistoury 服务。
 
->使用快速部署脚本，会在本机部署一整套Bistoury服务，其中包括ui、proxy、agent。
+> 使用快速部署脚本，会在本机部署一整套 Bistoury 服务，其中包括 ui、proxy、agent。
 
 注意，这里提供的快速部署脚本仅适用于快速上手进行单机诊断，想要获得完整的体验，还是需要进行合理的部署。
 
 目前在我们公司内部的使用方式，也是推荐的部署方式为：
 
-- ui独立多机部署，并提供独立的域名
+- ui 独立部署，推荐部署在多台机器，并提供独立的域名
 
-- proxy独立多机部署，并提供独立的域名
+- proxy 独立部署，推荐部署在多台机器，并提供独立的域名
 
-- agent在测试环境全环境自动部署，线上环境提供单机一键部署，以及应用下所有机器一键部署
+- agent 需要和应用部署在同一台机器上。推荐在测试环境全环境自动部署，线上环境提供单机一键部署，以及应用下所有机器一键部署
 
-- 独立的应用中心，管理所有功能内部应用和机器信息，这是一个和Bistoury相独立的系统
+- 独立的应用中心，管理所有功能内部应用和机器信息，这是一个和 Bistoury 相独立的系统，Bistoury 从中拿到不断更新的应用和机器信息
 
 ### 构建
 
 #### 获取快速部署包
 
-- 我们在项目Release页面提供了已经构建好的快速部署包，你也可以直接下载。
+- 我们在项目 [Release](https://github.com/qunarcorp/bistoury/releases) 页面提供了已经构建好的快速部署包，你也可以直接下载。
 
-- 你也可以下载源码然后自己构建快速启动包，这同样很简单。首先clone项目到本地，运行script/quick_start_build.sh，运行完成后script目录下会生成相应的快速部署包，名字格式为bistoury-quick-start.tar.gz
+- 你也可以下载源码然后自己构建快速启动包，这同样很简单。首先 clone 项目到本地，运行 script/quick_start_build.sh，运行完成后 script 目录下会生成相应的快速部署包，名字格式为 bistoury-quick-start.tar.gz
 
 #### 准备
 
-- 目前仅支持linux环境，所以需要一个linux环境
+- 目前仅支持 Linux 环境，所以需要一个 Linux 环境
 
-- 本机已安装jdk1.8+，并且设置了JAVA_HOME环境变量，如果没有设置也可以在启动脚本中传递参数，详情建下文
+- 本机已安装 jdk1.8+，并且设置了 `JAVA_HOME` 环境变量，如果没有设置也可以在启动脚本中传递 `-j` 参数，详情见下文：[启动参数](#启动参数)
 
-- 本机9090，9091，9880，9881端口未被占用，这些端口会被Bistoury使用，如果已占用需要进行配置，详情见下文
+- 本机 9090，9091，9880，9881 端口未被占用，这些端口会被 Bistoury 使用，如果已占用需要进行配置，详情见下文：[当端口冲突了怎么解决](#当端口冲突了怎么解决)
 
-- 本机已经启动一个待诊断java应用，如果是spring web应用不需要做处理，非spring web应用需要配置启动脚本的-c参数，详情见下文 
+- 本机已经启动一个待诊断 JAVA 应用，如果是 Spring Web 应用不需要做处理，非 Spring Web 应用需要配置启动脚本的 `-c` 参数，详情见下文：[启动参数](#启动参数)
 
 #### 启动
 
-首先我们将快速启动包bistoury-quick-start.tar.gz拷贝到想要安装的位置。
+首先我们将快速启动包 bistoury-quick-start.tar.gz 拷贝到想要安装的位置。
 
 然后解压启动包：
 
@@ -47,9 +47,9 @@ tar -zxvf bistoury-quick-start.tar.gz
 cd bistoury
 ```
 
-最后是启动Bistoury，因为Bistoury会用到jstack等操作，为了保证所有功能可用，需要使用和待诊断java应用相同的用户启动。
+最后是启动 Bistoury，因为 Bistoury 会用到 jstack 等操作，为了保证所有功能可用，需要使用和待诊断 JAVA 应用相同的用户启动。
 
-假设应用进程id为1024
+假设应用进程 id 为 1024
 
 - 如果应用以本人用户启动，可以直接运行
 
@@ -57,7 +57,8 @@ cd bistoury
 ./quick_start.sh -p 1024 start
 ```
 
-- 如果应用以其它帐号启动，比如tomcat，需要指定一下用户然后运行
+- 如果应用以其它帐号启动，比如 tomcat，需要指定一下用户然后运行
+
 ```bash
 sudo -u tomcat ./quick_start.sh -p 1024 start
 ```
@@ -69,45 +70,49 @@ sudo -u tomcat ./quick_start.sh -p 1024 start
 ```
 
 ### 访问
-可以通过http://ip:9091来对ui进行访问，比如部署的机器ip为192.168.1.20，则可以通过[http://192.168.1.20:9091/](http://192.168.1.20:9091/)访问，初始化用户名密码均为admin
+
+可以通过 http://ip:9091 来对 ui 进行访问，比如部署的机器 ip 为 192.168.1.20，则可以通过 [http://192.168.1.20:9091/](http://192.168.1.20:9091/) 访问，初始化用户名密码均为 admin
 
 ### 启动参数
 
-quick_start.sh可以设置一些启动参数，
+quick_start.sh 可以设置一些启动参数，如下表所示：
 
 |参数名称|是否必填|默认值|说明|
 |-------|------|-----|---|
-|-i    |选填|ip中列表的第一个|当本机存在多个ip时，指定一个可用ip|
-|-j    |选填|环境变量JAVA_HOME|指定jdk路径|
-|-l    |选填|/tmp|应用的日志目录，Bistoury命令执行的目录，比如ls，tail等都会默认在此目录下执行|
-|-p    |必填|    |应用进程id，因为是脚本快速启动，所以需要使用该参数指定对哪个java进程进行诊断|
-|-c    |选填|org.springframework.web.servlet.DispatcherServlet|用于获取一些应用信息，应填写为依赖的jar包中的一个已加载的类（不能使用Bistoury agent中用到的类，推荐使用公司内部中间件的jar包或Spring相关包中的，agent不可能使用到的类，如org.springframework.web.servlet.DispatcherServlet）|
+|-i    |选填|ip 中列表的第一个|当本机存在多个 ip 时，指定一个可用 ip|
+|-j    |选填|环境变量 JAVA_HOME |指定 jdk 路径|
+|-l    |选填|/tmp|应用的日志目录，Bistoury 命令执行的目录，比如 ls，tail 等都会默认在此目录下执行|
+|-p    |必填|    |应用进程 id，因为是脚本快速启动，所以需要使用该参数指定对哪个 JAVA 进程进行诊断|
+|-c    |选填|org.springframework.web.servlet.DispatcherServlet|用于获取一些应用信息，应填写为依赖的 jar 包中的一个已加载的类（不能使用 Bistoury agent 中用到的类，推荐使用公司内部中间件的 jar 包或 Spring 相关包中的，agent 不可能使用到的类，如org.springframework.web.servlet.DispatcherServlet）|
 |-h   | 选填||查看帮助文档
 
 ### 问题解决
 
-- 当端口冲突了怎么解决
+#### 当端口冲突了怎么解决
 
-Bistoury快捷部署脚本默认会占用一些端口，其中proxy默认使用9090端口，ui默认使用9091端口，agent和proxy通信默认使用9880端口，ui和proxy通信默认使用9881端口，h2数据库默认使用9092端口，端口冲突解决方法如下：
-   - 修改自己占用的端口
-   - 9090端口占用修改位置：`bistoury/bistoury-proxy-bin/conf/server.properties`中的`tomcat.port`值和quick_start.sh中`PROXY_TOMCAT_PORT`的值
-   - 9091端口占用修改位置：`bistoury/bistoury-ui-bin/conf/server.properties`中的`tomcat.port`值
-   - 9880端口占用修改位置：`bistoury/bistoury-proxy-bin/conf/global.properties`中的`agent.newport`值
-   - 9881端口占用修改位置：`bistoury/bistoury-proxy-bin/conf/global.properties`中的`server.port`值和quick_start.sh中`PROXY_WEBSOCKET_PORT`的值
-   - 9092端口占用修改位置：`bistoury/h2/h2.sh`中的`H2_PORT`的值
+Bistoury 快捷部署脚本默认会占用一些端口，其中 proxy 默认使用 9090 端口，ui 默认使用 9091 端口，agent 和 proxy 通信默认使用 9880 端口，ui 和 proxy 通信默认使用 9881 端口，h2 数据库默认使用 9092 端口，端口冲突解决方法如下：
 
-- 提示not find proxy for agent
-   - 到agent启动日志中检查agent是否启动成功，检查日志中是否存在`bistoury netty client start success`字样日志，如果没有，检查jvm参数`bistoury.proxy.host`是否配置为正确的proxy域名或ip:prot，如果存在这样的日志（`bistoury netty client start success, ProxyConfig{ip='192.168.2.22', port=9880, heartbeatSec=30}`），按照日志后面的ip到对应的proxy上进行后续检查
-   - 访问proxy下proxyIp:port/proxy.html，检查agent对应的IP是否注册到proxy下
-   - 注意：可能会出现这种情况，当一台机器存在多个ip时，可能会出现agent注册到proxy的ip与应用中心的ip不一致，此时只需要在应用中心将ip改为注册到proxy的IP即可。
-   
-- 应用重启，进程id变了怎么办
-   - 需要先使用quick_start.sh脚本先stop，然后更改-p参数start
+- 修改自己占用的端口
+- 9090 端口占用修改位置：`bistoury/bistoury-proxy-bin/conf/server.properties` 中的 `tomcat.port` 值和 quick_start.sh 中`PROXY_TOMCAT_PORT` 的值
+- 9091端口占用修改位置：`bistoury/bistoury-ui-bin/conf/server.properties` 中的 `tomcat.port` 值
+- 9880 端口占用修改位置：`bistoury/bistoury-proxy-bin/conf/global.properties` 中的 `agent.newport` 值
+- 9881 端口占用修改位置：`bistoury/bistoury-proxy-bin/conf/global.properties` 中的 `server.port` 值和 quick_start.sh 中 `PROXY_WEBSOCKET_PORT` 的值
+- 9092 端口占用修改位置：`bistoury/h2/h2.sh` 中的 `H2_PORT` 的值
+
+#### 提示 not find proxy for agent
+
+- 到 agent 启动日志中检查 agent 是否启动成功，检查日志中是否存在 `bistoury netty client start success` 字样日志，如果没有，检查 jvm 参数 `bistoury.proxy.host` 是否配置为正确的 proxy 域名或 ip:prot，如果存在这样的日志（`bistoury netty client start success, ProxyConfig{ip='192.168.2.22', port=9880, heartbeatSec=30}`），按照日志后面的 ip 到对应的 proxy 上进行后续检查
+- 访问 proxy 下 proxyIp:port/proxy.html，检查 agent 对应的 ip 是否注册到 proxy 下
+- 注意：可能会出现这种情况，当一台机器存在多个 ip 时，可能会出现 agent 注册到 proxy 的 ip 与应用中心的 ip 不一致，此时只需要在应用中心将 ip 改为注册到 proxy 的 ip 即可。
+
+#### 应用重启，进程 id 变了怎么办
+
+- 需要先使用 quick_start.sh 脚本先 stop，然后更改 `-p` 参数 start
 
 ### 快速启动脚本做了什么
 
-我们在本机上部署了全套的Bistoury，包括ui，proxy和agent。
+1. 我们在本机上部署了全套的 Bistoury，包括 ui，proxy 和 agent。
 
-使用并初始化一个h2数据库，并初始化了一些数据用来对本机应用做诊断。
+2. 使用并初始化一个 h2 数据库，并初始化了一些数据用来对本机应用做诊断。
 
-包括创建一个用户名密码均为admin的用户，一个名为bistoury_demo_app的应用，并将本机注册到bistoury_demo_app下作为一台服务器。
+3. 包括创建一个用户名密码均为 admin 的用户，一个名为 bistoury_demo_app 的应用，并将本机注册到 bistoury_demo_app 下作为一台服务器。
