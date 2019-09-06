@@ -3,6 +3,7 @@ package qunar.tc.decompiler.modules.decompiler.sforms;
 
 import qunar.tc.decompiler.code.CodeConstants;
 import qunar.tc.decompiler.modules.decompiler.exps.*;
+import qunar.tc.decompiler.modules.decompiler.sforms.FlattenStatementsHelper.FinallyPathWrapper;
 import qunar.tc.decompiler.modules.decompiler.stats.*;
 import qunar.tc.decompiler.modules.decompiler.vars.VarVersionEdge;
 import qunar.tc.decompiler.modules.decompiler.vars.VarVersionNode;
@@ -535,13 +536,13 @@ public class SSAUConstructorSparseEx {
             boolean isExceptionMonitorExit = (exceptionDest != null && !nodeid.equals(exceptionDest));
 
             HashSet<String> setLongPathWrapper = new HashSet<>();
-            for (List<FlattenStatementsHelper.FinallyPathWrapper> lstwrapper : dgraph.mapLongRangeFinallyPaths.values()) {
-                for (FlattenStatementsHelper.FinallyPathWrapper finwraplong : lstwrapper) {
+            for (List<FinallyPathWrapper> lstwrapper : dgraph.mapLongRangeFinallyPaths.values()) {
+                for (FinallyPathWrapper finwraplong : lstwrapper) {
                     setLongPathWrapper.add(finwraplong.destination + "##" + finwraplong.source);
                 }
             }
 
-            for (FlattenStatementsHelper.FinallyPathWrapper finwrap : dgraph.mapShortRangeFinallyPaths.get(predid)) {
+            for (FinallyPathWrapper finwrap : dgraph.mapShortRangeFinallyPaths.get(predid)) {
                 SFormsFastMapDirect map;
 
                 boolean recFinally = dgraph.mapShortRangeFinallyPaths.containsKey(finwrap.source);

@@ -17,20 +17,14 @@
 
 package qunar.tc.bistoury.agent.common.kv;
 
-import com.google.common.util.concurrent.ListeningScheduledExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
-import org.rocksdb.RocksDBException;
 import org.rocksdb.TtlDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.common.CharsetUtils;
-import qunar.tc.bistoury.common.NamedThreadFactory;
 
 import java.io.File;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -39,9 +33,10 @@ import java.util.concurrent.TimeUnit;
  * @describe：
  */
 public class RocksDBStoreImpl implements KvDb {
+
     private static final Logger LOG = LoggerFactory.getLogger(RocksDBStoreImpl.class);
+
     private static final int MB_BYTE = 1048576;
-    private static final ListeningScheduledExecutorService executor = MoreExecutors.listeningDecorator(Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("rocksDb-compact-range-task", true)));
 
     static {
         RocksDB.loadLibrary();

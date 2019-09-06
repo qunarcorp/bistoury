@@ -79,6 +79,11 @@ public class StructLocalVariableTableAttribute extends StructGeneralAttribute {
         return null;
     }
 
+ /* private Stream<LocalVariable> matchingVars(int index, int visibleOffset) {
+    return localVariables.stream()
+      .filter(v -> v.index == index && (visibleOffset >= v.start_pc && visibleOffset < v.start_pc + v.length));
+  }*/
+
     private List<LocalVariable> matchingVars(final int index, final int visibleOffset) {
        /* return localVariables.stream()
                 .filter(v -> v.index == index && (visibleOffset >= v.start_pc && visibleOffset < v.start_pc + v.length));*/
@@ -91,11 +96,11 @@ public class StructLocalVariableTableAttribute extends StructGeneralAttribute {
     }
 
     public boolean containsName(final String name) {
-        //return localVariables.stream().anyMatch(v -> v.name == name);
+        //return localVariables.stream().anyMatch(v -> Objects.equals(v.name, name));
         return List827.anyMatch(Lists.newArrayList(localVariables), new Predicate<LocalVariable>() {
             @Override
             public boolean apply(LocalVariable v) {
-                return v.name == name;
+                return Objects.equals(v.name, name);
             }
         });
     }

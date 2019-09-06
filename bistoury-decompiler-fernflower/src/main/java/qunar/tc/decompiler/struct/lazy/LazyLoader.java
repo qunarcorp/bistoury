@@ -88,7 +88,7 @@ public class LazyLoader {
                     for (int j = 0; j < attrSize; j++) {
                         int attrNameIndex = in.readUnsignedShort();
                         String attrName = pool.getPrimitiveConstant(attrNameIndex).getString();
-                        if (!StructGeneralAttribute.ATTRIBUTE_CODE.equals(attrName)) {
+                        if (!StructGeneralAttribute.ATTRIBUTE_CODE.getName().equals(attrName)) {
                             in.discard(in.readInt());
                             continue;
                         }

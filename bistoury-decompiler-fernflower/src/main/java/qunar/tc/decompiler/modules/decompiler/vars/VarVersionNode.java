@@ -31,6 +31,7 @@ public class VarVersionNode implements IGraphNode {
         this.version = version;
     }
 
+    @Override
     public List<IGraphNode> getPredecessors() {
         List<IGraphNode> lst = new ArrayList<>(preds.size());
         for (VarVersionEdge edge : preds) {

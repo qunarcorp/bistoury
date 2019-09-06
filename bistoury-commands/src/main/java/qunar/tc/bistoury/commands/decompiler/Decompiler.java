@@ -26,6 +26,7 @@ import qunar.tc.decompiler.main.extern.IResultSaver;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,8 +84,8 @@ public class Decompiler {
         engine.addSource(source);
     }
 
-    public void addStream(InputStream in, final String filename, final String absolutePath) {
-        engine.addStream(in, filename, URLDecoder.decode(absolutePath));
+    public void addStream(InputStream in, final String filename, final String absolutePath) throws UnsupportedEncodingException {
+        engine.addStream(in, filename, URLDecoder.decode(absolutePath, "UTF-8"));
     }
 
     public void addLibrary(File library) {

@@ -30,6 +30,7 @@ public abstract class InstructionSequence {
     // *****************************************************************************
 
     // to nbe overwritten
+    @Override
     public InstructionSequence clone() {
         return null;
     }

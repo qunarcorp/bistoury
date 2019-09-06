@@ -9,12 +9,16 @@ public interface CodeConstants {
     // BYTECODE VERSIONS
     // ----------------------------------------------------------------------
 
-    int BYTECODE_JAVA_LE_4 = 1;
-    int BYTECODE_JAVA_5 = 2;
-    int BYTECODE_JAVA_6 = 3;
-    int BYTECODE_JAVA_7 = 4;
-    int BYTECODE_JAVA_8 = 5;
-    int BYTECODE_JAVA_9 = 6;
+    int BYTECODE_JAVA_LE_4 = 48;
+    int BYTECODE_JAVA_5 = 49;
+    int BYTECODE_JAVA_6 = 50;
+    int BYTECODE_JAVA_7 = 51;
+    int BYTECODE_JAVA_8 = 52;
+    int BYTECODE_JAVA_9 = 53;
+    int BYTECODE_JAVA_10 = 54;
+    int BYTECODE_JAVA_11 = 55;
+    int BYTECODE_JAVA_12 = 56;
+    int BYTECODE_JAVA_13 = 57;
 
     // ----------------------------------------------------------------------
     // VARIABLE TYPES

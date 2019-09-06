@@ -4,7 +4,7 @@
 package qunar.tc.decompiler.modules.decompiler.exps;
 
 import qunar.tc.decompiler.code.CodeConstants;
-import qunar.tc.decompiler.main.ClassesProcessor;
+import qunar.tc.decompiler.main.ClassesProcessor.ClassNode;
 import qunar.tc.decompiler.main.DecompilerContext;
 import qunar.tc.decompiler.main.collectors.BytecodeMappingTracer;
 import qunar.tc.decompiler.main.rels.MethodWrapper;
@@ -53,7 +53,7 @@ public class FieldExprent extends Exprent {
 
     @Override
     public int getExprentUse() {
-        return instance == null ? Exprent.MULTIPLE_USES : instance.getExprentUse() & Exprent.MULTIPLE_USES;
+        return 0; // multiple references to a field considered dangerous in a multithreaded environment, thus no Exprent.MULTIPLE_USES set here
     }
 
     @Override
@@ -87,7 +87,7 @@ public class FieldExprent extends Exprent {
         TextBuffer buf = new TextBuffer();
 
         if (isStatic) {
-            ClassesProcessor.ClassNode node = (ClassesProcessor.ClassNode) DecompilerContext.getProperty(DecompilerContext.CURRENT_CLASS_NODE);
+            ClassNode node = (ClassNode) DecompilerContext.getProperty(DecompilerContext.CURRENT_CLASS_NODE);
             if (node == null || !classname.equals(node.classStruct.qualifiedName) || isAmbiguous()) {
                 buf.append(DecompilerContext.getImportCollector().getShortNameInClassContext(ExprProcessor.buildJavaClassName(classname)));
                 buf.append(".");

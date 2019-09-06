@@ -6,11 +6,13 @@ package qunar.tc.decompiler.main.collectors;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import qunar.tc.decompiler.main.ClassesProcessor;
+import qunar.tc.decompiler.main.ClassesProcessor.ClassNode;
 import qunar.tc.decompiler.main.DecompilerContext;
 import qunar.tc.decompiler.struct.StructClass;
 import qunar.tc.decompiler.struct.StructContext;
 import qunar.tc.decompiler.struct.StructField;
+import qunar.tc.decompiler.struct.attr.StructGeneralAttribute;
+import qunar.tc.decompiler.struct.attr.StructInnerClassesAttribute;
 import qunar.tc.decompiler.util.TextBuffer;
 
 import java.util.*;
@@ -22,10 +24,11 @@ public class ImportCollector {
     private final Set<String> setNotImportedNames = new HashSet<>();
     // set of field names in this class and all its predecessors.
     private final Set<String> setFieldNames = new HashSet<>();
+    private final Set<String> setInnerClassNames = new HashSet<>();
     private final String currentPackageSlash;
     private final String currentPackagePoint;
 
-    public ImportCollector(ClassesProcessor.ClassNode root) {
+    public ImportCollector(ClassNode root) {
         String clName = root.classStruct.qualifiedName;
         int index = clName.lastIndexOf('/');
         if (index >= 0) {
@@ -38,15 +41,35 @@ public class ImportCollector {
         }
 
         Map<String, StructClass> classes = DecompilerContext.getStructContext().getClasses();
+        LinkedList<String> queue = new LinkedList<>();
         StructClass currentClass = root.classStruct;
         while (currentClass != null) {
+            if (currentClass.superClass != null) {
+                queue.add(currentClass.superClass.getString());
+            }
+
+            Collections.addAll(queue, currentClass.getInterfaceNames());
+
             // all field names for the current class ..
             for (StructField f : currentClass.getFields()) {
                 setFieldNames.add(f.getName());
             }
 
+            // .. all inner classes for the current class ..
+            StructInnerClassesAttribute attribute = currentClass.getAttribute(StructGeneralAttribute.ATTRIBUTE_INNER_CLASSES);
+            if (attribute != null) {
+                for (StructInnerClassesAttribute.Entry entry : attribute.getEntries()) {
+                    if (entry.enclosingName != null && entry.enclosingName.equals(currentClass.qualifiedName)) {
+                        setInnerClassNames.add(entry.simpleName);
+                    }
+                }
+            }
+
             // .. and traverse through parent.
-            currentClass = currentClass.superClass != null ? classes.get(currentClass.superClass.getString()) : null;
+            currentClass = !queue.isEmpty() ? classes.get(queue.removeFirst()) : null;
+            while (currentClass == null && !queue.isEmpty()) {
+                currentClass = classes.get(queue.removeFirst());
+            }
         }
     }
 
@@ -71,19 +94,19 @@ public class ImportCollector {
     }
 
     public String getShortName(String fullName, boolean imported) {
-        ClassesProcessor.ClassNode node = DecompilerContext.getClassProcessor().getMapRootClasses().get(fullName.replace('.', '/')); //todo[r.sh] anonymous classes?
+        ClassNode node = DecompilerContext.getClassProcessor().getMapRootClasses().get(fullName.replace('.', '/')); //todo[r.sh] anonymous classes?
 
         String result = null;
         if (node != null && node.classStruct.isOwn()) {
             result = node.simpleName;
 
-            while (node.parent != null && node.type == ClassesProcessor.ClassNode.CLASS_MEMBER) {
+            while (node.parent != null && node.type == ClassNode.CLASS_MEMBER) {
                 //noinspection StringConcatenationInLoop
                 result = node.parent.simpleName + '.' + result;
                 node = node.parent;
             }
 
-            if (node.type == ClassesProcessor.ClassNode.CLASS_ROOT) {
+            if (node.type == ClassNode.CLASS_ROOT) {
                 fullName = node.classStruct.qualifiedName;
                 fullName = fullName.replace('/', '.');
             } else {
@@ -104,12 +127,14 @@ public class ImportCollector {
 
         StructContext context = DecompilerContext.getStructContext();
 
-        // check for another class which could 'shadow' this one. Two cases:
+        // check for another class which could 'shadow' this one. Three cases:
         // 1) class with the same short name in the current package
         // 2) class with the same short name in the default package
+        // 3) inner class with the same short name in the current class, a super class, or an implemented interface
         boolean existsDefaultClass =
                 (context.getClass(currentPackageSlash + shortName) != null && !packageName.equals(currentPackagePoint)) || // current package
-                        (context.getClass(shortName) != null && !currentPackagePoint.isEmpty());  // default package
+                        (context.getClass(shortName) != null && !currentPackagePoint.isEmpty()) || // default package
+                        setInnerClassNames.contains(shortName); // inner class
 
         if (existsDefaultClass ||
                 (mapSimpleNames.containsKey(shortName) && !packageName.equals(mapSimpleNames.get(shortName)))) {

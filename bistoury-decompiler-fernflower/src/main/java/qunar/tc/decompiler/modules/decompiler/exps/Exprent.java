@@ -12,6 +12,7 @@ import qunar.tc.decompiler.struct.gen.VarType;
 import qunar.tc.decompiler.struct.match.IMatchable;
 import qunar.tc.decompiler.struct.match.MatchEngine;
 import qunar.tc.decompiler.struct.match.MatchNode;
+import qunar.tc.decompiler.struct.match.MatchNode.RuleValue;
 import qunar.tc.decompiler.util.TextBuffer;
 
 import java.util.Collection;
@@ -159,7 +160,7 @@ public class Exprent implements IMatchable {
             return false;
         }
 
-        for (Entry<MatchProperties, MatchNode.RuleValue> rule : matchNode.getRules().entrySet()) {
+        for (Entry<MatchProperties, RuleValue> rule : matchNode.getRules().entrySet()) {
             MatchProperties key = rule.getKey();
             if (key == MatchProperties.EXPRENT_TYPE && this.type != (Integer) rule.getValue().value) {
                 return false;

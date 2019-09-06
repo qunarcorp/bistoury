@@ -18,9 +18,9 @@ public class AnnotationExprent extends Exprent {
 
     private final String className;
     private final List<String> parNames;
-    private final List<Exprent> parValues;
+    private final List<? extends Exprent> parValues;
 
-    public AnnotationExprent(String className, List<String> parNames, List<Exprent> parValues) {
+    public AnnotationExprent(String className, List<String> parNames, List<? extends Exprent> parValues) {
         super(EXPRENT_ANNOTATION);
         this.className = className;
         this.parNames = parNames;

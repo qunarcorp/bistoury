@@ -43,10 +43,12 @@ public class ArrayExprent extends Exprent {
         }
     }
 
+    @Override
     public int getExprentUse() {
-        return array.getExprentUse() & index.getExprentUse() & MULTIPLE_USES;
+        return array.getExprentUse() & index.getExprentUse() & Exprent.MULTIPLE_USES;
     }
 
+    @Override
     public CheckTypesResult checkExprTypeBounds() {
         CheckTypesResult result = new CheckTypesResult();
         result.addMinTypeExprent(index, VarType.VARTYPE_BYTECHAR);
@@ -54,6 +56,7 @@ public class ArrayExprent extends Exprent {
         return result;
     }
 
+    @Override
     public List<Exprent> getAllExprents() {
         List<Exprent> lst = new ArrayList<>();
         lst.add(array);

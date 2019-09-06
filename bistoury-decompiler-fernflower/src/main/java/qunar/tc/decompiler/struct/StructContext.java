@@ -65,6 +65,13 @@ public class StructContext {
         addSpace("", file, isOwn, 0);
     }
 
+    /**
+     * 提供使用文件流反编译的方法
+     *
+     * @param in
+     * @param filename
+     * @param absolutePath
+     */
     public void addStream(InputStream in, final String filename, final String absolutePath) {
         ContextUnit unit = units.get("");
         try (DataInputFullStream ins = new DataInputFullStream(in)) {
@@ -77,6 +84,7 @@ public class StructContext {
             DecompilerContext.getLogger().writeMessage(message, e);
         }
     }
+
 
     private void addSpace(String path, File file, boolean isOwn, int level) {
         if (file.isDirectory()) {
@@ -132,7 +140,6 @@ public class StructContext {
     }
 
     private void addArchive(String path, File file, int type, boolean isOwn) throws IOException {
-        //noinspection IOResourceOpenedButNotSafelyClosed
         try (ZipFile archive = type == ContextUnit.TYPE_JAR ? new JarFile(file) : new ZipFile(file)) {
             Enumeration<? extends ZipEntry> entries = archive.entries();
             while (entries.hasMoreElements()) {

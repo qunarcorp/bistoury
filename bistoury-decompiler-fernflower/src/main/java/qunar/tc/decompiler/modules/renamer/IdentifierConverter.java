@@ -316,7 +316,6 @@ public class IdentifierConverter implements NewClassNameBuilder {
                     nodes.put(clStr.qualifiedName, node = new ClassWrapperNode(clStr));
                 }
 
-                //noinspection ConstantConditions
                 if (child != null) {
                     node.addSubclass(child);
                 }

@@ -277,7 +277,8 @@ public class TextBuffer {
             myLineMapping = new HashMap<>();
             for (int i = 0; i < lineMapping.length; i += 2) {
                 int key = lineMapping[i + 1];
-                //Set<Integer> existing = myLineMapping.computeIfAbsent(key, k -> new TreeSet<>());
+
+                // Set<Integer> existing = myLineMapping.computeIfAbsent(key, k -> new TreeSet<>());
                 Set<Integer> existing = Map827.computeIfAbsent(myLineMapping, key, new Function<Integer, Set<Integer>>() {
                     @Override
                     public Set<Integer> apply(Integer input) {

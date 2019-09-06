@@ -73,7 +73,7 @@ public class ClassReference14Processor {
         }
     }
 
-    private static void processClassRec(ClassesProcessor.ClassNode node, final Map<ClassWrapper, MethodWrapper> mapClassMeths, final Set<ClassWrapper> setFound) {
+    private static void processClassRec(ClassesProcessor.ClassNode node, final Map<ClassWrapper, MethodWrapper> mapClassMeths, final Set<? super ClassWrapper> setFound) {
         ClassWrapper wrapper = node.getWrapper();
 
         // search code

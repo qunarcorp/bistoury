@@ -63,7 +63,7 @@ public class SwitchStatement extends Statement {
             lstNodes.remove(post);
         }
 
-        default_edge = head.getSuccessorEdges(Statement.STATEDGE_DIRECT_ALL).get(0);
+        default_edge = head.getSuccessorEdges(STATEDGE_DIRECT_ALL).get(0);
 
         for (Statement st : lstNodes) {
             stats.addWithKey(st, st.id);
@@ -76,7 +76,7 @@ public class SwitchStatement extends Statement {
 
     public static Statement isHead(Statement head) {
 
-        if (head.type == Statement.TYPE_BASICBLOCK && head.getLastBasicType() == Statement.LASTBASICTYPE_SWITCH) {
+        if (head.type == TYPE_BASICBLOCK && head.getLastBasicType() == LASTBASICTYPE_SWITCH) {
 
             List<Statement> lst = new ArrayList<>();
             if (DecHelper.isChoiceStatement(head, lst)) {
@@ -97,6 +97,7 @@ public class SwitchStatement extends Statement {
         return null;
     }
 
+    @Override
     public TextBuffer toJava(int indent, BytecodeMappingTracer tracer) {
         SwitchHelper.simplify(this);
 
@@ -123,7 +124,6 @@ public class SwitchStatement extends Statement {
             for (int j = 0; j < edges.size(); j++) {
                 if (edges.get(j) == default_edge) {
                     buf.appendIndent(indent).append("default:").appendLineSeparator();
-                    tracer.incrementCurrentSourceLine();
                 } else {
                     buf.appendIndent(indent).append("case ");
                     Exprent value = values.get(j);
@@ -138,8 +138,8 @@ public class SwitchStatement extends Statement {
                     }
 
                     buf.append(":").appendLineSeparator();
-                    tracer.incrementCurrentSourceLine();
                 }
+                tracer.incrementCurrentSourceLine();
             }
 
             buf.append(ExprProcessor.jmpWrapper(stat, indent + 1, false, tracer));
@@ -151,6 +151,7 @@ public class SwitchStatement extends Statement {
         return buf;
     }
 
+    @Override
     public void initExprents() {
         SwitchExprent swexpr = (SwitchExprent) first.getExprents().remove(first.getExprents().size() - 1);
         swexpr.setCaseValues(caseValues);
@@ -158,6 +159,7 @@ public class SwitchStatement extends Statement {
         headexprent.set(0, swexpr);
     }
 
+    @Override
     public List<Object> getSequentialObjects() {
 
         List<Object> lst = new ArrayList<Object>(stats);
@@ -166,12 +168,14 @@ public class SwitchStatement extends Statement {
         return lst;
     }
 
+    @Override
     public void replaceExprent(Exprent oldexpr, Exprent newexpr) {
         if (headexprent.get(0) == oldexpr) {
             headexprent.set(0, newexpr);
         }
     }
 
+    @Override
     public void replaceStatement(Statement oldstat, Statement newstat) {
 
         for (int i = 0; i < caseStatements.size(); i++) {
@@ -183,13 +187,15 @@ public class SwitchStatement extends Statement {
         super.replaceStatement(oldstat, newstat);
     }
 
+    @Override
     public Statement getSimpleCopy() {
         return new SwitchStatement();
     }
 
+    @Override
     public void initSimpleCopy() {
         first = stats.get(0);
-        default_edge = first.getSuccessorEdges(Statement.STATEDGE_DIRECT_ALL).get(0);
+        default_edge = first.getSuccessorEdges(STATEDGE_DIRECT_ALL).get(0);
 
         sortEdgesAndNodes();
     }

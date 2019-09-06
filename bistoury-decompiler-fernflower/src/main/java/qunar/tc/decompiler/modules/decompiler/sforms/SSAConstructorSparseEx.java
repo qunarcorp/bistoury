@@ -6,6 +6,7 @@ import qunar.tc.decompiler.modules.decompiler.exps.AssignmentExprent;
 import qunar.tc.decompiler.modules.decompiler.exps.Exprent;
 import qunar.tc.decompiler.modules.decompiler.exps.FunctionExprent;
 import qunar.tc.decompiler.modules.decompiler.exps.VarExprent;
+import qunar.tc.decompiler.modules.decompiler.sforms.FlattenStatementsHelper.FinallyPathWrapper;
 import qunar.tc.decompiler.modules.decompiler.stats.CatchAllStatement;
 import qunar.tc.decompiler.modules.decompiler.stats.CatchStatement;
 import qunar.tc.decompiler.modules.decompiler.stats.RootStatement;
@@ -322,11 +323,11 @@ public class SSAConstructorSparseEx {
             boolean isExceptionMonitorExit = (exceptionDest != null && !nodeid.equals(exceptionDest));
 
             HashSet<String> setLongPathWrapper = new HashSet<>();
-            for (FlattenStatementsHelper.FinallyPathWrapper finwraplong : dgraph.mapLongRangeFinallyPaths.get(predid)) {
+            for (FinallyPathWrapper finwraplong : dgraph.mapLongRangeFinallyPaths.get(predid)) {
                 setLongPathWrapper.add(finwraplong.destination + "##" + finwraplong.source);
             }
 
-            for (FlattenStatementsHelper.FinallyPathWrapper finwrap : dgraph.mapShortRangeFinallyPaths.get(predid)) {
+            for (FinallyPathWrapper finwrap : dgraph.mapShortRangeFinallyPaths.get(predid)) {
                 SFormsFastMapDirect map;
 
                 boolean recFinally = dgraph.mapShortRangeFinallyPaths.containsKey(finwrap.source);

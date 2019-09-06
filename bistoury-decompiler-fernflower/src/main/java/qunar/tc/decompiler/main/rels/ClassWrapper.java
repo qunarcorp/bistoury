@@ -71,7 +71,7 @@ public class ClassWrapper {
                         MethodProcessorRunnable mtProc = new MethodProcessorRunnable(mt, md, varProc, DecompilerContext.getCurrentContext());
 
                         Thread mtThread = new Thread(mtProc, "Java decompiler");
-                        long stopAt = System.currentTimeMillis() + maxSec * 1000;
+                        long stopAt = System.currentTimeMillis() + maxSec * 1000L;
 
                         mtThread.start();
 
@@ -148,7 +148,7 @@ public class ClassWrapper {
 
                 varProc.refreshVarNames(namesCollector);
 
-                // if decompiler information present and should be used
+                // if debug information present and should be used
                 if (DecompilerContext.getOption(IFernflowerPreferences.USE_DEBUG_VAR_NAMES)) {
                     StructLocalVariableTableAttribute attr = mt.getLocalVariableAttr();
                     if (attr != null) {
@@ -161,15 +161,15 @@ public class ClassWrapper {
                             public int processExprent(Exprent exprent) {
                                 List<Exprent> lst = exprent.getAllExprents(true);
                                 lst.add(exprent);
-                            /*lst.stream()
-                                    .filter(e -> e.type == Exprent.EXPRENT_VAR)
-                                    .forEach(e -> {
-                                        VarExprent varExprent = (VarExprent) e;
-                                        String name = varExprent.getDebugName(mt);
-                                        if (name != null) {
-                                            varProc.setVarName(varExprent.getVarVersionPair(), name);
-                                        }
-                                    });*/
+                                /*lst.stream()
+                                        .filter(e -> e.type == Exprent.EXPRENT_VAR)
+                                        .forEach(e -> {
+                                            VarExprent varExprent = (VarExprent) e;
+                                            String name = varExprent.getDebugName(mt);
+                                            if (name != null) {
+                                                varProc.setVarName(varExprent.getVarVersionPair(), name);
+                                            }
+                                        });*/
                                 ArrayList<Exprent> list = Lists.newArrayList(lst);
                                 List827.filter(list, new Predicate<Exprent>() {
                                     @Override

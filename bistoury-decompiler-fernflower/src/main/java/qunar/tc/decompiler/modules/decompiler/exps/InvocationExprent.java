@@ -4,7 +4,7 @@
 package qunar.tc.decompiler.modules.decompiler.exps;
 
 import qunar.tc.decompiler.code.CodeConstants;
-import qunar.tc.decompiler.main.ClassesProcessor;
+import qunar.tc.decompiler.main.ClassesProcessor.ClassNode;
 import qunar.tc.decompiler.main.DecompilerContext;
 import qunar.tc.decompiler.main.collectors.BytecodeMappingTracer;
 import qunar.tc.decompiler.main.extern.IFernflowerPreferences;
@@ -65,7 +65,7 @@ public class InvocationExprent extends Exprent {
     public InvocationExprent(int opcode,
                              LinkConstant cn,
                              List<PooledConstant> bootstrapArguments,
-                             ListStack<Exprent> stack,
+                             ListStack<? extends Exprent> stack,
                              Set<Integer> bytecodeOffsets) {
         this();
 
@@ -209,11 +209,11 @@ public class InvocationExprent extends Exprent {
             if (isBoxingCall() && canIgnoreBoxing) {
                 // process general "boxing" calls, e.g. 'Object[] data = { true }' or 'Byte b = 123'
                 // here 'byte' and 'short' values do not need an explicit narrowing type cast
-                ExprProcessor.getCastedExprent(lstParameters.get(0), descriptor.params[0], buf, indent, false, false, false, tracer);
+                ExprProcessor.getCastedExprent(lstParameters.get(0), descriptor.params[0], buf, indent, false, false, false, false, tracer);
                 return buf;
             }
 
-            ClassesProcessor.ClassNode node = (ClassesProcessor.ClassNode) DecompilerContext.getProperty(DecompilerContext.CURRENT_CLASS_NODE);
+            ClassNode node = (ClassNode) DecompilerContext.getProperty(DecompilerContext.CURRENT_CLASS_NODE);
             if (node == null || !classname.equals(node.classStruct.qualifiedName)) {
                 buf.append(DecompilerContext.getImportCollector().getShortNameInClassContext(ExprProcessor.buildJavaClassName(classname)));
             }
@@ -241,7 +241,9 @@ public class InvocationExprent extends Exprent {
 
                     if (invocationTyp == INVOKE_SPECIAL) {
                         if (!classname.equals(this_classname)) { // TODO: direct comparison to the super class?
-                            super_qualifier = this_classname;
+                            StructClass cl = DecompilerContext.getStructContext().getClass(classname);
+                            boolean isInterface = cl != null && cl.hasModifier(CodeConstants.ACC_INTERFACE);
+                            super_qualifier = !isInterface ? this_classname : classname;
                         }
                     }
                 }
@@ -313,7 +315,7 @@ public class InvocationExprent extends Exprent {
         List<VarVersionPair> mask = null;
         boolean isEnum = false;
         if (functype == TYP_INIT) {
-            ClassesProcessor.ClassNode newNode = DecompilerContext.getClassProcessor().getMapRootClasses().get(classname);
+            ClassNode newNode = DecompilerContext.getClassProcessor().getMapRootClasses().get(classname);
             if (newNode != null) {
                 mask = ExprUtil.getSyntheticParametersMask(newNode, stringDescriptor, lstParameters.size());
                 isEnum = newNode.classStruct.hasModifier(CodeConstants.ACC_ENUM) && DecompilerContext.getOption(IFernflowerPreferences.DECOMPILE_ENUM);
@@ -337,9 +339,8 @@ public class InvocationExprent extends Exprent {
                 TextBuffer buff = new TextBuffer();
                 boolean ambiguous = setAmbiguousParameters.get(i);
 
-                Exprent param = unboxIfNeeded(lstParameters.get(i));
                 // 'byte' and 'short' literals need an explicit narrowing type cast when used as a parameter
-                ExprProcessor.getCastedExprent(param, descriptor.params[i], buff, indent, true, ambiguous, true, tracer);
+                ExprProcessor.getCastedExprent(lstParameters.get(i), descriptor.params[i], buff, indent, true, ambiguous, true, true, tracer);
 
                 // the last "new Object[0]" in the vararg call is not printed
                 if (buff.length() > 0) {
@@ -356,14 +357,6 @@ public class InvocationExprent extends Exprent {
         buf.append(')');
 
         return buf;
-    }
-
-    public static Exprent unboxIfNeeded(Exprent param) {
-        // "unbox" invocation parameters, e.g. 'byteSet.add((byte)123)' or 'new ShortContainer((short)813)'
-        if (param.type == Exprent.EXPRENT_INVOCATION && ((InvocationExprent) param).isBoxingCall()) {
-            param = ((InvocationExprent) param).lstParameters.get(0);
-        }
-        return param;
     }
 
     private boolean isVarArgCall() {
@@ -383,7 +376,7 @@ public class InvocationExprent extends Exprent {
         return false;
     }
 
-    private boolean isBoxingCall() {
+    public boolean isBoxingCall() {
         if (isStatic && "valueOf".equals(name) && lstParameters.size() == 1) {
             int paramType = lstParameters.get(0).getExprType().type;
 

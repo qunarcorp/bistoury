@@ -88,9 +88,10 @@ public class ConstExprent extends Exprent {
 
     @Override
     public int getExprentUse() {
-        return MULTIPLE_USES | SIDE_EFFECTS_FREE;
+        return Exprent.MULTIPLE_USES | Exprent.SIDE_EFFECTS_FREE;
     }
 
+    @Override
     public List<Exprent> getAllExprents() {
         return new ArrayList<>();
     }

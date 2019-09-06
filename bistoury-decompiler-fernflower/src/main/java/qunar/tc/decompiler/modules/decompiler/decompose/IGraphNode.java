@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface IGraphNode {
 
-  List<? extends IGraphNode> getPredecessors();
+    List<? extends IGraphNode> getPredecessors();
 }

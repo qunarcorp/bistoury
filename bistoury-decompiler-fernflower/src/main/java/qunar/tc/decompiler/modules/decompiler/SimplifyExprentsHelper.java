@@ -2,7 +2,7 @@
 package qunar.tc.decompiler.modules.decompiler;
 
 import qunar.tc.decompiler.code.CodeConstants;
-import qunar.tc.decompiler.main.ClassesProcessor;
+import qunar.tc.decompiler.main.ClassesProcessor.ClassNode;
 import qunar.tc.decompiler.main.DecompilerContext;
 import qunar.tc.decompiler.main.extern.IFernflowerPreferences;
 import qunar.tc.decompiler.main.rels.ClassWrapper;
@@ -65,18 +65,11 @@ public class SimplifyExprentsHelper {
                 for (Statement st : stat.getStats()) {
                     res |= simplifyStackVarsStatement(st, setReorderedIfs, ssa, cl);
 
-                    // collapse composed if's
-                    if (changed = IfHelper.mergeIfs(st, setReorderedIfs)) {
-                        break;
-                    }
+                    changed = IfHelper.mergeIfs(st, setReorderedIfs) ||  // collapse composed if's
+                            buildIff(st, ssa) ||  // collapse iff ?: statement
+                            processClass14 && collapseInlinedClass14(st);  // collapse inlined .class property in version 1.4 and before
 
-                    // collapse iff ?: statement
-                    if (changed = buildIff(st, ssa)) {
-                        break;
-                    }
-
-                    // collapse inlined .class property in version 1.4 and before
-                    if (processClass14 && (changed = collapseInlinedClass14(st))) {
+                    if (changed) {
                         break;
                     }
                 }
@@ -178,7 +171,7 @@ public class SimplifyExprentsHelper {
             }
 
             // expr++ and expr--
-            if (isIPPorIMM(current, next)) {
+            if (isIPPorIMM(current, next) || isIPPorIMM2(current, next)) {
                 list.remove(index + 1);
                 res = true;
                 continue;
@@ -456,6 +449,49 @@ public class SimplifyExprentsHelper {
         return false;
     }
 
+    private static boolean isIPPorIMM2(Exprent first, Exprent second) {
+        if (first.type != Exprent.EXPRENT_ASSIGNMENT || second.type != Exprent.EXPRENT_ASSIGNMENT) {
+            return false;
+        }
+
+        AssignmentExprent af = (AssignmentExprent) first;
+        AssignmentExprent as = (AssignmentExprent) second;
+
+        if (as.getRight().type != Exprent.EXPRENT_FUNCTION) {
+            return false;
+        }
+
+        FunctionExprent func = (FunctionExprent) as.getRight();
+
+        if (func.getFuncType() != FunctionExprent.FUNCTION_ADD && func.getFuncType() != FunctionExprent.FUNCTION_SUB) {
+            return false;
+        }
+
+        Exprent econd = func.getLstOperands().get(0);
+        Exprent econst = func.getLstOperands().get(1);
+
+        if (econst.type != Exprent.EXPRENT_CONST && econd.type == Exprent.EXPRENT_CONST && func.getFuncType() == FunctionExprent.FUNCTION_ADD) {
+            econd = econst;
+            econst = func.getLstOperands().get(0);
+        }
+
+        if (econst.type == Exprent.EXPRENT_CONST &&
+                ((ConstExprent) econst).hasValueOne() &&
+                af.getLeft().equals(econd) &&
+                af.getRight().equals(as.getLeft()) &&
+                (af.getLeft().getExprentUse() & Exprent.MULTIPLE_USES) != 0) {
+            int type = func.getFuncType() == FunctionExprent.FUNCTION_ADD ? FunctionExprent.FUNCTION_IPP : FunctionExprent.FUNCTION_IMM;
+
+            FunctionExprent ret = new FunctionExprent(type, af.getRight(), func.bytecode);
+            ret.setImplicitType(VarType.VARTYPE_INT);
+
+            af.setRight(ret);
+            return true;
+        }
+
+        return false;
+    }
+
     private static boolean isMonitorExit(Exprent first) {
         if (first.type == Exprent.EXPRENT_MONITOR) {
             MonitorExprent expr = (MonitorExprent) first;
@@ -484,8 +520,8 @@ public class SimplifyExprentsHelper {
                                 newExpr.getConstructor().getLstParameters().get(0).equals(invocation.getInstance())) {
 
                             String classname = newExpr.getNewType().value;
-                            ClassesProcessor.ClassNode node = DecompilerContext.getClassProcessor().getMapRootClasses().get(classname);
-                            if (node != null && node.type != ClassesProcessor.ClassNode.CLASS_ROOT) {
+                            ClassNode node = DecompilerContext.getClassProcessor().getMapRootClasses().get(classname);
+                            if (node != null && node.type != ClassNode.CLASS_ROOT) {
                                 return true;
                             }
                         }
@@ -557,7 +593,7 @@ public class SimplifyExprentsHelper {
 
             if (in.getInvocationTyp() == InvocationExprent.INVOKE_DYNAMIC) {
                 String lambda_class_name = cl.qualifiedName + in.getInvokeDynamicClassSuffix();
-                ClassesProcessor.ClassNode lambda_class = DecompilerContext.getClassProcessor().getMapRootClasses().get(lambda_class_name);
+                ClassNode lambda_class = DecompilerContext.getClassProcessor().getMapRootClasses().get(lambda_class_name);
 
                 if (lambda_class != null) { // real lambda class found, replace invocation with an anonymous class
                     NewExprent newExpr = new NewExprent(new VarType(lambda_class_name, true), null, 0, in.bytecode);

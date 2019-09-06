@@ -72,10 +72,12 @@ public class VarVersionsGraph {
         }
 
         engine = new GenericDominatorEngine(new IGraph() {
+            @Override
             public List<? extends IGraphNode> getReversePostOrderList() {
                 return getReversedPostOrder(roots);
             }
 
+            @Override
             public Set<? extends IGraphNode> getRoots() {
                 return new HashSet<IGraphNode>(roots);
             }
@@ -97,7 +99,7 @@ public class VarVersionsGraph {
         return lst;
     }
 
-    private static void addToReversePostOrderListIterative(VarVersionNode root, List<VarVersionNode> lst, Set<VarVersionNode> setVisited) {
+    private static void addToReversePostOrderListIterative(VarVersionNode root, List<? super VarVersionNode> lst, Set<? super VarVersionNode> setVisited) {
         Map<VarVersionNode, List<VarVersionEdge>> mapNodeSuccs = new HashMap<>();
         LinkedList<VarVersionNode> stackNode = new LinkedList<>();
         LinkedList<Integer> stackIndex = new LinkedList<>();

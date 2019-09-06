@@ -5,7 +5,6 @@ import qunar.tc.decompiler.main.DecompilerContext;
 import qunar.tc.decompiler.main.extern.IFernflowerPreferences;
 import qunar.tc.decompiler.main.extern.IResultSaver;
 import qunar.tc.decompiler.struct.lazy.LazyLoader;
-import qunar.tc.decompiler.struct.lazy.LazyLoader.Link;
 import qunar.tc.decompiler.util.DataInputFullStream;
 
 import java.io.IOException;
@@ -70,7 +69,7 @@ public class ContextUnit {
 
             lstClasses.add(newCl);
 
-            Link lnk = loader.getClassLink(oldName);
+            LazyLoader.Link lnk = loader.getClassLink(oldName);
             loader.removeClassLink(oldName);
             loader.addClassLink(newCl.qualifiedName, lnk);
         }

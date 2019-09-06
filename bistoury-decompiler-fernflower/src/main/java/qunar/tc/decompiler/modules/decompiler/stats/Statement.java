@@ -554,7 +554,7 @@ public class Statement implements IMatchable {
     // private methods
     // *****************************************************************************
 
-    private static void addToReversePostOrderListIterative(Statement root, List<Statement> lst) {
+    private static void addToReversePostOrderListIterative(Statement root, List<? super Statement> lst) {
 
         LinkedList<Statement> stackNode = new LinkedList<>();
         LinkedList<Integer> stackIndex = new LinkedList<>();
@@ -597,7 +597,7 @@ public class Statement implements IMatchable {
     }
 
 
-    private static void addToPostReversePostOrderList(Statement stat, List<Statement> lst, HashSet<Statement> setVisited) {
+    private static void addToPostReversePostOrderList(Statement stat, List<? super Statement> lst, HashSet<? super Statement> setVisited) {
 
         if (setVisited.contains(stat)) { // because of not considered exception edges, s. isExitComponent. Should be rewritten, if possible.
             return;
@@ -678,7 +678,7 @@ public class Statement implements IMatchable {
         List<StatEdge> res;
         if ((type & (type - 1)) == 0) {
             res = map.get(type);
-            res = res == null ? new ArrayList<StatEdge>() : new ArrayList<StatEdge>(res);
+            res = res == null ? new ArrayList<StatEdge>() : new ArrayList<>(res);
         } else {
             res = new ArrayList<>();
             for (int edgetype : StatEdge.TYPES) {
@@ -701,7 +701,7 @@ public class Statement implements IMatchable {
         List<Statement> res;
         if ((type & (type - 1)) == 0) {
             res = map.get(type);
-            res = res == null ? new ArrayList<Statement>() : new ArrayList<Statement>(res);
+            res = res == null ? new ArrayList<Statement>() : new ArrayList<>(res);
         } else {
             res = new ArrayList<>();
             for (int edgetype : StatEdge.TYPES) {

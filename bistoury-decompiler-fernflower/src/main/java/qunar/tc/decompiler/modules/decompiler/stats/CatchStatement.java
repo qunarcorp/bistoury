@@ -129,6 +129,7 @@ public class CatchStatement extends Statement {
         return null;
     }
 
+    @Override
     public TextBuffer toJava(int indent, BytecodeMappingTracer tracer) {
         TextBuffer buf = new TextBuffer();
 
@@ -168,7 +169,7 @@ public class CatchStatement extends Statement {
             buf.append(vars.get(i - 1).toJava(indent, tracer));
             buf.append(") {").appendLineSeparator();
             tracer.incrementCurrentSourceLine();
-            buf.append(ExprProcessor.jmpWrapper(stat, indent + 1, true, tracer)).appendIndent(indent)
+            buf.append(ExprProcessor.jmpWrapper(stat, indent + 1, false, tracer)).appendIndent(indent)
                     .append("}");
         }
         buf.appendLineSeparator();
@@ -177,6 +178,7 @@ public class CatchStatement extends Statement {
         return buf;
     }
 
+    @Override
     public Statement getSimpleCopy() {
         CatchStatement cs = new CatchStatement();
 
