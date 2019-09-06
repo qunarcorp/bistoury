@@ -55,15 +55,13 @@
 解决办法就是指定一下相应的类名，因为不能是agent使用到的类，推荐使用用户自身中间件jar包或者spring中类（注意要是已加载的类），如果使用业务类，可能导致小部分功能不可用。
 
 例子 :
-```
-./quick_start.sh -c org.springframework.web.servlet.DispatcherServlet(不要照抄) -p 1024 start
-```
+![./quick_start.sh -c org.springframework.web.servlet.DispatcherServlet(不要照抄) -p 1024 start](../image/cannot_lib_class.png)
 
-如果自身依赖中有相应的类，但是还是报"can not find lib class"，这种情况应该是类没有加载。
+如果自身依赖中有相应的类，但是还是报"`can not find lib class`"，这种情况应该是类没有加载。
 
-"can not find lib class"下面一行从“begin print all loaded classes”开始，会打印所有已加载的类名，可以从这里进行确认。
+"`can not find lib class`"下面一行从“`begin print all loaded classes`”开始，会打印**所有已加载**的类名，可以从这里进行确认。
 
- ### windows 环境暂时不支持
+ ### windows 环境
 
 ---
 
@@ -89,7 +87,7 @@
 
 > 如果是使用快速启动脚本，需使用JDK8
 
-> 手动指定JDK目录(例如目录为`/bin/jdk`) : `./quick_start.sh -j /bin/jdk -p 1024 start`
+> 手动指定 **`JAVA_HOME`** 目录(例如目录为`/lib/java_1.8/home`) : `./quick_start.sh -j /lib/java_1.8/home -p 1024 start`
 
 ### 端口问题
 

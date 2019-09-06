@@ -41,7 +41,7 @@ Arthas的watch命令让我们可以观察函数的入参、返回值、异常等
     选择“全部加载”会把整个列表重新加载一遍。
 ![debug class list](../image/debug_class_list.png)
 
-- 找到需要调试的那行代码，点击前方的行号标记设置断点
+- 找到需要调试的那行代码，点击前方的行号标记设置断点。对于内部类，需要内部类代码被执行过（**保证类被加载**）才能添加断点
 
 ![debug panel](../image/deug_panel.png)
 

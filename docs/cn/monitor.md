@@ -23,7 +23,7 @@
 
     选择“全部加载”会把整个列表重新加载一遍。
 ![monitor_class_list](../image/monitor_class_list.png)
-- 找到需要添加监控的方法，在其中任意语句添加标记，点击前方的行号标记所在行。
+- 找到需要添加监控的方法，在其中任意语句添加标记，点击前方的行号标记所在行。对于内部类，需要内部类代码被执行过（**保证类被加载**）才能添加监控
 ![monitor_panel](../image/monitor_panel.png)
 - 在监控首页可以选择应用及机器后可以查看监控数据
 ![monitor_display](../image/monitor_display.png)
