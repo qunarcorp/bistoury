@@ -39,9 +39,9 @@ public class ZkRegistryServiceImpl implements RegistryService {
     private void doOnline() {
         String node = ProxyConfigStore.getProxyNode();
         try {
-            registryClient.addEphemeralNode(node);
+            registryClient.addNode(node);
         } catch (Exception e) {
-            LOGGER.error("online proxy error. node: {}", node, e);
+            LOGGER.error("online proxy error. zk node: {}", node, e);
         }
     }
 
@@ -63,7 +63,6 @@ public class ZkRegistryServiceImpl implements RegistryService {
     private void deleteNode(String node) {
         try {
             registryClient.deleteNode(node);
-            LOGGER.info("zk delete successfully, node {}", node);
         } catch (Exception e) {
             LOGGER.error("zk delete node: {} error", node, e);
             throw new RuntimeException("zk delete node: " + node + " error", e);

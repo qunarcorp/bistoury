@@ -70,12 +70,14 @@ public class EtcdV2ClientImpl implements RegistryClient {
     public void deleteNode(String node) {
         proxys.remove(node);
         runLeaseKeepAlive();
+        LOGGER.info("etcd client remove node. namespace: {}, node: {}", namespace, node);
     }
 
     @Override
-    public void addEphemeralNode(String node) {
+    public void addNode(String node) {
         proxys.add(node);
         runLeaseKeepAlive();
+        LOGGER.info("etcd client add node. namespace: {}, node: {}", namespace, node);
     }
 
     @Override
@@ -101,6 +103,7 @@ public class EtcdV2ClientImpl implements RegistryClient {
         if (etcdClient != null) {
             try {
                 etcdClient.close();
+                LOGGER.info("close etcd client success. namespace: {}. nodes: {}.", namespace, proxys);
             } catch (IOException e) {
                 throw new RuntimeException("close etcd v2 client error.", e);
             }

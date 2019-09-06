@@ -9,7 +9,7 @@ public interface RegistryClient {
 
     void deleteNode(String node) throws Exception;
 
-    void addEphemeralNode(String node) throws Exception;
+    void addNode(String node) throws Exception;
 
     List<String> getChildren() throws Exception;
 

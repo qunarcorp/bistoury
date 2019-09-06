@@ -59,9 +59,10 @@ public class ZKClientImpl implements RegistryClient {
         try {
             client.delete()
                     .forPath(ZKPaths.makePath(namespace, node));
+            logger.info("zk client remove node success. namespace: {}, node: {}", namespace, node);
         } catch (KeeperException.NoNodeException e) {
             //ignore
-            logger.warn("nonode for namespace: {}, node: {}", namespace, node);
+            logger.debug("nonode for namespace: {}, node: {}", namespace, node);
         }
     }
 
@@ -82,6 +83,7 @@ public class ZKClientImpl implements RegistryClient {
                     .creatingParentsIfNeeded()
                     .withMode(CreateMode.PERSISTENT)
                     .forPath(path);
+            logger.info("zk client add namespace success. namespace: {}", namespace);
         } catch (KeeperException.NodeExistsException e) {
             //ignore
         } catch (Exception e) {
@@ -90,13 +92,14 @@ public class ZKClientImpl implements RegistryClient {
     }
 
     @Override
-    public void addEphemeralNode(String node) throws Exception {
+    public void addNode(String node) throws Exception {
         doAddEphemeralNode(node);
         addConnectionChangeListener((sender, state) -> {
             if (state == ConnectionState.RECONNECTED) {
                 resetNode(node);
             }
         });
+        logger.info("zk client add node success. namespace: {}, node: {}", namespace, node);
     }
 
     private void doAddEphemeralNode(String node) throws Exception {
@@ -105,7 +108,7 @@ public class ZKClientImpl implements RegistryClient {
                     .withMode(CreateMode.EPHEMERAL)
                     .forPath(ZKPaths.makePath(namespace, node));
         } catch (KeeperException.NodeExistsException e) {
-            logger.warn("Node already exists: {}", node);
+            logger.debug("Node already exists: {}", node);
         }
     }
 

@@ -33,7 +33,7 @@ public class EtcdV2RegistryServiceImpl implements RegistryService {
     @Override
     public void online() {
         try {
-            etcdV2Client.addEphemeralNode(ProxyConfigStore.getProxyNode());
+            etcdV2Client.addNode(ProxyConfigStore.getProxyNode());
         } catch (Exception e) {
             throw new RuntimeException("online proxy error.", e);
         }

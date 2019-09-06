@@ -43,23 +43,23 @@ public class MockRegistryClient implements RegistryClient {
 
     @Override
     public void deleteNode(String node) throws Exception {
-        logger.info("zk mock\t delete node, node: {}", node);
+        logger.info("mock delete node, node: {}", node);
     }
 
     @Override
     public List<String> getChildren() throws Exception {
         List<String> list = Files.readLines(new File(zkChildrenPath), Charsets.UTF_8);
-        logger.info("zk mock\t get children, children: {}", list);
+        logger.info("mock get children, children: {}", list);
         return ImmutableList.copyOf(list);
     }
 
     @Override
-    public void addEphemeralNode(String node) throws Exception {
-        logger.info("zk mock\t add ephemeral node, node: {}", node);
+    public void addNode(String node) throws Exception {
+        logger.info("mock add ephemeral node, node: {}", node);
     }
 
     @Override
     public void close() {
-        logger.info("zk mock\t close zk client");
+        logger.info("mock close client");
     }
 }

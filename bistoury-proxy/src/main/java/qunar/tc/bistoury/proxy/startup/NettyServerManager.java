@@ -86,6 +86,7 @@ public class NettyServerManager {
         nettyServerForUi = startUiServer(conf);
 
         registryService.online();
+        logger.info("proxy online success");
     }
 
     @PreDestroy
@@ -93,7 +94,9 @@ public class NettyServerManager {
         closeAgentConnections();
         nettyServerForUi.stop();
         nettyServerForAgent.stop();
+
         registryService.offline();
+        logger.info("proxy offline success");
     }
 
     private NettyServerForUi startUiServer(Conf conf) {

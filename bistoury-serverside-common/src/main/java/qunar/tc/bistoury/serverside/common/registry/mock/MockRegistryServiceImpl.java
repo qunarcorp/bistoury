@@ -31,7 +31,7 @@ public class MockRegistryServiceImpl implements RegistryService {
     @Override
     public void online() {
         try {
-            mockClient.addEphemeralNode("");
+            mockClient.addNode("");
         } catch (Exception e) {
             throw new RuntimeException("mock online error.", e);
         }
