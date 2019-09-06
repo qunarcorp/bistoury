@@ -15,17 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.service;
+package qunar.tc.bistoury.ui.git;
 
-import qunar.tc.bistoury.ui.model.PrivateToken;
-
-import java.util.Optional;
+import org.gitlab.api.GitlabAPI;
 
 /**
  * @author keli.wang
  */
-public interface GitlabPrivateTokenService {
-    int saveToken(final String username, final String privateToken);
+public interface GitlabApiCreateService {
+    GitlabAPI create();
 
-    Optional<PrivateToken> queryToken(String userCode);
+    GitlabAPI createForUser(final String userCode);
 }

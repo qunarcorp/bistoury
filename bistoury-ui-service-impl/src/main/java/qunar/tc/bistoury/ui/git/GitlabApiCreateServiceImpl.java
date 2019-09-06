@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.service.impl;
+package qunar.tc.bistoury.ui.git;
 
 import org.gitlab.api.GitlabAPI;
 import org.springframework.stereotype.Service;
@@ -24,8 +24,6 @@ import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.ui.model.PrivateToken;
 import qunar.tc.bistoury.ui.security.LoginContext;
-import qunar.tc.bistoury.ui.service.GitlabApiCreateService;
-import qunar.tc.bistoury.ui.service.GitlabPrivateTokenService;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -46,7 +44,7 @@ public class GitlabApiCreateServiceImpl implements GitlabApiCreateService {
     }
 
     @Resource
-    private GitlabPrivateTokenService gitlabPrivateTokenService;
+    private GitPrivateTokenService gitPrivateTokenService;
 
     @Override
     public GitlabAPI create() {
@@ -56,7 +54,7 @@ public class GitlabApiCreateServiceImpl implements GitlabApiCreateService {
 
     @Override
     public GitlabAPI createForUser(final String userCode) {
-        Optional<PrivateToken> token = gitlabPrivateTokenService.queryToken(userCode);
+        Optional<PrivateToken> token = gitPrivateTokenService.queryToken(userCode);
         if (!token.isPresent()) {
             throw new RuntimeException("尚未设置 Gitlab Private Token");
         }

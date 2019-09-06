@@ -26,7 +26,7 @@ import qunar.tc.bistoury.serverside.bean.ApiResult;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 import qunar.tc.bistoury.ui.model.PrivateToken;
 import qunar.tc.bistoury.ui.security.LoginContext;
-import qunar.tc.bistoury.ui.service.GitlabPrivateTokenService;
+import qunar.tc.bistoury.ui.git.GitPrivateTokenService;
 
 import javax.annotation.Resource;
 import java.util.Optional;
@@ -38,14 +38,14 @@ import java.util.Optional;
 @RequestMapping("/api/settings/token")
 public class PrivateTokenApiController {
     @Resource
-    private GitlabPrivateTokenService gitlabPrivateTokenService;
+    private GitPrivateTokenService gitPrivateTokenService;
 
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ResponseBody
     public ApiResult saveToken(@RequestParam final String privateToken) {
         final String username = LoginContext.getLoginContext().getLoginUser();
-        final int ret = gitlabPrivateTokenService.saveToken(username, privateToken);
+        final int ret = gitPrivateTokenService.saveToken(username, privateToken);
         if (ret > 0) {
             return ResultHelper.success();
         } else {
@@ -57,7 +57,7 @@ public class PrivateTokenApiController {
     @ResponseBody
     public ApiResult<PrivateToken> queryToken() {
         final String userCode = LoginContext.getLoginContext().getLoginUser();
-        Optional<PrivateToken> privateToken = gitlabPrivateTokenService.queryToken(userCode);
+        Optional<PrivateToken> privateToken = gitPrivateTokenService.queryToken(userCode);
         if (!privateToken.isPresent()) {
             return ResultHelper.fail(-2, "请先配置private token");
         }
