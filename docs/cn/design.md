@@ -14,7 +14,7 @@
 - 6、请求proxy，确认我要连接的agent是否在当前proxy上
 - 7、返回agent是否连接在本机的结果
 - 8、ui使用websocket发送命令到proxy
-- 9、proxy对名进行初步加工校验后将命令转发到agent
+- 9、proxy对命令进行初步加工校验后将命令转发到agent
 - 10、agent返回命令的处理结果
 - 11、proxy返回命令结果
 
