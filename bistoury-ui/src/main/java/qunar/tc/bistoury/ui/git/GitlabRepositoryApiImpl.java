@@ -27,13 +27,18 @@ import org.springframework.stereotype.Component;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
+import qunar.tc.bistoury.serverside.metrics.Metrics;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 import qunar.tc.bistoury.ui.model.GitlabFile;
+import qunar.tc.bistoury.ui.model.PrivateToken;
+import qunar.tc.bistoury.ui.security.LoginContext;
+import qunar.tc.bistoury.ui.service.GitPrivateTokenService;
 
 import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Optional;
 
 /**
  * @author leix.xie
@@ -44,29 +49,19 @@ import java.text.MessageFormat;
 public class GitlabRepositoryApiImpl implements GitRepositoryApi {
 
     @Autowired
-    private GitlabApiCreateService gitlabApiCreateService;
+    private GitPrivateTokenService gitPrivateTokenService;
 
     private String filePathFormat;
+
+    private String gitEndPoint;
 
     @PostConstruct
     public void init() {
         DynamicConfigLoader.<LocalDynamicConfig>load("config.properties")
-                .addListener(config -> filePathFormat = config.getString("file.path.format", "{0}src/main/java/{1}.java"));
-    }
-
-    @Override
-    public ApiResult tree(String projectId, String path, String ref) {
-        try {
-            final GitlabAPI api = gitlabApiCreateService.create();
-            final GitlabProject project = api.getProject(projectId);
-            return ResultHelper.success(api.getRepositoryTree(project, path, ref));
-        } catch (GitlabAPIException e) {
-            return ResultHelper.fail(-1, "连接gitlab服务器失败，请核对private token", e);
-        } catch (FileNotFoundException fnfe) {
-            return ResultHelper.fail(-1, "文件不存在，请核对仓库地址", fnfe);
-        } catch (IOException e) {
-            return ResultHelper.fail(-1, "获取文件属失败", e);
-        }
+                .addListener(config -> {
+                    filePathFormat = config.getString("file.path.format", "{0}src/main/java/{1}.java");
+                    gitEndPoint = config.getString("gitlab.endpoint");
+                });
     }
 
     @Override
@@ -82,12 +77,13 @@ public class GitlabRepositoryApiImpl implements GitRepositoryApi {
 
     private ApiResult doFile(final String projectId, final String ref, final String filepath) throws IOException {
         try {
-            final GitlabAPI api = gitlabApiCreateService.create();
+            final GitlabAPI api = createGitlabApi();
             final GitlabProject project = api.getProject(projectId);
             final Query query = new Query().append("file_path", filepath).append("ref", ref);
             final String url = "/projects/" + project.getId() + "/repository/files" + query.toString();
             return ResultHelper.success(api.retrieve().to(url, GitlabFile.class));
         } catch (GitlabAPIException e) {
+            Metrics.counter("connect_gitlab_error").inc();
             return ResultHelper.fail(-1, "连接gitlab服务器失败，请核private token", e);
         } catch (FileNotFoundException fnfe) {
             return ResultHelper.fail(-1, "文件不存在，请核对仓库地址", fnfe);
@@ -101,5 +97,15 @@ public class GitlabRepositoryApiImpl implements GitRepositoryApi {
             module = module + "/";
         }
         return MessageFormat.format(filePathFormat, module, className.replace(".", "/"));
+    }
+
+
+    private GitlabAPI createGitlabApi() {
+        String userCode = LoginContext.getLoginContext().getLoginUser();
+        Optional<PrivateToken> token = gitPrivateTokenService.queryToken(userCode);
+        if (!token.isPresent()) {
+            throw new RuntimeException("尚未设置 Git Private Token");
+        }
+        return GitlabAPI.connect(gitEndPoint, token.get().getPrivateToken());
     }
 }

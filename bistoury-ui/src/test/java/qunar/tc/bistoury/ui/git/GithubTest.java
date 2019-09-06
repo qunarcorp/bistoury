@@ -17,12 +17,16 @@
 
 package qunar.tc.bistoury.ui.git;
 
+import com.google.common.base.Charsets;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.ListenableFuture;
+import com.ning.http.client.Request;
+import com.ning.http.client.Response;
 import org.junit.Test;
-import org.kohsuke.github.GHEventInfo;
-import org.kohsuke.github.GitHub;
+import qunar.tc.bistoury.common.AsyncHttpClientHolder;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author leix.xie
@@ -30,16 +34,33 @@ import java.util.List;
  * @describe
  */
 public class GithubTest {
-    @Test
-    public void githubTest() throws IOException {
-        GitHub gitHub = GitHub.connectUsingOAuth("4647e0311fe1fa670877855a2c56a14bd092c22f");
-        //GitHub gitHub = GitHub.connect();
-        String apiUrl = gitHub.getApiUrl();
-        System.out.println(apiUrl);
+    private static final String token = "token 9db2ef44286ba5e2f37e8441a20c55f2e7cf8fd2";
+    private AsyncHttpClient client = AsyncHttpClientHolder.getInstance();
 
-        List<GHEventInfo> events = gitHub.getEvents();
-        for (GHEventInfo event : events) {
-            System.out.println(event.getActor().getName() + "\t" + event.getRepository().getFullName());
-        }
+    @Test
+    public void githubTest() throws IOException, ExecutionException, InterruptedException {
+        Request request = client.prepareGet("https://api.github.com/repos/xleiy/algorithm/git/trees/master")
+                .addHeader("Accept", "application/json")
+                .addHeader("'content-type", "application/json")
+                .addHeader("Authorization", token)
+                .build();
+        ListenableFuture<Response> future = client.executeRequest(request);
+        Response response = future.get();
+        System.out.println(response.getStatusCode());
+        System.out.println(response.getResponseBody(Charsets.UTF_8.name()));
+    }
+
+    @Test
+    public void githubFileTest() throws ExecutionException, InterruptedException, IOException {
+        Request request = client.prepareGet("https://api.github.com/repos/xleiy/algorithm/contents/src/main/java/com/xx/leetcode/AddTwoNumbers.java")
+                .addQueryParam("ref", "master")
+                .addHeader("Accept", "application/json")
+                .addHeader("'content-type", "application/json")
+                .addHeader("Authorization", token)
+                .build();
+        ListenableFuture<Response> future = client.executeRequest(request);
+        Response response = future.get();
+        System.out.println(response.getStatusCode());
+        System.out.println(response.getResponseBody(Charsets.UTF_8.name()));
     }
 }

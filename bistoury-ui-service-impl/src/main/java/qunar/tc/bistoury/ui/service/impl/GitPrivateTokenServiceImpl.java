@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.git;
+package qunar.tc.bistoury.ui.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.ui.dao.GitlabPrivateTokenDao;
 import qunar.tc.bistoury.ui.model.PrivateToken;
 import qunar.tc.bistoury.ui.service.AESCryptService;
-import qunar.tc.bistoury.ui.git.GitPrivateTokenService;
+import qunar.tc.bistoury.ui.service.GitPrivateTokenService;
 
 import java.util.Optional;
 

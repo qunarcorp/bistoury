@@ -38,15 +38,6 @@ public class GitlabRepositoryApiController {
     @Autowired
     private GitRepositoryApiStore gitRepositoryApiStore;
 
-    @RequestMapping("/tree")
-    @ResponseBody
-    public ApiResult tree(@RequestParam final String projectId,
-                          @RequestParam final String path,
-                          @RequestParam final String ref) throws IOException {
-        GitRepositoryApi gitRepositoryApi = gitRepositoryApiStore.getGitRepositoryApi();
-        return gitRepositoryApi.tree(projectId, path, ref);
-    }
-
     @RequestMapping("/file")
     @ResponseBody
     public ApiResult file(@RequestParam final String projectId,

@@ -28,8 +28,6 @@ import java.io.IOException;
  */
 public interface GitRepositoryApi {
 
-    ApiResult tree(final String projectId, final String path, final String ref);
-
     ApiResult file(final String projectId, final String path, final String ref) throws IOException;
 
     ApiResult fileByClass(final String projectId, final String ref, final String module, final String className) throws IOException;

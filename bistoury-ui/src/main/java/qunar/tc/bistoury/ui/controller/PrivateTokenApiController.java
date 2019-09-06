@@ -26,7 +26,7 @@ import qunar.tc.bistoury.serverside.bean.ApiResult;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 import qunar.tc.bistoury.ui.model.PrivateToken;
 import qunar.tc.bistoury.ui.security.LoginContext;
-import qunar.tc.bistoury.ui.git.GitPrivateTokenService;
+import qunar.tc.bistoury.ui.service.GitPrivateTokenService;
 
 import javax.annotation.Resource;
 import java.util.Optional;
@@ -49,7 +49,7 @@ public class PrivateTokenApiController {
         if (ret > 0) {
             return ResultHelper.success();
         } else {
-            return ResultHelper.fail("保存 Gitlab Private Token 失败");
+            return ResultHelper.fail("保存 Git Private Token 失败");
         }
     }
 
