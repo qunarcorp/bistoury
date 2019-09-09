@@ -124,6 +124,10 @@ public class BistouryBootstrap {
             if (shellServer != null) {
                 shellServer.close();
             }
+
+            InstrumentClientStore.destroy();
+
+            isBindRef.compareAndSet(true, false);
             throw e;
         }
     }

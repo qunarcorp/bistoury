@@ -48,11 +48,7 @@ public class QShutdownCommand extends AnnotatedCommand {
                 // ignore
             }
 
-            try {
-                InstrumentClientStore.destroy();
-            } catch (Exception e) {
-                // ignore
-            }
+            InstrumentClientStore.destroy();
 
             process.write("bistoury Server is going to shut down...\n");
         } finally {
