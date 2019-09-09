@@ -24,13 +24,10 @@ import com.ning.http.client.Request;
 import com.ning.http.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import qunar.tc.bistoury.common.AsyncHttpClientHolder;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
-import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
-import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
+import qunar.tc.bistoury.serverside.configuration.DynamicConfig;
 import qunar.tc.bistoury.serverside.metrics.Metrics;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 import qunar.tc.bistoury.ui.model.GitHubFile;
@@ -38,8 +35,6 @@ import qunar.tc.bistoury.ui.model.PrivateToken;
 import qunar.tc.bistoury.ui.security.LoginContext;
 import qunar.tc.bistoury.ui.service.GitPrivateTokenService;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.text.MessageFormat;
 import java.util.Optional;
 
@@ -48,12 +43,10 @@ import java.util.Optional;
  * @date 2019/9/4 16:51
  * @describe
  */
-@Component
 public class GithubRepositoryApiImpl implements GitRepositoryApi {
 
     private static final Logger logger = LoggerFactory.getLogger(GithubRepositoryApiImpl.class);
 
-    @Autowired
     private GitPrivateTokenService privateTokenService;
 
     private AsyncHttpClient client = AsyncHttpClientHolder.getInstance();
@@ -62,15 +55,11 @@ public class GithubRepositoryApiImpl implements GitRepositoryApi {
 
     private String gitEndPoint;
 
-    @PostConstruct
-    public void init() {
-        DynamicConfigLoader.<LocalDynamicConfig>load("config.properties")
-                .addListener(config -> {
-                    filePathFormat = config.getString("file.path.format", "{0}src/main/java/{1}.java");
-                    gitEndPoint = config.getString("gitlab.endpoint");
-                });
+    public GithubRepositoryApiImpl(GitPrivateTokenService privateTokenService, DynamicConfig config) {
+        this.privateTokenService = privateTokenService;
+        filePathFormat = config.getString("file.path.format", "{0}src/main/java/{1}.java");
+        gitEndPoint = config.getString("gitlab.endpoint");
     }
-
 
     @Override
     public ApiResult file(String projectId, String path, String ref) {
@@ -138,7 +127,7 @@ public class GithubRepositoryApiImpl implements GitRepositoryApi {
         return MessageFormat.format(filePathFormat, module, className.replace(".", "/"));
     }
 
-    @PreDestroy
+    @Override
     public void destroy() {
         client.close();
     }

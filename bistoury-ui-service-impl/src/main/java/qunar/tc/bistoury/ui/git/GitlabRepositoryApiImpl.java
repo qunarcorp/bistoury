@@ -22,11 +22,8 @@ import org.gitlab.api.GitlabAPI;
 import org.gitlab.api.GitlabAPIException;
 import org.gitlab.api.http.Query;
 import org.gitlab.api.models.GitlabProject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
-import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
-import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
+import qunar.tc.bistoury.serverside.configuration.DynamicConfig;
 import qunar.tc.bistoury.serverside.metrics.Metrics;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 import qunar.tc.bistoury.ui.model.GitlabFile;
@@ -34,7 +31,6 @@ import qunar.tc.bistoury.ui.model.PrivateToken;
 import qunar.tc.bistoury.ui.security.LoginContext;
 import qunar.tc.bistoury.ui.service.GitPrivateTokenService;
 
-import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -45,23 +41,18 @@ import java.util.Optional;
  * @date 2019/9/4 16:37
  * @describe
  */
-@Component
 public class GitlabRepositoryApiImpl implements GitRepositoryApi {
 
-    @Autowired
     private GitPrivateTokenService gitPrivateTokenService;
 
     private String filePathFormat;
 
     private String gitEndPoint;
 
-    @PostConstruct
-    public void init() {
-        DynamicConfigLoader.<LocalDynamicConfig>load("config.properties")
-                .addListener(config -> {
-                    filePathFormat = config.getString("file.path.format", "{0}src/main/java/{1}.java");
-                    gitEndPoint = config.getString("gitlab.endpoint");
-                });
+    public GitlabRepositoryApiImpl(GitPrivateTokenService privateTokenService, DynamicConfig config) {
+        this.gitPrivateTokenService = privateTokenService;
+        filePathFormat = config.getString("file.path.format", "{0}src/main/java/{1}.java");
+        gitEndPoint = config.getString("gitlab.endpoint");
     }
 
     @Override
@@ -107,5 +98,10 @@ public class GitlabRepositoryApiImpl implements GitRepositoryApi {
             throw new RuntimeException("尚未设置 Git Private Token");
         }
         return GitlabAPI.connect(gitEndPoint, token.get().getPrivateToken());
+    }
+
+    @Override
+    public void destroy() {
+
     }
 }

@@ -23,8 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
-import qunar.tc.bistoury.ui.git.GitRepositoryApi;
-import qunar.tc.bistoury.ui.git.GitRepositoryApiStore;
+import qunar.tc.bistoury.ui.service.GitRepositoryStoreService;
 
 import java.io.IOException;
 
@@ -36,15 +35,14 @@ import java.io.IOException;
 public class GitlabRepositoryApiController {
 
     @Autowired
-    private GitRepositoryApiStore gitRepositoryApiStore;
+    private GitRepositoryStoreService gitRepositoryStoreServiceImpl;
 
     @RequestMapping("/file")
     @ResponseBody
     public ApiResult file(@RequestParam final String projectId,
                           @RequestParam final String ref,
                           @RequestParam final String filepath) throws IOException {
-        GitRepositoryApi gitRepositoryApi = gitRepositoryApiStore.getGitRepositoryApi();
-        return gitRepositoryApi.file(projectId, ref, filepath);
+        return gitRepositoryStoreServiceImpl.file(projectId, ref, filepath);
     }
 
     @RequestMapping("/filebyclass")
@@ -53,7 +51,6 @@ public class GitlabRepositoryApiController {
                           @RequestParam final String ref,
                           @RequestParam(required = false) final String module,
                           @RequestParam final String className) throws IOException {
-        GitRepositoryApi gitRepositoryApi = gitRepositoryApiStore.getGitRepositoryApi();
-        return gitRepositoryApi.fileByClass(projectId, ref, module, className);
+        return gitRepositoryStoreServiceImpl.fileByClass(projectId, ref, module, className);
     }
 }
