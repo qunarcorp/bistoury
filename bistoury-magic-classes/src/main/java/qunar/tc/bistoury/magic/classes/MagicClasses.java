@@ -3,6 +3,7 @@ package qunar.tc.bistoury.magic.classes;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -12,14 +13,20 @@ import java.util.Set;
  */
 public class MagicClasses {
 
-    private static final Set<String> MAGIC_CLASS_NAME_SET = ImmutableSet.of(
-            "com.fasterxml.jackson.databind.ser.BeanSerializerFactory",
-            "com.taobao.arthas.core.advisor.Enhancer"
-    );
+    private static final Set<String> MAGIC_CLASS_NAME_SET;
 
-    private static final Set<String> MAGIC_CLASS_PREFIX_SET = ImmutableSet.of(
-            "com.taobao.arthas.core.advisor.Enhancer$"
-    );
+    private static final Set<String> MAGIC_CLASS_PREFIX_SET;
+
+    static {
+        MAGIC_CLASS_NAME_SET = new HashSet<>();
+        MAGIC_CLASS_NAME_SET.add("com.fasterxml.jackson.databind.ser.BeanSerializerFactory");
+        MAGIC_CLASS_NAME_SET.add("com.taobao.arthas.core.advisor.Enhancer");
+
+        MAGIC_CLASS_PREFIX_SET = new HashSet<>();
+        for (String name : MAGIC_CLASS_NAME_SET) {
+            MAGIC_CLASS_PREFIX_SET.add(name + "$");
+        }
+    }
 
     public static boolean isMagicClass(String name) {
         if (Strings.isNullOrEmpty(name)) {
