@@ -19,6 +19,7 @@ package qunar.tc.bistoury.common;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
@@ -59,31 +60,25 @@ public final class FileUtil {
         return result;
     }
 
-    private static void listFile(List<String> result, File file) {
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            if (files == null)
-                return;
-
-            for (File f : files) {
-                listFile(result, f);
-            }
-        } else {
-            result.add(file.getName());
+    private static void listFile(List<String> resultNames, File file) {
+        List<File> resultFiles = Lists.newArrayList();
+        listFile(resultFiles, file, Predicates.<File>alwaysTrue());
+        for (File resultFile : resultFiles) {
+            resultNames.add(resultFile.getName());
         }
     }
 
-    private static void listFile(List<File> result, File file, Predicate<File> filter) {
+    private static void listFile(List<File> resultFiles, File file, Predicate<File> filter) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
             if (files == null) {
                 return;
             }
             for (File f : files) {
-                listFile(result, f, filter);
+                listFile(resultFiles, f, filter);
             }
         } else if (filter.apply(file)) {
-            result.add(file);
+            resultFiles.add(file);
         }
     }
 

@@ -51,15 +51,15 @@ public class JarDebugClient implements InstrumentClient {
 
     private static final String FILE_PROTOCOL = "file:";
 
-    private Map<String, ClassInfo> class_classInfo = Maps.newHashMap();
+    private final InstrumentInfo instrumentInfo;
 
-    private InstrumentInfo instrumentInfo;
+    private volatile Map<String, ClassInfo> classNameToClassInfoMapping = Maps.newHashMap();
 
     JarDebugClient(InstrumentInfo instrumentInfo) {
         this.instrumentInfo = instrumentInfo;
         logger.info("start init jar debugg client");
         try {
-            class_classInfo = initAllClassInfo(instrumentInfo, true);
+            classNameToClassInfoMapping = initAllClassInfo(instrumentInfo, true);
             logger.info("success init jar decompiler client");
         } catch (Exception e) {
             destroy();
@@ -74,14 +74,14 @@ public class JarDebugClient implements InstrumentClient {
         if (isLoadAll) {
             classInfoMap = Maps.newHashMap();
         } else {
-            classInfoMap = Maps.newHashMap(class_classInfo);
+            classInfoMap = Maps.newHashMap(classNameToClassInfoMapping);
         }
         Map<String, JarFile> jarFileMap = new HashMap<>();
         Map<String, Optional<Properties>> mavenInfoMap = new HashMap<>();
         try {
             for (Class clazz : loadedClasses) {
                 final String clazzName = clazz.getName();
-                if (Strings.isNullOrEmpty(clazzName) || clazzName.startsWith("[") || clazzName.indexOf("$") >= 0) {
+                if (Strings.isNullOrEmpty(clazzName) || clazzName.startsWith("[") || clazzName.contains("$")) {
                     continue;
                 }
 
@@ -111,7 +111,7 @@ public class JarDebugClient implements InstrumentClient {
     }
 
     public Set<String> getAllClass() {
-        return ImmutableSet.copyOf(class_classInfo.keySet());
+        return ImmutableSet.copyOf(classNameToClassInfoMapping.keySet());
     }
 
     /**
@@ -121,8 +121,7 @@ public class JarDebugClient implements InstrumentClient {
      */
     public boolean reloadAllClass() {
         logger.info("begin reload all class");
-        Map<String, ClassInfo> tmpClassInfo = initAllClassInfo(instrumentInfo, true);
-        class_classInfo = tmpClassInfo;
+        classNameToClassInfoMapping = initAllClassInfo(instrumentInfo, true);
         logger.info("end reload all class");
         return true;
     }
@@ -134,15 +133,14 @@ public class JarDebugClient implements InstrumentClient {
      */
     public boolean reLoadNewClass() {
         logger.info("begin reload new class");
-        Map<String, ClassInfo> tmpClassInfo = initAllClassInfo(instrumentInfo, false);
-        class_classInfo = tmpClassInfo;
+        classNameToClassInfoMapping = initAllClassInfo(instrumentInfo, false);
         logger.info("end reload new class");
         return true;
     }
 
 
     public ClassInfo getClassPath(final String className) {
-        return class_classInfo.get(className);
+        return classNameToClassInfoMapping.get(className);
     }
 
     private ClassInfo getClassInfo(Class clazz, Map<String, JarFile> jarFileMap, Map<String, Optional<Properties>> mavenInfoMap) {
