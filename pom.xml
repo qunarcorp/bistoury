@@ -63,7 +63,6 @@
     </modules>
 
     <properties>
-        <mvn_version.update_pattern>*.0.0</mvn_version.update_pattern>
         <maven_compiler_plugin_version>3.2</maven_compiler_plugin_version>
         <org.springframework.version>4.3.10.RELEASE</org.springframework.version>
         <jackson.version>2.8.10</jackson.version>
