@@ -18,14 +18,17 @@ public class MagicClasses {
     private static final Set<String> MAGIC_CLASS_PREFIX_SET;
 
     static {
-        MAGIC_CLASS_NAME_SET = new HashSet<>();
-        MAGIC_CLASS_NAME_SET.add("com.fasterxml.jackson.databind.ser.BeanSerializerFactory");
-        MAGIC_CLASS_NAME_SET.add("com.taobao.arthas.core.advisor.Enhancer");
+        Set<String> nameSet = new HashSet<>();
+        nameSet.add("com.fasterxml.jackson.databind.ser.BeanSerializerFactory");
+        nameSet.add("com.taobao.arthas.core.advisor.Enhancer");
 
-        MAGIC_CLASS_PREFIX_SET = new HashSet<>();
-        for (String name : MAGIC_CLASS_NAME_SET) {
-            MAGIC_CLASS_PREFIX_SET.add(name + "$");
+        Set<String> namePrefixSet = new HashSet<>();
+        for (String name : nameSet) {
+            namePrefixSet.add(name + "$");
         }
+
+        MAGIC_CLASS_NAME_SET = nameSet;
+        MAGIC_CLASS_PREFIX_SET = namePrefixSet;
     }
 
     public static boolean isMagicClass(String name) {
