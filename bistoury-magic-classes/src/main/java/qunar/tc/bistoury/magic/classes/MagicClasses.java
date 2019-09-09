@@ -1,8 +1,5 @@
 package qunar.tc.bistoury.magic.classes;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,7 +29,7 @@ public class MagicClasses {
     }
 
     public static boolean isMagicClass(String name) {
-        if (Strings.isNullOrEmpty(name)) {
+        if (name == null || name.isEmpty()) {
             return false;
         }
 
