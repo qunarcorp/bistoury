@@ -75,7 +75,7 @@
         <fastjson.version>1.2.60</fastjson.version>
         <vjtools.version>1.0.6</vjtools.version>
         <junit.version>4.10</junit.version>
-        <cfr.version>0.136</cfr.version>
+        <cfr.version>0.132</cfr.version>
         <zookeeper.version>3.4.6</zookeeper.version>
         <curator.framework.version>2.6.0</curator.framework.version>
         <netty.all.version>4.0.36.Final</netty.all.version>
