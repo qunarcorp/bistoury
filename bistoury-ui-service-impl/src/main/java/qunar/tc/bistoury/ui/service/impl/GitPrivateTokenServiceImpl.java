@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.ui.dao.GitlabPrivateTokenDao;
 import qunar.tc.bistoury.ui.model.PrivateToken;
 import qunar.tc.bistoury.ui.service.AESCryptService;
-import qunar.tc.bistoury.ui.service.GitlabPrivateTokenService;
+import qunar.tc.bistoury.ui.service.GitPrivateTokenService;
 
 import java.util.Optional;
 
@@ -32,7 +32,7 @@ import java.util.Optional;
  * @author keli.wang
  */
 @Service
-public class GitlabPrivateTokenServiceImpl implements GitlabPrivateTokenService {
+public class GitPrivateTokenServiceImpl implements GitPrivateTokenService {
 
     @Autowired
     private GitlabPrivateTokenDao gitlabPrivateTokenDao;

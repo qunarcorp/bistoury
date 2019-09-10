@@ -154,7 +154,7 @@ pre {
 code {
     white-space: pre !important;
     display: block;
-    overflow-y: auto;
+    overflow-y: hidden;
     overflow-x: auto !important;
 }
 
