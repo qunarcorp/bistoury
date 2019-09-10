@@ -43,8 +43,6 @@ public class GitRepositoryStoreServiceImpl implements GitRepositoryStoreService 
         gitRepository = dynamicConfig.getString(GIT_KEY);
         gitlabRepositoryApiImpl = new GitlabRepositoryApiImpl(gitPrivateTokenService, dynamicConfig);
         githubRepositoryApiImpl = new GithubRepositoryApiImpl(gitPrivateTokenService, dynamicConfig);
-
-
     }
 
 
