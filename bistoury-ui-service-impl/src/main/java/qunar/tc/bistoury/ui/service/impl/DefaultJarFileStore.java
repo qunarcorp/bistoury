@@ -187,6 +187,11 @@ public class DefaultJarFileStore implements JarFileStore {
 
     private String fetchSourceJar(MavenInfo mavenInfo) {
         try {
+
+            if (Strings.isNullOrEmpty(mavenHost)) {
+                throw new RuntimeException("maven 下载链接配置错误");
+            }
+
             AsyncHttpClient.BoundRequestBuilder builder = httpClient.prepareGet(getUrl(mavenInfo));
             Response response = httpClient.executeRequest(builder.build()).get();
             if (response.getStatusCode() != 200) {

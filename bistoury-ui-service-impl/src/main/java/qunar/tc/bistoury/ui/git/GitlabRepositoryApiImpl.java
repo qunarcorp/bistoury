@@ -92,6 +92,11 @@ public class GitlabRepositoryApiImpl implements GitRepositoryApi {
 
 
     private GitlabAPI createGitlabApi() {
+
+        if (Strings.isNullOrEmpty(gitEndPoint)) {
+            throw new RuntimeException("git 链接配置错误");
+        }
+
         String userCode = LoginContext.getLoginContext().getLoginUser();
         Optional<PrivateToken> token = gitPrivateTokenService.queryToken(userCode);
         if (!token.isPresent()) {

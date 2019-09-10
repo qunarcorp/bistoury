@@ -108,6 +108,10 @@ public class GithubRepositoryApiImpl implements GitRepositoryApi {
     }
 
     private String buildFileUrl(final String projectId, final String path) {
+        if (Strings.isNullOrEmpty(gitEndPoint)) {
+            throw new RuntimeException("git 链接配置错误");
+        }
+
         StringBuilder sb = new StringBuilder();
         sb.append(gitEndPoint)
                 .append("/repos/")
