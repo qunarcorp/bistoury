@@ -36,6 +36,7 @@ Bistoury提供可视化页面实时查看机器和应用的各种信息，包括
 
 ## 使用文档
 - [快速开始](docs/cn/quick_start.md)
+- [git及maven配置](docs/cn/gitlab_maven.md)
 - [在线debug](docs/cn/debug.md)
 - [线程级cpu使用率监控](docs/cn/jstack.md)
 - [命令使用文档](docs/cn/commands.md)
