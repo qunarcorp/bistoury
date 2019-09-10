@@ -71,7 +71,7 @@ ui、proxy使用Java1.8，agent使用java1.7或java1.8，由于agent会attach到
 
 qq群：717242486
 
-![QQ](docs/image//bistoury_qq_small.png)
+![QQ](docs/image/bistoury_qq_small.png)
 
 ## Screenshots
 

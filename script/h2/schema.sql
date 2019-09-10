@@ -58,7 +58,7 @@ CREATE TABLE `bistoury_gitlab_token`
     `id`            int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键id',
     `user_code`     varchar(50)      NOT NULL DEFAULT '' COMMENT '用户code',
     `private_token` varchar(100)     NOT NULL DEFAULT '' COMMENT 'gitlab private token',
-    `create_time`   timestamp        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `create_time`   timestamp        NOT NULL DEFAULT '1970-01-01 08:00:01' COMMENT '创建时间',
     `update_time`   timestamp        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_git_user_code` (`user_code`)
