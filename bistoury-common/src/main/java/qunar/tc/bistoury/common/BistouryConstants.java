@@ -56,7 +56,7 @@ public class BistouryConstants {
     public static final String SPY_CLASSNAME = "qunar.tc.bistoury.instrument.spy.BistourySpys1";
 
     // todo: 先这么写吧
-    public static final String CURRENT_VERSION = "2.0.5";
+    public static final String CURRENT_VERSION = "2.0.6";
 
     public static final String BISTOURY_VERSION_LINE_PREFIX = "bistoury version:";
 
