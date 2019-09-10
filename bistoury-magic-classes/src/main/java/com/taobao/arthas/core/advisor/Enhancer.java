@@ -1,6 +1,7 @@
 package com.taobao.arthas.core.advisor;
 
 import com.taobao.arthas.core.GlobalOptions;
+import com.taobao.arthas.core.config.Configure;
 import com.taobao.arthas.core.util.Constants;
 import com.taobao.arthas.core.util.FileUtils;
 import com.taobao.arthas.core.util.LogUtil;
@@ -58,6 +59,7 @@ public class Enhancer implements ClassFileTransformer {
     /**
      * @param adviceId          通知编号
      * @param isTracing         可跟踪方法调用
+     * @param skipJDKTrace      是否忽略对JDK内部方法的跟踪
      * @param matchingClasses   匹配中的类
      * @param methodNameMatcher 方法名匹配
      * @param affect            影响统计
@@ -84,7 +86,7 @@ public class Enhancer implements ClassFileTransformer {
         // 因为 Spy 是被bootstrap classloader加载的，所以一定可以被找到，如果找不到的话，说明应用方的classloader实现有问题
         Class<?> spyClass = targetClassLoader.loadClass(Constants.SPY_CLASSNAME);
 
-        final ClassLoader arthasClassLoader = Enhancer.class.getClassLoader();
+        final ClassLoader arthasClassLoader = Configure.class.getClassLoader();
 
         // 初始化间谍, AgentLauncher会把各种hook设置到ArthasClassLoader当中
         // 这里我们需要把这些hook取出来设置到目标classloader当中
@@ -111,10 +113,10 @@ public class Enhancer implements ClassFileTransformer {
 
             final ClassReader cr;
             final byte[] enhanceClassByteArray;
-            // 首先先检查是否在缓存中存在Class字节码
-            // 因为要支持多人协作,存在多人同时增强的情况
-            lock.lock();
             try {
+                lock.lock();
+                // 首先先检查是否在缓存中存在Class字节码
+                // 因为要支持多人协作,存在多人同时增强的情况
                 final byte[] byteOfClassInCache = classBytesCache.get(classBeingRedefined);
                 if (null != byteOfClassInCache) {
                     cr = new ClassReader(byteOfClassInCache);
@@ -181,7 +183,7 @@ public class Enhancer implements ClassFileTransformer {
             // 成功计数
             affect.cCnt(1);
 
-            // 排遣间谍
+            // 派遣间谍
             try {
                 spy(inClassLoader);
             } catch (Throwable t) {
@@ -192,8 +194,6 @@ public class Enhancer implements ClassFileTransformer {
             return enhanceClassByteArray;
         } catch (Throwable t) {
             logger.warn("transform loader[{}]:class[{}] failed.", inClassLoader, className, t);
-        } finally {
-            lock.unlock();
         }
 
         return null;
@@ -249,8 +249,16 @@ public class Enhancer implements ClassFileTransformer {
      * 是否过滤Arthas加载的类
      */
     private static boolean isSelf(Class<?> clazz) {
-        return null != clazz
-                && isEquals(clazz.getClassLoader(), Enhancer.class.getClassLoader());
+        return clazz != null
+                && (isLoadByBistouryClassLoader(clazz) || isLoadByMagicClassLoader(clazz));
+    }
+
+    private static boolean isLoadByBistouryClassLoader(Class<?> clazz) {
+        return isEquals(clazz.getClassLoader(), Configure.class.getClassLoader());
+    }
+
+    private static boolean isLoadByMagicClassLoader(Class<?> clazz) {
+        return isEquals(clazz.getClassLoader(), Enhancer.class.getClassLoader());
     }
 
     /**
@@ -278,6 +286,7 @@ public class Enhancer implements ClassFileTransformer {
      * @param inst              inst
      * @param adviceId          通知ID
      * @param isTracing         可跟踪方法调用
+     * @param skipJDKTrace      是否忽略对JDK内部方法的跟踪
      * @param classNameMatcher  类名匹配
      * @param methodNameMatcher 方法名匹配
      * @return 增强影响范围

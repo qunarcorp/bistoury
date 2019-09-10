@@ -27,7 +27,7 @@ Arthas的watch命令让我们可以观察函数的入参、返回值、异常等
   
 ## 使用步骤
 
-- 进入在线debug页面，初次使用时请先点击下方链接设置gitlab private token，若不设置，则添加断点时的代码将会通过反编译产生。目前仅支持gitlab，点击输入框下方对应链接获取，然后点击保存设置private token
+- 进入在线debug页面，初次使用时请先点击下方链接设置git private token，若不设置，则添加断点时的代码将会通过反编译产生。目前仅支持gitlab，点击输入框下方对应链接获取，然后点击保存设置private token
 ![private token](../image/private_token.png)
 
 - 选择需要调试的应用名，再选择需要调试的机器，然后点击【debug】按钮，进入已加载类列表。
