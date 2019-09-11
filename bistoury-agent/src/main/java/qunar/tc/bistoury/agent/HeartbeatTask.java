@@ -23,10 +23,13 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.common.LocalHost;
 import qunar.tc.bistoury.common.NamedThreadFactory;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
+import qunar.tc.bistoury.remoting.protocol.PayloadHolder;
 import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
 import qunar.tc.bistoury.remoting.protocol.ResponseCode;
+import qunar.tc.bistoury.remoting.protocol.payloadHolderImpl.RequestPayloadHolder;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -48,7 +51,8 @@ class HeartbeatTask {
 
     public HeartbeatTask(long heartbeatSec) {
         this.heartbeatSec = heartbeatSec;
-        heartbeatRequest = RemotingBuilder.buildAgentRequest(ResponseCode.RESP_TYPE_HEARTBEAT.getCode(), null);
+        PayloadHolder payloadHolder = new RequestPayloadHolder(LocalHost.getLocalHost());
+        heartbeatRequest = RemotingBuilder.buildAgentRequest(ResponseCode.RESP_TYPE_HEARTBEAT.getCode(), payloadHolder);
     }
 
     public void start(final Channel channel, final AtomicBoolean running) {

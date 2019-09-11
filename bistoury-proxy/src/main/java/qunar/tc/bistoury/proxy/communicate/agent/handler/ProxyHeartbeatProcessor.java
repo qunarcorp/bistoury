@@ -17,7 +17,9 @@
 
 package qunar.tc.bistoury.proxy.communicate.agent.handler;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
@@ -52,6 +54,8 @@ public class ProxyHeartbeatProcessor implements AgentMessageProcessor {
 
     private final Datagram heartbeatResponse = initHeartbeatResponse();
 
+    private final boolean initIdFromBody = Boolean.valueOf(System.getProperty("agent.id.parse"));
+
     @Override
     public Set<Integer> codes() {
         return ImmutableSet.of(ResponseCode.RESP_TYPE_HEARTBEAT.getCode());
@@ -60,18 +64,30 @@ public class ProxyHeartbeatProcessor implements AgentMessageProcessor {
     @Override
     public void process(ChannelHandlerContext ctx, Datagram message) {
         logger.debug("receive heartbeat, {}", message);
-        String ip = getIp(ctx.channel());
+        String agentId = getAgentId(ctx.channel(), message);
         message.release();
-        connectionStore.register(ip, message.getHeader().getVersion(), ctx.channel());
+        connectionStore.register(agentId, message.getHeader().getVersion(), ctx.channel());
         ctx.channel().writeAndFlush(heartbeatResponse);
     }
 
-    private String getIp(Channel channel) {
+    private String getAgentId(Channel channel, Datagram message) {
+        if (initIdFromBody) {
+            return getAgentIdFromBody(message.getBody());
+        }
         InetSocketAddress address = (InetSocketAddress) channel.remoteAddress();
         return address.getAddress().getHostAddress();
     }
 
+    private String getAgentIdFromBody(ByteBuf body) {
+        int size = body.readableBytes();
+        byte[] agentId = new byte[size];
+        body.readBytes(agentId);
+        return new String(agentId, Charsets.UTF_8);
+    }
+
+
     private Datagram initHeartbeatResponse() {
         return RemotingBuilder.buildRequestDatagram(ResponseCode.RESP_TYPE_HEARTBEAT.getCode(), idGenerator.generateId(), new RequestPayloadHolder(""));
     }
+
 }
