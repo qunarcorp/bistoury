@@ -20,12 +20,11 @@ package qunar.tc.bistoury.attach.arthas.debug;
 import com.google.common.collect.Maps;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
-import qunar.tc.bistoury.common.NamedThreadFactory;
 import qunar.tc.bistoury.common.Snapshot;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
@@ -45,11 +44,11 @@ public class DefaultSnapshotStore implements SnapshotStore {
     private final RemoveListener removeListener;
     private final Lock lock;
 
-    public DefaultSnapshotStore(Lock lock, RemoveListener removeListener) {
+    public DefaultSnapshotStore(Lock lock, RemoveListener removeListener, ScheduledExecutorService cleanExecutor) {
         this.removeListener = removeListener;
         this.lock = lock;
 
-        Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("snapshot-cache-clean")).scheduleAtFixedRate(new Runnable() {
+        cleanExecutor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 for (String breakpointId : snapshotCache.keySet()) {
