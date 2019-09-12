@@ -48,7 +48,7 @@
 
 往往表现为在ui上调用命令时报"can not init bistoury, start arthas error"，"Agent JAR loaded but agent failed to initialize"，同时在agent的log中也会有一样的错误日志。
 
-这时去“应用进程所属用户的主目录/logslogs/arthas/arthas.log”中查找日志，如果发现错误"can not find lib class"，那么可以确定是这个问题。
+这时去“应用进程所属用户的主目录/logs/arthas/arthas.log”中查找日志，如果发现错误"can not find lib class"，那么可以确定是这个问题。
 
 原因是agent在初始化时需要加载一个初始化类，也就是快速启动脚本-c所指定的类。这个类应当是应用已加载的依赖的jar包中的类，默认是spring的org.springframework.web.servlet.DispatcherServlet，往往非spring应用没有特殊指定会报这个错。
 
