@@ -1,7 +1,7 @@
 * [日志目录](#日志目录)
 * [获取ip错误](#获取ip错误)
 * [agent attach时加载初始化类失败](#agent-attach时加载初始化类失败)
-* [windows 环境暂时不支持](#windows-环境暂时不支持)
+* [windows 环境暂时不支持](#windows-环境)
 * [在线debug暂时不支持github仓库的源码调试](#在线debug暂时不支持github仓库的源码调试)
 * [jdk版本](#jdk版本)
     * [应用jdk版本要求](#应用jdk版本要求)
@@ -11,8 +11,8 @@
     * [修改默认端口](#修改默认端口)
 * [在线debug时,前端界面上对象值显示 `object size greater than ***kb`](#在线debug时前端界面上对象值显示-object-size-greater-than-kb)
 * [在线debug时 前端界面右上角提示 *** 代码查看仅可通过反编译](#在线debug时-前端界面右上角提示--代码查看仅可通过反编译)
-* [在线debug添加断点出现 `register breakpoint fail, File was not found in the executable`](#在线debug添加断点出现-register-breakpoint-fail,-File-was-not-found-in-the-executable)
-* [动态监控添加监控出现 `add monitor failed, File was not found in the executable`](#动态监控添加监控出现-add-monitor-failed,-File-was-not-found-in-the-executable)
+* [在线debug添加断点出现 `register breakpoint fail, File was not found in the executable`](#在线debug添加断点出现-register-breakpoint-fail-file-was-not-found-in-the-executable)
+* [动态监控添加监控出现 `add monitor failed, File was not found in the executable`](#动态监控添加监控出现-add-monitor-failed-file-was-not-found-in-the-executable)
 
 
 ### 日志目录
