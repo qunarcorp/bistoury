@@ -11,8 +11,8 @@
     * [修改默认端口](#修改默认端口)
 * [在线debug时,前端界面上对象值显示 `object size greater than ***kb`](#在线debug时前端界面上对象值显示-object-size-greater-than-kb)
 * [在线debug时 前端界面右上角提示 *** 代码查看仅可通过反编译](#在线debug时-前端界面右上角提示--代码查看仅可通过反编译)
-* [在线debug添加断点出现`register breakpoint fail, File was not found in the executable`](#在线debug添加断点出现`register breakpoint fail, File was not found in the executable`)
-* [动态监控添加监控出现`add monitor failed, File was not found in the executable`](#动态监控添加监控出现`add monitor failed, File was not found in the executable`)
+* [在线debug添加断点出现 `register breakpoint fail, File was not found in the executable`](#在线debug添加断点出现-register-breakpoint-fail,-File-was-not-found-in-the-executable)
+* [动态监控添加监控出现 `add monitor failed, File was not found in the executable`](#动态监控添加监控出现-add-monitor-failed,-File-was-not-found-in-the-executable)
 
 
 ### 日志目录
@@ -135,8 +135,8 @@
 
 - [源代码查看详细介绍](https://github.com/qunarcorp/bistoury/blob/master/docs/cn/gitlab_maven.md)
 
-### 在线debug添加断点出现`register breakpoint fail, File was not found in the executable`
-### 动态监控添加监控出现`add monitor failed, File was not found in the executable`
+### 在线debug添加断点出现 register breakpoint fail, File was not found in the executable
+### 动态监控添加监控出现 add monitor failed, File was not found in the executable
 在添加断点和添加监控时，我们需要知道项目源码目录（`classes`目录）和jar包目录（`lib`目录）的路径，如果这两个路径获取错误，则会出现以上两种错误。
 
 一般出现以上两种错误的情况为：
