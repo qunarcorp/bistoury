@@ -15,17 +15,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.service;
+package qunar.tc.bistoury.ui.git;
 
-import qunar.tc.bistoury.ui.model.PrivateToken;
+import qunar.tc.bistoury.serverside.bean.ApiResult;
 
-import java.util.Optional;
+import java.io.IOException;
 
 /**
- * @author keli.wang
+ * @author leix.xie
+ * @date 2019/9/4 16:50
+ * @describe
  */
-public interface GitlabPrivateTokenService {
-    int saveToken(final String username, final String privateToken);
+public interface GitRepositoryApi {
 
-    Optional<PrivateToken> queryToken(String userCode);
+    ApiResult file(final String projectId, final String path, final String ref) throws IOException;
+
+    ApiResult fileByClass(final String projectId, final String ref, final String module, final String className) throws IOException;
+
+    void destroy();
 }

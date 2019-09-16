@@ -38,8 +38,8 @@ public class AsyncHttpClientHolder {
 
     private static final AsyncHttpClient INSTANCE = initClient();
 
-    private static final int CONN_TIMEOUT = 1000;
-    private static final int REQUEST_TIMEOUT = 2000;
+    private static final int CONN_TIMEOUT = 2000;
+    private static final int REQUEST_TIMEOUT = 3000;
     private static final int READ_TIMEOUT = Integer.MAX_VALUE;
 
     private static final int BOSS_COUNT = 1;

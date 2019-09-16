@@ -325,6 +325,6 @@ public class AgentBootstrap2 {
                 throw e;
             }
         }
-        ps.println("Arthas server already bind.");
+        ps.println("Bistoury server already bind.");
     }
 }

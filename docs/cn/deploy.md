@@ -70,6 +70,9 @@ Bistoury的ui和proxy需要知道如何连接到在上面创建的数据库，�
 位于bistoury-proxy/target目录下的bistoury-proxy-bin.tar.gz
 
 ## 2.3 部署
+
+    proxy和ui启动时需要配置启动参数bistoury.conf，参数的值为对应配置文件所在文件夹的路径
+
 ### 2.3.1 bistoury-proxy部署
 解压并调整完配置后运行bin目录下的脚本进行启动，可以在bistoury-proxy-env.sh中的JAVA_OPTS里配置JVM相关参数，GC相关配置已配置，
 + 启动

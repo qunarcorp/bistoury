@@ -113,12 +113,16 @@ public class InstrumentClientStore {
     }
 
     public static synchronized void destroy() {
-        if (instrumentInfo != null) {
-            instrumentInfo.reset();
+        try {
+            if (instrumentInfo != null) {
+                instrumentInfo.reset();
 
-            for (InstrumentClient client : clients) {
-                client.destroy();
+                for (InstrumentClient client : clients) {
+                    client.destroy();
+                }
             }
+        } catch (Exception e) {
+            logger.error("", "destroy error", e);
         }
     }
 }
