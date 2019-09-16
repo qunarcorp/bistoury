@@ -6,7 +6,7 @@ RUN ping -c 1 www.baidu.com
 
 WORKDIR .
 
-COPY  --from=bistoury-agent:v2.0.5 /home/q/bistoury  /home/q/bistoury
+COPY  --from=bistoury-agent:latest  /home/q/bistoury  /home/q/bistoury
 COPY  --from=registry.cn-hangzhou.aliyuncs.com/bistoury/jdk8:v0.1 /home/q/bistoury/java /home/q/bistoury/java
 
 COPY spring-mvc-boot-0.0.1-SNAPSHOT.jar /home/q/www/spring-mvc-boot-0.0.1-SNAPSHOT.jar

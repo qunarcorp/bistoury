@@ -73,7 +73,7 @@ build_docker(){
     cp bistoury-dist/docker/agent/demo/demo_docker_start.sh $SCRIPT_DIR
 
     cd $BISTOURY_PACKAGE_DIR/bistoury-agent-bin
-    docker build -t bistoury-agent:v$BISTOURY_PROJECT_VERSION .
+    docker build -t bistoury-agent -t bistoury-agent:v$BISTOURY_PROJECT_VERSION .
 
     cd $BISTOURY_PACKAGE_DIR/bistoury-agent-bin/demo
     docker build -t bistoury-demo:v$BISTOURY_PROJECT_VERSION .
