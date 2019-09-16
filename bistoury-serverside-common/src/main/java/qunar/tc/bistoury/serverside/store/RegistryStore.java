@@ -17,6 +17,7 @@
 
 package qunar.tc.bistoury.serverside.store;
 
+import com.google.common.base.Strings;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 
 import javax.annotation.PostConstruct;
@@ -41,10 +42,10 @@ public class RegistryStore {
     @PostConstruct
     public void init() {
         Map<String, String> registries = DynamicConfigLoader.load(REGISTRY_CONFIG).asMap();
-        zkAddress = registries.get(DEFAULT_ZK);
+        String priorityZkAddress = System.getProperty("bistoury.zk");
+        zkAddress = Strings.isNullOrEmpty(priorityZkAddress) ? registries.get(DEFAULT_ZK) : priorityZkAddress;
         pathForNewUi = newBaseRoot + "ui";
     }
-
 
     public String getZkAddress() {
         return zkAddress;

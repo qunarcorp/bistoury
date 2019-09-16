@@ -11,10 +11,16 @@ BISTOURY_MAIN="qunar.tc.bistoury.proxy.container.Bootstrap"
 for CMD in "$@";do true; done
 
 LOCAL_IP=""
-while getopts j:i:h opt;do
+PARSE_AGENT_ID=""
+PROXY_JDBC_URL=""
+DEFAULT_ZK=""
+while getopts j:i:h:r:p:d: opt;do
     case $opt in
         j) JAVA_HOME=$OPTARG;;
         i) LOCAL_IP=$OPTARG;;
+        r) DEFAULT_ZK=$OPTARG;;
+        p) PARSE_AGENT_ID=$OPTARG;;
+        d) PROXY_JDBC_URL=$OPTARG;;
         h|*) echo "-j    通过-j指定java home"
            echo "-i    通过-i参数指定本机ip"
            echo "-h    通过-h查看命令帮助"
@@ -30,6 +36,18 @@ fi
 
 if [[ -n $LOCAL_IP ]]; then
     JAVA_OPTS="$JAVA_OPTS -Dbistoury.local.host=$LOCAL_IP"
+fi
+
+if [[ -n $DEFAULT_ZK ]]; then
+    JAVA_OPTS="$JAVA_OPTS -Dbistoury.zk=$DEFAULT_ZK"
+fi
+
+if [[ -n $PARSE_AGENT_ID ]]; then
+    JAVA_OPTS="$JAVA_OPTS -Dagent.id.parse=$PARSE_AGENT_ID"
+fi
+
+if [[ -n $PROXY_JDBC_URL ]]; then
+    JAVA_OPTS="$JAVA_OPTS -Dbistoury.jdbc.url=$PROXY_JDBC_URL"
 fi
 
 CLASSPATH="$CLASSPATH:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/sa-jdi.jar"

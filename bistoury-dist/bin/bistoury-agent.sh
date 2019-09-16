@@ -14,12 +14,13 @@ for CMD in "$@";do true; done
 APP_PID=""
 LOCAL_IP=""
 
-while getopts p:i:j:c:h opt;do
+while getopts p:i:j:c:h:s: opt;do
     case $opt in
         p) APP_PID=$OPTARG;;
         i) LOCAL_IP=$OPTARG;;
         j) JAVA_HOME=$OPTARG;;
         c) BISTOURY_APP_LIB_CLASS=$OPTARG;;
+        s) PROXY_HOST=$OPTARG;;
         h|*) echo "-p    通过-p指定应用进程pid"
            echo "-i    通过-i参数指定本机ip"
            echo "-j    通过-j指定java home"
@@ -46,6 +47,10 @@ fi
 
 if [[ -n $APP_PID ]]; then
     JAVA_OPTS="$JAVA_OPTS -Dbistoury.user.pid=$APP_PID"
+fi
+
+if [[ -n $PROXY_HOST ]]; then
+    JAVA_OPTS="$JAVA_OPTS -Dbistoury.proxy.host=$PROXY_HOST"
 fi
 
 CLASSPATH="$CLASSPATH:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/sa-jdi.jar"
