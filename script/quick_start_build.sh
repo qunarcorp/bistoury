@@ -76,16 +76,16 @@ build_docker(){
     docker build -t bistoury-agent -t bistoury-agent:v$BISTOURY_PROJECT_VERSION .
 
     cd $BISTOURY_PACKAGE_DIR/bistoury-agent-bin/demo
-    docker build -t bistoury-demo:v$BISTOURY_PROJECT_VERSION .
+    docker build -t bistoury-demo -t bistoury-demo:v$BISTOURY_PROJECT_VERSION .
 
     cd $BISTOURY_PACKAGE_DIR/bistoury-proxy-bin
-    docker build -t bistoury-proxy:v$BISTOURY_PROJECT_VERSION .
+    docker build -t bistoury-proxy -t bistoury-proxy:v$BISTOURY_PROJECT_VERSION .
 
     cd $BISTOURY_PACKAGE_DIR/bistoury-ui-bin
-    docker build -t bistoury-ui:v$BISTOURY_PROJECT_VERSION .
+    docker build -t bistoury-ui -t bistoury-ui:v$BISTOURY_PROJECT_VERSION .
 
     cd $BISTOURY_PACKAGE_DIR/mysql
-    docker build -t bistoury-db:v$BISTOURY_PROJECT_VERSION .
+    docker build -t bistoury-db -t bistoury-db:v$BISTOURY_PROJECT_VERSION .
 
     rm -rf $BISTOURY_PACKAGE_DIR
     exit 0;
