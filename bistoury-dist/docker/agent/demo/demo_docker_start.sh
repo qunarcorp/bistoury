@@ -14,3 +14,4 @@ docker run -d -p 9880:9880 -p 9881:9881 -p 9090:9090 -i --net bistoury --ip 172.
 docker run -p 9091:9091  -it -d --net bistoury --ip 172.19.0.4 bistoury-ui:v2.0.5 --zk-address 172.19.0.2:2181 --ui-jdbc-url jdbc:mysql://172.19.0.7:3306/bistoury
 # 简单的spring mvc demo镜像
 docker  run -it -d  -p 8686:8686 -i --net bistoury --ip 172.19.0.5 bistoury-demo:v2.0.5 --proxy-host $1:9090
+docker  run -it -d  -p 8687:8686 -i --net bistoury --ip 172.19.0.6 bistoury-demo:v2.0.5 --proxy-host $1:9090

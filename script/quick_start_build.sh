@@ -70,6 +70,8 @@ build_docker(){
     &&cp  bistoury-ui/sql/bistoury_init.sql $BISTOURY_PACKAGE_DIR/mysql/ \
     &&cat  bistoury-dist/docker/agent/demo/bistoury_demo_init.sql >> $BISTOURY_PACKAGE_DIR/mysql/bistoury_init.sql
 
+    cp bistoury-dist/docker/agent/demo/demo_docker_start.sh $SCRIPT_DIR
+
     cd $BISTOURY_PACKAGE_DIR/bistoury-agent-bin
     docker build -t bistoury-agent:v$BISTOURY_PROJECT_VERSION .
 
@@ -86,7 +88,6 @@ build_docker(){
     docker build -t bistoury-db:v$BISTOURY_PROJECT_VERSION .
 
     rm -rf $BISTOURY_PACKAGE_DIR
-    cp bistoury-dist/docker/agent/demo/demo_docker_start.sh $SCRIPT_DIR
     exit 0;
 }
 
