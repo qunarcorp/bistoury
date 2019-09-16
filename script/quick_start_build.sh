@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 MAVEN_PROFILE="local"
 DOCKER_MODE="false"
