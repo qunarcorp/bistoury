@@ -85,6 +85,7 @@ build_docker(){
     docker build -t bistoury-db:v$BISTOURY_PROJECT_VERSION .
 
     rm -rf $BISTOURY_PACKAGE_FILE
+    cp bistoury-dist/docker/demo_docker_start.sh $SCRIPT_DIR
     exit 0;
 }
 
