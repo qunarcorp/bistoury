@@ -6,7 +6,7 @@ bistoury的agent在工作过程中会和应用进行通信，此时会使用到�
 
 pid获取类：`qunar.tc.bistoury.agent.common.pid.PidUtils`
 ## 系统参数指定
-该方法是在agent启动是通过`bistoury.user.pid`指定pid，使用这种方式在应用重启后也需要重启agent。
+该方法是在agent启动时需要在bistoury-agent-bin/conf/bistoury-agent-env.sh中自行配置系统参数`bistoury.user.pid`指定pid，也可在脚本启动时使用-p参数指定pid，使用这种方式在应用重启后也需要重启agent。
 
 实现类：`qunar.tc.bistoury.agent.common.pid.impl.PidBySystemPropertyHandler`
 ## jps -l获取
@@ -20,7 +20,7 @@ pid获取类：`qunar.tc.bistoury.agent.common.pid.PidUtils`
 28510 qunar.tc.bistoury.proxy.container.Bootstrap
 28655 sun.tools.jps.Jps
 ```
-在agent启动时需要配置系统参数`bistoury.pid.handler.jps.symbol.class`，这个的值为`jps -l`执行结果的第二列，即上面执行结果的`qunar.tc.githubtest.GithubTestApplication`等，默认值为`org.apache.catalina.startup.Bootstrap`
+在agent启动时需要在bistoury-agent-bin/conf/bistoury-agent-env.sh中自行配置系统参数`bistoury.pid.handler.jps.symbol.class`，这个的值为`jps -l`执行结果的第二列，即上面执行结果的`qunar.tc.githubtest.GithubTestApplication`等，默认值为`org.apache.catalina.startup.Bootstrap`
 
 实现类：`qunar.tc.bistoury.agent.common.pid.impl.PidByJpsHandler`
 ## ps aux|grep java 获取
