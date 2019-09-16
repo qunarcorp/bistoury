@@ -34,6 +34,7 @@ tomcat         28330   0.0  0.6  8536264 201216   ??  S     3:55下午   0:04.00
 `tomcat.user`的值为运行java应用的用户名，[ps aux | grep java] 结果的第1列，即上面执行结果的`tomcat`，默认为 `tomcat`
 
 `tomcat.command`的值为运行Java应用的Java命令，[ps aux | grep java] 结果的第11列，即上面执行结果的`/Library/Java/JavaVirtualMachines/jdk1.8.0_211.jdk/Contents/Home/bin/java`，默认值 /home/java/default/bin/java
+
 实现类：`qunar.tc.bistoury.agent.common.pid.impl.PidByPsHandler`
 
 ## 自定义pid获取方法
