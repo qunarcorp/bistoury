@@ -14,6 +14,7 @@ COPY  --from=registry.cn-hangzhou.aliyuncs.com/bistoury/jdk8:v0.1 /home/q/bistou
 
 COPY spring-mvc-boot-0.0.1-SNAPSHOT.jar /home/q/www/spring-mvc-boot-0.0.1-SNAPSHOT.jar
 ENV PATH="/home/q/bistoury/java/bin:${PATH}"
+ENV JAVA_HOME /home/q/bistoury/java
 
 COPY boot_start.sh /home/q/www/boot_start.sh
 
