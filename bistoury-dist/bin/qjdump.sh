@@ -70,7 +70,7 @@ START()
 
   # qjtop
   QJTOP_SCRIPT=$BISTOURY_BIN_DIR/qjtop.sh
-#  which $QJTOP_SCRIPT 2>/dev/null
+  $QJTOP_SCRIPT 2>/dev/null
   if [[ $? == 0 ]]; then
     VJTOP_DURATION=2
     echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process vjtop."
