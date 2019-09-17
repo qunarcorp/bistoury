@@ -1,5 +1,4 @@
 #!/bin/sh
-set -euo pipefail
 
 TIMESTAMP=$(date +%s)
 BISTOURY_COF_DIR="$BISTOURY_BIN_DIR/../conf"

@@ -1,5 +1,4 @@
 #!/bin/sh
-set -euo pipefail
 
 BISTOURY_STORY_PATH="$BISTOURY_STORE_DIR"
 BISTOURY_PROXY_HOST="127.0.0.1:9090"

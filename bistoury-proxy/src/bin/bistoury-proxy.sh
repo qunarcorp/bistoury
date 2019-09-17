@@ -1,5 +1,5 @@
 #!/bin/sh
-set -euo pipefail
+
 BISTOURY_BIN="${BASH_SOURCE-$0}"
 BISTOURY_BIN="$(dirname "$BISTOURY_BIN")"
 BISTOURY_BIN_DIR="$(cd "$BISTOURY_BIN"; pwd)"

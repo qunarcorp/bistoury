@@ -1,5 +1,4 @@
 #!/bin/sh
-set -euo pipefail
 
 BISTOURY_BIN="${BASH_SOURCE-$0}"
 BISTOURY_BIN="$(dirname "$BISTOURY_BIN")"
@@ -13,6 +12,7 @@ for CMD in "$@";do true; done
 
 APP_PID=""
 LOCAL_IP=""
+PROXY_HOST=""
 
 while getopts p:i:j:c:h:s: opt;do
     case $opt in

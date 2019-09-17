@@ -1,5 +1,5 @@
 #!/bin/sh
-set -euo pipefail
+
 BISTOURY_BIN="${BASH_SOURCE-$0}"
 BISTOURY_BIN="$(dirname "$BISTOURY_BIN")"
 BISTOURY_BIN_DIR="$(cd "$BISTOURY_BIN"; pwd)"
@@ -12,6 +12,7 @@ for CMD in "$@";do true; done
 
 LOCAL_IP=""
 DEFAULT_ZK=""
+UI_JDBC_URL=""
 
 while getopts j:i:h:r:d: opt;do
     case $opt in
