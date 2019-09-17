@@ -30,6 +30,7 @@ import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
 import qunar.tc.bistoury.proxy.communicate.agent.DefaultAgentConnectionStore;
 import qunar.tc.bistoury.proxy.generator.IdGenerator;
 import qunar.tc.bistoury.proxy.generator.SessionIdGenerator;
+import qunar.tc.bistoury.proxy.util.AgentIdUtil;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
 import qunar.tc.bistoury.remoting.protocol.ResponseCode;
@@ -54,7 +55,7 @@ public class ProxyHeartbeatProcessor implements AgentMessageProcessor {
 
     private final Datagram heartbeatResponse = initHeartbeatResponse();
 
-    private final boolean initIdFromBody = Boolean.valueOf(System.getProperty("agent.id.parse"));
+
 
     @Override
     public Set<Integer> codes() {
@@ -64,27 +65,11 @@ public class ProxyHeartbeatProcessor implements AgentMessageProcessor {
     @Override
     public void process(ChannelHandlerContext ctx, Datagram message) {
         logger.debug("receive heartbeat, {}", message);
-        String agentId = getAgentId(ctx.channel(), message);
+        String agentId = AgentIdUtil.getAgentId(ctx.channel(), message);
         message.release();
         connectionStore.register(agentId, message.getHeader().getVersion(), ctx.channel());
         ctx.channel().writeAndFlush(heartbeatResponse);
     }
-
-    private String getAgentId(Channel channel, Datagram message) {
-        if (initIdFromBody) {
-            return getAgentIdFromBody(message.getBody());
-        }
-        InetSocketAddress address = (InetSocketAddress) channel.remoteAddress();
-        return address.getAddress().getHostAddress();
-    }
-
-    private String getAgentIdFromBody(ByteBuf body) {
-        int size = body.readableBytes();
-        byte[] agentId = new byte[size];
-        body.readBytes(agentId);
-        return new String(agentId, Charsets.UTF_8);
-    }
-
 
     private Datagram initHeartbeatResponse() {
         return RemotingBuilder.buildRequestDatagram(ResponseCode.RESP_TYPE_HEARTBEAT.getCode(), idGenerator.generateId(), new RequestPayloadHolder(""));

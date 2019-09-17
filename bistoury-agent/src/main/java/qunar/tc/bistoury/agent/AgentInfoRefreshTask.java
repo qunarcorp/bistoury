@@ -26,10 +26,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.config.AgentConfig;
 import qunar.tc.bistoury.clientside.common.meta.MetaStores;
+import qunar.tc.bistoury.common.LocalHost;
 import qunar.tc.bistoury.common.NamedThreadFactory;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
+import qunar.tc.bistoury.remoting.protocol.PayloadHolder;
 import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
+import qunar.tc.bistoury.remoting.protocol.payloadHolderImpl.RequestPayloadHolder;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +52,8 @@ public class AgentInfoRefreshTask {
     private final Datagram refreshRequest;
 
     public AgentInfoRefreshTask() {
-        this.refreshRequest = RemotingBuilder.buildAgentRequest(CommandCode.REQ_TYPE_REFRESH_AGENT_INFO.getCode(), null);
+        PayloadHolder payloadHolder = new RequestPayloadHolder(LocalHost.getLocalHost());
+        this.refreshRequest = RemotingBuilder.buildAgentRequest(CommandCode.REQ_TYPE_REFRESH_AGENT_INFO.getCode(), payloadHolder);
     }
 
     public void start(final Channel channel, final AtomicBoolean running) {

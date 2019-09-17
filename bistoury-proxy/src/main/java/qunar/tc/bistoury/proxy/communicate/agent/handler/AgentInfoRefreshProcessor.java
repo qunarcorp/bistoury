@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.proxy.config.AgentInfoManager;
 import qunar.tc.bistoury.proxy.generator.IdGenerator;
+import qunar.tc.bistoury.proxy.util.AgentIdUtil;
 import qunar.tc.bistoury.proxy.util.ChannelUtils;
 import qunar.tc.bistoury.proxy.util.FutureSuccessCallBack;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
@@ -59,7 +60,7 @@ public class AgentInfoRefreshProcessor implements AgentMessageProcessor {
     @Override
     public void process(final ChannelHandlerContext ctx, Datagram message) {
         Metrics.counter("agent_info_refresh").inc();
-        String ip = ChannelUtils.getIp(ctx.channel());
+        String ip = AgentIdUtil.getAgentId(ctx.channel(), message);
         ListenableFuture<Map<String, String>> agentInfoFuture = agentInfoManager.getAgentInfo(ip);
         Futures.addCallback(agentInfoFuture, (FutureSuccessCallBack<Map<String, String>>) agentInfo ->
                 Optional.ofNullable(agentInfo)
