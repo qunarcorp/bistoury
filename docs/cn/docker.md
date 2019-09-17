@@ -1,7 +1,7 @@
 # docker支持
 * [怎样使用](#怎样使用)
 * [生成的镜像](#生成的镜像)
-* [`demo_docker_start.sh`脚本](#demo_docker_start.sh脚本)
+* [`demo_docker_start.sh`脚本](#demo_docker_startsh脚本)
 * [镜像参数](#镜像参数)
 
 > 使用docker部署,包含全部模块,包括ui模块、proxy模块、包含agent模块的demo应用.
