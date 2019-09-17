@@ -56,14 +56,15 @@
 3. ui 镜像
 > 指定的ip: 172.19.0.4
 
-    1.--zk-address参数 使用到的zk地址
-    2.--proxy-jdbc-url参数 指定ui连接的数据库url 
+    --zk-address参数 使用到的zk地址
+    --proxy-jdbc-url参数 指定ui连接的数据库url 
 4. demo 镜像
 > 指定的ip为172.19.0.5\172.19.0.6               
-    1.--proxy-host 指定连接的proxy的host
+>   
+    --proxy-host 指定连接的proxy的host
     (参考[指定应用的class ](https://github.com/qunarcorp/bistoury/blob/master/docs/cn/quick_start.md#%E5%90%AF%E5%8A%A8%E5%8F%82%E6%95%B0中-c参数))   
-    2.--app-class参数    
-    3.--cap-add=SYS_PTRACE 开启ptrace(如果不开启,和attach相关的会不能使用)
+    --app-class参数    
+    --cap-add=SYS_PTRACE 开启ptrace(如果不开启,和attach相关的会不能使用)
     
 5. mysql 镜像
 > 指定的ip: 172.19.0.7
