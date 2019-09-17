@@ -10,13 +10,13 @@
 
 ## 怎样使用
 打包镜像 
-> ./quick_start_build.sh -d -p prod
+> `./quick_start_build.sh -d -p prod`
 >> 参数 -d代表docker模式  
 >> 参数 -p代表maven的profile 默认为local,docker打包时需要使用prod,
 用来使用mysql数据库
 
 打包完之后,运行所有镜像
-> ./demo_docker_start.sh  宿主机ip
+> `./demo_docker_start.sh  宿主机ip`
 >> 访问 [127.0.0.1:9091](http://127.0.0.1:9091/),即可使用到bistoury的所有功能  
 `第一次访问可能需要等待20秒左右`
 
