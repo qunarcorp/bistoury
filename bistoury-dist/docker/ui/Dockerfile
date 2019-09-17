@@ -6,6 +6,9 @@ RUN ping -c 1 www.baidu.com
 
 WORKDIR .
 
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 COPY  --from=registry.cn-hangzhou.aliyuncs.com/bistoury/jdk8:v0.1 /home/q/bistoury/java /home/q/bistoury/java
 
 ENV JAVA_HOME /home/q/bistoury/java
