@@ -22,6 +22,7 @@ import com.taobao.arthas.core.shell.command.CommandProcess;
 import com.taobao.middleware.cli.annotations.Argument;
 import com.taobao.middleware.cli.annotations.Name;
 import com.taobao.middleware.logger.Logger;
+import qunar.tc.bistoury.attach.common.AttachJacksonSerializer;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.common.*;
 
@@ -68,7 +69,7 @@ public class QDebugReleaseInfoCommand extends AnnotatedCommand {
             codeResponse.setCode(-1);
             codeResponse.setMessage("获取项目信息失败，请检查主机上是否存在" + path + "文件");
         } finally {
-            process.write(URLCoder.encode(JacksonSerializer.serialize(typeResponse)));
+            process.write(URLCoder.encode(AttachJacksonSerializer.serialize(typeResponse)));
             process.end();
         }
     }

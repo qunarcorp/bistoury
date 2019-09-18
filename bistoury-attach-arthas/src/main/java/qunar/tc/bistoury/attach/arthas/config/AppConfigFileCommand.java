@@ -22,8 +22,12 @@ import com.taobao.arthas.core.shell.command.CommandProcess;
 import com.taobao.middleware.cli.annotations.Argument;
 import com.taobao.middleware.cli.annotations.Name;
 import com.taobao.middleware.logger.Logger;
+import qunar.tc.bistoury.attach.common.AttachJacksonSerializer;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
-import qunar.tc.bistoury.common.*;
+import qunar.tc.bistoury.common.BistouryConstants;
+import qunar.tc.bistoury.common.CodeProcessResponse;
+import qunar.tc.bistoury.common.TypeResponse;
+import qunar.tc.bistoury.common.URLCoder;
 
 /**
  * @author: leix.xie
@@ -60,7 +64,7 @@ public class AppConfigFileCommand extends AnnotatedCommand {
             response.setCode(-1);
             response.setMessage("获取配置文件信息出错, " + e.getMessage());
         } finally {
-            process.write(URLCoder.encode(JacksonSerializer.serialize(typeResponse)));
+            process.write(URLCoder.encode(AttachJacksonSerializer.serialize(typeResponse)));
             process.end();
         }
     }
