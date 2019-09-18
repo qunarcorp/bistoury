@@ -21,8 +21,8 @@ import com.codahale.metrics.Clock;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Metric;
 import com.google.common.primitives.Ints;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.taobao.middleware.logger.Logger;
+import qunar.tc.bistoury.attach.common.BistouryLoggger;
 
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  * Time: 下午2:02
  */
 public class ResettableTimer implements Metric {
-    private static final Logger LOG = LoggerFactory.getLogger(ResettableTimer.class);
+    private static final Logger LOG = BistouryLoggger.getLogger();
 
     public static final double P98 = 98.0;
 

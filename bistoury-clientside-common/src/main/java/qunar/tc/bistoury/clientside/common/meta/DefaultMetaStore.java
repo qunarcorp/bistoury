@@ -17,9 +17,6 @@
 
 package qunar.tc.bistoury.clientside.common.meta;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,14 +29,11 @@ public class DefaultMetaStore implements MetaStore {
 
     private volatile Map<String, String> attrs = new HashMap<>();
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultMetaStore.class);
-
     DefaultMetaStore() {
     }
 
     @Override
     public void update(Map<String, String> attrs) {
-        logger.debug("update agent info, {}", attrs);
         this.attrs = attrs;
     }
 
