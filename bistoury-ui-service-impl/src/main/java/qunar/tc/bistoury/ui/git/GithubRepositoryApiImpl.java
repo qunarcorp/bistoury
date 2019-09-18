@@ -58,7 +58,7 @@ public class GithubRepositoryApiImpl implements GitRepositoryApi {
     public GithubRepositoryApiImpl(GitPrivateTokenService privateTokenService, DynamicConfig config) {
         this.privateTokenService = privateTokenService;
         filePathFormat = config.getString("file.path.format", "{0}src/main/java/{1}.java");
-        gitEndPoint = config.getString("git.endpoint");
+        gitEndPoint = config.getString("git.endpoint", "");
     }
 
     @Override
