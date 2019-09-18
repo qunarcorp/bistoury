@@ -1,23 +1,32 @@
 # docker支持
-* [使用](#使用)
-* [镜像对应的模块](#镜像对应的模块)
-* [`demo_docker_start.sh`脚本介绍](#demo_docker_startsh脚本介绍)
-* [镜像参数](#镜像参数)
 
 > 使用docker部署,包含全部模块,包括ui模块、proxy模块、包含agent模块的demo应用.
 
-> 使用到的脚本都位于script目录下
+* [使用远程仓库镜像运行](#使用远程仓库镜像运行)
+* [手动构建镜像运行](#手动构建镜像运行)
+* [镜像相关文件](#镜像相关文件)
+* [镜像对应的模块](#镜像对应的模块)
+* [demo运行脚本介绍](#demo运行脚本介绍)
+* [镜像参数](#镜像参数)
 
-## 使用
+# 使用远程仓库镜像运行
+> `./remote_repositories_start.sh  宿主机ip`    
+
+访问 [127.0.0.1:9091](http://127.0.0.1:9091/),即可使用到bistoury的所有功能  
+`第一次访问可能需要等待20秒左右`(初始化agent与proxy的连接)
+
+# 手动构建镜像运行
 ### 第一步: 使用脚本生成镜像 
-> 运行脚本 `./quick_start_build.sh -d -p prod`
->> 参数 -d代表docker模式  
->> 参数 -p代表maven的profile 默认为local,docker打包时需要设置为prod (用来使用mysql数据库)
+> 运行脚本 `./build.sh`  *(script/docker目录下)*
 
 ### 第二步: 运行镜像
-> 运行脚本 `./demo_docker_start.sh  宿主机ip`
+> 运行脚本 `./demo_docker_start.sh  宿主机ip` *(script/docker目录下)*
 >> 访问 [127.0.0.1:9091](http://127.0.0.1:9091/),即可使用到bistoury的所有功能  
 `第一次访问可能需要等待20秒左右`(初始化agent与proxy的连接)
+
+## 镜像相关文件
+打包镜像相关的文件都位于script/docker目录下,如果想自行部署,可参考相关文件
+
 
 ## 镜像对应的模块
 |镜像名称|对应模块|
@@ -31,7 +40,8 @@
 > 使用到的端口,都与[快速开始](https://github.com/qunarcorp/bistoury/blob/master/docs/cn/quick_start.md)定义的相对应
 
 
-## `demo_docker_start.sh`脚本介绍
+## demo运行脚本介绍
+### 创建网络
 > 首先会创建一个名为bistoury的网络,子网为172.19.0.0/16
 
 ### 启动的容器
