@@ -71,6 +71,7 @@ public class JarDebugCommand extends AnnotatedCommand {
             codeResponse.setCode(-1);
             codeResponse.setMessage("获取类列表失败，" + e.getMessage());
         } finally {
+            logger.info("", "finish jar debug command, code :{}", codeResponse.getCode());
             process.write(URLCoder.encode(AttachJacksonSerializer.serialize(typeResponse)));
             process.end();
         }
