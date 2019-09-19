@@ -18,9 +18,11 @@
 package qunar.tc.bistoury.agent.common;
 
 import com.google.common.util.concurrent.RateLimiter;
+import qunar.tc.bistoury.common.Throwables;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 
 /**
@@ -32,8 +34,34 @@ public class UnixProcess extends ClosableProcess {
 
     private final RateLimiter rateLimiter = RateLimiter.create(16); //限制每秒read的次数
 
+    private final Process delegate;
+
+    private final Field hasExited;
+
     UnixProcess(Process delegate) {
         super(delegate);
+        this.delegate = delegate;
+        try {
+            hasExited = delegate.getClass().getDeclaredField("hasExited");
+            hasExited.setAccessible(true);
+        } catch (Exception e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    /**
+     * 方法重命名下，与Java8中isAlive效果一样，不重名在Java8中编译报错
+     *
+     * @return
+     */
+    private boolean isAliveIn8() {
+        synchronized (delegate) {
+            try {
+                return !hasExited.getBoolean(delegate);
+            } catch (IllegalAccessException e) {
+                throw Throwables.propagate(e);
+            }
+        }
     }
 
     /**
@@ -51,7 +79,7 @@ public class UnixProcess extends ClosableProcess {
             while (true) {
                 rateLimiter.acquire();
                 int count = readAndSendAvailable(inputStream, buffer, handler);
-                if (count <= 0 && !isAlive()) {
+                if (count <= 0 && !isAliveIn8()) {
                     readAndSendAvailable(inputStream, buffer, handler);
                     break;
                 }
