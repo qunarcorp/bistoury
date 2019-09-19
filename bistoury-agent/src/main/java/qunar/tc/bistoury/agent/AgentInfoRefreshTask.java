@@ -17,6 +17,7 @@
 
 package qunar.tc.bistoury.agent;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.channel.Channel;
@@ -26,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.config.AgentConfig;
 import qunar.tc.bistoury.clientside.common.meta.MetaStores;
+import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.LocalHost;
 import qunar.tc.bistoury.common.NamedThreadFactory;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
@@ -34,6 +36,7 @@ import qunar.tc.bistoury.remoting.protocol.PayloadHolder;
 import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
 import qunar.tc.bistoury.remoting.protocol.payloadHolderImpl.RequestPayloadHolder;
 
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -52,7 +55,9 @@ public class AgentInfoRefreshTask {
     private final Datagram refreshRequest;
 
     public AgentInfoRefreshTask() {
-        PayloadHolder payloadHolder = new RequestPayloadHolder(LocalHost.getLocalHost());
+        String agentId = LocalHost.getLocalHost();
+        Map<String, String> agentInfo = ImmutableMap.of(BistouryConstants.AGENT_ID_NAME, agentId);
+        PayloadHolder payloadHolder = new RequestPayloadHolder(agentInfo);
         this.refreshRequest = RemotingBuilder.buildAgentRequest(CommandCode.REQ_TYPE_REFRESH_AGENT_INFO.getCode(), payloadHolder);
     }
 

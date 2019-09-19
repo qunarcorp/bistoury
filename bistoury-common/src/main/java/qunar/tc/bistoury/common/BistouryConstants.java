@@ -61,4 +61,6 @@ public class BistouryConstants {
     public static final String BISTOURY_VERSION_LINE_PREFIX = "bistoury version:";
 
     public static final String SHUTDOWN_COMMAND = "shutdown";
+
+    public static final String AGENT_ID_NAME = "agentId";
 }

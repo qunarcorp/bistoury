@@ -17,12 +17,14 @@
 
 package qunar.tc.bistoury.agent;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.LocalHost;
 import qunar.tc.bistoury.common.NamedThreadFactory;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
@@ -31,6 +33,7 @@ import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
 import qunar.tc.bistoury.remoting.protocol.ResponseCode;
 import qunar.tc.bistoury.remoting.protocol.payloadHolderImpl.RequestPayloadHolder;
 
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -51,7 +54,9 @@ class HeartbeatTask {
 
     public HeartbeatTask(long heartbeatSec) {
         this.heartbeatSec = heartbeatSec;
-        PayloadHolder payloadHolder = new RequestPayloadHolder(LocalHost.getLocalHost());
+        String agentId = LocalHost.getLocalHost();
+        Map<String, String> agentInfo = ImmutableMap.of(BistouryConstants.AGENT_ID_NAME, agentId);
+        PayloadHolder payloadHolder = new RequestPayloadHolder(agentInfo);
         heartbeatRequest = RemotingBuilder.buildAgentRequest(ResponseCode.RESP_TYPE_HEARTBEAT.getCode(), payloadHolder);
     }
 
