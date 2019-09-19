@@ -77,7 +77,6 @@ build_docker(){
     docker build -t bistoury-db -t bistoury-db:v$BISTOURY_PROJECT_VERSION .
 
     rm -rf $BISTOURY_PACKAGE_DIR
-    exit 0;
 }
 
 build_docker

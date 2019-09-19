@@ -2,7 +2,7 @@
 PARSE_AGENT_ID="false"
 PROXY_JDBC_URL=""
 
-TEMP=`getopt -o : --long real-ip:,zk-address:,proxy-java-home:,parse-agent-id:,proxy-jdbc-url: -- "$@"`
+TEMP=`getopt -o : --long real-ip:,zk-address:,proxy-java-home:,proxy-jdbc-url: -- "$@"`
 
 eval set -- "$TEMP"
 
@@ -14,8 +14,6 @@ while true; do
       ZK_ADDRESS="$2"; shift 2 ;;
     --proxy-java-home )
       PROXY_JAVA_HOME="$2"; shift 2 ;;
-    --parse-agent-id )
-      PARSE_AGENT_ID="$2"; shift 2 ;;
     --proxy-jdbc-url )
       PROXY_JDBC_URL="$2"; shift 2 ;;
     * ) break ;;
@@ -25,8 +23,7 @@ done
 echo "real ip: "$REAL_IP
 echo "zk address: "$ZK_ADDRESS
 echo "proxy java home: "$PROXY_JAVA_HOME
-echo "parse agent id: "$PARSE_AGENT_ID
 echo "proxy jdbc url: "$PROXY_JDBC_URL
 
-/home/q/bistoury/proxy/bin/bistoury-proxy.sh -j $PROXY_JAVA_HOME -i $REAL_IP -r $ZK_ADDRESS -p $PARSE_AGENT_ID -d $PROXY_JDBC_URL start
+/home/q/bistoury/proxy/bin/bistoury-proxy.sh -j $PROXY_JAVA_HOME -i $REAL_IP -r $ZK_ADDRESS -d $PROXY_JDBC_URL start
 tail -f /dev/null

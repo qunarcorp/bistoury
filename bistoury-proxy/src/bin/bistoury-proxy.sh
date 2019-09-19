@@ -11,15 +11,13 @@ BISTOURY_MAIN="qunar.tc.bistoury.proxy.container.Bootstrap"
 for CMD in "$@";do true; done
 
 LOCAL_IP=""
-PARSE_AGENT_ID=""
 PROXY_JDBC_URL=""
 DEFAULT_ZK=""
-while getopts j:i:h:r:p:d: opt;do
+while getopts j:i:h:r:d: opt;do
     case $opt in
         j) JAVA_HOME=$OPTARG;;
         i) LOCAL_IP=$OPTARG;;
         r) DEFAULT_ZK=$OPTARG;;
-        p) PARSE_AGENT_ID=$OPTARG;;
         d) PROXY_JDBC_URL=$OPTARG;;
         h|*) echo "-j    通过-j指定java home"
            echo "-i    通过-i参数指定本机ip"
@@ -40,10 +38,6 @@ fi
 
 if [[ -n $DEFAULT_ZK ]]; then
     JAVA_OPTS="$JAVA_OPTS -Dbistoury.zk=$DEFAULT_ZK"
-fi
-
-if [[ -n $PARSE_AGENT_ID ]]; then
-    JAVA_OPTS="$JAVA_OPTS -Dagent.id.parse=$PARSE_AGENT_ID"
 fi
 
 if [[ -n $PROXY_JDBC_URL ]]; then
