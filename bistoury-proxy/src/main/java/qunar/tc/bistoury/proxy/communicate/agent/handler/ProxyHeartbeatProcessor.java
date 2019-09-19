@@ -17,10 +17,7 @@
 
 package qunar.tc.bistoury.proxy.communicate.agent.handler;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +33,6 @@ import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
 import qunar.tc.bistoury.remoting.protocol.ResponseCode;
 import qunar.tc.bistoury.remoting.protocol.payloadHolderImpl.RequestPayloadHolder;
 
-import java.net.InetSocketAddress;
 import java.util.Set;
 
 /**
