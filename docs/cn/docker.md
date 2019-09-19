@@ -67,7 +67,6 @@
 |:---|:---:|
 |--real-ip|宿主机的ip|
 |--zk-address|使用到的zk地址|  
-|--parse-agent-id|是否解析从agent传输过来的ip,docker里面直接获取到的ip可能是gateway的ip|
 |--proxy-jdbc-url|指定proxy连接的数据库url|
 ### ui 镜像
     
