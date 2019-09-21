@@ -43,7 +43,7 @@ public class AppServerDaoImpl implements AppServerDao {
 
     private static final String SELECT_APP_SERVER_BY_SERVER_ID = "select server_id,ip,port,host,log_dir,room,app_code,auto_jstack_enable,auto_jmap_histo_enable from bistoury_server where server_id=?";
 
-    private static final String INSERT_APP_SERVER = "insert ignore into bistoury_server (server_id,ip,port,host,log_dir,room,app_code,auto_jstack_enable,auto_jmap_histo_enable) value (?,?,?,?,?,?,?,?,?);";
+    private static final String INSERT_APP_SERVER = "insert ignore into bistoury_server (server_id,ip,port,host,log_dir,room,app_code,auto_jstack_enable,auto_jmap_histo_enable) values (?,?,?,?,?,?,?,?,?);";
 
     private static final String DELETE_APP_SERVER_BY_IP_PORT = "delete from bistoury_server where ip=?";
 
