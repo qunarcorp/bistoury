@@ -65,11 +65,11 @@
     <properties>
         <maven_compiler_plugin_version>3.8.0</maven_compiler_plugin_version>
         <!--agent的java版本，jdk1.7+ -->
-        <java_source_version>11</java_source_version>
-        <java_target_version>11</java_target_version>
+        <java_source_version>1.8</java_source_version>
+        <java_target_version>1.8</java_target_version>
         <!--ui、proxy的java版本，jdk1.8+ -->
-        <server_java_source_version>11</server_java_source_version>
-        <server_java_target_version>11</server_java_target_version>
+        <server_java_source_version>1.8</server_java_source_version>
+        <server_java_target_version>1.8</server_java_target_version>
 
         <org.springframework.version>4.3.10.RELEASE</org.springframework.version>
         <jackson.version>2.9.2</jackson.version>
@@ -105,8 +105,10 @@
 
         <metrics.version>3.0.2</metrics.version>
         <rocksdb.version>5.17.2</rocksdb.version>
-
+        <sajdijar>${java.home}/../lib/sa-jdi.jar</sajdijar>
         <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
+        <!-- <sajdijar>/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home/lib/sa-jdi.jar</sajdijar>
+         <toolsjar>/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home/lib/tools.jar</toolsjar>-->
         <java.tools.version>1.7</java.tools.version>
     </properties>
 
@@ -361,28 +363,6 @@
                 <scope>compile</scope>
             </dependency>
             <dependency>
-                <groupId>com.vip.vjtools</groupId>
-                <artifactId>vjtop</artifactId>
-                <version>${vjtools.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>jopt-simple</artifactId>
-                        <groupId>net.sf.jopt-simple</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.vip.vjtools</groupId>
-                <artifactId>vjmap</artifactId>
-                <version>${vjtools.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.vip.vjtools</groupId>
-                <artifactId>vjmxcli</artifactId>
-                <version>${vjtools.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>${servlet.version}</version>
@@ -453,14 +433,6 @@
                 <groupId>commons-cli</groupId>
                 <artifactId>commons-cli</artifactId>
                 <version>1.3</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.sun</groupId>
-                <artifactId>tools</artifactId>
-                <version>${java.tools.version}</version>
-                <scope>system</scope>
-                <systemPath>${toolsjar}</systemPath>
             </dependency>
 
             <dependency>
@@ -685,6 +657,20 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>SmallJavaVersion</id>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.sun</groupId>
+                        <artifactId>tools</artifactId>
+                        <version>${java.tools.version}</version>
+                        <scope>system</scope>
+                        <systemPath>${toolsjar}</systemPath>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+        </profile>
         <profile>
             <id>BigJavaVersion</id>
             <build>

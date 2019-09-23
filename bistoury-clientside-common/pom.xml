@@ -22,5 +22,16 @@
             <artifactId>bistoury-common</artifactId>
         </dependency>
     </dependencies>
-
+    <profiles>
+        <profile>
+            <id>SmallJavaVersion</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                    <scope>system</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>

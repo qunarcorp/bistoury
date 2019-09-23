@@ -30,18 +30,6 @@
             <artifactId>bistoury-remoting</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.vip.vjtools</groupId>
-            <artifactId>vjtop</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.vip.vjtools</groupId>
-            <artifactId>vjmap</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.vip.vjtools</groupId>
-            <artifactId>vjmxcli</artifactId>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>bistoury-decompiler-fernflower</artifactId>
         </dependency>

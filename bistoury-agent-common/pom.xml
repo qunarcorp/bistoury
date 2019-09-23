@@ -22,10 +22,6 @@
             <artifactId>bistoury-clientside-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-        </dependency>
-        <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
@@ -35,5 +31,4 @@
             <artifactId>rocksdbjni</artifactId>
         </dependency>
     </dependencies>
-
 </project>
