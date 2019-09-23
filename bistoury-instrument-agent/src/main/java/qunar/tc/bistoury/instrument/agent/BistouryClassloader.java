@@ -17,13 +17,12 @@
 
 package qunar.tc.bistoury.instrument.agent;
 
-import sun.misc.CompoundEnumeration;
-
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
+import java.util.NoSuchElementException;
 
 /**
  * @author zhenyu.nie created on 2018 2018/11/19 19:45
@@ -112,5 +111,35 @@ public class BistouryClassloader extends URLClassLoader {
     private boolean isMagicClass(String name) throws Throwable {
         return name != null && isMagicClassMethod != null
                 && (boolean) isMagicClassMethod.invoke(null, name);
+    }
+}
+
+final class CompoundEnumeration<E> implements Enumeration<E> {
+    private final Enumeration<E>[] enums;
+    private int index;
+
+    public CompoundEnumeration(Enumeration<E>[] enums) {
+        this.enums = enums;
+    }
+
+    private boolean next() {
+        while (index < enums.length) {
+            if (enums[index] != null && enums[index].hasMoreElements()) {
+                return true;
+            }
+            index++;
+        }
+        return false;
+    }
+
+    public boolean hasMoreElements() {
+        return next();
+    }
+
+    public E nextElement() {
+        if (!next()) {
+            throw new NoSuchElementException();
+        }
+        return enums[index].nextElement();
     }
 }

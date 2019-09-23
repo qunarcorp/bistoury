@@ -22,7 +22,6 @@ import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.sun.management.OperatingSystemMXBean;
-import com.vip.vjtools.vjtop.data.PerfData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
@@ -70,6 +69,7 @@ public class HostTask implements Task {
     private List<GarbageCollectorMXBean> gcMxBeans;
     private List<MemoryPoolMXBean> memoryPoolMXBeans;
     private volatile ListenableFuture<Integer> future;
+
 
     public HostTask(String id, int pid, ResponseHandler handler, long maxRunningMs) {
         this.id = id;
@@ -139,7 +139,7 @@ public class HostTask implements Task {
         List<MemoryPoolInfo> memoryPoolInfos = new ArrayList<>();
         for (MemoryPoolMXBean memoryPoolMXBean : memoryPoolMXBeans) {
             MemoryUsage usage = memoryPoolMXBean.getUsage();
-            MemoryPoolInfo info = new MemoryPoolInfo(memoryPoolMXBean.getName(), usage.getInit() / KB, usage.getUsed() / KB, usage.getCommitted() / KB, usage.getMax() / KB);
+            MemoryPoolInfo info = new MemoryPoolInfo(memoryPoolMXBean.getName().replaceAll("^PS|^G1|\\s|\\'|-", ""), usage.getInit() / KB, usage.getUsed() / KB, usage.getCommitted() / KB, usage.getMax() / KB);
             memoryPoolInfos.add(info);
         }
         return memoryPoolInfos;
@@ -279,7 +279,11 @@ public class HostTask implements Task {
         //库路径
         vmInfo.setLibraryPath(runtimeBean.getLibraryPath());
         //引导类路径
-        vmInfo.setBootClassPath(runtimeBean.getBootClassPath());
+        try {
+            vmInfo.setBootClassPath(runtimeBean.getBootClassPath());
+        } catch (Exception e) {
+            //jdk9以上版本会抛出 UnsupportedOperationException，忽略
+        }
 
         return vmInfo;
     }
@@ -400,7 +404,7 @@ class MemoryPoolInfo {
     }
 
     public MemoryPoolInfo(String name, long init, long used, long committed, long max) {
-        this.key = name.replaceAll("\\s", "");
+        this.key = name;
         this.name = name;
         this.init = init;
         this.used = used;

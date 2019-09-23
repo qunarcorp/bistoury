@@ -23,6 +23,7 @@ import com.sun.tools.attach.AgentLoadException;
 import com.sun.tools.attach.VirtualMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.agent.common.JavaVersionUtils;
 
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
@@ -33,6 +34,7 @@ import javax.management.remote.JMXServiceURL;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.*;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -86,33 +88,43 @@ public class VirtualMachineUtil {
 
             // 2. 未启动，尝试启动
             // JDK8后有更直接的vm.startLocalManagementAgent()方法
-            String home = vm.getSystemProperties().getProperty("java.home");
-
-            // Normally in ${java.home}/jre/lib/management-agent.jar but might
-            // be in ${java.home}/lib in build environments.
-
-            String agentPath = home + File.separator + "jre" + File.separator + "lib" + File.separator
-                    + "management-agent.jar";
-            File f = new File(agentPath);
-            if (!f.exists()) {
-                agentPath = home + File.separator + "lib" + File.separator + "management-agent.jar";
-                f = new File(agentPath);
-                if (!f.exists()) {
-                    throw new IOException("Management agent not found");
+            if (JavaVersionUtils.isGreaterThanOrEqualToJava8()) {
+                try {
+                    Method startLocalManagementAgentMethod = vm.getClass().getMethod("startLocalManagementAgent");
+                    startLocalManagementAgentMethod.invoke(vm);
+                } catch (Exception e) {
+                    //jdk8以后才有这个方法
+                    logger.error("jdk greater than or equal to jdk8， but start local management agent fail ", e);
                 }
-            }
+            } else {
+                String home = vm.getSystemProperties().getProperty("java.home");
 
-            agentPath = f.getCanonicalPath();
-            try {
-                vm.loadAgent(agentPath, "com.sun.management.jmxremote");
-            } catch (AgentLoadException x) {
-                IOException ioe = new IOException(x.getMessage());
-                ioe.initCause(x);
-                throw ioe;
-            } catch (AgentInitializationException x) {
-                IOException ioe = new IOException(x.getMessage());
-                ioe.initCause(x);
-                throw ioe;
+                // Normally in ${java.home}/jre/lib/management-agent.jar but might
+                // be in ${java.home}/lib in build environments.
+
+                String agentPath = home + File.separator + "jre" + File.separator + "lib" + File.separator
+                        + "management-agent.jar";
+                File f = new File(agentPath);
+                if (!f.exists()) {
+                    agentPath = home + File.separator + "lib" + File.separator + "management-agent.jar";
+                    f = new File(agentPath);
+                    if (!f.exists()) {
+                        throw new IOException("Management agent not found");
+                    }
+                }
+
+                agentPath = f.getCanonicalPath();
+                try {
+                    vm.loadAgent(agentPath, "com.sun.management.jmxremote");
+                } catch (AgentLoadException x) {
+                    IOException ioe = new IOException(x.getMessage());
+                    ioe.initCause(x);
+                    throw ioe;
+                } catch (AgentInitializationException x) {
+                    IOException ioe = new IOException(x.getMessage());
+                    ioe.initCause(x);
+                    throw ioe;
+                }
             }
 
             // 3. 再次获取connector address

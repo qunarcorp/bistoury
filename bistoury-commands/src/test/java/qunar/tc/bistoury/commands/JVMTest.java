@@ -1,8 +1,12 @@
 package qunar.tc.bistoury.commands;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.sun.management.OperatingSystemMXBean;
 import com.sun.tools.attach.VirtualMachine;
-import com.vip.vjtools.vjtop.data.PerfData;
+import qunar.tc.bistoury.commands.host.HostTask;
+import qunar.tc.bistoury.commands.host.PerfData;
 import sun.management.counter.Counter;
 
 import javax.management.remote.JMXConnector;
@@ -13,6 +17,7 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.RuntimeMXBean;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author: leix.xie
@@ -30,11 +35,29 @@ public class JVMTest {
      */
     public static void main(String[] args) throws Exception {
         //new JVMTest();
-        getVmInfo();
+        //getJvmInfo();
+        final CountDownLatch latch = new CountDownLatch(1);
+        HostTask hostTask = new HostTask(UUID.randomUUID().toString(), 78233, new ConsoleResponseHandler(), 5000L);
+        ListenableFuture<Integer> future = hostTask.execute();
+        Futures.addCallback(future, new FutureCallback<Integer>() {
+            @Override
+            public void onSuccess(Integer result) {
+                System.out.println(result);
+                latch.countDown();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                t.printStackTrace();
+                latch.countDown();
+            }
+        });
+        latch.await();
+
     }
 
     public static void getJvmInfo() {
-        PerfData perfData = PerfData.connect(36700);
+        PerfData perfData = PerfData.connect(64896);
         Map<String, Counter> jvmInfo = perfData.getAllCounters();
         Set<String> keySet = jvmInfo.keySet();
         List<String> keys = new ArrayList<>(keySet);

@@ -19,7 +19,6 @@ package qunar.tc.bistoury.instrument.client.location;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,7 +73,18 @@ final class UniquifierComputer {
      * Computes the SHA1 hash value and encodes it in a string.
      */
     public String getUniquifier() {
-        return DatatypeConverter.printHexBinary(hash.digest());
+        return printHexBinary(hash.digest());
+    }
+
+    private static final char[] hexCode = "0123456789ABCDEF".toCharArray();
+
+    public String printHexBinary(byte[] data) {
+        StringBuilder r = new StringBuilder(data.length * 2);
+        for (byte b : data) {
+            r.append(hexCode[(b >> 4) & 0xF]);
+            r.append(hexCode[(b & 0xF)]);
+        }
+        return r.toString();
     }
 
     /**

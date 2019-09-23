@@ -7,10 +7,19 @@ SCRIPT_DIR=`pwd`
 cd ..
 
 
-mvn -v
+MVN_VERSION=`mvn -v 2>&1`
 if [ $? -ne 0 ]; then
-    echo "command mvn not found, install the maven first！"
+    echo "command mvn not found, Install the maven before executing the script！"
     exit 0;
+fi
+
+PROFILR='local'
+JAVA_VERSION_GREATER_THAN_8_PROFILE="java9"
+
+if [[ `echo $MVN_VERSION | egrep "1\.[78]\."` ]]; then
+    true
+else
+    PROFILR="$PROFILR,$JAVA_VERSION_GREATER_THAN_8_PROFILE"
 fi
 
 BISTOURY_PROJECT_VERSION=`mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout`
@@ -19,17 +28,17 @@ BISTOURY_PACKAGE_DIR="$SCRIPT_DIR/$BISTOURY_PACKAGE_FILE"
 
 #打包agent
 echo "================ starting to build bistoury agent ================"
-mvn clean package -am -pl bistoury-dist -Plocal -Dmaven.test.skip -Denforcer.skip=true
+mvn clean package -am -pl bistoury-dist -P$PROFILR -Dmaven.test.skip -Denforcer.skip=true
 echo "================ building bistoury agent finished ================"
 
 #打包ui
 echo "================ starting to build bistoury ui    ================"
-mvn clean package -am -pl bistoury-ui -Plocal -Dmaven.test.skip=true -Denforcer.skip=true
+mvn clean package -am -pl bistoury-ui -P$PROFILR -Dmaven.test.skip=true -Denforcer.skip=true
 echo "================ building bistoury ui finished    ================"
 
 #打包proxy
 echo "================ starting to build bistoury proxy ================"
-mvn clean package -am -pl bistoury-proxy -Plocal -Dmaven.test.skip=true -Denforcer.skip=true
+mvn clean package -am -pl bistoury-proxy -P$PROFILR -Dmaven.test.skip=true -Denforcer.skip=true
 echo "================ building bistoury proxy finished ================"
 
 rm -rf "$BISTOURY_PACKAGE_DIR"

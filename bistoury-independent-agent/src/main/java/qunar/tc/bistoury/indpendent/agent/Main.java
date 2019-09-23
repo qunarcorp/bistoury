@@ -27,6 +27,10 @@ import java.util.List;
 /**
  * @author zhenyu.nie created on 2018 2018/10/18 19:37
  */
+
+/**
+ * 如果Java版本高于java 9，启动agent需要在启动参数中添加--add-opens=java.base/jdk.internal.perf=ALL-UNNAMED
+ */
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 

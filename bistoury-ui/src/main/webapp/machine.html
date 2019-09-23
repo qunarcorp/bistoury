@@ -357,12 +357,14 @@
                                 <table id="jar-dep-table" class="table table-hover"></table>
                             </div>
                             <div id="jvm-memory-monitor" class="jvm-tab">
+                                <div class="curve" id="pSSurvivorSpace-curve"></div>
+                                <div class="curve" id="pSEdenSpace-curve"></div>
                                 <div class="curve" id="metaspace-curve"></div>
                                 <div class="curve" id="psOldGen-curve"></div>
                                 <div class="curve" id="compressedClassSpace-curve"></div>
-                                <div class="curve" id="pSSurvivorSpace-curve"></div>
-                                <div class="curve" id="pSEdenSpace-curve"></div>
                                 <div class="curve" id="codeCache-curve"></div>
+                                <div class="curve" id="codeHeap-non-nmethods"></div>
+                                <div class="curve" id="codeHeap-non-profiled-nmethods"></div>
                             </div>
                             <div id="jvm-visua-gc" class="jvm-tab">
                                 <div class="curve" id="compile-time-curve"></div>
@@ -445,7 +447,7 @@
                                         <div class="form-group">
                                             <label for="thread-max-depth">max depth:</label>
                                             <input type="number" class="form-control" id="thread-max-depth" min="0"
-                                                   value="3"
+                                                   value="10"
                                                    style="width: 60px;padding-right: 0px;">
                                         </div>
                                         <button type="button" class="btn btn-info"

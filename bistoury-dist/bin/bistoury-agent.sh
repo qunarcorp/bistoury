@@ -35,6 +35,16 @@ else
     JAVA=java;
 fi
 
+JAVA_VERSION=`$JAVA -version 2>&1`
+
+if [[ `echo $JAVA_VERSION | egrep "1\.[78]\."` ]]; then
+    true
+else
+    JAVA_OPTS="$JAVA_OPTS --add-opens=java.base/jdk.internal.perf=ALL-UNNAMED"
+fi
+echo $JAVA_VERSION
+echo $JAVA_OPTS
+
 if [[ ! -n $BISTOURY_APP_LIB_CLASS ]]; then
     echo "请通过-c参数指定应用依赖的jar包中的一个类（推荐使用公司内部中间件的jar包或Spring相关包中的类，如org.springframework.web.servlet.DispatcherServlet），agent通过该类获取应用jar包路径"
     exit 0
