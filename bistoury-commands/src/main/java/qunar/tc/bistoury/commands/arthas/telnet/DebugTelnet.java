@@ -164,9 +164,10 @@ public class DebugTelnet extends Telnet {
             boolean isDataEnd = false;
 
             int promptIndex = findPrompt(input, start, count);
-            if (promptIndex != -1) {
+            int newPromptIndex = skipPrompt(input, start, promptIndex);
+            if (newPromptIndex != -1) {
                 isDataEnd = true;
-                count = promptIndex - start;
+                count = newPromptIndex - start;
             }
 
             System.arraycopy(input, start, buf, length, count);
@@ -193,6 +194,17 @@ public class DebugTelnet extends Telnet {
                     default:
                         return -1;
                 }
+            }
+            return -1;
+        }
+
+        //arthas 3.1.3 prompt改为了[arthas@pid]
+        private int skipPrompt(byte[] input, int start, int promptIndex) {
+            while (promptIndex >= start) {
+                if (input[promptIndex] == '@' && promptIndex - 7 >= start && input[promptIndex - 7] == '[') {
+                    return promptIndex - 7;
+                }
+                promptIndex--;
             }
             return -1;
         }
