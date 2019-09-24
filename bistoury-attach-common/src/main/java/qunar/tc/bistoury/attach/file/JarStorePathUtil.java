@@ -72,7 +72,7 @@ public class JarStorePathUtil {
     private synchronized static Manifest getMavenInfo() {
         if (maninest == null) {
             maninest = getManifest();
-            logger.info("user manifest: {}", maninest);
+            logger.info("use manifest: {}", maninest);
         }
         return maninest;
     }
@@ -86,7 +86,7 @@ public class JarStorePathUtil {
             }
         });
         if (files == null || files.isEmpty()) {
-            logger.warn("cannot find MANIFEST.MF，user default manifest: {}", DEFAULT_MANIFEST);
+            logger.warn("cannot find MANIFEST.MF，use default manifest: {}", DEFAULT_MANIFEST);
             return DEFAULT_MANIFEST;
         }
         for (File file : files) {
@@ -98,13 +98,13 @@ public class JarStorePathUtil {
                 if (Strings.isNullOrEmpty(springBootClassesValue) || Strings.isNullOrEmpty(springBootLibValue)) {
                     continue;
                 } else {
-                    return new Manifest(springBootClassesValue, springBootLibValue);
+                    return new Manifest(springBootClassesValue.trim(), springBootLibValue.trim());
                 }
             } catch (IOException e) {
                 //ignore
             }
         }
-        logger.warn("read MANIFEST.MF fail, user default manifest: {}", DEFAULT_MANIFEST);
+        logger.warn("read MANIFEST.MF fail, use default manifest: {}", DEFAULT_MANIFEST);
         return DEFAULT_MANIFEST;
     }
 
