@@ -43,7 +43,11 @@ $(document).ready(function () {
             "sysenv",
             "ognl",
             "mc",
-            "mbean"
+            "mbean",
+            "heapdump",
+            "vmoption",
+            "logger",
+            "stop"
         ];
 
         var debugCommand = [

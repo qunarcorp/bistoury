@@ -65,11 +65,11 @@
     <properties>
         <maven_compiler_plugin_version>3.8.0</maven_compiler_plugin_version>
         <!--agent的java版本，jdk1.7+ -->
-        <java_source_version>1.8</java_source_version>
-        <java_target_version>1.8</java_target_version>
+        <java_source_version>11</java_source_version>
+        <java_target_version>11</java_target_version>
         <!--ui、proxy的java版本，jdk1.8+ -->
-        <server_java_source_version>1.8</server_java_source_version>
-        <server_java_target_version>1.8</server_java_target_version>
+        <server_java_source_version>11</server_java_source_version>
+        <server_java_target_version>11</server_java_target_version>
 
         <org.springframework.version>4.3.10.RELEASE</org.springframework.version>
         <jackson.version>2.9.2</jackson.version>
@@ -78,7 +78,7 @@
         <guava.version>20.0</guava.version>
         <gson.version>2.6.2</gson.version>
         <guice.version>4.0</guice.version>
-        <arthas.version>3.1.1</arthas.version>
+        <arthas.version>3.1.3</arthas.version>
         <fastjson.version>1.2.60</fastjson.version>
         <vjtools.version>1.0.6</vjtools.version>
         <junit.version>4.10</junit.version>
@@ -290,10 +290,10 @@
                         <groupId>com.alibaba</groupId>
                         <artifactId>fastjson</artifactId>
                     </exclusion>
-                    <exclusion>
+                   <!-- <exclusion>
                         <groupId>org.benf</groupId>
                         <artifactId>cfr</artifactId>
-                    </exclusion>
+                    </exclusion>-->
                     <exclusion>
                         <groupId>io.netty</groupId>
                         <artifactId>netty-buffer</artifactId>
@@ -411,12 +411,12 @@
                 <scope>test</scope>
             </dependency>
 
-            <dependency>
+           <!-- <dependency>
                 <groupId>org.benf</groupId>
                 <artifactId>cfr</artifactId>
                 <version>${cfr.version}</version>
             </dependency>
-
+-->
             <dependency>
                 <groupId>com.codahale.metrics</groupId>
                 <artifactId>metrics-core</artifactId>

@@ -133,11 +133,15 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 >+ [mbean](#mbean) 查看 Mbean 的信息
 >+ [sysprop](#sysprop) 查看和修改JVM的系统属性
 >+ [sysenv](#sysenv) 查看当前JVM的环境属性
+>+ [vmoption](#vmoption) 查看，更新VM诊断相关的参数
 >+ [getstatic](#getstatic) 查看类的静态属性
+>+ [heapdump](#heapdump) dump java heap, 类似jmap命令的heap dump功能。
+>+ [logger](#logger) 查看logger信息，更新logger level
 >+ [qjtop](#qjtop) 观察JVM进程指标及其繁忙线程
 >+ [qjmap](#qjmap) JMAP的分代打印版
 >+ [qjdump](#qjdump) 线上紧急收集JVM数据
 >+ [qjmxcli](#qjmxcli) JMX 查看工具
+
 
 
 ## class/classloader相关
@@ -163,7 +167,7 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 >可以通过 [Web Console](/qconsole.html) 使用`Bistoury`
 # 命令列表
 
-## **ls**
+## ls
 **ls命令** 用来显示目标列表，参数与linux中的参数一样。
 >当选择一台机器时，该命令在一台机器上执行，当选择多台机器时，该命令可以同时在多台机器上执行，未选择机器则在所有机器上执行。
 ### 语法
@@ -1064,6 +1068,41 @@ root@local.example.com@bistoury:\>sysenv MAINCLASS
 MAINCLASS=org.apache.catalina.startup.Bootstrap
 $
 ```
+## vmoption
+> 查看，更新VM诊断相关的参数
+
+### 实例
+查看所有option
+```shell
+admin@local@bistoury_demo_app:\>vmoption
+ KEY                                   VALUE                                ORIGIN                                WRITEABLE                           
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ HeapDumpBeforeFullGC                  false                                DEFAULT                               true                                
+ HeapDumpAfterFullGC                   false                                DEFAULT                               true                                
+ HeapDumpOnOutOfMemoryError            false                                DEFAULT                               true                                
+ HeapDumpPath                                                               DEFAULT                               true                                
+
+ PrintClassHistogram                   false                                DEFAULT                               true                                
+ MinHeapFreeRatio                      40                                   DEFAULT                               true                                
+ MaxHeapFreeRatio                      70                                   DEFAULT                               true                                
+ PrintConcurrentLocks                  false                                DEFAULT                               true                                
+ CMSAbortablePrecleanWaitMillis        100                                  DEFAULT                               true                                
+ CMSWaitDuration                       2000                                 DEFAULT                               true                                
+ CMSTriggerInterval                    -1                                   DEFAULT                               true 
+```
+查看指定option
+```shell
+admin@local@bistoury_demo_app:\>vmoption PrintClassHistogram
+ KEY                                   VALUE                                ORIGIN                                WRITEABLE                           
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ PrintClassHistogram                   false                                DEFAULT                               true                                
+```
+更新指定option
+```shell
+admin@local@bistoury_demo_app:\>vmoption PrintClassHistogram true
+Successfully updated the vm option.
+PrintClassHistogram=true
+```
 ## ognl
 >执行ognl表达式
 ### 参数说明
@@ -1133,6 +1172,145 @@ field: m
 @ArrayList[
     @Node[a=aaa],
 ]
+```
+
+## heapdump
+> dump java heap, 类似jmap命令的heap dump功能。
+
+### 实例
+dump到指定文件
+```shell
+admin@local@bistoury_demo_app:\>heapdump /home/root/Desktop/bistoury-2.0.6/dump1.hprof
+Dumping heap to /home/root/Desktop/bistoury-2.0.6/dump1.hprof...
+Heap dump file created
+```
+只dump live 对象
+```shell
+admin@local@bistoury_demo_app:\>heapdump --live /home/root/Desktop/bistoury-2.0.6/dump2.hprof
+Dumping heap to /home/root/Desktop/bistoury-2.0.6/dump2.hprof...
+Heap dump file created
+```
+dump 到临时文件
+```shell
+admin@local@bistoury_demo_app:\>heapdump
+Dumping heap to /var/folders/c5/yvdt09ls5xv2825vp_pqy4200000gn/T/heapdump2019-09-23-20-218597155241814313750.hprof...
+Heap dump file created
+```
+
+## logger
+>查看logger信息，更新logger level
+### 实例
+以下面的logbook.xml为例
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="APPLICATION" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>app.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>mylog-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+ 
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="APPLICATION" />
+    </appender>
+ 
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n
+            </pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+ 
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="ASYNC" />
+    </root>
+</configuration>
+```
+使用logger命令打印的结果是：
+```shell
+admin@local@bistoury_demo_app:\>logger
+ name                                   ROOT
+ class                                  ch.qos.logback.classic.Logger
+ classLoader                            sun.misc.Launcher$AppClassLoader@2a139a55
+ classLoaderHash                        2a139a55
+ level                                  INFO
+ effectiveLevel                         INFO
+ additivity                             true
+ codeSource                             file:/Users/hengyunabc/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar
+ appenders                              name            CONSOLE
+                                        class           ch.qos.logback.core.ConsoleAppender
+                                        classLoader     sun.misc.Launcher$AppClassLoader@2a139a55
+                                        classLoaderHash 2a139a55
+                                        target          System.out
+                                        name            APPLICATION
+                                        class           ch.qos.logback.core.rolling.RollingFileAppender
+                                        classLoader     sun.misc.Launcher$AppClassLoader@2a139a55
+                                        classLoaderHash 2a139a55
+                                        file            app.log
+                                        name            ASYNC
+                                        class           ch.qos.logback.classic.AsyncAppender
+                                        classLoader     sun.misc.Launcher$AppClassLoader@2a139a55
+                                        classLoaderHash 2a139a55
+                                        appenderRef     [APPLICATION]
+```
+从appenders的信息里，可以看到
+- CONSOLE logger的target是System.out
+- APPLICATION logger是RollingFileAppender，它的file是app.log
+- ASYNC它的appenderRef是APPLICATION，即异步输出到文件里
+
+查看指定名字的logger信息
+```shell
+admin@local@bistoury_demo_app:\>logger -n org.springframework.web
+ name                                   org.springframework.web
+ class                                  ch.qos.logback.classic.Logger
+ classLoader                            sun.misc.Launcher$AppClassLoader@2a139a55
+ classLoaderHash                        2a139a55
+ level                                  null
+ effectiveLevel                         INFO
+ additivity                             true
+ codeSource                             file:/Users/hengyunabc/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar
+```
+查看指定classloader的logger信息
+```shell
+admin@local@bistoury_demo_app:\>logger -c 2a139a55
+ name                                   ROOT
+ class                                  ch.qos.logback.classic.Logger
+ classLoader                            sun.misc.Launcher$AppClassLoader@2a139a55
+ classLoaderHash                        2a139a55
+ level                                  DEBUG
+ effectiveLevel                         DEBUG
+ additivity                             true
+ codeSource                             file:/Users/hengyunabc/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar
+ appenders                              name            CONSOLE
+                                        class           ch.qos.logback.core.ConsoleAppender
+                                        classLoader     sun.misc.Launcher$AppClassLoader@2a139a55
+                                        classLoaderHash 2a139a55
+                                        target          System.out
+                                        name            APPLICATION
+                                        class           ch.qos.logback.core.rolling.RollingFileAppender
+                                        classLoader     sun.misc.Launcher$AppClassLoader@2a139a55
+                                        classLoaderHash 2a139a55
+                                        file            app.log
+                                        name            ASYNC
+                                        class           ch.qos.logback.classic.AsyncAppender
+                                        classLoader     sun.misc.Launcher$AppClassLoader@2a139a55
+                                        classLoaderHash 2a139a55
+                                        appenderRef     [APPLICATION]
+
+```
+更新logger level
+```shell
+admin@local@bistoury_demo_app:\>logger --name ROOT --level debug
+update logger level success.
 ```
 ## qjtop
 >对应于观看“OS指标及繁忙进程”的top，qjtop就是观察“JVM进程指标及其繁忙线程”的首选工具。
@@ -2190,6 +2368,18 @@ options save-result
                                     lt to log file   hich path is ${user.home}/logs/a
                                                      rthas-cache/result.log.     
 ```
+## stop/shutdown
+停止bistoury-agent attach 到应用中的部分
+
+```shell
+admin@local@bistoury_demo_app:\>stop
+Bistoury Server is going to shut down...
+```
+```shell
+admin@local@bistoury_demo_app:\>shutdown
+Bistoury Server is going to shut down...
+```
+stop和shutdown执行效果完全一样
 <script type="application/javascript">
     $(document).ready(function () {
         $.ajax({
