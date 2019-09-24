@@ -19,9 +19,11 @@ package qunar.tc.bistoury.instrument.client.classpath;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import qunar.tc.bistoury.attach.file.FileOperateFactory;
 import qunar.tc.bistoury.attach.file.JarStorePathUtil;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -35,11 +37,15 @@ public class DefaultAppClassPathSupplier implements AppClassPathSupplier {
 
     public DefaultAppClassPathSupplier(AppLibClassSupplier appLibClassSupplier) {
         Class<?> appLibClass = appLibClassSupplier.get();
-        String libJarPath = appLibClass
+        URL url = appLibClass
                 .getProtectionDomain()
                 .getCodeSource()
-                .getLocation()
-                .getPath();
+                .getLocation();
+
+        //调用该方法触发解压
+        FileOperateFactory.replaceJarWithUnPackDir(url.toString());
+
+        String libJarPath = url.getPath();
         String appLibPath = new File(libJarPath).getParentFile().getAbsolutePath();
 
         String appSourcePath = System.getProperty("bistoury.app.classes.path");
