@@ -63,9 +63,7 @@ start(){
       fi
     fi
 
-    JAVA_VERSION=`echo $JAVA -version`
-
-    if [[ `echo $JAVA_VERSION | egrep "1\.[78]\."` ]]; then
+    if [[ `$JAVA -version 2>&1 | egrep "1\.[78]\."` ]]; then
         true
     else
         JAVA_OPTS="$JAVA_OPTS --add-opens=java.base/jdk.internal.perf=ALL-UNNAMED"

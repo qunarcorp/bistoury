@@ -78,14 +78,16 @@ START()
   fi
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jinfo -flags."
 
-  #jmap -heap
-  echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jmap -heap."
-  JMAP_HEAP_LOG=${LOGDIR}/jmap_heap-${PID}-${DATE}.log
-  ${JAVA_HOME}/bin/jmap -heap $PID > ${JMAP_HEAP_LOG}
-  if [[ $? != 0 ]]; then
-    echo -e "\033[31mprocess jmap -heap error.\033[0m"
+  if [[ `${JAVA_HOME}/bin/java -version 2>&1 | egrep "1\.[78]\."` ]]; then
+    #jmap -heap
+    echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jmap -heap."
+    JMAP_HEAP_LOG=${LOGDIR}/jmap_heap-${PID}-${DATE}.log
+    ${JAVA_HOME}/bin/jmap -heap $PID > ${JMAP_HEAP_LOG}
+    if [[ $? != 0 ]]; then
+      echo -e "\033[31mprocess jmap -heap error.\033[0m"
+    fi
+    echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jmap -heap."
   fi
-  echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jmap -heap."
 
   # jmap -histo
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jmap -histo."
@@ -109,7 +111,7 @@ START()
 
   # jmap -dump:live
   if [[ $NEED_HEAP_DUMP == 1 ]]; then
-    JMAP_DUMP_FILE=${LOGDIR}/jmap_dump_live-${PID}-${DATE}.bin
+    JMAP_DUMP_FILE=${LOGDIR}/jmap_dump_live-${PID}-${DATE}.hprof
     echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jmap -dump:live."
     ${JAVA_HOME}/bin/jmap -dump:live,format=b,file=${JMAP_DUMP_FILE} $PID
     if [[ $? != 0 ]]; then
