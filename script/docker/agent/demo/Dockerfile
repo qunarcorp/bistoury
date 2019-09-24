@@ -1,8 +1,5 @@
 FROM centos
-#标明著作人的名称和邮箱 
-MAINTAINER wenbeicai wenbeicai@gmail.com
-#测试一下网络环境
-RUN ping -c 1 www.baidu.com
+LABEL maintainer="wenbeicai@gmail.com"
 
 WORKDIR .
 
@@ -12,7 +9,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 COPY  --from=bistoury-agent:latest  /home/q/bistoury  /home/q/bistoury
 COPY  --from=registry.cn-hangzhou.aliyuncs.com/bistoury/jdk8:v0.1 /home/q/bistoury/java /home/q/bistoury/java
 
-COPY spring-mvc-boot-0.0.1-SNAPSHOT.jar /home/q/www/spring-mvc-boot-0.0.1-SNAPSHOT.jar
+COPY  --from=registry.cn-hangzhou.aliyuncs.com/bistoury/bistoury-demo:latest  /home/q/www/spring-mvc-boot-0.0.1-SNAPSHOT.jar /home/q/www/spring-mvc-boot-0.0.1-SNAPSHOT.jar
 ENV PATH="/home/q/bistoury/java/bin:${PATH}"
 ENV JAVA_HOME /home/q/bistoury/java
 

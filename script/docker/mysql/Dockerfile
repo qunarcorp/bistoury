@@ -1,8 +1,5 @@
-#基础镜像使用 mysql:latest
 FROM mysql:5.7.22
-
-##标明著作人的名称和邮箱 
-MAINTAINER wenbeicai wenbeicai@gmail.com
+LABEL maintainer="wenbeicai@gmail.com"
 
 #定义会被容器自动执行的目录
 ENV AUTO_RUN_DIR /docker-entrypoint-initdb.d
