@@ -68,39 +68,24 @@ START()
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jstack."
   sleep ${SLEEP_TIME}
 
-  # qjtop
-  QJTOP_SCRIPT=$BISTOURY_BIN_DIR/qjtop.sh
-  which $QJTOP_SCRIPT 2>/dev/null
-  if [[ $? == 0 ]]; then
-    VJTOP_DURATION=2
-    echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process vjtop."
-    echo -e "It will take ${VJTOP_DURATION} seconds, please wait."
-    VJTOP_LOG=${LOGDIR}/vjtop-${PID}-${DATE}.log
-    $QJTOP_SCRIPT -n 1 -d $VJTOP_DURATION $PID > ${VJTOP_LOG}
-    if [[ $? != 0 ]]; then
-      echo -e "\033[31mprocess vjtop error.\033[0m"
-    fi
-    echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process vjtop."
-  else
-    # no vjtop, use other replacement
-    # jinfo -flags $PID
-    echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jinfo -flags."
-    JINFO_FLAGS_LOG=${LOGDIR}/jinfo-flags-${PID}-${DATE}.log
-    ${JAVA_HOME}/bin/jinfo -flags $PID 1>${JINFO_FLAGS_LOG} 2>&1
-    if [[ $? != 0 ]]; then
-      echo -e "\033[31mprocess jinfo -flags error.\033[0m"
-    fi
-    echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jinfo -flags."
-
-    #jmap -heap
-    echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jmap -heap."
-    JMAP_HEAP_LOG=${LOGDIR}/jmap_heap-${PID}-${DATE}.log
-    ${JAVA_HOME}/bin/jmap -heap $PID > ${JMAP_HEAP_LOG}
-    if [[ $? != 0 ]]; then
-      echo -e "\033[31mprocess jmap -heap error.\033[0m"
-    fi
-    echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jmap -heap."
+  # no vjtop, use other replacement
+  # jinfo -flags $PID
+  echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jinfo -flags."
+  JINFO_FLAGS_LOG=${LOGDIR}/jinfo-flags-${PID}-${DATE}.log
+  ${JAVA_HOME}/bin/jinfo -flags $PID 1>${JINFO_FLAGS_LOG} 2>&1
+  if [[ $? != 0 ]]; then
+    echo -e "\033[31mprocess jinfo -flags error.\033[0m"
   fi
+  echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jinfo -flags."
+
+  #jmap -heap
+  echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jmap -heap."
+  JMAP_HEAP_LOG=${LOGDIR}/jmap_heap-${PID}-${DATE}.log
+  ${JAVA_HOME}/bin/jmap -heap $PID > ${JMAP_HEAP_LOG}
+  if [[ $? != 0 ]]; then
+    echo -e "\033[31mprocess jmap -heap error.\033[0m"
+  fi
+  echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jmap -heap."
 
   # jmap -histo
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jmap -histo."

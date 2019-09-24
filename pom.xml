@@ -411,12 +411,6 @@
                 <scope>test</scope>
             </dependency>
 
-           <!-- <dependency>
-                <groupId>org.benf</groupId>
-                <artifactId>cfr</artifactId>
-                <version>${cfr.version}</version>
-            </dependency>
--->
             <dependency>
                 <groupId>com.codahale.metrics</groupId>
                 <artifactId>metrics-core</artifactId>

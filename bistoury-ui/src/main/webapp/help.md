@@ -137,11 +137,10 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 >+ [getstatic](#getstatic) 查看类的静态属性
 >+ [heapdump](#heapdump) dump java heap, 类似jmap命令的heap dump功能。
 >+ [logger](#logger) 查看logger信息，更新logger level
->+ [qjtop](#qjtop) 观察JVM进程指标及其繁忙线程
->+ [qjmap](#qjmap) JMAP的分代打印版
 >+ [qjdump](#qjdump) 线上紧急收集JVM数据
->+ [qjmxcli](#qjmxcli) JMX 查看工具
-
+>+ [qjtop](#qjtop)  不再支持 qjtop 命令，可到[主机信息](/machine.html)页面查看 JVM 指标及繁忙线程
+>+ [qjmap](#qjmap)  不再支持 qjmap 命令，请使用 [heapdump](#heapdump) 命令 dump 内存信息
+>+ [qjmxcli](#qjmxcli)  不再支持 qjmxcli 命令，请使用 [mbean](#mbean) 命令查看 MBean 信息，使用 [jstat](#jstat) 命令查看 GC 信息
 
 
 ## class/classloader相关
@@ -1175,7 +1174,7 @@ field: m
 ```
 
 ## heapdump
-> dump java heap, 类似jmap命令的heap dump功能。
+> dump java heap, 类似jmap命令的heap dump功能。<font color=red>请摘掉流量使用</font>
 
 ### 实例
 dump到指定文件
@@ -1312,141 +1311,12 @@ admin@local@bistoury_demo_app:\>logger -c 2a139a55
 admin@local@bistoury_demo_app:\>logger --name ROOT --level debug
 update logger level success.
 ```
-## qjtop
->对应于观看“OS指标及繁忙进程”的top，qjtop就是观察“JVM进程指标及其繁忙线程”的首选工具。
-JVM进程信息：收集了进程在OS层面和JVM层面的所有重要指标。大家为什么喜欢用dstat看OS状态，因为它将你想看的数据全都收集呈现眼前了，qjtop也是这样的风格。
-
->繁忙线程信息： 对比于“先top -H 列出线程，再执行jstack拿到全部线程，再手工换算十与十六进制的线程号”的繁琐过程，qjtop既方便，又可以连续跟踪，更不会因为jstack造成JVM停顿。
-对于超出正常范围的值，qjtop还很贴心的进行了变色显示。
-运行时不造成应用停顿，可在线上安全使用。
-
-常用场景：
-
->1. 性能问题快速定位，用vjtop显示出CPU繁忙或内存消耗大的线程，再实时交互翻查该线程的statk trace。
->2. 压测场景，用vjtop实时反馈JVM进程状态，类似于用dstast对操作系统指标的监控。
->3. 生产环境，当应用出现问题时，用vjtop快速了解进程的状态。还可与监控系统结合，发现指标(如CPU、超时请求数)超出阈值时，用钩子脚本调用vjtop来纪录事发地的状况。
-
-在jvmtop 的基础上二次开发，结合 SJK的优点，从/proc ，PerfData，JMX等处，以更高的性能，获取更多的信息。
-### 参数说明
-|参数名称|参数说明|
-|--------|--------|
-|-?, -h, --help|shows help   
-|-m, --mode `<Integer>` | 找出CPU最繁忙的线程，找出内存分配最频繁的线程， mode 取值如下：<br>1--按时间区间内，线程占用的CPU排序，默认显示前10的线程，默认每10秒打印一次 <br>2--按时间区间内，线程占用的SYS CPU排序 <br>3--按线程从启动以来的总占用CPU来排序<br>4--按线程从启动以来的总SYS CPU排序 <br>5--线程分配内存的速度排序，默认显示前10的线程，默认每10秒打印一次 <br>6--按线程的总内存分配而不是打印间隔内的内存分配来排序         |
-|-i，--interval `<Integer>`|设置打印间隔，默认为10秒|
-|-n, --iteration `<Integer>` |设置打印间隔，默认不退出|
-|-l, --limit `<Integer>`|显示前limit个线程，默认为10|
-|-c, --content |all--采集jvm及繁忙线程信息<br>jvm--只采集jvm信息，不采集繁忙线程信息<br>thread只采集繁忙线程信息，不采集jvm信息|
-|-w, --width `<Integer>`|控制台输出的宽度，默认为100
-### 实例
-```shell
-root@local.example.com@bistoury:\>qjtop
-
-
- 14:51:44 - PID: 12280 JVM: 1.7.0_45 USER: tomcat UPTIME: 21h28m
- PROCESS:  0.00% cpu( 0.00% of 4 core), 142 thread
- MEMORY: 1105m rss, 1106m peak, 0m swap | DISK: 0B read, 0B write
- THREAD: 132 live, 109 daemon, 132 peak, 0 new | CLASS: 11449 loaded, 0 unloaded, 0 new
- HEAP: 21m/497m/499m eden, 48m/91m sur, 46m/1365m old
- NON-HEAP: 65m/256m perm, 3m/7m/48m codeCache
- OFF-HEAP: 66m/66m direct(max=NaN), 0m/0m map(count=0), 132m threadStack
- GC: 0/0ms/0ms ygc, 0/0ms fgc | SAFE-POINT: 0 count, 0ms time, 0ms syncTime
-
- VMARGS: -Djava.util.logging.config.file=/home/user/tomcat/www/qconfig-admin/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Xms2048m -Xmx2048m -XX:NewSize=256m -XX:PermSize=256m -XX:+DisableExplicitGC -verbose:gc -XX:+PrintGCDateStamps -XX:+PrintGCDetails -Djava.endorsed.dirs=/home/user/tomcat/tomcat/endorsed  -Dcatalina.home=/home/user/tomcat/tomcat
-
-
- Collecting data, please wait ......
-
-
-
- 14:51:54 - PID: 12280 JVM: 1.7.0_45 USER: tomcat UPTIME: 21h28m
- PROCESS:  0.80% cpu( 0.20% of 4 core), 142 thread
- MEMORY: 1105m rss, 1106m peak, 0m swap | DISK: 0B read, 408B write
- THREAD: 132 live, 109 daemon, 132 peak, 0 new | CLASS: 11449 loaded, 0 unloaded, 0 new
- HEAP: 21m/497m/499m eden, 48m/91m sur, 46m/1365m old
- NON-HEAP: 65m/256m perm, 3m/7m/48m codeCache
- OFF-HEAP: 66m/66m direct(max=NaN), 0m/0m map(count=0), 132m threadStack
- GC: 0/0ms/0ms ygc, 0/0ms fgc | SAFE-POINT: 1 count, 1ms time, 0ms syncTime
-
-    TID NAME                                                      STATE    CPU SYSCPU  TOTAL TOLSYS
-    187 RMI TCP Connection(77)-127.0.0.1                    RUNNABLE  0.08%  0.08%  0.12%  0.01%
-    102 DubboResponseTimeoutScanTimer                        TIMED_WAIT  0.07%  0.07% 11.48%  6.77%
-
- Total  :  0.15% cpu(user= 0.00%, sys= 0.15%) by 2 active threads(which cpu>0.05%)
- Setting: top 10 threads order by CPU, flush every 10s
-```
-进程区数据解释:
-
-- `PROCESS`: `thread`: 进程的操作系统线程数, `cxtsw`为主动与被动的线程上下文切换数
-- `MEMORY`: `rss` 为 `Resident Set Size`, 进程实际占用的物理内存; `peak`为最峰值的`rss`; `swap`为进程被交换到磁盘的虚拟内存。
-- `DISK`: 真正达到物理存储层的读/写的速度。
-- `THREAD`: `Java`线程数, `active`为当前线程数, `daemon`为`active`线程中的`daemon`线程数, `new`为刷新周期内新创建的线程数。
-- `CLASS`: `loaded`为当前加载的类数量，`unloaded`为总卸载掉的类数量，`new`为刷新周期内新加载的类数量。
-- `HEAP`: 1.0.3版开始每一项有三个数字, 分别为1.当前使用内存, 2.当前已申请内存, 3.最大内存; 如果后两个数字相同时则合并。
-- `sur`: 当前存活区的大小，注意实际有`from`, `to` 两个存活区。
-- `NON-HEAP`: 数字含义同`HEAP`
-- `codeCache`: `JIT`编译的二进制代码的存放区，满后将不能编译新的代码。
-- `direct`: 堆外内存，三个数字含义同`HEAP`, 未显式设置最大内存时，约等于堆内存大小。注意新版`Netty`不经过`JDK API`所分配的堆外内存未在此统计。
-- `map`: 映射文件内存，三个数字分别为1. `map`数量，2.当前使用内存，3.当前已申请内存，没有最大值数据。
-- `threadStack`: `Java`线程所占的栈内存总和，但不包含VM线程。(since 1.0.3)
-- `ygc`: `YoungGC`, 三个数字分别为次数／总停顿时间／平均停顿时间
-- `fgc`: `OldGC` ＋ `FullGC`， 两个数字分别为次数／总执行时间，注意此时间仅为执行时间，非JVM停顿时间。
-- `SAFE-POINT`: `PerfData`开启时可用，`JVM`真正的停顿次数及停顿时间，以及等待所有线程进入安全点所消耗的时间。
-
-线程区数据解释:
-
-- `CPU`: 线程在打印间隔内使用的`CPU`百分比(按单个核计算)
-- `SYSCPU`: 线程在打印间隔内使用的`SYS CPU`百分比(按单个核计算)
-- `TOTAL`: 从进程启动到现在，线程的总CPU时间/进程的总CPU时间的百分比
-- `TOLSYS`: 从进程启动到现在，线程的总SYS CPU时间/进程的总CPU时间的百分比
-
-底部数据解释:
-
-- 如果该线程的平均使用`CPU`少于单核的0.1%，这条线程将不参与排序显示，减少消耗。
-
-## qjmap
->分代版的jmap（新生代，存活区，老生代），是排查内存缓慢泄露，老生代增长过快原因的利器。因为jmap -histo PID 打印的是整个Heap的对象统计信息，而为了定位上面的问题，我们需要专门查看OldGen对象，和Survivor区大龄对象的工具。
-qjmap的原始思路来源于R大的[TBJMap](https://github.com/alibaba/TBJMap) ，翻新后支持JDK8，支持Survivor区大龄对象过滤，以及大天秤对输出结果不要看歪脖子的执着。
-注意：因为vjmap的原理，只支持CMS和ParallelGC，不支持G1。
-###注意事项
-> **<font color="red"> 注意：qjmap在执行过程中，会完全停止应用一段时间，必须摘流量执行！！！！ </font>**
-
->1. 意外停止
-qjmap的运行需要一段时间，如果中途需要停止执行，请使用ctrl＋c，或者kill qjmap的PID，让qjmap从目标进程退出。
-如果错用了kill -9 ，目标java进程会保持在阻塞状态不再工作，此时必须执行两次 kill -SIGCONT $目标进程PID，重新唤醒目标java进程。
-
->2. OldGen碎片
-如果很久没都有进行过CMS GC or Full GC，OldGen将有非常非常多的Live Regions，执行 -all 和 -old 时将非常缓慢，比如 -all的第一步Get Live Regions就会非常缓慢，如非要故意观察死对象的场景，此时可尝试先触发一次full gc， 如使用qjmap -all:live, 或 jmap -histo:live 或 jcmd GC.run 等。
-
-### 参数说明
-|参数名称|参数说明|
-|--------|--------|
-|-help|获取帮助文档
-| -all                      |print all gens histogram, order by total size
-| -all:minsize=1024         |print all gens histogram, total size>=1024
-| -all:minsize=1024,byname  |print all gens histogram, total size>=1024, order by class name
-| -old                      |print oldgen histogram, order by oldgen size
-| -old:live                 |print oldgen histogram, live objects only
-| -old:minsize=1024         |print oldgen histogram, oldgen size>=1024
-| -old:minsize=1024,byname  |print oldgen histogram, oldgen size>=1024, order by class name
-| -sur                      |print survivor histogram, age>=3
-| -sur:minage=4             |print survivor histogram, age>=4
-| -sur:minsize=1024,byname  |print survivor histogram, age>=3, survivor size>=1024, order by class  name
-| -address                  | 打印各代地址，不会造成过长时间停顿
-| -class                    | 打印加载的Class列表
-### 实例
-打印各代地址
-```shell
-root@local.example.com@bistoury:\>qjmap -address
-PSYoungGen [ eden =  [0x00000007d5500000,0x00000007dcaba290,0x00000007f4600000] , from =  [0x00000007fa500000,0x00000007fd5f2400,0x0000000800000000] , to =  [0x00000007f4600000,0x00000007f4600000,0x00000007fa300000]  ]
-PSOldGen [  [0x000000077ff80000,0x0000000782e4d488,0x00000007d5500000]  ]
- Heap traversal took 0.0 seconds.
-```
 ## qjdump
 >qjdump是线上JVM数据紧急收集脚本。它可以在<font color=red>紧急场景</font>下（比如马上要对进程进行重启），一键收集jstack、jmap以及GC日志等相关信息，并以zip包保存(默认在目录/tmp/bistoury/qjtools/qjdump/${PID}下)，保证在紧急情况下仍能收集足够的问题排查信息，减轻运维团队的工作量，以及与开发团队的沟通成本。
 
 收集数据包括：
 >- thread dump数据：jstack -l \$PID
->- qjtop JVM概况及繁忙线程：qjtop.sh -n 1 \$PID (需要将qjtop.sh 加入用户的PATH变量中)
+>- jinfo -flags $PID
 >- jmap histo 堆对象统计数据：jmap -histo \$PID & jmap -histo:live \$PID
 >- GC日志(如果JVM有设定GC日志输出)
 >- heap dump数据（需指定--liveheap开启）：jmap -dump:live,format=b,file=\${DUMP_FILE} \$PID
@@ -1459,120 +1329,12 @@ qjdump
 # 额外收集heap dump信息（jmap -dump:live的信息）
 qjdump --liveheap
 ```
+## qjtop
+ Bistoury 不再支持 qjtop 命令，可到主机信息页面查看 JVM 指标及繁忙线程
+## qjmap
+Bistoury 不再支持 qjmap 命令，请使用 [heapdump](#heapdump) 命令 dump 内存信息
 ## qjmxcli
->在cmdline-jmxclient项目上定制，增加功能
-不需要原JVM在启动参数中打开了JMX选项
-完全模拟jstat -gcutil输出的gcutil，用于jstat不能使用的情况， 或者jstat计算使用百分比时，用“已申请大小”，而不是“Max大小”作为分母，不能反映内存是否真正不足的情况。
-因为每调度一次java -jar vjmxclient.jar，其实是创建了一个新的JVM，因此在qjmxcli 加上了一系列JVM参数减少消耗。
-
-### 实例
-```shell
-root@local.example.com@bistoury:\>qjmxcli
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=groupAuthorizationFilter
-Catalina:name=HttpRequest1,type=RequestProcessor,worker="http-bio-8080"
-java.lang:type=Memory
-JMImplementation:type=MBeanServerDelegate
-Catalina:name="http-bio-8080",type=ThreadPool
-Catalina:port=8080,type=Connector
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=loginAuthorizationFilter
-java.lang:name=PS MarkSweep,type=GarbageCollector
-java.nio:name=mapped,type=BufferPool
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Servlet,name=web
-Catalina:context=/,host=localhost,type=Cache
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=loginFilter
-java.lang:name=PS Survivor Space,type=MemoryPool
-java.lang:name=CodeCacheManager,type=MemoryManager
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Servlet,name=jsp
-Catalina:host=localhost,type=Host
-Catalina:name="http-bio-8080",type=GlobalRequestProcessor
-Catalina:host=localhost,name=ErrorReportValve,type=Valve
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Servlet,name=jvm
-java.lang:name=PS Old Gen,type=MemoryPool
-java.lang:name=PS Perm Gen,type=MemoryPool
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=encodingFilter
-java.lang:type=Runtime
-Catalina:type=Engine
-java.nio:name=direct,type=BufferPool
-Catalina:name=HttpRequest6,type=RequestProcessor,worker="http-bio-8080"
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=clearFilter
-Catalina:context=/,host=localhost,type=Manager
-Catalina:name=HttpRequest3,type=RequestProcessor,worker="http-bio-8080"
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,name=jsp,type=JspMonitor
-Catalina:host=localhost,name=AccessLogValve,type=Valve
-Catalina:type=Service
-com.sun.management:type=HotSpotDiagnostic
-java.lang:name=PS Scavenge,type=GarbageCollector
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Servlet,name=default
-java.lang:name=Code Cache,type=MemoryPool
-java.util.logging:type=Logging
-Catalina:context=/,host=localhost,type=WebappClassLoader
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=RedirectFilter
-Catalina:type=Server
-Catalina:name=StandardEngineValve,type=Valve
-Catalina:context=/,host=localhost,name=StandardContextValve,type=Valve
-Catalina:name=HttpRequest5,type=RequestProcessor,worker="http-bio-8080"
-Catalina:J2EEApplication=none,J2EEServer=none,j2eeType=WebModule,name=//localhost/
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=org.apache.tomcat.websocket.server.WsFilter
-Catalina:type=NamingResources
-Catalina:context=/,host=localhost,type=Loader
-Catalina:name=common,type=ServerClassLoader
-Catalina:name=HttpRequest2,type=RequestProcessor,worker="http-bio-8080"
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Servlet,name=monitor
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=recentlyAccessedFilter
-Catalina:context=/,host=localhost,type=NamingResources
-Catalina:context=/,host=localhost,name=NonLoginAuthenticator,type=Valve
-java.lang:name=PS Eden Space,type=MemoryPool
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=HttpMethodFilter
-Catalina:host=localhost,type=Deployer
-Catalina:type=MBeanFactory
-java.lang:type=OperatingSystem
-Catalina:name=HttpRequest4,type=RequestProcessor,worker="http-bio-8080"
-java.lang:type=Compilation
-Catalina:port=8080,type=ProtocolHandler
-Catalina:type=StringCache
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=watcher
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Servlet,name=stats
-java.lang:type=Threading
-java.lang:type=ClassLoading
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=uploadFilter
-Catalina:realmPath=/realm0,type=Realm
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=adminAuthorizationFilter
-Catalina:port=8080,type=Mapper
-Catalina:host=localhost,name=StandardHostValve,type=Valve
-```
-获取MBean属性值
-```shell
-root@local.example.com@bistoury:\>qjmxcli java.lang:type=Memory HeapMemoryUsage
-HeapMemoryUsage:
-committed: 1925185536
-init: 2147483648
-max: 1925185536
-used: 125783504
-```
-GC统计(jstat gcutil)
-一次性输出
-```shell
-root@local.example.com@bistoury:\>qjmxcli gcutil
-S	S	E	O	P	YGC	YGCT	FGC	FGCT	GCT
-0.00	0.00	15.40	6.23	26.56	11	0.468	3	0.853	1.321
-```
-每5s输出一次
-```shell
-root@local.example.com@bistoury:\>qjmxcli gcutil 5
-S	S	E	O	P	YGC	YGCT	FGC	FGCT	GCT
-0.00	0.00	14.54	6.23	26.56	11	0.468	3	0.853	1.321
-S	S	E	O	P	YGC	YGCT	FGC	FGCT	GCT
-0.00	0.00	14.62	6.23	26.56	11	0.468	3	0.853	1.321
-```
-### 常用JMX条目
-|条目	                |Object Name	|Attribute Name
-|--|--|--|
-|堆内存|	java.lang:type=Memory|HeapMemoryUsage
-|非堆内存(不包含堆外内存)|	java.lang:type=Memory|	NonHeapMemoryUsage
-|堆外内存(不包含新版Netty申请的堆外内存)|	java.nio:type=BufferPool,name=direct|	MemoryUsed
-|线程数|	java.lang:type=Threading|	ThreadCount
-|守护线程数|	java.lang:type=Threading|	DaemonThreadCount
-|分代内存及GC|	不同JDK的值不一样|	不同JDK的值不一样
+Bistoury 不再支持 qjmxcli 命令，请使用 mbean 命令查看 [MBean](#mbean) 信息，使用 [jstat](#jstat) 命令查看 GC 信息
 ## sc
 >查看JVM已加载的类信息
 “Search-Class” 的简写，这个命令能搜索出所有已经加载到 JVM 中的 Class 信息，这个命令支持的参数有 [d]、[E]、[f] 和 [x:]。
