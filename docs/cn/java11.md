@@ -9,11 +9,11 @@
 ## 打包
 代码新增两个profile，BigJavaVersion和SmallJavaVersion，其中BigJavaVersion在Java版本大于等于Java9时使用，SmallJavaVersion在Java版本小于Java9时使用。
 
-在使用script/build.sh和script/quick_start_build.sh打包时，根据mvn -v中的`Java version`选择profile进行打包
+在使用script/build.sh和script/quick_start_build.sh打包时，根据maven运行时的`java version`选择profile进行打包
 
 ### 打包步骤
 - 在bistoury/pom.xml中修改java_source_version、java_target_version、server_java_source_version和server_java_target_version
-- 运行mvn -v检查版本是否为需要的Java版本
-- 运行script/build.sh和script/quick_start_build.sh进行打包
+- 运行./mvnw -v检查maven中Java版本是否为需要的版本，不是时请修改环境变量JAVA_HOME的值。
+- 运行script/build.sh和script/quick_start_build.sh进行打包。
 
-**注意**：当Java版本高于Java8时，如果你需要自己启动agent，则需要在启动参数添加` --add-opens=java.base/jdk.internal.perf=ALL-UNNAMED`
+**注意**：当Java版本高于Java8时，如果你需要自己启动agent，请在启动参数添加` --add-opens=java.base/jdk.internal.perf=ALL-UNNAMED`
