@@ -11,8 +11,6 @@
 
 在使用script/build.sh和script/quick_start_build.sh打包时，根据maven运行时的`Java version`选择profile进行打包，即` ./mvnw -v`命令的返回结果中的`Java version`的值。
 
-
-
 ### 打包步骤
 - 在bistoury/pom.xml中修改java_source_version、java_target_version（agent的编译版本）和server_java_source_version、server_java_target_version（ui和proxy的编译版本）的值。agent和ui、server的版本不能一个是1.8及以下版本另一个是1.8以上的版本
 - 运行script/build.sh和script/quick_start_build.sh进行打包。

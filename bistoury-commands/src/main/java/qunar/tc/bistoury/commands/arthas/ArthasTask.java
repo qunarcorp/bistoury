@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.commands.arthas.telnet.Telnet;
 import qunar.tc.bistoury.commands.arthas.telnet.TelnetStore;
-import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 import qunar.tc.bistoury.remoting.netty.Task;
 
@@ -77,9 +76,6 @@ public class ArthasTask implements Task {
         this.future = agentExecutor.submit(new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
-                if (actShutDownCommand()) {
-                    return 0;
-                }
 
                 Telnet telnet = telnetStore.getTelnet(pid);
                 try {
@@ -104,27 +100,5 @@ public class ArthasTask implements Task {
         } catch (Exception e) {
             logger.error("cancel arthas task error", e);
         }
-    }
-
-    private boolean actShutDownCommand() {
-        if (!BistouryConstants.SHUTDOWN_COMMAND.equals(command)) {
-            return false;
-        }
-
-        Telnet client = null;
-        try {
-            client = telnetStore.tryGetTelnet();
-            if (client != null) {
-                client.write(BistouryConstants.SHUTDOWN_COMMAND);
-            }
-        } catch (Exception e) {
-            // ignore
-        } finally {
-            if (client != null) {
-                client.close();
-            }
-        }
-
-        return true;
     }
 }
