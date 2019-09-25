@@ -55,7 +55,6 @@ public class DebugTelnet extends Telnet {
                     break;
                 }
             }
-            System.out.println(System.currentTimeMillis());
         }
     }
 

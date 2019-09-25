@@ -65,11 +65,11 @@
     <properties>
         <maven_compiler_plugin_version>3.8.0</maven_compiler_plugin_version>
         <!--agent的java版本，jdk1.7+ -->
-        <java_source_version>11</java_source_version>
-        <java_target_version>11</java_target_version>
+        <java_source_version>1.8</java_source_version>
+        <java_target_version>1.8</java_target_version>
         <!--ui、proxy的java版本，jdk1.8+ -->
-        <server_java_source_version>11</server_java_source_version>
-        <server_java_target_version>11</server_java_target_version>
+        <server_java_source_version>1.8</server_java_source_version>
+        <server_java_target_version>1.8</server_java_target_version>
 
         <org.springframework.version>4.3.10.RELEASE</org.springframework.version>
         <jackson.version>2.9.2</jackson.version>
@@ -107,8 +107,6 @@
         <rocksdb.version>5.17.2</rocksdb.version>
         <sajdijar>${java.home}/../lib/sa-jdi.jar</sajdijar>
         <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
-        <!-- <sajdijar>/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home/lib/sa-jdi.jar</sajdijar>
-         <toolsjar>/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home/lib/tools.jar</toolsjar>-->
         <java.tools.version>1.7</java.tools.version>
     </properties>
 
@@ -290,10 +288,10 @@
                         <groupId>com.alibaba</groupId>
                         <artifactId>fastjson</artifactId>
                     </exclusion>
-                   <!-- <exclusion>
-                        <groupId>org.benf</groupId>
-                        <artifactId>cfr</artifactId>
-                    </exclusion>-->
+                    <!-- <exclusion>
+                         <groupId>org.benf</groupId>
+                         <artifactId>cfr</artifactId>
+                     </exclusion>-->
                     <exclusion>
                         <groupId>io.netty</groupId>
                         <artifactId>netty-buffer</artifactId>

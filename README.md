@@ -48,7 +48,7 @@ Bistoury提供可视化页面实时查看机器和应用的各种信息，包括
 
 ## java版本要求
 
-ui、proxy使用Java1.8，agent使用java1.7或java1.8，由于agent会attach到应用中，所以应用也需要使用Java1.7或Java1.8。Java9及后续版本由于改动较大，会在以后陆续支持。
+ui、proxy使用Java1.8+，agent使用java1.7+，由于agent会attach到应用中，所以应用也需要使用Java1.7+，最好保持应用和agent的版本一致。点击[这里](docs/cn/java11.md)使用Java11运行bistoury
 
 ## 系统要求
 
