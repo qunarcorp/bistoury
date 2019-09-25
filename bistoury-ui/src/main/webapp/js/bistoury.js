@@ -72,12 +72,12 @@
                 bistoury.result += content;
                 return false;
             } else {
-                func.call(this, bistoury.result, type);
+                func.call(this, bistoury.result.trim().replace(/\[arthas@[0-9]*\]$/, ""), type);
                 bistoury.result = "";
                 return true;
             }
         } else {
-            func.call(this, content);
+            func.call(this, content.trim().replace(/\[arthas@[0-9]*\]$/, ""));
             bistoury.result = "";
             return true;
         }

@@ -29,6 +29,7 @@ import qunar.tc.bistoury.clientside.common.monitor.MetricsSnapshot;
 import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.CodeProcessResponse;
 import qunar.tc.bistoury.common.TypeResponse;
+import qunar.tc.bistoury.common.URLCoder;
 
 /**
  * @author: leix.xie
@@ -63,7 +64,7 @@ public class QMonitorSnapshotCommand extends AnnotatedCommand {
             response.setCode(-1);
             response.setMessage("qmonitor snapshot get error, " + e.getClass() + ", " + e.getMessage());
         } finally {
-            process.write(AttachJacksonSerializer.serialize(typeResponse));
+            process.write(URLCoder.encode(AttachJacksonSerializer.serialize(typeResponse)));
             process.end();
             logger.debug("finish monitor snapshot command");
         }
