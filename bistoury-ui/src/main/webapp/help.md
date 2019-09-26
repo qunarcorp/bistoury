@@ -33,12 +33,43 @@ toc:
 
 [动态监控使用说明](/api/url/redirect.do?name=monitor.help.url)
 
-[线程级cpu使用率监控](/api/url/redirect.do?name=jstack.help.url)
+[线程级cpu使用率监控使用说明](/api/url/redirect.do?name=jstack.help.url)
 
-[堆内存对象监控](/api/url/redirect.do?name=jmap.help.url)
+[堆内存对象监控使用说明](/api/url/redirect.do?name=jmap.help.url)
 # Bistoury
+![license](https://img.shields.io/github/license/qunarcorp/bistoury)
+![release](https://img.shields.io/github/v/release/qunarcorp/bistoury)
 ## Bistoury是什么？
-> `Bistoury` 去哪网开源的一个对应用透明，无侵入的Java诊断工具，Bistoury在公司内部原有agent的基础上集成Alibaba开源的[Arthas](https://github.com/alibaba/arthas)和唯品会开源的[vjtools](https://github.com/vipshop/vjtools)，提供更加丰富的功能。
+
+`Bistoury` 是去哪儿网开源的一个对应用透明，无侵入的java应用诊断工具，用于提升开发人员的诊断效率和能力。
+
+`Bistoury` 的目标是一站式java应用诊断解决方案，让开发人员无需登录机器或修改系统，就可以从日志、内存、线程、类信息、调试、机器和系统属性等各个方面对应用进行诊断，提升开发人员诊断问题的效率和能力。
+
+`Bistoury` 在公司内部原有agent的基础上集成Alibaba开源的[arthas](https://github.com/alibaba/arthas)和唯品会开源的[vjtools](https://github.com/vipshop/vjtools)，提供了更加丰富的功能，感谢他们做出的优秀工作。
+
+## 简介
+
+Arthas和vjtools已经是很优秀的工具，我们为什么还要开发Bistoury？
+
+Arthas和vjtools通过命令行或类似的方式使用，不可否认命令行在很多时候具有比较高的效率；但图形化界面也有其自身的优点，特别是在参数复杂时使用起来更加简单，效率更高。Bistoury在保留命令行界面的基础上，还对很多命令提供了图形化界面，方面用户使用。
+
+Arthas和vjtools针对单台机器，从机器的维度对系统进行诊断，没有提供全局的视角；而在线应用往往部署在多台机器，Bistoury可以和使用方应用中心整合，从应用的维度对系统进行诊断，提供了更多的可能。
+
+Arthas和vjtools在使用上，要么登录机器，要么需要使用者提供相应的ip和端口；Bistoury去掉各种设置，提供统一的web入口，从页面上选择应用和机器即可使用。
+
+除了这些针对性优化，Bistoury在保留arthas和vjtools的所有功能之外，还提供了更加丰富的功能。
+
+Bistoury的[在线debug功能](/api/url/redirect.do?name=debug.help.url)去掉了各种复杂参数，模拟ide调试体验，通过web界面提供断点调试的功能，可以在不阻塞应用的情况下捕获断点处的信息（包括本地变量、成员变量、静态变量和方法调用栈）。
+
+Bistoury提供了[线程级cpu使用率监控](/api/url/redirect.do?name=jstack.help.url)，可以监控系统每个线程的分钟级cpu使用率，并提供最近几天的历史数据查询。
+
+Bistoury可以[动态对方法添加监控](/api/url/redirect.do?name=monitor.help.url)，监控方法的调用次数、异常次数和执行时间，同时也保留最近几天的监控数据。
+
+Bistoury提供了日志查看功能，可以使用tail、grep等命令对单台或同时对多台机器的日志进行查看。
+
+Bistoury提供可视化页面实时查看机器和应用的各种信息，包括主机内存和磁盘使用、cpu使用率和load、系统配置文件、jar包信息、jvm信息、内存使用和gc等等。
+
+
 ## Bistoury 能做什么？
 - 查看应用日志
 - 查看主机运行状态
@@ -95,9 +126,11 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 运行bin目录下的脚本进行启动，可以在bistoury-agent-env.sh中的JAVA_OPTS里配置JVM相关参数，GC相关配置已配置，
 ## 启动bistoury agent
 在启动是可以通过-p指定pid确定agent attach特定的java进程，不指定时会通过jps -l和ps aux|grep java 命令及proxy中配置的参数解析pid，优先级依次降低。
+
+使用 `./bistoury-agent.sh -h` 查看脚本参数信息
+
 + 启动
 ```shell
-#注意：格式固定
 ./bistoury-agent.sh -p 100 start
 ./bistoury-agent.sh start
 ```
@@ -107,7 +140,6 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 ```
 + 重启
 ```shell
-#注意：格式固定
 ./bistoury-agent.sh -p 101 restart
 ./bistoury-agent.sh restart
 ```
@@ -173,28 +205,28 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 > ls (选项) (参数)
 
 ### 选项
-> -a：显示所有档案及目录（ls内定将档案名或目录名称为“.”的视为影藏，不会列出）；
--A：显示除影藏文件“.”和“..”以外的所有文件列表；
--C：多列显示输出结果。这是默认选项；
--l：与“-C”选项功能相反，所有输出信息用单列格式输出，不输出为多列；
--F：在每个输出项后追加文件的类型标识符，具体含义：“\*”表示具有可执行权限的普通文件，“/”表示目录，“@”表示符号链接，“|”表示命令管道FIFO，“=”表示sockets套接字。当文件为普通文件时，不输出任何标识符；
--b：将文件中的不可输出的字符以反斜线“”加字符编码的方式输出；
--c：与“-lt”选项连用时，按照文件状态时间排序输出目录内容，排序的依据是文件的索引节点中的ctime字段。与“-l”选项连用时，则排序的一句是文件的状态改变时间；
--d：仅显示目录名，而不显示目录下的内容列表。显示符号链接文件本身，而不显示其所指向的目录列表；
--f：此参数的效果和同时指定“aU”参数相同，并关闭“lst”参数的效果；
--i：显示文件索引节点号（inode）。一个索引节点代表一个文件；
---file-type：与“-F”选项的功能相同，但是不显示“\*”；
--k：以KB（千字节）为单位显示文件大小；
--l：以长格式显示目录下的内容列表。输出的信息从左到右依次包括文件名，文件类型、权限模式、硬连接数、所有者、组、文件大小和文件的最后修改时间等；
--m：用“,”号区隔每个文件和目录的名称；
--n：以用户识别码和群组识别码替代其名称；
--r：以文件名反序排列并输出目录内容列表；
--s：显示文件和目录的大小，以区块为单位；
--t：用文件和目录的更改时间排序；
--L：如果遇到性质为符号链接的文件或目录，直接列出该链接所指向的原始文件或目录；
--R：递归处理，将指定目录下的所有文件及子目录一并处理；
---full-time：列出完整的日期与时间；
---color[=WHEN]：使用不同的颜色高亮显示不同类型的。
+    -a：显示所有档案及目录（ls内定将档案名或目录名称为“.”的视为影藏，不会列出）；
+    -A：显示除影藏文件“.”和“..”以外的所有文件列表；
+    -C：多列显示输出结果。这是默认选项；
+    -l：与“-C”选项功能相反，所有输出信息用单列格式输出，不输出为多列；
+    -F：在每个输出项后追加文件的类型标识符，具体含义：“\*”表示具有可执行权限的普通文件，“/”表示目录，“@”表示符号链接，“|”表示命令管道FIFO，“=”表示sockets套接字。当文件为普通文件时，不输出任何标识符；
+    -b：将文件中的不可输出的字符以反斜线“”加字符编码的方式输出；
+    -c：与“-lt”选项连用时，按照文件状态时间排序输出目录内容，排序的依据是文件的索引节点中的ctime字段。与“-l”选项连用时，则排序的一句是文件的状态改变时间；
+    -d：仅显示目录名，而不显示目录下的内容列表。显示符号链接文件本身，而不显示其所指向的目录列表；
+    -f：此参数的效果和同时指定“aU”参数相同，并关闭“lst”参数的效果；
+    -i：显示文件索引节点号（inode）。一个索引节点代表一个文件；
+    --file-type：与“-F”选项的功能相同，但是不显示“\*”；
+    -k：以KB（千字节）为单位显示文件大小；
+    -l：以长格式显示目录下的内容列表。输出的信息从左到右依次包括文件名，文件类型、权限模式、硬连接数、所有者、组、文件大小和文件的最后修改时间等；
+    -m：用“,”号区隔每个文件和目录的名称；
+    -n：以用户识别码和群组识别码替代其名称；
+    -r：以文件名反序排列并输出目录内容列表；
+    -s：显示文件和目录的大小，以区块为单位；
+    -t：用文件和目录的更改时间排序；
+    -L：如果遇到性质为符号链接的文件或目录，直接列出该链接所指向的原始文件或目录；
+    -R：递归处理，将指定目录下的所有文件及子目录一并处理；
+    --full-time：列出完整的日期与时间；
+    --color[=WHEN]：使用不同的颜色高亮显示不同类型的。
 
 ### 参数
 >目录：指定要显示列表的目录，也可以是具体的文件。
@@ -205,12 +237,12 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 >cat (选项) (参数)
 
 ### 选项
-> -n或-number：有1开始对所有输出的行数编号；
--b或--number-nonblank：和-n相似，只不过对于空白行不编号；
--s或--squeeze-blank：当遇到有连续两行以上的空白行，就代换为一行的空白行；
--A：显示不可打印字符，行尾显示“$”；
--e：等价于"-vE"选项；
--t：等价于"-vT"选项；
+    -n或-number：有1开始对所有输出的行数编号；
+    -b或--number-nonblank：和-n相似，只不过对于空白行不编号；
+    -s或--squeeze-blank：当遇到有连续两行以上的空白行，就代换为一行的空白行；
+    -A：显示不可打印字符，行尾显示“$”；
+    -e：等价于"-vE"选项；
+    -t：等价于"-vT"选项；
 
 ### 参数
 > 文件列表：指定要连接的文件列表。
@@ -235,17 +267,17 @@ cat m1 m2 > file （将文件ml和m2合并后放入文件file中）
 >tail(选项)(参数)
 
 ### 选项
->--retry：即是在tail命令启动时，文件不可访问或者文件稍后变得不可访问，都始终尝试打开文件。使用此选项时需要与选项“——follow=name”连用；
--c<N>或——bytes=<N>：输出文件尾部的N（N为整数）个字节内容；
--f <name/descriptor>或；--follow<nameldescript>：显示文件最新追加的内容。“name”表示以文件名的方式监视文件的变化。“-f”与“-fdescriptor”等效；
--F：与选项“-follow=name”和“--retry"连用时功能相同；
--n <N>或——line=<N>：输出文件的尾部N（N位数字）行内容。
---pid=<进程号>：与“-f”选项连用，当指定的进程号的进程终止后，自动退出tail命令；
--q或——quiet或——silent：当有多个文件参数时，不输出各个文件名；
--s<秒数>或——sleep-interal=<秒数>：与“-f”选项连用，指定监视文件变化时间隔的秒数；
--v或——verbose：当有多个文件参数时，总是输出各个文件名；
---help：显示指令的帮助信息；
---version：显示指令的版本信息。
+    --retry：即是在tail命令启动时，文件不可访问或者文件稍后变得不可访问，都始终尝试打开文件。使用此选项时需要与选项“——follow=name”连用；
+    -c<N>或——bytes=<N>：输出文件尾部的N（N为整数）个字节内容；
+    -f <name/descriptor>或；--follow<nameldescript>：显示文件最新追加的内容。“name”表示以文件名的方式监视文件的变化。“-f”与“-fdescriptor”等效；
+    -F：与选项“-follow=name”和“--retry"连用时功能相同；
+    -n <N>或——line=<N>：输出文件的尾部N（N位数字）行内容。
+    --pid=<进程号>：与“-f”选项连用，当指定的进程号的进程终止后，自动退出tail命令；
+    -q或——quiet或——silent：当有多个文件参数时，不输出各个文件名；
+    -s<秒数>或——sleep-interal=<秒数>：与“-f”选项连用，指定监视文件变化时间隔的秒数；
+    -v或——verbose：当有多个文件参数时，总是输出各个文件名；
+    --help：显示指令的帮助信息；
+    --version：显示指令的版本信息。
 
 ### 参数
 >文件列表：指定要显示尾部内容的文件列表。
@@ -392,6 +424,7 @@ root@local.example.com@bistoury:\>jstat
 |[i `<value>`]|指定cpu占比统计的采样间隔，单位为毫秒
 cpu占比是如何统计出来的？
 >这里的cpu统计的是，一段采样间隔内，当前JVM里各个线程所占用的cpu时间占总cpu时间的百分比。其计算方法为： 首先进行一次采样，获得所有线程的cpu的使用时间(调用的是java.lang.management.ThreadMXBean#getThreadCpuTime这个接口)，然后睡眠一段时间，默认100ms，可以通过-i参数指定，然后再采样一次，最后得出这段时间内各个线程消耗的cpu时间情况，最后算出百分比。
+
 <font color="red">注意</font>：这个统计也会产生一定的开销（<font color="red">JDK这个接口本身开销比较大</font>），因此会看到as的线程占用一定的百分比，为了降低统计自身的开销带来的影响，可以把采样间隔拉长一些，比如5000毫秒。
 
 ### 实例
@@ -469,7 +502,9 @@ root@local.example.com@bistoury:\>thread 170
 Affect(row-cnt:0) cost in 60 ms.
 ```
 4、thread -b, 找出当前阻塞其他线程的线程
->有时候我们发现应用卡住了， 通常是由于某个线程拿住了某个锁， 并且其他线程都在等待这把锁造成的。 为了排查这类问题， Bistoury提供了thread -b， 一键找出那个罪魁祸首。
+
+有时候我们发现应用卡住了， 通常是由于某个线程拿住了某个锁， 并且其他线程都在等待这把锁造成的。 为了排查这类问题， Bistoury提供了thread -b， 一键找出那个罪魁祸首。
+
 ```shell
 root@local.example.com@bistoury:\>thread -b
 "http-bio-8080-exec-4" Id=27 TIMED_WAITING
@@ -1516,6 +1551,7 @@ Affect(row-cnt:1) cost in 49 ms.
 ```
 ## redefine
 >加载外部的.class文件，redefine jvm已加载的类
+
 <font color="red">注意：</font>redefine后的原来的类不能恢复，redefine有可能失败（比如增加了新的field），参考jdk本身的文档。
 ### 参数说明
 |参数名称	|参数说明|
@@ -1544,7 +1580,8 @@ mc -c 32ba647b /tmp/Test.java
 mc -d /tmp/output /tmp/ClassA.java /tmp/ClassB.java
 ```
 编译生成.class文件之后，可以结合[redefine](#redefine)命令实现热更新代码。
-> <font color=red>注意</font>：mc命令有可能失败。如果编译失败可以在本地编译好.class文件，再上传到服务器。具体参考[redefine](#redefine)命令说明。
+ 
+<font color=red>注意</font>：mc命令有可能失败。如果编译失败可以在本地编译好.class文件，再上传到服务器。具体参考[redefine](#redefine)命令说明。
 
 ## jad
 >反编译指定已加载类的源码

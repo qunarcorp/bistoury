@@ -19,6 +19,22 @@ $(document).ready(function () {
     $(function () {
         var linuxCommandType = [1, 4, 6];
         var errorMapping = bistoury.errorMapping;
+        var waitCommand = [
+            "ls",
+            "jvm",
+            "thread",
+            "sysprop",
+            "sysenv",
+            "dump",
+            "classloader",
+            "options",
+            "logger",
+            "getstatic",
+            "vmoption",
+            "mbean",
+            "ognl",
+            "jad"
+        ];
         var arthasCommands = [
             "dashboard",
             "thread",
@@ -893,7 +909,7 @@ $(document).ready(function () {
 
             var wait = function () {
                 //                    return !isTab && (command == 'tail' || command == 'cat' || command == 'awk' || command == 'jstack' || command == 'jstat');
-                return isTab || (command == 'ls');
+                return isTab || arrayContains(waitCommand, command);
             };
 
             var recv = function (data, agentHost) {

@@ -1,6 +1,7 @@
 # Bistoury
 
-![GitHub](https://img.shields.io/github/license/qunarcorp/bistoury) 
+![license](https://img.shields.io/github/license/qunarcorp/bistoury)
+![release](https://img.shields.io/github/v/release/qunarcorp/bistoury)
 
 `Bistoury` 是去哪儿网开源的一个对应用透明，无侵入的java应用诊断工具，用于提升开发人员的诊断效率和能力。
 
