@@ -60,6 +60,9 @@ public abstract class Telnet {
     }
 
     public void write(String command) throws Exception {
+        if (command.getBytes(Charsets.UTF_8).length > 999) {
+            throw new RuntimeException("the command length is too long，the max length is 999 bytes");
+        }
         out.write(command);
         out.newLine();
         out.flush();
