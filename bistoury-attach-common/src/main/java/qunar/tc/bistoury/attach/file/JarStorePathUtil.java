@@ -17,10 +17,9 @@
 
 package qunar.tc.bistoury.attach.file;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Predicate;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
+import com.google.common.base.*;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.clientside.common.store.BistouryStore;
@@ -28,6 +27,7 @@ import qunar.tc.bistoury.common.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,11 +39,15 @@ import java.util.Map;
 public class JarStorePathUtil {
     private static final Logger logger = BistouryLoggger.getLogger();
 
-    private static final String STORE_PATH = BistouryStore.getStorePath("tomcat_webapp");
+    private static final String STORE_PATH = BistouryStore.getStorePath("bistoury_tomcat_webapp");
 
     private static final Manifest DEFAULT_MANIFEST = new Manifest("BOOT-INF/lib/", "BOOT-INF/classes/");
 
-    private static final Splitter.MapSplitter MANINFSET_SPLITTER = Splitter.on("\n").trimResults().omitEmptyStrings().withKeyValueSeparator(":");
+    private static final Splitter MANIFEST_SPLITTER = Splitter.on("\n").trimResults().omitEmptyStrings();
+
+    private static final Splitter LINE_SPLITTER = Splitter.on(":").trimResults().omitEmptyStrings();
+
+    private static final Joiner LINE_JOINER = Joiner.on(":").skipNulls();
 
     private static final String SPRING_BOOT_CLASSES_KEY = "Spring-Boot-Classes";
     private static final String SPRING_BOOT_LIB_KEY = "Spring-Boot-Lib";
@@ -91,10 +95,9 @@ public class JarStorePathUtil {
         }
         for (File file : files) {
             try {
-                String fileContent = FileUtil.readString(file, Charsets.UTF_8);
-                Map<String, String> maninfsetMap = MANINFSET_SPLITTER.split(fileContent);
-                String springBootClassesValue = maninfsetMap.get(SPRING_BOOT_CLASSES_KEY);
-                String springBootLibValue = maninfsetMap.get(SPRING_BOOT_LIB_KEY);
+                Map<String, String> manifestMap = getManifestMap(file);
+                String springBootClassesValue = manifestMap.get(SPRING_BOOT_CLASSES_KEY);
+                String springBootLibValue = manifestMap.get(SPRING_BOOT_LIB_KEY);
                 if (Strings.isNullOrEmpty(springBootClassesValue) || Strings.isNullOrEmpty(springBootLibValue)) {
                     continue;
                 } else {
@@ -106,6 +109,25 @@ public class JarStorePathUtil {
         }
         logger.warn("read MANIFEST.MF fail, use default manifest: {}", DEFAULT_MANIFEST);
         return DEFAULT_MANIFEST;
+    }
+
+    private static Map<String, String> getManifestMap(final File file) throws IOException {
+        Map<String, String> result = Maps.newHashMap();
+        String fileContent = FileUtil.readString(file, Charsets.UTF_8);
+        List<String> list = MANIFEST_SPLITTER.splitToList(fileContent);
+        if (list == null || list.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        for (String line : list) {
+            List<String> lines = LINE_SPLITTER.splitToList(line);
+            if (lines.size() >= 2) {
+                lines = Lists.newArrayList(lines);
+                final String key = lines.get(0);
+                lines.remove(0);
+                result.put(key, LINE_JOINER.join(lines));
+            }
+        }
+        return result;
     }
 
     private static class Manifest {
