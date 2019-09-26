@@ -183,12 +183,7 @@ public class AgentBootstrap2 {
             Constructor<?> magicClassLoaderConstructor = magicClassLoaderClass.getDeclaredConstructor(URL[].class, ClassLoader.class);
             ClassLoader magicClassLoader = (ClassLoader) magicClassLoaderConstructor.newInstance(magicJarUrls, bistouryClassloader);
 
-            Class<?> magicClassesClass = bistouryClassloader.loadClass(MAGIC_CLASSES);
-            Method isMagicClassMethod = magicClassesClass.getDeclaredMethod(IS_MAGIC_CLASS_METHOD, String.class);
-            // 这一句不要删除，init一下MagicClasses类
-            isMagicClassMethod.invoke(null, "");
-
-            bistouryClassloader.setMagicClassSetting(magicClassLoader, isMagicClassMethod);
+            bistouryClassloader.setMagicClassSetting(magicClassLoader);
         } catch (Throwable e) {
             ps.println("init magic error, " + e.getMessage());
             e.printStackTrace(ps);

@@ -18,11 +18,12 @@
 package qunar.tc.bistoury.instrument.agent;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * @author zhenyu.nie created on 2018 2018/11/19 19:45
@@ -31,7 +32,6 @@ public class BistouryClassloader extends URLClassLoader {
 
     private ClassLoader magicClassLoader;
 
-    private Method isMagicClassMethod;
 
     private final ClassLoader resourceSearchParent = getSystemClassLoader().getParent();
 
@@ -39,9 +39,8 @@ public class BistouryClassloader extends URLClassLoader {
         super(urls, classLoader);
     }
 
-    public void setMagicClassSetting(ClassLoader magicClassLoader, Method isMagicClassMethod) {
+    public void setMagicClassSetting(ClassLoader magicClassLoader) {
         this.magicClassLoader = magicClassLoader;
-        this.isMagicClassMethod = isMagicClassMethod;
     }
 
     @Override
@@ -108,9 +107,51 @@ public class BistouryClassloader extends URLClassLoader {
         return null;
     }
 
-    private boolean isMagicClass(String name) throws Throwable {
-        return name != null && isMagicClassMethod != null
-                && (boolean) isMagicClassMethod.invoke(null, name);
+    private boolean isMagicClass(String name) {
+        return name != null && MagicClasses.isMagicClass(name);
+    }
+
+    /**
+     * copy form {@link qunar.tc.bistoury.magic.classes.MagicClasses }，
+     * Java11 使用反射调用{@link qunar.tc.bistoury.magic.classes.MagicClasses }时会出现 java.lang.ClassCircularityError: jdk/internal/reflect/MethodAccessorImpl
+     */
+    static class MagicClasses {
+
+        private static final Set<String> MAGIC_CLASS_NAME_SET;
+
+        private static final Set<String> MAGIC_CLASS_PREFIX_SET;
+
+        static {
+            Set<String> nameSet = new HashSet<>();
+            nameSet.add("com.fasterxml.jackson.databind.ser.BeanSerializerFactory");
+            nameSet.add("com.taobao.arthas.core.advisor.Enhancer");
+
+            Set<String> namePrefixSet = new HashSet<>();
+            for (String name : nameSet) {
+                namePrefixSet.add(name + "$");
+            }
+
+            MAGIC_CLASS_NAME_SET = nameSet;
+            MAGIC_CLASS_PREFIX_SET = namePrefixSet;
+        }
+
+        public static boolean isMagicClass(String name) {
+            if (name == null || name.isEmpty()) {
+                return false;
+            }
+
+            if (MAGIC_CLASS_NAME_SET.contains(name)) {
+                return true;
+            }
+
+            for (String prefix : MAGIC_CLASS_PREFIX_SET) {
+                if (name.startsWith(prefix)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }
 
