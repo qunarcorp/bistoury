@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
 import qunar.tc.bistoury.proxy.communicate.agent.DefaultAgentConnectionStore;
 import qunar.tc.bistoury.proxy.generator.IdGenerator;
-import qunar.tc.bistoury.proxy.generator.SessionIdGenerator;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
 import qunar.tc.bistoury.remoting.protocol.ResponseCode;
@@ -44,11 +43,13 @@ public class ProxyHeartbeatProcessor implements AgentMessageProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(ProxyHeartbeatProcessor.class);
 
+    private static final String HEARTBEAT_SIGN = ".h";
+
     @Autowired
     private AgentConnectionStore connectionStore = new DefaultAgentConnectionStore();
 
     @Autowired
-    private IdGenerator idGenerator = new SessionIdGenerator();
+    private IdGenerator idGenerator;
 
     private final Datagram heartbeatResponse = initHeartbeatResponse();
 
@@ -72,6 +73,6 @@ public class ProxyHeartbeatProcessor implements AgentMessageProcessor {
     }
 
     private Datagram initHeartbeatResponse() {
-        return RemotingBuilder.buildRequestDatagram(ResponseCode.RESP_TYPE_HEARTBEAT.getCode(), idGenerator.generateId(), new RequestPayloadHolder(""));
+        return RemotingBuilder.buildRequestDatagram(ResponseCode.RESP_TYPE_HEARTBEAT.getCode(), idGenerator.generateId() + HEARTBEAT_SIGN, new RequestPayloadHolder(""));
     }
 }
