@@ -1,7 +1,7 @@
 * [日志目录](#日志目录)
 * [获取ip错误](#获取ip错误)
 * [agent attach时加载初始化类失败](#agent-attach时加载初始化类失败)
-* [windows 环境暂时不支持](#windows-环境暂时不支持)
+* [windows 环境暂时不支持](#windows-环境)
 * [在线debug暂时不支持github仓库的源码调试](#在线debug暂时不支持github仓库的源码调试)
 * [jdk版本](#jdk版本)
     * [应用jdk版本要求](#应用jdk版本要求)
@@ -11,6 +11,9 @@
     * [修改默认端口](#修改默认端口)
 * [在线debug时,前端界面上对象值显示 `object size greater than ***kb`](#在线debug时前端界面上对象值显示-object-size-greater-than-kb)
 * [在线debug时 前端界面右上角提示 *** 代码查看仅可通过反编译](#在线debug时-前端界面右上角提示--代码查看仅可通过反编译)
+* [在线debug添加断点出现 `register breakpoint fail, File was not found in the executable`](#在线debug添加断点出现-register-breakpoint-fail-file-was-not-found-in-the-executable)
+* [动态监控添加监控出现 `add monitor failed, File was not found in the executable`](#动态监控添加监控出现-add-monitor-failed-file-was-not-found-in-the-executable)
+
 
 ### 日志目录
 
@@ -48,7 +51,7 @@
 
 往往表现为在ui上调用命令时报"can not init bistoury, start arthas error"，"Agent JAR loaded but agent failed to initialize"，同时在agent的log中也会有一样的错误日志。
 
-这时去“应用进程所属用户的主目录/logslogs/arthas/arthas.log”中查找日志，如果发现错误"can not find lib class"，那么可以确定是这个问题。
+这时去“应用进程所属用户的主目录/logs/arthas/arthas.log”中查找日志，如果发现错误"can not find lib class"，那么可以确定是这个问题。
 
 原因是agent在初始化时需要加载一个初始化类，也就是快速启动脚本-c所指定的类。这个类应当是应用已加载的依赖的jar包中的类，默认是spring的org.springframework.web.servlet.DispatcherServlet，往往非spring应用没有特殊指定会报这个错。
 
@@ -109,7 +112,7 @@
 |:---------------------|:------------------------------|
 | 9880 | `解压缩目录/bistoury-proxy-bin/conf/global.properties`中的`agent.newport`值|
 | 9881 | `解压缩目录/bistoury-proxy-bin/conf/global.properties`中的`server.port`值和`quick_start.sh`中`PROXY_WEBSOCKET_PORT`的值|
-| 9090 | `解压缩目录/bistoury-proxy-bin/conf/server.properties`中的`tomcat.port`值和`quick_start.sh`中`PROXY_TOMCAT_PORT`的值|
+| 9090 | `解压缩目录/bistoury-proxy-bin/conf/server.properties`中的`tomcat.port`值和`quick_start.sh`中`PROXY_TOMCAT_PORT`的值以及bistoury-agent-bin/bin/bistoury-agent-env.sh中的BISTOURY_PROXY_HOST的值|
 | 9091 | `解压缩目录/bistoury-ui-bin/conf/server.properties`中的`tomcat.port`值|
 | 9092 | `解压缩目录/h2/h2.sh`中的H2_PORT值|
 
@@ -131,3 +134,11 @@
   > 代表没有读取到releaseInfo.properties文件，不能根据此文件，找到应用对应的源码信息。
 
 - [源代码查看详细介绍](https://github.com/qunarcorp/bistoury/blob/master/docs/cn/gitlab_maven.md)
+
+### 在线debug添加断点出现 register breakpoint fail, File was not found in the executable
+### 动态监控添加监控出现 add monitor failed, File was not found in the executable
+在添加断点和添加监控时，我们需要知道项目源码目录（`classes`目录）和jar包目录（`lib`目录）的路径，如果这两个路径获取错误，则会出现以上两种错误。
+
+一般出现以上两种错误的情况为：
+ - 使用IDE启动应用，这时获取的路径是错误的。
+ - springboot是用较旧的插件打包应用 [#40](https://github.com/qunarcorp/bistoury/issues/40)
