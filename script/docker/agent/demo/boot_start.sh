@@ -32,6 +32,4 @@ APP_PID=`$AGENT_JAVA_HOME/bin/jps -l|awk '{if($2!="sun.tools.jps.Jps"){print $1 
 
 echo "app pid: "$APP_PID
 
-/home/q/bistoury/agent/bin/bistoury-agent.sh -j $AGENT_JAVA_HOME -p $APP_PID -c $BISTOURY_APP_LIB_CLASS -s $PROXY_HOST start
-
-tail -f /dev/null
+/home/q/bistoury/agent/bin/bistoury-agent.sh -j $AGENT_JAVA_HOME -p $APP_PID -c $BISTOURY_APP_LIB_CLASS -s $PROXY_HOST -f start

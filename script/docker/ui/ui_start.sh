@@ -20,5 +20,4 @@ echo "zk address: "$ZK_ADDRESS
 echo "ui java home: "$UI_JAVA_HOME
 echo "ui mysql url" $UI_JDBC_URL
 
-/home/q/bistoury/ui/bin/bistoury-ui.sh -j $UI_JAVA_HOME  -r $ZK_ADDRESS -d $UI_JDBC_URL start
-tail -f /dev/null
+/home/q/bistoury/ui/bin/bistoury-ui.sh -j $UI_JAVA_HOME  -r $ZK_ADDRESS -d $UI_JDBC_URL -f start

@@ -13,14 +13,16 @@ for CMD in "$@";do true; done
 APP_PID=""
 LOCAL_IP=""
 PROXY_HOST=""
+IN_FOREGROUND=false
 
-while getopts p:i:j:c:h:s: opt;do
+while getopts p:i:j:c:h:s:f opt;do
     case $opt in
         p) APP_PID=$OPTARG;;
         i) LOCAL_IP=$OPTARG;;
         j) JAVA_HOME=$OPTARG;;
         c) BISTOURY_APP_LIB_CLASS=$OPTARG;;
         s) PROXY_HOST=$OPTARG;;
+        f) IN_FOREGROUND=true;;
         h|*) echo "-p    通过-p指定应用进程pid"
            echo "-i    通过-i参数指定本机ip"
            echo "-j    通过-j指定java home"
@@ -67,7 +69,11 @@ start(){
          exit 0
       fi
     fi
-    nohup "$JAVA" -cp "$CLASSPATH" ${JAVA_OPTS} ${BISTOURY_MAIN} > "$BISTOURY_DAEMON_OUT" 2>&1 < /dev/null &
+    if [[ "$IN_FOREGROUND" = true ]] ; then
+        "$JAVA" -cp "$CLASSPATH" ${JAVA_OPTS} ${BISTOURY_MAIN} > "$BISTOURY_DAEMON_OUT" 2>&1 < /dev/null
+    else
+        nohup "$JAVA" -cp "$CLASSPATH" ${JAVA_OPTS} ${BISTOURY_MAIN} > "$BISTOURY_DAEMON_OUT" 2>&1 < /dev/null &
+    fi
     if [[ $? -eq 0 ]]
     then
       /bin/echo -n $! > "$BISTOURY_PID_FILE"

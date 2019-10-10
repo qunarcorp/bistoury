@@ -25,5 +25,4 @@ echo "zk address: "$ZK_ADDRESS
 echo "proxy java home: "$PROXY_JAVA_HOME
 echo "proxy jdbc url: "$PROXY_JDBC_URL
 
-/home/q/bistoury/proxy/bin/bistoury-proxy.sh -j $PROXY_JAVA_HOME -i $REAL_IP -r $ZK_ADDRESS -d $PROXY_JDBC_URL start
-tail -f /dev/null
+/home/q/bistoury/proxy/bin/bistoury-proxy.sh -j $PROXY_JAVA_HOME -i $REAL_IP -r $ZK_ADDRESS -d $PROXY_JDBC_URL -f start
