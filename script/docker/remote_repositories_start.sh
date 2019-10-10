@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 #创建网络
 echo "start create network"
 docker network create --subnet=172.19.0.0/16 bistoury
