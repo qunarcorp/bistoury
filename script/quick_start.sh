@@ -1,5 +1,4 @@
 #!/bin/bash
-
 BISTOURY_BASE_DIR=`pwd`
 
 H2_DATABASE_DIR="$BISTOURY_BASE_DIR/h2"
