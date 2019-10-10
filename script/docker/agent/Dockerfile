@@ -1,5 +1,5 @@
 #agent docker file
-FROM alpine:3.2
+FROM debian:buster-slim
 LABEL maintainer="wenbeicai@gmail.com"
 
 WORKDIR .
