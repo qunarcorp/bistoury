@@ -7,7 +7,7 @@ echo "start run mysql image"
 docker run --name mysql -p 3307:3306 -e MYSQL_ROOT_PASSWORD=root -d -i --net bistoury --ip 172.19.0.7  registry.cn-hangzhou.aliyuncs.com/bistoury/bistoury-db
 #zk 镜像
 echo "start run zk image"
-docker run -d -p 2181:2181 -it --net bistoury --ip 172.19.0.2 registry.cn-hangzhou.aliyuncs.com/bistoury/zk:v0.1
+docker run -d -p 2181:2181 -it --net bistoury --ip 172.19.0.2 registry.cn-hangzhou.aliyuncs.com/bistoury/zk:latest
 sleep 30
 #proxy 镜像
 echo "start run proxy module"
