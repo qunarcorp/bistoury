@@ -30,21 +30,17 @@ import java.util.concurrent.TimeUnit;
 public class AgentMonitor {
     public static Long start() {
         long startTime = System.currentTimeMillis();
-        System.out.println("start: " + startTime);
         return startTime;
     }
 
     public static void stop(String key, long startTime) {
-        if (startTime == 0L || Strings.isNullOrEmpty(key)) {
-            return;
+        if (startTime != 0L && !Strings.isNullOrEmpty(key)) {
+            Metrics.timer(key + "_timer").get().update(System.currentTimeMillis() - startTime, TimeUnit.MILLISECONDS);
+            Metrics.counter(key + "_counter").delta().get().inc();
         }
-        System.out.println(key + " stop: " + startTime);
-        Metrics.counter(key + "_counter").delta().get().inc();
-        Metrics.timer(key + "_timer").get().update(System.currentTimeMillis() - startTime, TimeUnit.MILLISECONDS);
     }
 
     public static void exception(String key) {
-        System.out.println(key + "exception");
         Metrics.counter(key + "_exception").delta().get().inc();
     }
 }

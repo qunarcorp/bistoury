@@ -118,9 +118,9 @@ public class MonitorAdviceAdapter extends MethodVisitor implements Opcodes {
         int exceptionVarIndex = localVariablesSorter.newLocal(Type.getType(Object.class));
         mv.visitVarInsn(ASTORE, exceptionVarIndex);
 
-        exceptionMonitor();
         //异常处理中结束
         endMonitor();
+        exceptionMonitor();
 
         //throw ex
         mv.visitVarInsn(ALOAD, exceptionVarIndex);
