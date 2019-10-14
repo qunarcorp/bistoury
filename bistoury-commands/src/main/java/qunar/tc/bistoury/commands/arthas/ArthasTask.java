@@ -19,15 +19,19 @@ package qunar.tc.bistoury.commands.arthas;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.commands.arthas.telnet.Telnet;
 import qunar.tc.bistoury.commands.arthas.telnet.TelnetStore;
+import qunar.tc.bistoury.common.BistouryConstants;
+import qunar.tc.bistoury.common.NamedThreadFactory;
 import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 import qunar.tc.bistoury.remoting.netty.Task;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 
 /**
  * @author zhenyu.nie created on 2018 2018/10/15 18:55
@@ -36,7 +40,10 @@ public class ArthasTask implements Task {
 
     private static final Logger logger = LoggerFactory.getLogger(ArthasTask.class);
 
-    private static final ListeningExecutorService agentExecutor = AgentRemotingExecutor.getExecutor();
+    private static final ListeningExecutorService AGENT_EXECUTOR = AgentRemotingExecutor.getExecutor();
+
+    private static final ListeningExecutorService ARTHAS_SHUTDOWN_EXECUTOR = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor(new NamedThreadFactory("arthas_shutdown")));
+
 
     private final TelnetStore telnetStore;
 
@@ -73,7 +80,17 @@ public class ArthasTask implements Task {
 
     @Override
     public ListenableFuture<Integer> execute() {
-        this.future = agentExecutor.submit(new Callable<Integer>() {
+        String realCommand = command.trim();
+        if (BistouryConstants.SHUTDOWN_COMMAND.equalsIgnoreCase(realCommand) || BistouryConstants.STOP_COMMADN.equalsIgnoreCase(realCommand)) {
+            this.future = executeArthasShutdown();
+        } else {
+            this.future = executeArthasCommand();
+        }
+        return future;
+    }
+
+    private ListenableFuture<Integer> executeArthasCommand() {
+        return AGENT_EXECUTOR.submit(new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
 
@@ -87,7 +104,23 @@ public class ArthasTask implements Task {
                 }
             }
         });
-        return future;
+    }
+
+    private ListenableFuture<Integer> executeArthasShutdown() {
+        return ARTHAS_SHUTDOWN_EXECUTOR.submit(new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+
+                Telnet telnet = telnetStore.getTelnet(pid);
+                try {
+                    telnet.write(command);
+                    telnet.read(command, handler);
+                    return 0;
+                } finally {
+                    telnet.close();
+                }
+            }
+        });
     }
 
     @Override
