@@ -20,8 +20,8 @@ package qunar.tc.bistoury.commands.arthas;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
-import qunar.tc.bistoury.commands.arthas.telnet.ArthasTelnetStore;
-import qunar.tc.bistoury.commands.arthas.telnet.DebugTelnetStore;
+import qunar.tc.bistoury.commands.arthas.telnet.NormalTelnetStore;
+import qunar.tc.bistoury.commands.arthas.telnet.UrlEncodedTelnetStore;
 import qunar.tc.bistoury.commands.arthas.telnet.TelnetStore;
 import qunar.tc.bistoury.remoting.netty.Task;
 import qunar.tc.bistoury.remoting.netty.TaskFactory;
@@ -40,10 +40,9 @@ public class ArthasTaskFactory implements TaskFactory<String> {
 
     private static final String ASYNC_COMMAND_SYMBOL = "&";
 
-    private static final TelnetStore arthasTelnetStore = ArthasTelnetStore.getInstance();
+    private static final TelnetStore arthasTelnetStore = NormalTelnetStore.getInstance();
 
-    private static final TelnetStore debugTelnetStore = DebugTelnetStore.getInstance();
-
+    private static final TelnetStore debugTelnetStore = UrlEncodedTelnetStore.getInstance();
 
     private static final Map<Integer, TelnetStore> storeMapping;
 

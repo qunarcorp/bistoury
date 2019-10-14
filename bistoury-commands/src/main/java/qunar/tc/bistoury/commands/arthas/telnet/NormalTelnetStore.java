@@ -17,18 +17,27 @@
 
 package qunar.tc.bistoury.commands.arthas.telnet;
 
-import qunar.tc.bistoury.agent.common.ResponseHandler;
+import org.apache.commons.net.telnet.TelnetClient;
+
+import java.io.IOException;
 
 /**
- * @author zhenyu.nie created on 2018 2018/10/15 19:01
+ * @author zhenyu.nie created on 2018 2018/11/28 19:26
  */
-public interface Telnet {
+public class NormalTelnetStore extends AbstractTelnetStore {
 
-    void write(String command) throws Exception;
+    private static final NormalTelnetStore INSTANCE = new NormalTelnetStore();
 
-    String getVersion();
+    public static TelnetStore getInstance() {
+        return INSTANCE;
+    }
 
-    void read(String command, ResponseHandler responseHandler) throws Exception;
+    private NormalTelnetStore() {
 
-    void close();
+    }
+
+    @Override
+    protected Telnet doCreateTelnet(TelnetClient client) throws IOException {
+        return new NormalTelnet(client);
+    }
 }
