@@ -81,7 +81,7 @@ public class ArthasTask implements Task {
     @Override
     public ListenableFuture<Integer> execute() {
         String realCommand = command.trim();
-        if (BistouryConstants.SHUTDOWN_COMMAND.equalsIgnoreCase(realCommand) || BistouryConstants.STOP_COMMADN.equalsIgnoreCase(realCommand)) {
+        if (BistouryConstants.SHUTDOWN_COMMAND.equalsIgnoreCase(realCommand) || BistouryConstants.STOP_COMMAND.equalsIgnoreCase(realCommand)) {
             this.future = executeArthasShutdown();
         } else {
             this.future = executeArthasCommand();

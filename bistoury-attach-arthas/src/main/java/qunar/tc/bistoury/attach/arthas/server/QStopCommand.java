@@ -11,7 +11,7 @@ import qunar.tc.bistoury.common.BistouryConstants;
  * @date 2019/9/23 19:31
  * @describe
  */
-@Name(BistouryConstants.STOP_COMMADN)
+@Name(BistouryConstants.STOP_COMMAND)
 @Summary("Stop/Shutdown Arthas server and exit the console. Alias for shutdown.")
 public class QStopCommand extends AnnotatedCommand {
     @Override

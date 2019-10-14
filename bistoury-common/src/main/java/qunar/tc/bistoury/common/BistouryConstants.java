@@ -62,5 +62,5 @@ public class BistouryConstants {
 
     public static final String SHUTDOWN_COMMAND = "shutdown";
 
-    public static final String STOP_COMMADN = "stop";
+    public static final String STOP_COMMAND = "stop";
 }
