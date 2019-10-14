@@ -4,14 +4,6 @@ cd "${0%/*}"
 cd ..
 
 PROFILR='prod'
-JAVA_VERSION_GREATER_THAN_8_PROFILE="BigJavaVersion"
-JAVA_VERSION_LESS_THAN_9_PROFILE="SmallJavaVersion"
-
-if [[ `./mvnw -v 2>&1 | egrep "1\.[78]\."` ]]; then
-    PROFILR="$PROFILR,$JAVA_VERSION_LESS_THAN_9_PROFILE"
-else
-    PROFILR="$PROFILR,$JAVA_VERSION_GREATER_THAN_8_PROFILE"
-fi
 
 #打包agent
 echo "================ starting to build bistoury agent ================"

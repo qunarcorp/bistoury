@@ -8,14 +8,6 @@ cd ..
 
 
 PROFILR='local'
-JAVA_VERSION_GREATER_THAN_8_PROFILE="BigJavaVersion"
-JAVA_VERSION_LESS_THAN_9_PROFILE="SmallJavaVersion"
-
-if [[ `./mvnw -v 2>&1 | egrep "1\.[78]\."` ]]; then
-    PROFILR="$PROFILR,$JAVA_VERSION_LESS_THAN_9_PROFILE"
-else
-    PROFILR="$PROFILR,$JAVA_VERSION_GREATER_THAN_8_PROFILE"
-fi
 
 BISTOURY_PROJECT_VERSION=`./mvnw org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout`
 BISTOURY_PACKAGE_FILE="bistoury-$BISTOURY_PROJECT_VERSION"

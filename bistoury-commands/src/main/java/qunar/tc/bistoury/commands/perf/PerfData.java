@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.commands.host;
+package qunar.tc.bistoury.commands.perf;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

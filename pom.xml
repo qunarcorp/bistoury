@@ -65,8 +65,8 @@
     <properties>
         <maven_compiler_plugin_version>3.8.0</maven_compiler_plugin_version>
         <!--agent的java版本，jdk1.7+ -->
-        <java_source_version>1.8</java_source_version>
-        <java_target_version>1.8</java_target_version>
+        <java_source_version>1.7</java_source_version>
+        <java_target_version>1.7</java_target_version>
         <!--ui、proxy的java版本，jdk1.8+ -->
         <server_java_source_version>1.8</server_java_source_version>
         <server_java_target_version>1.8</server_java_target_version>
@@ -104,9 +104,7 @@
 
         <metrics.version>3.0.2</metrics.version>
         <rocksdb.version>5.17.2</rocksdb.version>
-        <sajdijar>${java.home}/../lib/sa-jdi.jar</sajdijar>
-        <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
-        <java.tools.version>1.7</java.tools.version>
+
     </properties>
 
     <dependencyManagement>
@@ -600,6 +598,13 @@
                 <version>${h2.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.github.olivergondza</groupId>
+                <artifactId>maven-jdk-tools-wrapper</artifactId>
+                <version>0.1</version>
+                <scope>provided</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -632,9 +637,7 @@
                         <encoding>${file_encoding}</encoding>
                         <debug>true</debug>
                         <fork>true</fork>
-                        <compilerArgs>
-                            <arg>-J-Duser.country=US</arg>
-                        </compilerArgs>
+                        <showDeprecation>true</showDeprecation>
                     </configuration>
                 </plugin>
             </plugins>
@@ -646,44 +649,4 @@
         </plugins>
 
     </build>
-
-    <profiles>
-        <profile>
-            <id>SmallJavaVersion</id>
-            <dependencyManagement>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.sun</groupId>
-                        <artifactId>tools</artifactId>
-                        <version>${java.tools.version}</version>
-                        <scope>system</scope>
-                        <systemPath>${toolsjar}</systemPath>
-                    </dependency>
-                </dependencies>
-            </dependencyManagement>
-        </profile>
-        <profile>
-            <id>BigJavaVersion</id>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <artifactId>maven-compiler-plugin</artifactId>
-                            <configuration>
-                                <compilerArgs>
-                                    <arg>--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED</arg>
-                                    <arg>--add-exports=jdk.attach/sun.tools.attach=ALL-UNNAMED</arg>
-                                    <arg>--add-exports=java.management/sun.management.counter=ALL-UNNAMED</arg>
-                                    <arg>--add-exports=java.management/sun.management.counter.perf=ALL-UNNAMED</arg>
-                                    <arg>--add-exports=java.management/sun.management.counter=ALL-UNNAMED</arg>
-                                    <arg>--add-exports=java.base/jdk.internal.perf=ALL-UNNAMED</arg>
-                                </compilerArgs>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
-        </profile>
-    </profiles>
-
 </project>

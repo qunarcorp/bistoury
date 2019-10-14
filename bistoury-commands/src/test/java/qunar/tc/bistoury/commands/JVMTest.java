@@ -6,7 +6,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.sun.management.OperatingSystemMXBean;
 import com.sun.tools.attach.VirtualMachine;
 import qunar.tc.bistoury.commands.host.HostTask;
-import qunar.tc.bistoury.commands.host.PerfData;
+import qunar.tc.bistoury.commands.perf.PerfData;
 import sun.management.counter.Counter;
 
 import javax.management.remote.JMXConnector;

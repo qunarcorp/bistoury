@@ -33,7 +33,9 @@ $(document).ready(function () {
             "vmoption",
             "mbean",
             "ognl",
-            "jad"
+            "jad",
+            "sc",
+            "sm"
         ];
         var arthasCommands = [
             "dashboard",
