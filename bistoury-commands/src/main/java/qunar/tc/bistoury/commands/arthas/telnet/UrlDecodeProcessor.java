@@ -7,7 +7,7 @@ import com.google.common.base.Preconditions;
 /**
  * @author zhenyu.nie created on 2019 2019/10/14 13:47
  */
-class DecodeProcessor implements ResultProcessor {
+class UrlDecodeProcessor implements ResultProcessor {
 
     private static final int[] mapping = getMapping();
 
@@ -35,7 +35,7 @@ class DecodeProcessor implements ResultProcessor {
 
     private final ResultProcessor delegate;
 
-    DecodeProcessor(ResultProcessor delegate) {
+    UrlDecodeProcessor(ResultProcessor delegate) {
         this.delegate = delegate;
     }
 

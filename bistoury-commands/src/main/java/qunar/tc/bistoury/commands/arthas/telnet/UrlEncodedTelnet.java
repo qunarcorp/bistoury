@@ -32,6 +32,6 @@ public class UrlEncodedTelnet extends AbstractTelnet {
 
     @Override
     protected ResultProcessor getProcessor(Writer writer) {
-        return new SkipFirstLineProcessor(new DecodeProcessor(new PromptProcessor(writer)));
+        return new SkipFirstLineProcessor(new UrlDecodeProcessor(new PromptProcessor(writer)));
     }
 }
