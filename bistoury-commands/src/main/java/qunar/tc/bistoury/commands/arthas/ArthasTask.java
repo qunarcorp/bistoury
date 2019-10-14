@@ -42,7 +42,7 @@ public class ArthasTask implements Task {
 
     private static final ListeningExecutorService AGENT_EXECUTOR = AgentRemotingExecutor.getExecutor();
 
-    private static final ListeningExecutorService ARTHAS_SHUTDOWN_EXECUTOR = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor(new NamedThreadFactory("arthas_shutdown")));
+    private static final ListeningExecutorService ARTHAS_SHUTDOWN_EXECUTOR = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor(new NamedThreadFactory("shutdown_attach")));
 
 
     private final TelnetStore telnetStore;
