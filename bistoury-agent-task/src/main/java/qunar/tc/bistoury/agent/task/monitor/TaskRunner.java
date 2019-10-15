@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.clientside.common.monitor.MetricsSnapshot;
-import qunar.tc.bistoury.commands.arthas.telnet.DebugTelnetStore;
+import qunar.tc.bistoury.commands.arthas.telnet.UrlEncodedTelnetStore;
 import qunar.tc.bistoury.commands.arthas.telnet.Telnet;
 import qunar.tc.bistoury.commands.arthas.telnet.TelnetStore;
 import qunar.tc.bistoury.commands.monitor.QMonitorStore;
@@ -36,7 +36,7 @@ import qunar.tc.bistoury.remoting.netty.MonitorReceiver;
 public class TaskRunner implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(TaskRunner.class);
     private static QMonitorStore MONITOR_STORE = QMonitorStore.getInstance();
-    private static final TelnetStore TELNET_STORE = DebugTelnetStore.getInstance();
+    private static final TelnetStore TELNET_STORE = UrlEncodedTelnetStore.getInstance();
     private MonitorReceiver receiver;
     private static final String COMMAND = BistouryConstants.REQ_MONITOR_SNAPSHOT;
 

@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.clientside.common.meta.MetaStore;
 import qunar.tc.bistoury.clientside.common.meta.MetaStores;
-import qunar.tc.bistoury.commands.arthas.telnet.DebugTelnetStore;
+import qunar.tc.bistoury.commands.arthas.telnet.UrlEncodedTelnetStore;
 import qunar.tc.bistoury.commands.arthas.telnet.Telnet;
 import qunar.tc.bistoury.commands.arthas.telnet.TelnetStore;
 import qunar.tc.bistoury.common.JacksonSerializer;
@@ -45,7 +45,7 @@ public class TaskRunner implements Runnable {
 
     private static final MetaStore META_STORE = MetaStores.getMetaStore();
 
-    private static final TelnetStore TELNET_STORE = DebugTelnetStore.getInstance();
+    private static final TelnetStore TELNET_STORE = UrlEncodedTelnetStore.getInstance();
 
     private static final String MIN_VERSION = "1.2.8";
 
