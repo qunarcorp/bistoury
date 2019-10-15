@@ -56,7 +56,6 @@ resetEvn(){
     local IFS=$'\n'
     local tempClassPath
     local lines=$("${JAVA_HOME}"/bin/java -version 2>&1 | tr '\r' '\n')
-    echo $lines
     for line in $lines; do
       if [[ (-z $JAVA_VERSION) && ($line = *"version"*) ]]
       then
@@ -73,7 +72,6 @@ resetEvn(){
 
     # when java version less than 9, we can use tools.jar to confirm java home.
     # when java version greater than 9, there is no tools.jar.
-    echo "$JAVA_VERSION"
     if [[ "$JAVA_VERSION" -lt 9 ]];then
       # possible java homes
       javaHomes=("${JAVA_HOME%%/}" "${JAVA_HOME%%/}/.." "${JAVA_HOME%%/}/../..")
@@ -97,7 +95,6 @@ resetEvn(){
     fi
 
     echo "JAVA_HOME: $JAVA_HOME"
-    echo "JAVA_VERSION: $JAVA_VERSION"
 }
 
 start(){
