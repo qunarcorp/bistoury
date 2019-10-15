@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 BISTOURY_BIN="${BASH_SOURCE-$0}"
 BISTOURY_BIN="$(dirname "$BISTOURY_BIN")"

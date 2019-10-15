@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 BISTOURY_STORY_PATH="$BISTOURY_STORE_DIR"
 BISTOURY_PROXY_HOST="127.0.0.1:9090"

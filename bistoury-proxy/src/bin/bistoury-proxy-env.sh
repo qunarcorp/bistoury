@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -euo pipefail
 
 JAVA_HOME="/tmp/bistoury/java"
