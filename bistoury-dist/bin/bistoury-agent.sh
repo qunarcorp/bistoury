@@ -52,9 +52,9 @@ BISTOURY_PID_FILE="$BISTOURY_PID_DIR/bistoury-agent.pid"
 BISTOURY_DAEMON_OUT="$BISTOURY_LOG_DIR/bistoury-agent.out"
 
 resetEvn(){
-    local JAVA_VERSION
+    local JAVA_VERSION=""
     local IFS=$'\n'
-    local tempClassPath
+    local tempClassPath=""
     local lines=$("${JAVA_HOME}"/bin/java -version 2>&1 | tr '\r' '\n')
     for line in $lines; do
       if [[ (-z $JAVA_VERSION) && ($line = *"version"*) ]]
