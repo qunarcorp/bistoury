@@ -23,9 +23,10 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AnalyzerAdapter;
 import org.objectweb.asm.commons.LocalVariablesSorter;
-import qunar.tc.bistoury.instrument.client.common.Access;
 import qunar.tc.bistoury.instrument.client.util.DescDeal;
 import qunar.tc.bistoury.instrument.spy.BistourySpys1;
+
+import java.util.List;
 
 /**
  * @author: leix.xie
@@ -47,18 +48,6 @@ public class MonitorMethodVisitor extends MethodVisitor implements Opcodes {
 
     private final String MONITOR_KEY;
 
-    private final Type[] parameterTypes;
-    private final int totalParameterSize;
-
-    private final Type returnType;
-    private final boolean hasReturn;
-
-    private final String desc;
-    private final String className;
-    private final String methodName;
-
-    private final int startOfVarIndex;
-
     private int scopeVarIndex;
 
     private Label beginLabel;
@@ -72,17 +61,6 @@ public class MonitorMethodVisitor extends MethodVisitor implements Opcodes {
 
     public MonitorMethodVisitor(MethodVisitor methodVisitor, int access, final String name, final String desc, final String className) {
         super(ASM7, methodVisitor);
-        this.className = className;
-        this.methodName = name;
-        this.desc = desc;
-
-        this.returnType = Type.getReturnType(desc);
-        this.hasReturn = this.returnType != Type.VOID_TYPE;
-
-        this.parameterTypes = Type.getArgumentTypes(desc);
-        this.totalParameterSize = computeTotalParameterSize(parameterTypes);
-
-        this.startOfVarIndex = Access.of(access).contain(Opcodes.ACC_STATIC) ? 0 : 1;
 
         this.MONITOR_KEY = className.replaceAll("\\/", ".") + "#" + name + "(" + DescDeal.getSimplifyMethodDesc(desc) + ")";
 
@@ -105,7 +83,13 @@ public class MonitorMethodVisitor extends MethodVisitor implements Opcodes {
     public void visitInsn(int opcode) {
         if ((opcode >= IRETURN && opcode <= RETURN)) {
             endMonitor();
-            maxStack = Math.max(analyzerAdapter.stack.size() + 4, maxStack);
+
+            List<Object> stack = analyzerAdapter.stack;
+            if (stack == null) {
+                maxStack = Math.max(4, maxStack);
+            } else {
+                maxStack = Math.max(stack.size() + 4, maxStack);
+            }
         }
         mv.visitInsn(opcode);
     }
@@ -159,15 +143,6 @@ public class MonitorMethodVisitor extends MethodVisitor implements Opcodes {
         //throw ex
         mv.visitVarInsn(ALOAD, exceptionVarIndex);
         mv.visitInsn(ATHROW);
-    }
-
-    private int computeTotalParameterSize(Type[] parameterTypes) {
-        int result = 0;
-        int parameterCount = parameterTypes.length;
-        for (int i = 0; i < parameterCount; i++) {
-            result += parameterTypes[i].getSize();
-        }
-        return result;
     }
 
     public void setLocalVariablesSorter(LocalVariablesSorter localVariablesSorter) {

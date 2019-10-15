@@ -11,6 +11,8 @@ import qunar.tc.bistoury.instrument.client.common.Access;
 import qunar.tc.bistoury.instrument.client.util.DescDeal;
 import qunar.tc.bistoury.instrument.spy.BistourySpys1;
 
+import java.util.List;
+
 /**
  * @author leix.xie
  * @date 2019/10/9 19:46
@@ -95,7 +97,13 @@ public class MonitorAdviceAdapter extends MethodVisitor implements Opcodes {
     public void visitInsn(int opcode) {
         if ((opcode >= IRETURN && opcode <= RETURN)) {
             endMonitor();
-            maxStack = Math.max(analyzerAdapter.stack.size() + 4, maxStack);
+
+            List<Object> stack = analyzerAdapter.stack;
+            if (stack == null) {
+                maxStack = Math.max(4, maxStack);
+            } else {
+                maxStack = Math.max(stack.size() + 4, maxStack);
+            }
         }
         mv.visitInsn(opcode);
     }
