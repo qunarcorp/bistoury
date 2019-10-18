@@ -143,7 +143,7 @@ public class UiRequestHandler extends ChannelDuplexHandler {
         for (AgentServerInfo agentServerInfo : requestData.getAgentServerInfos()) {
             Optional<AgentConnection> agentConnection = agentConnectionStore.getConnection(agentServerInfo.getAgentId());
             if (agentConnection.isPresent()) {
-                if (agentConnection.get().getVersion() > communicateCommand.getMinAgentVersion()) {
+                if (agentConnection.get().getVersion() >= communicateCommand.getMinAgentVersion()) {
                     agentConnections.add(agentConnection.get());
                 } else {
                     lessVersionAgents.add(agentServerInfo.getAgentId());
