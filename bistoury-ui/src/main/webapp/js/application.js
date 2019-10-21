@@ -164,7 +164,7 @@ $(document).ready(function () {
                     getAppServerListByAppCode();
                 } else {
                     console.log(ret.message);
-                    bistoury.error("自动JMap修改失败");
+                    bistoury.error("堆内存对象监控开关修改失败");
                 }
             }
         })
@@ -184,7 +184,7 @@ $(document).ready(function () {
                     getAppServerListByAppCode();
                 } else {
                     console.log(ret.message);
-                    bistoury.error("自动JStack修改失败");
+                    bistoury.error("线程级CPU监控开关修改失败");
                 }
             }
         })
@@ -366,7 +366,7 @@ $(document).ready(function () {
                     }
                 }
             }, /*{
-                title: '堆对象概览监控',
+                title: '堆内存对象监控',
                 field: 'autoJMapHistoEnable',
                 sortable: true,
                 searchable: true,
