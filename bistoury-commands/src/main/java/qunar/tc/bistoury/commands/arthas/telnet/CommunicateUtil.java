@@ -3,7 +3,7 @@ package qunar.tc.bistoury.commands.arthas.telnet;
 /**
  * @author zhenyu.nie created on 2019 2019/10/12 16:53
  */
-class CommunicateUtil {
+public class CommunicateUtil {
 
     public static final byte[] PROMPT_PREFIX = new byte[] { '[', 'a', 'r', 't', 'h', 'a', 's', '@' };
 

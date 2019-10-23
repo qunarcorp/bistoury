@@ -27,6 +27,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.agent.common.WritableListener;
 import qunar.tc.bistoury.commands.HeartbeatProcessor;
 import qunar.tc.bistoury.commands.MetaRefreshProcessor;
 import qunar.tc.bistoury.commands.MetaRefreshTipProcessor;
@@ -52,15 +53,18 @@ class AgentNettyClient {
 
     private final EventLoopGroup workGroup;
 
+    private final WritableListener writableListener;
+
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     private final SettableFuture<Void> started = SettableFuture.create();
 
     private volatile Channel channel;
 
-    public AgentNettyClient(ProxyConfig proxyConfig, EventLoopGroup workGroup) {
+    public AgentNettyClient(ProxyConfig proxyConfig, EventLoopGroup workGroup, WritableListener writableListener) {
         this.proxyConfig = proxyConfig;
         this.workGroup = workGroup;
+        this.writableListener = writableListener;
     }
 
     public void start() {
@@ -147,6 +151,7 @@ class AgentNettyClient {
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
             logger.info("agent netty client channel active, {}", ctx.channel());
+            writableListener.setWritable(true);
             super.channelActive(ctx);
         }
 
@@ -171,6 +176,14 @@ class AgentNettyClient {
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
             logger.error("agent netty client error, {}", ctx.channel(), cause);
             destroyAndSync();
+        }
+
+        @Override
+        public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+            boolean writable = channel.isWritable();
+            logger.warn("agent writability changed to {}", writable);
+            writableListener.setWritable(writable);
+            super.channelWritabilityChanged(ctx);
         }
     }
 

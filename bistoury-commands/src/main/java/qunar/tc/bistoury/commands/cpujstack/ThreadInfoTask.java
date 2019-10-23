@@ -21,19 +21,23 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.SettableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.agent.common.cpujstack.KvUtils;
 import qunar.tc.bistoury.agent.common.cpujstack.ThreadInfo;
 import qunar.tc.bistoury.agent.common.kv.KvDb;
+import qunar.tc.bistoury.commands.arthas.telnet.CommunicateUtil;
+import qunar.tc.bistoury.commands.job.ContinueResponseJob;
+import qunar.tc.bistoury.commands.job.DefaultResponseJobManager;
 import qunar.tc.bistoury.common.JacksonSerializer;
-import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 import qunar.tc.bistoury.remoting.netty.Task;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 /**
  * @author zhenyu.nie created on 2019 2019/1/9 19:35
@@ -42,12 +46,10 @@ public class ThreadInfoTask implements Task {
 
     private static final Logger logger = LoggerFactory.getLogger(ThreadInfoTask.class);
 
-    private static final ListeningExecutorService agentExecutor = AgentRemotingExecutor.getExecutor();
-
     private static final TypeReference<Map<String, ThreadInfo>> TYPE_REFERENCE = new TypeReference<Map<String, ThreadInfo>>() {
     };
 
-    private volatile ListenableFuture<Integer> future;
+    private volatile SettableFuture<Integer> future = SettableFuture.create();
 
     private final String id;
 
@@ -79,26 +81,59 @@ public class ThreadInfoTask implements Task {
 
     @Override
     public ListenableFuture<Integer> execute() {
-        this.future = agentExecutor.submit(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                Map<String, Object> map = Maps.newHashMap();
-                map.put("type", "jstackThreads");
-                map.put("time", time);
-                String threadInfoStr = kvDb.get(KvUtils.getThreadInfoKey(time));
-                Map<String, ThreadInfo> threadInfo = Maps.newHashMap();
-                if (!Strings.isNullOrEmpty(threadInfoStr)) {
-                    threadInfo = JacksonSerializer.deSerialize(threadInfoStr, TYPE_REFERENCE);
-                }
-                addMomentCpuTimeInfo(threadInfo, time);
-                map.put("threadInfo", threadInfo);
-                String jstack = kvDb.get(KvUtils.getJStackResultKey(time));
-                map.put("jstack", Strings.nullToEmpty(jstack));
-                handler.handle(JacksonSerializer.serializeToBytes(map));
-                return null;
-            }
-        });
+        DefaultResponseJobManager.getInstance().submit(new Job());
         return future;
+    }
+
+    private class Job implements ContinueResponseJob {
+
+        private InputStream inputStream;
+
+        @Override
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public void init() {
+            Map<String, Object> map = Maps.newHashMap();
+            map.put("type", "jstackThreads");
+            map.put("time", time);
+            String threadInfoStr = kvDb.get(KvUtils.getThreadInfoKey(time));
+            Map<String, ThreadInfo> threadInfo = Maps.newHashMap();
+            if (!Strings.isNullOrEmpty(threadInfoStr)) {
+                threadInfo = JacksonSerializer.deSerialize(threadInfoStr, TYPE_REFERENCE);
+            }
+            addMomentCpuTimeInfo(threadInfo, time);
+            map.put("threadInfo", threadInfo);
+            String jstack = kvDb.get(KvUtils.getJStackResultKey(time));
+            map.put("jstack", Strings.nullToEmpty(jstack));
+
+            byte[] bytes = JacksonSerializer.serializeToBytes(map);
+            inputStream = new ByteArrayInputStream(bytes);
+        }
+
+        @Override
+        public boolean doResponse() throws Exception {
+            byte[] bytes = new byte[CommunicateUtil.DEFAULT_BUFFER_SIZE];
+            int count = inputStream.read(bytes);
+            if (count == CommunicateUtil.DEFAULT_BUFFER_SIZE) {
+                handler.handle(bytes);
+            } else if (count > 0) {
+                handler.handle(Arrays.copyOf(bytes, count));
+            }
+            return count == -1;
+        }
+
+        @Override
+        public void finish() {
+            future.set(null);
+        }
+
+        @Override
+        public void error(Throwable t) {
+            future.setException(t);
+        }
     }
 
     private void addMomentCpuTimeInfo(Map<String, ThreadInfo> threadInfo, String time) {
@@ -113,13 +148,7 @@ public class ThreadInfoTask implements Task {
 
     @Override
     public void cancel() {
-        try {
-            if (future != null) {
-                future.cancel(true);
-                future = null;
-            }
-        } catch (Exception e) {
-            logger.error("cancel thread info task error", e);
-        }
+        DefaultResponseJobManager.getInstance().stop(id);
+        future.cancel(true);
     }
 }
