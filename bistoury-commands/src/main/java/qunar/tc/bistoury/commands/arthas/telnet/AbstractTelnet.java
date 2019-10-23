@@ -60,6 +60,8 @@ public abstract class AbstractTelnet implements Telnet {
                 if (str.trim().endsWith(CommunicateUtil.LAST_PROMPT_STR)) {
                     return parseVersion(sb.toString());
                 }
+            } else {
+                throw new IllegalVersionException();
             }
         }
     }
