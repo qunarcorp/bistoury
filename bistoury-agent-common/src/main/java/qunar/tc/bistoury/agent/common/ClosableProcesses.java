@@ -17,6 +17,8 @@
 
 package qunar.tc.bistoury.agent.common;
 
+import com.google.common.base.Strings;
+
 /**
  * @author zhenyu.nie created on 2019 2019/7/16 16:56
  */
@@ -31,12 +33,8 @@ public class ClosableProcesses {
     }
 
     private static boolean isUnixProcess() {
-        String osName = getPlatform();
-
-        if (osName.equals("Linux") || osName.contains("OS X") || osName.equals("SunOS") || osName.equals("AIX")) {
-            return true;
-        }
-        return false;
+        String osName = Strings.nullToEmpty(getPlatform());
+        return osName.equals("Linux") || osName.contains("OS X") || osName.equals("SunOS") || osName.equals("AIX");
     }
 
     private static String getPlatform() {
