@@ -94,7 +94,7 @@ public class SystemTask implements Task {
 
         try {
             if (process != null) {
-                process.destroyForcibly();
+                process.destroy();
                 process = null;
             }
         } catch (Exception e) {
