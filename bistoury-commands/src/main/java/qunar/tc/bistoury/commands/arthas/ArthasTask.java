@@ -57,9 +57,9 @@ public class ArthasTask implements Task {
 
     private final ResponseHandler handler;
 
-    private volatile ListenableFuture<Integer> future;
+    private volatile ListenableFuture<Integer> future = null;
 
-    private volatile Telnet telnet;
+    private volatile Telnet telnet = null;
 
     public ArthasTask(TelnetStore telnetStore, String id, long maxRunningMs, int pid, String command, ResponseHandler handler) {
         this.telnetStore = telnetStore;
@@ -113,7 +113,7 @@ public class ArthasTask implements Task {
             @Override
             public Integer call() throws Exception {
 
-                Telnet telnet = telnetStore.getTelnet(pid);
+                telnet = telnetStore.getTelnet(pid);
                 try {
                     telnet.write(command);
                     telnet.read(command, handler);
@@ -130,6 +130,7 @@ public class ArthasTask implements Task {
         try {
             if (telnet != null) {
                 telnet.close();
+                telnet = null;
             }
             if (future != null) {
                 future.cancel(true);
