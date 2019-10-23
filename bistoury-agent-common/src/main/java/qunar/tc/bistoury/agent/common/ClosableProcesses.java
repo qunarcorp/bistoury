@@ -23,19 +23,23 @@ package qunar.tc.bistoury.agent.common;
 public class ClosableProcesses {
 
     public static ClosableProcess wrap(Process process) {
-        if (isUnixProcess(process)) {
+        if (isUnixProcess()) {
             return new UnixProcess(process);
         } else {
             return new NormalProcess(process);
         }
     }
 
-    private static boolean isUnixProcess(Process process) {
-        try {
-            Class<? extends Process> clazz = process.getClass();
-            return clazz.getName().equals("java.lang.UNIXProcess");
-        } catch (Exception e) {
-            return false;
+    private static boolean isUnixProcess() {
+        String osName = getPlatform();
+
+        if (osName.equals("Linux") || osName.contains("OS X") || osName.equals("SunOS") || osName.equals("AIX")) {
+            return true;
         }
+        return false;
+    }
+
+    private static String getPlatform() {
+        return System.getProperty("os.name");
     }
 }
