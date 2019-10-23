@@ -27,6 +27,8 @@ import qunar.tc.bistoury.proxy.communicate.ui.UiResponses;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.remoting.protocol.ResponseCode;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * @author zhenyu.nie created on 2019 2019/5/13 14:55
  */
@@ -44,6 +46,8 @@ public class DefaultSession implements Session {
 
     private final SettableFuture<State> resultFuture = SettableFuture.create();
 
+    private final AtomicBoolean end = new AtomicBoolean(false);
+
     public DefaultSession(String id, RequestData requestData, AgentConnection agentConnection, UiConnection uiConnection) {
         this.id = id;
         this.requestData = requestData;
@@ -53,8 +57,17 @@ public class DefaultSession implements Session {
 
     @Override
     public void writeToUi(Datagram message) {
+        if (end.get()) {
+            return;
+        }
+
+        boolean isEndMessage = isEndMessage(message);
+        if (isEndMessage) {
+            end.set(true);
+        }
+
         ListenableFuture<WriteResult> result = uiConnection.write(message);
-        if (isEndMessage(message)) {
+        if (isEndMessage) {
             Futures.addCallback(result, new FutureCallback<WriteResult>() {
                 @Override
                 public void onSuccess(WriteResult result) {
