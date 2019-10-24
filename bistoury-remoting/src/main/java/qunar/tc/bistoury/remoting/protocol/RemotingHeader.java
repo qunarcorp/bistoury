@@ -47,7 +47,7 @@ public class RemotingHeader {
     //协议版本
     public static final short PROTOCOL_VERSION = 1;
     //agent版本
-    public static final short AGENT_VERSION = 11;
+    public static final short AGENT_VERSION = 12;
 
     public static final int DEFAULT_MAGIC_CODE = 0xdec1_0ade;
 
@@ -127,6 +127,14 @@ public class RemotingHeader {
 
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
+    }
+
+    public String getProperties(String key) {
+        return properties.get(key);
+    }
+
+    public void setProperties(String key, String value) {
+        properties.put(key, value);
     }
 
     @Override
