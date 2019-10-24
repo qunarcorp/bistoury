@@ -63,7 +63,7 @@ public class BistouryBootstrap {
         executorService = Executors.newCachedThreadPool(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
-                final Thread t = new Thread(r, "bistoury-command-execute-daemon");
+                final Thread t = new Thread(r, BistouryConstants.BISTOURY_COMMAND_THREAD_NAME);
                 t.setDaemon(true);
                 return t;
             }

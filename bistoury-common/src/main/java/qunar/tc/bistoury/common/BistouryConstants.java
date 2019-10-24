@@ -53,6 +53,10 @@ public class BistouryConstants {
 
     public static final String REQ_AGENT_INFO = "agentinfopush";
 
+    public static final String REQ_PROFILER_ADD = "profileradd";
+
+    public static final String BISTOURY_COMMAND_THREAD_NAME = "bistoury-command-execute-daemon";
+
     public static final String SPY_CLASSNAME = "qunar.tc.bistoury.instrument.spy.BistourySpys1";
 
     // todo: 先这么写吧

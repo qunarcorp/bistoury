@@ -23,7 +23,7 @@ import com.taobao.arthas.core.shell.command.CommandProcess;
 import com.taobao.middleware.cli.annotations.Argument;
 import com.taobao.middleware.cli.annotations.Name;
 import com.taobao.middleware.logger.Logger;
-import qunar.tc.bistoury.attach.arthas.Util.AgentConfig;
+import qunar.tc.bistoury.attach.arthas.util.AgentConfig;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.clientside.common.meta.MetaStores;
 import qunar.tc.bistoury.common.JacksonSerializer;

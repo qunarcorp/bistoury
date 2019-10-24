@@ -66,9 +66,9 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
     public void init() {
         DynamicConfigLoader.<LocalDynamicConfig>load("releaseInfo_config.properties", false)
                 .addListener(mapConf -> {
-            conf = Conf.fromMap(mapConf.asMap());
-            defaultCmInfoFilePath = conf.getString(DEFAULT, DEFAULT_RELEASE_INFO_PATH);
-        });
+                    conf = Conf.fromMap(mapConf.asMap());
+                    defaultCmInfoFilePath = conf.getString(DEFAULT, DEFAULT_RELEASE_INFO_PATH);
+                });
     }
 
     @Override
@@ -78,7 +78,8 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
                 CommandCode.REQ_TYPE_MONITOR.getCode(),
                 CommandCode.REQ_TYPE_JAR_INFO.getCode(),
                 CommandCode.REQ_TYPE_CONFIG.getCode(),
-                CommandCode.REQ_TYPE_JAR_DEBUG.getCode());
+                CommandCode.REQ_TYPE_JAR_DEBUG.getCode(),
+                CommandCode.REQ_TYPE_PROFILER.getCode());
     }
 
     @Override

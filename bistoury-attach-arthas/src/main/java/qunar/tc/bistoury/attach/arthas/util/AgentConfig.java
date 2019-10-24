@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.attach.arthas.Util;
+package qunar.tc.bistoury.attach.arthas.util;
 
 import qunar.tc.bistoury.clientside.common.meta.MetaStore;
 
