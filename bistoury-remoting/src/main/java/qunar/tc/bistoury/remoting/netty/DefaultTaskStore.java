@@ -18,7 +18,6 @@
 package qunar.tc.bistoury.remoting.netty;
 
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.ListenableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.common.NamedThreadFactory;
@@ -91,18 +90,11 @@ public class DefaultTaskStore implements TaskStore {
     }
 
     @Override
-    public void cancel(final String id) {
-        WrapTask task = tasks.putIfAbsent(id, cancelStubTask);
+    public void cancel(String id) {
+        WrapTask task = tasks.get(id);
         if (task != null) {
             task.getTask().cancel();
             tasks.remove(id);
-        } else {
-            clearExecutor.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    tasks.remove(id, cancelStubTask);
-                }
-            }, 1, TimeUnit.MINUTES);
         }
     }
 
@@ -117,28 +109,6 @@ public class DefaultTaskStore implements TaskStore {
             wrapTask.getTask().cancel();
         }
     }
-
-    private static final WrapTask cancelStubTask = new WrapTask(new Task() {
-        @Override
-        public String getId() {
-            return "";
-        }
-
-        @Override
-        public long getMaxRunningMs() {
-            return Long.MAX_VALUE;
-        }
-
-        @Override
-        public ListenableFuture<Integer> execute() {
-            return null;
-        }
-
-        @Override
-        public void cancel() {
-
-        }
-    }, 0);
 
     private static class WrapTask {
 
