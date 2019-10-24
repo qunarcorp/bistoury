@@ -102,7 +102,7 @@ $(document).ready(function () {
         if (staticFields) {
             for (var key in staticFields) {
                 var value = staticFields[key];
-                var tr = $("<tr></tr>");
+                var tr = $("<tr></tr>").addClass("debug-result-var");
                 var key = $("<td></td>").append(key);
                 var value = $("<td></td>").attr("datatype", "value").append($("<pre></pre>").append(getData(value)));
                 tr.append(key).append(value).appendTo("#static-var tbody");
@@ -115,7 +115,7 @@ $(document).ready(function () {
         if (fields) {
             for (var key in fields) {
                 var value = fields[key];
-                var tr = $("<tr></tr>");
+                var tr = $("<tr></tr>").addClass("debug-result-var");
                 var key = $("<td></td>").append(key);
                 var value = $("<td></td>").attr("datatype", "value").append($("<pre></pre>").append(getData(value)));
                 tr.append(key).append(value).appendTo("#member-var tbody");
@@ -131,7 +131,7 @@ $(document).ready(function () {
                     continue;
                 }
                 var value = localVariables[key];
-                var tr = $("<tr></tr>");
+                var tr = $("<tr></tr>").addClass("debug-result-var");
                 var key = $("<td></td>").append(key);
                 var value = $("<td></td>").attr("datatype", "value").append($("<pre></pre>").append(getData(value)));
                 tr.append(key).append(value).appendTo("#local-var tbody");
@@ -740,6 +740,25 @@ $(document).ready(function () {
         keepRunning = false;
         deleteBreakPoint();
     })
+
+
+    $("#debug-result-search").on("keyup", function () {
+        var filter, tr, td, i;
+        filter = $("#debug-result-search").val().toLowerCase();
+        tr = $(".debug-result-var");
+
+        // 循环表格每一行，查找匹配项
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                if (td.innerHTML.toLowerCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    });
 
     var isResizing = false;
     var lastDownX = 0;
