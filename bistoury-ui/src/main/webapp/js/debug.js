@@ -19,6 +19,8 @@ $(document).ready(function () {
     var currentAppCode;
     var currentPointId;
     var currentPoint = {};
+    var varSearchResult = [];
+    var varSearchResultIndex = 0;
     window.setInterval(function () {
         if (keepRunning) {
             getDebugResult();
@@ -741,6 +743,24 @@ $(document).ready(function () {
         deleteBreakPoint();
     })
 
+    $("#search-var").click(searchVar);
+
+    $(document).keyup(function (event) {
+        if (event.keyCode === 78 && event.target.nodeName === "BODY" && varSearchResult.length > 0) {
+            preIdx = varSearchResultIndex;
+            curIdx = ++varSearchResultIndex;
+            varSearchResult[curIdx % varSearchResult.length].get(0).scrollIntoView({behavior: "smooth"})
+            highlightSearchVar(varSearchResult[preIdx % varSearchResult.length], varSearchResult[curIdx % varSearchResult.length]);
+        }
+    });
+
+    $("#search-var-name").keyup(function (event) {
+        if (event.keyCode === 13) {
+            $(this).blur();
+            searchVar();
+        }
+    });
+
     var isResizing = false;
     var lastDownX = 0;
     var flag = 0;
@@ -799,6 +819,46 @@ $(document).ready(function () {
         }
     })
 
+    function searchVar() {
+        searchVarName = $('#search-var-name').val().toLowerCase();
+        if (searchVarName.trim() === "") {
+            bistoury.warning("请输入要搜索的关键字");
+            return;
+        }
+
+        cleanVarSearchResult();
+        $('#static-var, #member-var, #local-var').each(function () {
+            $(this).children('tbody').children().each(function () {
+                td = $(this).children().first();
+                if (td.text().toLowerCase().indexOf(searchVarName) > -1) {
+                    varSearchResult.push(td);
+                }
+            });
+        });
+
+        if (varSearchResult.length === 0) {
+            bistoury.warning('未找到名字为[' + searchVarName + ']的变量');
+        } else {
+            varSearchResult[varSearchResultIndex].get(0).scrollIntoView({behavior: "smooth"});
+            highlightSearchVar(null, varSearchResult[varSearchResultIndex]);
+        }
+    }
+
+    function highlightSearchVar(pre, cur) {
+        if (pre) {
+            $(pre).removeClass("bg-warning");
+        }
+        if (cur) {
+            $(cur).addClass("bg-warning");
+        }
+    }
+
+    function cleanVarSearchResult() {
+        $(varSearchResult[varSearchResultIndex % varSearchResult.length]).removeClass("bg-warning");
+        varSearchResultIndex = 0;
+        varSearchResult = [];
+    }
+
     function closeDebugResultPanel() {
         isClose = true;
         var x = width;
@@ -823,6 +883,8 @@ $(document).ready(function () {
     function cleanDebugResult() {
         $("#debug-result table td[datatype='value']").html("");
         $("#debug-result table tbody").empty();
+        $("#search-var-name").val("");
+        cleanVarSearchResult();
     }
 
     function disableBreakPoint() {
