@@ -30,5 +30,9 @@ public interface Task {
 
     ListenableFuture<Integer> execute();
 
+    void pause();
+
+    void resume();
+
     void cancel();
 }

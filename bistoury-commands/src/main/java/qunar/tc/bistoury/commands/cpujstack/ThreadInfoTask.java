@@ -28,9 +28,9 @@ import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.agent.common.cpujstack.KvUtils;
 import qunar.tc.bistoury.agent.common.cpujstack.ThreadInfo;
 import qunar.tc.bistoury.agent.common.kv.KvDb;
+import qunar.tc.bistoury.commands.AbstractTask;
 import qunar.tc.bistoury.commands.arthas.telnet.CommunicateUtil;
 import qunar.tc.bistoury.commands.job.ContinueResponseJob;
-import qunar.tc.bistoury.commands.job.DefaultResponseJobManager;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.remoting.netty.Task;
 
@@ -42,7 +42,7 @@ import java.util.Map;
 /**
  * @author zhenyu.nie created on 2019 2019/1/9 19:35
  */
-public class ThreadInfoTask implements Task {
+public class ThreadInfoTask extends AbstractTask implements Task {
 
     private static final Logger logger = LoggerFactory.getLogger(ThreadInfoTask.class);
 
@@ -80,8 +80,12 @@ public class ThreadInfoTask implements Task {
     }
 
     @Override
-    public ListenableFuture<Integer> execute() {
-        DefaultResponseJobManager.getInstance().submit(new Job());
+    protected ContinueResponseJob createJob() {
+        return new Job();
+    }
+
+    @Override
+    protected ListenableFuture<Integer> getResultFuture() {
         return future;
     }
 
@@ -144,11 +148,5 @@ public class ThreadInfoTask implements Task {
             }
             info.setCpuTime(Integer.parseInt(momentCpuTime));
         }
-    }
-
-    @Override
-    public void cancel() {
-        DefaultResponseJobManager.getInstance().stop(id);
-        future.cancel(true);
     }
 }

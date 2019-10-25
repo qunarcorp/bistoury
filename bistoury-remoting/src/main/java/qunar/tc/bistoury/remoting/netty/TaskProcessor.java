@@ -110,7 +110,6 @@ public class TaskProcessor implements Processor<Object> {
 
     @SuppressWarnings("unchecked")
     private Task createTask(TaskFactory factory, RemotingHeader header, Object command, ResponseHandler handler) {
-
         Task task = factory.create(header, command, handler);
         if (taskStore.register(task)) {
             return task;

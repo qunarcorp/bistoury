@@ -5,7 +5,7 @@ import qunar.tc.bistoury.agent.common.WritableListener;
 /**
  * @author zhenyu.nie created on 2019 2019/10/16 17:57
  */
-public interface ResponseJobManager extends WritableListener {
+public interface ResponseJobStore extends WritableListener {
 
     void submit(ContinueResponseJob job);
 

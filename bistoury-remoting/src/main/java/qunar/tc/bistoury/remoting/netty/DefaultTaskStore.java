@@ -90,6 +90,22 @@ public class DefaultTaskStore implements TaskStore {
     }
 
     @Override
+    public void pause(String id) {
+        WrapTask task = tasks.get(id);
+        if (task != null) {
+            task.getTask().pause();
+        }
+    }
+
+    @Override
+    public void resume(String id) {
+        WrapTask task = tasks.get(id);
+        if (task != null) {
+            task.getTask().resume();
+        }
+    }
+
+    @Override
     public void cancel(String id) {
         WrapTask task = tasks.get(id);
         if (task != null) {

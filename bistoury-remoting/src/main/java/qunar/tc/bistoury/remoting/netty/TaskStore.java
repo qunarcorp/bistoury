@@ -26,6 +26,10 @@ public interface TaskStore {
 
     void finish(String id);
 
+    void pause(String id);
+
+    void resume(String id);
+
     void cancel(String id);
 
     void close();

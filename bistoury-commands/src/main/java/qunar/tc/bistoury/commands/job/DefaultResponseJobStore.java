@@ -15,15 +15,15 @@ import java.util.concurrent.CountDownLatch;
 /**
  * @author zhenyu.nie created on 2019 2019/10/16 19:29
  */
-public class DefaultResponseJobManager implements ResponseJobManager {
+public class DefaultResponseJobStore implements ResponseJobStore {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultResponseJobManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultResponseJobStore.class);
 
-    private static final DefaultResponseJobManager INSTANCE = new DefaultResponseJobManager();
+    private static final DefaultResponseJobStore INSTANCE = new DefaultResponseJobStore();
 
     private static final ListeningExecutorService EXECUTOR = AgentRemotingExecutor.getExecutor();
 
-    public static ResponseJobManager getInstance() {
+    public static ResponseJobStore getInstance() {
         return INSTANCE;
     }
 
