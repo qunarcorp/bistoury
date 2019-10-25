@@ -218,8 +218,8 @@ code {
 }
 
 .code-table .blob-num.selected {
-    background-color: #ff0000;
-    color: #fff;
+    background-color: #ff0000 !important;
+    color: #fff !important;
 }
 
 .code-table .blob-num.selected:hover {
@@ -228,8 +228,8 @@ code {
 }
 
 .code-table tr:hover > td.blob-num {
-    background-color: #ff0000 !important;
-    color: #fff !important;
+    background-color: #f79a9a;
+    color: #000;
 }
 
 .code-table .blob-code {
