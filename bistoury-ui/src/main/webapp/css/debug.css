@@ -168,72 +168,87 @@ code {
     list-style-type: none;
 }
 
-.line-number {
-    text-align: center;
-    vertical-align: middle;
+.code-table {
+    tab-size: 8;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+.code-table tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+
+.code-table tr:hover {
+    background-color: #eee;
+}
+
+.code-table td {
+    display: table-cell;
+    vertical-align: inherit;
+}
+
+.code-table th, .code-table td {
+    border: none;
+}
+
+.code-table tr, .code-table th {
+    padding: 0;
+}
+
+.code-table .blob-num {
+    width: 1%;
+    min-width: 50px;
+    padding-right: 10px;
+    padding-left: 10px;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    font-size: 14px;
+    line-height: 20px;
+    color: rgba(27, 31, 35, .3);
+    text-align: right;
+    white-space: nowrap;
+    vertical-align: top;
     cursor: pointer;
-    width: 50px;
-    position: absolute;
-    font-size: 14px !important;
-    line-height: 1.5 !important;
-    border: solid 1px #ccc;
+    border-right: solid 1px #ccc;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
-.line-number .selected {
+.code-table .blob-num.selected {
     background-color: #ff0000;
     color: #fff;
 }
 
-.line-number .selected:hover {
+.code-table .blob-num.selected:hover {
     background-color: #ff0000 !important;
     color: #fff !important;
 }
 
-.line-number .mouse-over {
-    background-color: #ff0000;
-    color: #fff;
-}
-
-.line-number .mouse-over:hover {
+.code-table tr:hover > td.blob-num {
     background-color: #ff0000 !important;
     color: #fff !important;
 }
 
-.code-line {
-    margin-left: 50px;
-    font-size: 14px !important;
-    line-height: 1.5 !important;
+.code-table .blob-code {
+    position: relative;
+    padding-right: 10px;
+    padding-left: 10px;
+    line-height: 20px;
+    vertical-align: top;
 }
 
-.code-line .selected {
+.code-table .blob-code.selected {
     background-color: #eee !important;
 }
 
-.code-line .mouse-over {
-    background-color: #eee !important;
-}
-
-.line-number .number {
-    height: 20px;
-    font-size: 14px !important;
-    line-height: 1.5 !important;
-}
-
-.line-number .number:hover {
-    background-color: #eee;
-}
-
-.code-line .line {
-    font-size: 14px !important;
-    line-height: 1.5 !important;
-    height: 20px;
-}
-
-.code-line .line:hover {
-    background-color: #eee;
-}
-
-.code-line .line .code-content {
-    margin-left: 10px;
-    margin-right: 10px;
+.code-table .blob-code-inner {
+    overflow: visible;
+    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    font-size: 14px;
+    color: #24292e;
+    word-wrap: normal;
+    white-space: pre;
 }

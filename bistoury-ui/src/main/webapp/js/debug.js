@@ -206,17 +206,18 @@ $(document).ready(function () {
         $("#code-line").val("");
         $("#conditional-breakpoint").val("");
 
-        $("#file-content-panel").empty();
+        var codeTable = $(".code-table table tbody");
+        codeTable.empty();
+
         var language = getMode(filename);
         var content = hljs.highlight(language, fileContent);
         var codetext = content.value.split("\n");
-        var code = $("<code></code>");
-        var lineNumberPanel = $("<div></div>").addClass("line-number");
-        var codeLinePanel = $("<div></div>").addClass("code-line");
+
         codetext.forEach(function (value, index) {
-            var lineNumber = $("<div></div>").addClass("number").append($("<span></span>").append(index + 1));
-            var codeLine = $("<div></div>").addClass("line").append($("<span></span>").addClass("code-content").append(value));
-            lineNumber.click(function () {
+            var lineNumberTd = $("<td></td>").addClass("blob-num").attr("data-line-number", index + 1).append(index + 1);
+            var lineCodeTd = $("<td></td>").addClass("blob-code").addClass("blob-code-inner").append(value);
+            var lineTr = $("<tr></tr>").append(lineNumberTd, lineCodeTd);
+            lineNumberTd.click(function () {
                 if (decompilerFile) {
                     var key = linePrefix + (index + 1);
                     var line = lineMapping[key];
@@ -229,25 +230,13 @@ $(document).ready(function () {
                     $("#code-line").val(index + 1);
                 }
                 $("#file-path").val(currentFile + ":" + (index + 1));
-                $(".number").removeClass("selected");
+                $(".blob-num").removeClass("selected");
                 $(this).addClass("selected")
-                $(".line").removeClass("selected")
-                codeLine.addClass("selected");
+                $(".blob-code").removeClass("selected")
+                lineCodeTd.addClass("selected");
             })
-            lineNumber.mouseover(function () {
-                $(this).addClass("mouse-over")
-                codeLine.addClass("mouse-over");
-            })
-            lineNumber.mouseout(function () {
-                $(".number").removeClass("mouse-over");
-                $(".line").removeClass("mouse-over")
-            })
-            lineNumberPanel.append(lineNumber);
-            code.append(codeLine);
+            codeTable.append(lineTr);
         })
-        var pre = $("<pre></pre>").append(code)
-        codeLinePanel.append(pre);
-        $("#file-content-panel").append(lineNumberPanel).append(codeLinePanel);
     }
 
 
