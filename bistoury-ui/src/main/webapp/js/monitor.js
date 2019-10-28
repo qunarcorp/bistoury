@@ -952,8 +952,8 @@ $(document).ready(function () {
             $("#debug-result-panel").show();
             let percent = parseInt((x / width * 100) + "");
             var codeWidth = percent + "%";
-            $("#code-panel").css("width", "calc(" + codeWidth + " + 0px)");
-            $("#file-content-panel").css("width", "calc(" + codeWidth + " + 1px)");
+            $("#code-panel").css("width", codeWidth);
+            $("#file-content-panel").css("width", codeWidth);
             $("#splitter-handle").css("left", codeWidth).attr("title", "收起侧边栏");
             $("#debug-result-panel").css("width", "calc(" + (100 - percent) + "% - 10px)");
         }
