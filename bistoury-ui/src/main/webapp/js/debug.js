@@ -784,11 +784,12 @@ $(document).ready(function () {
         } else {
             isClose = false;
             $("#debug-result-panel").show();
-            var codeWidth = x / width * 100 + "%";
-            $("#code-panel").css("width", codeWidth);
-            $("#file-content-panel").css("width", codeWidth);
-            $("#splitter-handle").css("margin-left", codeWidth).attr("title", "收起侧边栏");
-            $("#debug-result-panel").css("margin-left", codeWidth).css("width", (1 - x / width) * 100 + "%");
+            let percent = parseInt((x / width * 100) + "");
+            var codeWidth = percent + "%";
+            $("#code-panel").css("width", "calc(" + codeWidth + " + 0px)");
+            $("#file-content-panel").css("width", "calc(" + codeWidth + " + 1px)");
+            $("#splitter-handle").css("left", codeWidth).attr("title", "收起侧边栏");
+            $("#debug-result-panel").css("width", "calc(" + (100 - percent) + "% - 10px)");
         }
         lastDownX = x;
     })
@@ -812,9 +813,9 @@ $(document).ready(function () {
         var x = width;
         $("#debug-result-panel").hide();
         var codeWidth = x / width * 100 + "%";
-        $("#code-panel").css("width", codeWidth);
-        $("#file-content-panel").css("width", codeWidth);
-        $("#splitter-handle").css("margin-left", codeWidth).attr("title", "展开侧边栏");
+        $("#code-panel").css("width", "calc(" + codeWidth + " - 15px)");
+        $("#file-content-panel").css("width", "calc(" + codeWidth + " - 15px)");
+        $("#splitter-handle").css("left", "calc(" + codeWidth + " - 15px)").attr("title", "展开侧边栏");
     }
 
     function openDebugResultPanel() {
@@ -824,8 +825,8 @@ $(document).ready(function () {
         var codeWidth = x / width * 100 + "%";
         $("#code-panel").css("width", codeWidth);
         $("#file-content-panel").css("width", codeWidth);
-        $("#splitter-handle").css("margin-left", codeWidth).attr("title", "收起侧边栏");
-        $("#debug-result-panel").css("margin-left", codeWidth).css("width", (1 - x / width) * 100 + "%");
+        $("#splitter-handle").css("left", codeWidth).attr("title", "收起侧边栏");
+        $("#debug-result-panel").css("width", "calc(" + (1 - x / width) * 100 + "% - 10px)");
     }
 
     function cleanDebugResult() {

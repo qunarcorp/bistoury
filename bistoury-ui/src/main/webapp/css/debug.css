@@ -98,6 +98,30 @@ input {
     bottom: 0px;
 }
 
+.splitter-handle {
+    position: initial !important;
+    margin-left: 60%;
+}
+
+.splitter-handle-highlight {
+    width: 10px;
+    padding: 8px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 999;
+    position: fixed;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAMCAQAAADitaTfAAAAFUlEQVQIW2O++j+bkWUTAwZgJiwBAB9kCOy+u0d3AAAAAElFTkSuQmCC) no-repeat center center #fff;
+}
+
+#code-panel, #file-content-panel {
+    width: 60%;
+}
+
+#debug-result-panel {
+    right: 0px;
+    width: calc(40% - 10px);
+}
+
 #debug-result table {
     margin: 0px !important;
 }
@@ -118,19 +142,6 @@ input {
 
 .tips table tr td {
     border: none;
-}
-
-.splitter-handle {
-    position: initial !important;
-}
-
-.splitter-handle-highlight {
-    width: 5px;
-    height: 100%;
-    cursor: col-resize;
-    z-index: 999;
-    position: fixed;
-    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAAMCAQAAADitaTfAAAAFUlEQVQIW2O++j+bkWUTAwZgJiwBAB9kCOy+u0d3AAAAAElFTkSuQmCC) no-repeat center center;
 }
 
 table pre {
