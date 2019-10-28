@@ -29,14 +29,11 @@ import qunar.tc.bistoury.agent.common.cpujstack.KvUtils;
 import qunar.tc.bistoury.agent.common.cpujstack.ThreadInfo;
 import qunar.tc.bistoury.agent.common.kv.KvDb;
 import qunar.tc.bistoury.commands.AbstractTask;
-import qunar.tc.bistoury.commands.arthas.telnet.CommunicateUtil;
+import qunar.tc.bistoury.commands.job.BytesJob;
 import qunar.tc.bistoury.commands.job.ContinueResponseJob;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.remoting.netty.Task;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -49,7 +46,7 @@ public class ThreadInfoTask extends AbstractTask implements Task {
     private static final TypeReference<Map<String, ThreadInfo>> TYPE_REFERENCE = new TypeReference<Map<String, ThreadInfo>>() {
     };
 
-    private volatile SettableFuture<Integer> future = SettableFuture.create();
+    private final SettableFuture<Integer> future = SettableFuture.create();
 
     private final String id;
 
@@ -89,17 +86,14 @@ public class ThreadInfoTask extends AbstractTask implements Task {
         return future;
     }
 
-    private class Job implements ContinueResponseJob {
+    private class Job extends BytesJob {
 
-        private InputStream inputStream;
-
-        @Override
-        public String getId() {
-            return id;
+        private Job() {
+            super(id, handler, future);
         }
 
         @Override
-        public void init() {
+        protected byte[] getBytes() {
             Map<String, Object> map = Maps.newHashMap();
             map.put("type", "jstackThreads");
             map.put("time", time);
@@ -113,30 +107,7 @@ public class ThreadInfoTask extends AbstractTask implements Task {
             String jstack = kvDb.get(KvUtils.getJStackResultKey(time));
             map.put("jstack", Strings.nullToEmpty(jstack));
 
-            byte[] bytes = JacksonSerializer.serializeToBytes(map);
-            inputStream = new ByteArrayInputStream(bytes);
-        }
-
-        @Override
-        public boolean doResponse() throws Exception {
-            byte[] bytes = new byte[CommunicateUtil.DEFAULT_BUFFER_SIZE];
-            int count = inputStream.read(bytes);
-            if (count == CommunicateUtil.DEFAULT_BUFFER_SIZE) {
-                handler.handle(bytes);
-            } else if (count > 0) {
-                handler.handle(Arrays.copyOf(bytes, count));
-            }
-            return count == -1;
-        }
-
-        @Override
-        public void finish() {
-            future.set(null);
-        }
-
-        @Override
-        public void error(Throwable t) {
-            future.setException(t);
+            return JacksonSerializer.serializeToBytes(map);
         }
     }
 

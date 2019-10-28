@@ -18,13 +18,13 @@ public abstract class AbstractTask implements Task {
     protected abstract ListenableFuture<Integer> getResultFuture();
 
     @Override
-    public ListenableFuture<Integer> execute() {
+    public final ListenableFuture<Integer> execute() {
         start();
         return getResultFuture();
     }
 
     @Override
-    public void cancel() {
+    public final void cancel() {
         stop();
         getResultFuture().cancel(true);
     }

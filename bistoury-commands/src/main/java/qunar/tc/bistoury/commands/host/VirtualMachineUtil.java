@@ -17,6 +17,7 @@
 
 package qunar.tc.bistoury.commands.host;
 
+import com.google.common.base.Preconditions;
 import com.sun.management.OperatingSystemMXBean;
 import com.sun.tools.attach.AgentInitializationException;
 import com.sun.tools.attach.AgentLoadException;
@@ -31,14 +32,12 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.*;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author: leix.xie
@@ -46,6 +45,7 @@ import java.util.Set;
  * @describe：
  */
 public class VirtualMachineUtil {
+
     private static final Logger logger = LoggerFactory.getLogger(VirtualMachineUtil.class);
 
     private static final String LOCAL_CONNECTOR_ADDRESS_PROP = "com.sun.management.jmxremote.localConnectorAddress";
@@ -59,8 +59,8 @@ public class VirtualMachineUtil {
             JMXConnector connector = JMXConnectorFactory.connect(url);
             return new VMConnector(connector);
         } catch (Exception e) {
-            logger.error("attach to tomcat vm error ", e);
-            return null;
+            logger.error("attach to tomcat vm {} error", pid, e);
+            throw new IllegalStateException("attach to tomcat vm " + pid + " error", e);
         } finally {
             if (vm != null) {
                 try {
@@ -141,10 +141,11 @@ public class VirtualMachineUtil {
         }
     }
 
-    static class VMConnector {
+    static class VMConnector implements Closeable {
         private final JMXConnector connector;
 
         VMConnector(JMXConnector connector) {
+            Preconditions.checkNotNull(connector);
             this.connector = connector;
         }
 
@@ -190,15 +191,9 @@ public class VirtualMachineUtil {
             return memoryPoolMXBeans;
         }
 
-
-        public void disconnect() throws IOException {
-            if (connector != null) {
-                connector.close();
-            }
-        }
-
-        public JMXConnector getConnector() {
-            return connector;
+        @Override
+        public void close() throws IOException {
+            connector.close();
         }
     }
 }

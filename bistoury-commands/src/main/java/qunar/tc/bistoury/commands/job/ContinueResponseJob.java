@@ -7,7 +7,7 @@ public interface ContinueResponseJob {
 
     String getId();
 
-    void init();
+    void init() throws Exception;
 
     boolean doResponse() throws Exception;
 

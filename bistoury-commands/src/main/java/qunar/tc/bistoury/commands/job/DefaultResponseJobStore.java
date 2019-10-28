@@ -103,7 +103,7 @@ public class DefaultResponseJobStore implements ResponseJobStore {
         }
 
         @Override
-        public synchronized void init() {
+        public synchronized void init() throws Exception {
             if (!init) {
                 init = true;
                 logger.debug("job init {}", delegate.getId());

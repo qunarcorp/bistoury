@@ -17,7 +17,7 @@ public abstract class ForwardContinueResponseJob implements ContinueResponseJob 
     }
 
     @Override
-    public void init() {
+    public void init() throws Exception {
         delegate().init();
     }
 
