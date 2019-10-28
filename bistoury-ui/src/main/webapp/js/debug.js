@@ -746,11 +746,23 @@ $(document).ready(function () {
     $("#search-var").click(searchVar);
 
     $(document).keyup(function (event) {
-        if (event.keyCode === 78 && event.target.nodeName === "BODY" && varSearchResult.length > 0) {
-            preIdx = varSearchResultIndex;
-            curIdx = ++varSearchResultIndex;
-            varSearchResult[curIdx % varSearchResult.length].get(0).scrollIntoView({behavior: "smooth"})
-            highlightSearchVar(varSearchResult[preIdx % varSearchResult.length], varSearchResult[curIdx % varSearchResult.length]);
+        if (event.target.nodeName === "BODY" && varSearchResult.length > 0) {
+            var preIdx = varSearchResultIndex;
+            switch (event.keyCode) {
+                // n
+                case 78:
+                    varSearchResultIndex = ++varSearchResultIndex > varSearchResult.length - 1 ? 0 : varSearchResultIndex;
+                    break;
+                // p
+                case 80:
+                    varSearchResultIndex = --varSearchResultIndex < 0 ? varSearchResult.length - 1 : varSearchResultIndex;
+                    break;
+                default:
+                    return;
+            }
+
+            varSearchResult[varSearchResultIndex].get(0).scrollIntoView({behavior: "smooth"});
+            highlightSearchVar(varSearchResult[preIdx], varSearchResult[varSearchResultIndex]);
         }
     });
 
@@ -854,7 +866,7 @@ $(document).ready(function () {
     }
 
     function cleanVarSearchResult() {
-        $(varSearchResult[varSearchResultIndex % varSearchResult.length]).removeClass("bg-warning");
+        $(varSearchResult[varSearchResultIndex]).removeClass("bg-warning");
         varSearchResultIndex = 0;
         varSearchResult = [];
     }
