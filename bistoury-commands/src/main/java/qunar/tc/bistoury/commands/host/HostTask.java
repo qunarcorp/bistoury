@@ -56,7 +56,7 @@ public class HostTask extends AbstractTask implements Task {
 
     private static final String LOADAVG_FILENAME = "/proc/loadavg";
 
-    private static short KB = 1024;
+    private static final short KB = 1024;
 
     private final String id;
 

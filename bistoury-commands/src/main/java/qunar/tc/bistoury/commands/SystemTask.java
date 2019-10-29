@@ -18,6 +18,7 @@
 package qunar.tc.bistoury.commands;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,6 +139,11 @@ public class SystemTask extends AbstractTask implements Task {
         @Override
         public void error(Throwable t) {
             future.setException(t);
+        }
+
+        @Override
+        public ListeningExecutorService getExecutor() {
+            return null;
         }
     }
 }

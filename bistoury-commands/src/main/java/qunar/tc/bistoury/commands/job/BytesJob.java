@@ -1,5 +1,6 @@
 package qunar.tc.bistoury.commands.job;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.commands.arthas.telnet.CommunicateUtil;
@@ -65,5 +66,10 @@ public abstract class BytesJob implements ContinueResponseJob {
     @Override
     public void error(Throwable t) {
         future.setException(t);
+    }
+
+    @Override
+    public ListeningExecutorService getExecutor() {
+        return null;
     }
 }

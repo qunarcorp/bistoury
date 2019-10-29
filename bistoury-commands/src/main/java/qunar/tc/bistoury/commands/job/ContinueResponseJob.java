@@ -1,5 +1,7 @@
 package qunar.tc.bistoury.commands.job;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+
 /**
  * @author zhenyu.nie created on 2019 2019/10/16 19:20
  */
@@ -16,4 +18,6 @@ public interface ContinueResponseJob {
     void finish() throws Exception;
 
     void error(Throwable t);
+
+    ListeningExecutorService getExecutor();
 }

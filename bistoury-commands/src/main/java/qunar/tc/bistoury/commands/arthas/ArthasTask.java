@@ -20,29 +20,28 @@ package qunar.tc.bistoury.commands.arthas;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.SettableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
+import qunar.tc.bistoury.commands.AbstractTask;
 import qunar.tc.bistoury.commands.arthas.telnet.Telnet;
 import qunar.tc.bistoury.commands.arthas.telnet.TelnetStore;
+import qunar.tc.bistoury.commands.job.ContinueResponseJob;
 import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.NamedThreadFactory;
-import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 import qunar.tc.bistoury.remoting.netty.Task;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
 /**
  * @author zhenyu.nie created on 2018 2018/10/15 18:55
  */
-public class ArthasTask implements Task {
+public class ArthasTask extends AbstractTask implements Task {
 
     private static final Logger logger = LoggerFactory.getLogger(ArthasTask.class);
 
-    private static final ListeningExecutorService AGENT_EXECUTOR = AgentRemotingExecutor.getExecutor();
-
-    private static final ListeningExecutorService ARTHAS_SHUTDOWN_EXECUTOR = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor(new NamedThreadFactory("shutdown_attach")));
+    private static final ListeningExecutorService SHUTDOWN_EXECUTOR = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor(new NamedThreadFactory("shutdown_attach")));
 
     private final TelnetStore telnetStore;
 
@@ -56,7 +55,7 @@ public class ArthasTask implements Task {
 
     private final ResponseHandler handler;
 
-    private volatile ListenableFuture<Integer> future;
+    private final SettableFuture<Integer> future = SettableFuture.create();
 
     public ArthasTask(TelnetStore telnetStore, String id, long maxRunningMs, int pid, String command, ResponseHandler handler) {
         this.telnetStore = telnetStore;
@@ -78,59 +77,77 @@ public class ArthasTask implements Task {
     }
 
     @Override
-    public ListenableFuture<Integer> execute() {
-        String realCommand = command.trim();
-        if (BistouryConstants.SHUTDOWN_COMMAND.equalsIgnoreCase(realCommand) || BistouryConstants.STOP_COMMAND.equalsIgnoreCase(realCommand)) {
-            this.future = executeArthasShutdown();
+    protected ContinueResponseJob createJob() {
+        if (isShutdownCommand(command.trim())) {
+            return new Job(SHUTDOWN_EXECUTOR);
         } else {
-            this.future = executeArthasCommand();
+            return new Job(null);
         }
-        return future;
-    }
-
-    private ListenableFuture<Integer> executeArthasCommand() {
-        return AGENT_EXECUTOR.submit(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-
-                Telnet telnet = telnetStore.getTelnet(pid);
-                try {
-                    telnet.write(command);
-                    telnet.read(command, handler);
-                    return 0;
-                } finally {
-                    telnet.close();
-                }
-            }
-        });
-    }
-
-    private ListenableFuture<Integer> executeArthasShutdown() {
-        return ARTHAS_SHUTDOWN_EXECUTOR.submit(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-
-                Telnet telnet = telnetStore.getTelnet(pid);
-                try {
-                    telnet.write(command);
-                    telnet.read(command, handler);
-                    return 0;
-                } finally {
-                    telnet.close();
-                }
-            }
-        });
     }
 
     @Override
-    public void cancel() {
-        try {
-            if (future != null) {
-                future.cancel(true);
-                future = null;
+    protected ListenableFuture<Integer> getResultFuture() {
+        return future;
+    }
+
+    private boolean isShutdownCommand(String realCommand) {
+        return BistouryConstants.SHUTDOWN_COMMAND.equalsIgnoreCase(realCommand) || BistouryConstants.STOP_COMMAND.equalsIgnoreCase(realCommand);
+    }
+
+    private class Job implements ContinueResponseJob {
+
+        private final ListeningExecutorService executor;
+
+        private Telnet telnet;
+
+        private Job(ListeningExecutorService executor) {
+            this.executor = executor;
+        }
+
+        @Override
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public void init() throws Exception {
+            telnet = telnetStore.getTelnet(pid);
+            telnet.write(command);
+        }
+
+        @Override
+        public boolean doResponse() throws Exception {
+            byte[] bytes = telnet.read();
+            if (bytes == null) {
+                return true;
             }
-        } catch (Exception e) {
-            logger.error("cancel arthas task error", e);
+
+            if (bytes.length > 0) {
+                handler.handle(bytes);
+            }
+            return false;
+        }
+
+        @Override
+        public void clear() {
+            if (telnet != null) {
+                telnet.close();
+            }
+        }
+
+        @Override
+        public void finish() throws Exception {
+            future.set(0);
+        }
+
+        @Override
+        public void error(Throwable t) {
+            future.setException(t);
+        }
+
+        @Override
+        public ListeningExecutorService getExecutor() {
+            return executor;
         }
     }
 }

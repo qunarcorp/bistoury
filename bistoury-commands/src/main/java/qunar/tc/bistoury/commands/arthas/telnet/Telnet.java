@@ -17,8 +17,6 @@
 
 package qunar.tc.bistoury.commands.arthas.telnet;
 
-import qunar.tc.bistoury.agent.common.ResponseHandler;
-
 /**
  * @author zhenyu.nie created on 2018 2018/10/15 19:01
  */
@@ -28,7 +26,7 @@ public interface Telnet {
 
     String getVersion();
 
-    void read(String command, ResponseHandler responseHandler) throws Exception;
+    byte[] read() throws Exception;
 
     void close();
 }

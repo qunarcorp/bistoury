@@ -6,7 +6,6 @@ import com.google.common.io.CharSource;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.common.BistouryConstants;
 
 import java.io.BufferedWriter;
@@ -22,7 +21,11 @@ public abstract class AbstractTelnet implements Telnet {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractTelnet.class);
 
+    private static final byte[] ZERO_BYTES = new byte[0];
+
     private static final int DEFAULT_BUFFER_SIZE = CommunicateUtil.DEFAULT_BUFFER_SIZE;
+
+    private final byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
 
     private final TelnetClient client;
 
@@ -32,11 +35,19 @@ public abstract class AbstractTelnet implements Telnet {
 
     private final String version;
 
+    private final ResultProcessor resultProcessor;
+
+    private final SettedWriter writer;
+
+    private boolean isEnd = false;
+
     public AbstractTelnet(TelnetClient client) throws IOException {
         this.client = client;
         this.in = client.getInputStream();
         this.out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream(), Charsets.UTF_8));
         this.version = readVersionUtilPrompt();
+        this.writer = new SettedWriter();
+        this.resultProcessor = getProcessor(writer);
     }
 
     @Override
@@ -87,23 +98,22 @@ public abstract class AbstractTelnet implements Telnet {
     }
 
     @Override
-    public final void read(String command, ResponseHandler responseHandler) throws Exception {
-        Writer writer = new DefaultWriter(responseHandler);
-        ResultProcessor resultProcessor = getProcessor(writer);
-        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-        while (true) {
-            int size = in.read(buffer);
-            if (size == -1) {
-                throw new IllegalStateException("read data end, not complete data");
-            } else if (size > 0) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("read data, [{}]", new String(buffer, 0, size, Charsets.UTF_8));
-                }
-                boolean end = resultProcessor.process(buffer, 0, size);
-                if (end) {
-                    break;
-                }
+    public byte[] read() throws Exception {
+        if (isEnd) {
+            return null;
+        }
+
+        int size = in.read(buffer);
+        if (size == -1) {
+            throw new IllegalStateException("read data end, not complete data");
+        } else if (size == 0) {
+            return ZERO_BYTES;
+        } else {
+            if (logger.isDebugEnabled()) {
+                logger.debug("read data, [{}]", new String(buffer, 0, size, Charsets.UTF_8));
             }
+            isEnd = resultProcessor.process(buffer, 0, size);
+            return writer.getAndReset();
         }
     }
 
@@ -115,6 +125,32 @@ public abstract class AbstractTelnet implements Telnet {
             client.disconnect();
         } catch (Exception e) {
             // ignore
+        }
+    }
+
+    private static class SettedWriter implements Writer {
+
+        private byte[] data = ZERO_BYTES;
+
+        @Override
+        public void write(byte[] input) {
+            if (data.length == 0) {
+                data = input;
+                return;
+            }
+
+            if (input.length > 0) {
+                byte[] newData = new byte[data.length + input.length];
+                System.arraycopy(data, 0, newData, 0, data.length);
+                System.arraycopy(input, 0, newData, data.length, input.length);
+                data = newData;
+            }
+        }
+
+        public byte[] getAndReset() {
+            byte[] result = this.data;
+            this.data = ZERO_BYTES;
+            return result;
         }
     }
 }

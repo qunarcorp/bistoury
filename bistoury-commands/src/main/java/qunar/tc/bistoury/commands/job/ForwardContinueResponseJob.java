@@ -1,5 +1,7 @@
 package qunar.tc.bistoury.commands.job;
 
+import com.google.common.util.concurrent.ListeningExecutorService;
+
 /**
  * @author zhenyu.nie created on 2019 2019/10/23 16:46
  */
@@ -39,5 +41,10 @@ public abstract class ForwardContinueResponseJob implements ContinueResponseJob 
     @Override
     public void error(Throwable t) {
         delegate().error(t);
+    }
+
+    @Override
+    public ListeningExecutorService getExecutor() {
+        return delegate().getExecutor();
     }
 }

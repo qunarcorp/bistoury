@@ -91,6 +91,8 @@ public class DefaultResponseJobStore implements ResponseJobStore {
 
         private final ContinueResponseJob job;
 
+        private final ListeningExecutorService executor;
+
         private boolean paused = false;
 
         private boolean stopped = false;
@@ -99,6 +101,7 @@ public class DefaultResponseJobStore implements ResponseJobStore {
 
         private PausedJob(ContinueResponseJob job) {
             this.job = new WrappedJob(job);
+            this.executor = job.getExecutor() != null ? job.getExecutor() : EXECUTOR;
         }
 
         public ContinueResponseJob getJob() {
@@ -110,7 +113,7 @@ public class DefaultResponseJobStore implements ResponseJobStore {
                 return;
             }
 
-            this.finishFuture = EXECUTOR.submit(new JobRunner(this));
+            this.finishFuture = executor.submit(new JobRunner(this));
         }
 
         public synchronized void paused() {
@@ -129,7 +132,7 @@ public class DefaultResponseJobStore implements ResponseJobStore {
             boolean removed = pausedJobs.remove(job.getId());
             logger.debug("job resume {}, {}", removed, job.getId());
             if (removed) {
-                this.finishFuture = EXECUTOR.submit(new JobRunner(this));
+                this.finishFuture = executor.submit(new JobRunner(this));
             }
         }
 
@@ -244,7 +247,11 @@ public class DefaultResponseJobStore implements ResponseJobStore {
             if (!clear) {
                 clear = true;
                 logger.debug("job clear {}", getId());
-                super.clear();
+                try {
+                    super.clear();
+                } catch (Exception e) {
+                    logger.error("job clear error, {}", getId());
+                }
             }
         }
 
