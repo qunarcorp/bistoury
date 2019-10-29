@@ -19,6 +19,7 @@ package qunar.tc.bistoury.commands.host;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import com.sun.management.OperatingSystemMXBean;
@@ -103,8 +104,7 @@ public class HostTask extends AbstractTask implements Task {
         @Override
         protected byte[] getBytes() throws Exception {
             try (VirtualMachineUtil.VMConnector connect = VirtualMachineUtil.connect(pid)) {
-                PerfData prefData = PerfData.connect(pid);
-                MxBean mxBean = new MxBean(prefData.getAllCounters(),
+                MxBean mxBean = new MxBean(getCounters(pid),
                         connect.getRuntimeMXBean(),
                         connect.getOperatingSystemMXBean(),
                         connect.getMemoryMXBean(),
@@ -121,6 +121,16 @@ public class HostTask extends AbstractTask implements Task {
                 result.put("visuaGC", getVisuaGCInfo(mxBean.getCounters()));
                 return JacksonSerializer.serializeToBytes(result);
             }
+        }
+    }
+
+    private Map<String, Counter> getCounters(int pid) {
+        try {
+            PerfData prefData = PerfData.connect(pid);
+            return prefData.getAllCounters();
+        } catch (Exception e) {
+            logger.warn("get perf counters error", e);
+            return ImmutableMap.of();
         }
     }
 
