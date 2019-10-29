@@ -87,43 +87,6 @@ public class DefaultResponseJobStore implements ResponseJobStore {
         }
     }
 
-    private static class InitOnceJob extends ForwardContinueResponseJob {
-
-        private final ContinueResponseJob delegate;
-
-        private boolean init = false;
-
-        public InitOnceJob(ContinueResponseJob delegate) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        protected ContinueResponseJob delegate() {
-            return delegate;
-        }
-
-        @Override
-        public synchronized void init() throws Exception {
-            if (!init) {
-                init = true;
-                logger.debug("job init {}", delegate.getId());
-                super.init();
-            }
-        }
-
-        @Override
-        public void finish() {
-            logger.debug("job finish {}", delegate.getId());
-            super.finish();
-        }
-
-        @Override
-        public void error(Throwable t) {
-            logger.debug("job error {}", delegate.getId());
-            super.error(t);
-        }
-    }
-
     private class PausedJob {
 
         private final ContinueResponseJob job;
@@ -135,7 +98,7 @@ public class DefaultResponseJobStore implements ResponseJobStore {
         private ListenableFuture<?> finishFuture;
 
         private PausedJob(ContinueResponseJob job) {
-            this.job = new InitOnceJob(job);
+            this.job = new WrappedJob(job);
         }
 
         public ContinueResponseJob getJob() {
@@ -180,6 +143,7 @@ public class DefaultResponseJobStore implements ResponseJobStore {
             if (finishFuture != null) {
                 finishFuture.cancel(true);
             }
+            job.clear();
             pausedJobs.remove(job.getId());
             jobs.remove(job.getId());
         }
@@ -213,7 +177,7 @@ public class DefaultResponseJobStore implements ResponseJobStore {
 
         @Override
         public void run() {
-            logger.debug("job start run {}", job.getJob().getId());
+            logger.debug("run job {}", job.getJob().getId());
             try {
                 if (job.isStopped()) {
                     return;
@@ -221,11 +185,11 @@ public class DefaultResponseJobStore implements ResponseJobStore {
 
                 job.getJob().init();
                 doRun();
-            } catch (InterruptedException e) {
-                // be cancelled
-                logger.debug("job interrupted {}", job.getJob().getId());
             } catch (Throwable t) {
-                job.getJob().error(t);
+                logger.debug("error job {}", job.getJob().getId(), t);
+                if (!job.isStopped()) {
+                    job.getJob().error(t);
+                }
             }
         }
 
@@ -233,15 +197,69 @@ public class DefaultResponseJobStore implements ResponseJobStore {
             while (true) {
                 latch.await();
                 if (job.isStopped() || job.doPausedIfNeed()) {
+                    logger.debug("stop or paused job {}", job.getJob().getId());
                     return;
                 }
 
                 boolean end = job.getJob().doResponse();
                 if (end) {
-                    job.getJob().finish();
+                    logger.debug("finish job {}", job.getJob().getId());
+                    if (!job.isStopped()) {
+                        job.getJob().finish();
+                    }
                     return;
                 }
             }
+        }
+    }
+
+    private static class WrappedJob extends ForwardContinueResponseJob {
+
+        private final ContinueResponseJob delegate;
+
+        private boolean init = false;
+
+        private boolean clear = false;
+
+        public WrappedJob(ContinueResponseJob delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        protected ContinueResponseJob delegate() {
+            return delegate;
+        }
+
+        @Override
+        public synchronized void init() throws Exception {
+            if (!init && !clear) {
+                init = true;
+                logger.debug("job init {}", getId());
+                super.init();
+            }
+        }
+
+        @Override
+        public synchronized void clear() {
+            if (!clear) {
+                clear = true;
+                logger.debug("job clear {}", getId());
+                super.clear();
+            }
+        }
+
+        @Override
+        public void finish() throws Exception {
+            logger.debug("job finish {}", delegate.getId());
+            clear();
+            super.finish();
+        }
+
+        @Override
+        public void error(Throwable t) {
+            logger.debug("job error {}", delegate.getId(), t);
+            clear();
+            super.error(t);
         }
     }
 }

@@ -53,6 +53,11 @@ public abstract class BytesJob implements ContinueResponseJob {
     }
 
     @Override
+    public void clear() {
+
+    }
+
+    @Override
     public void finish() {
         future.set(0);
     }

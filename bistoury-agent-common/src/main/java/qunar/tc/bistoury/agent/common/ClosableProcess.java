@@ -66,7 +66,7 @@ public abstract class ClosableProcess extends Process implements Closeable {
         JavaProcesses.remove(id);
     }
 
-    public abstract int readAndWaitFor(ResponseHandler handler) throws Exception;
+    public abstract byte[] read() throws Exception;
 
     @Override
     public void close() {

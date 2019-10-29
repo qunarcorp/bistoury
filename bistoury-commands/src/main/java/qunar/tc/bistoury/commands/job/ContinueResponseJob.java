@@ -11,7 +11,9 @@ public interface ContinueResponseJob {
 
     boolean doResponse() throws Exception;
 
-    void finish();
+    void clear();
+
+    void finish() throws Exception;
 
     void error(Throwable t);
 }

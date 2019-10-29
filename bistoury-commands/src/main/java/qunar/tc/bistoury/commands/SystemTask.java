@@ -18,26 +18,24 @@
 package qunar.tc.bistoury.commands;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.SettableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ClosableProcess;
 import qunar.tc.bistoury.agent.common.ClosableProcesses;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
-import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
+import qunar.tc.bistoury.commands.job.ContinueResponseJob;
 import qunar.tc.bistoury.remoting.netty.Task;
 
 import java.io.File;
-import java.util.concurrent.Callable;
+import java.io.InputStream;
 
 /**
  * @author zhenyu.nie created on 2018 2018/10/9 12:12
  */
-public class SystemTask implements Task {
+public class SystemTask extends AbstractTask implements Task {
 
     private static final Logger logger = LoggerFactory.getLogger(SystemTask.class);
-
-    private static final ListeningExecutorService agentExecutor = AgentRemotingExecutor.getExecutor();
 
     private final String id;
 
@@ -47,9 +45,7 @@ public class SystemTask implements Task {
 
     private final long maxRunningMs;
 
-    private volatile ClosableProcess process;
-
-    private volatile ListenableFuture<Integer> future;
+    private final SettableFuture<Integer> future = SettableFuture.create();
 
     public SystemTask(String id,
                       String command,
@@ -75,39 +71,73 @@ public class SystemTask implements Task {
     }
 
     @Override
-    public ListenableFuture<Integer> execute() {
-        future = agentExecutor.submit(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                process = ClosableProcesses.wrap(processBuilder.start());
-                return process.readAndWaitFor(handler);
-            }
-        });
-        return future;
+    protected ContinueResponseJob createJob() {
+        return new Job();
     }
 
     @Override
-    public void cancel() {
-        if (future == null || future.isDone()) {
-            return;
+    protected ListenableFuture<Integer> getResultFuture() {
+        return future;
+    }
+
+    private class Job implements ContinueResponseJob {
+
+        private ClosableProcess process;
+
+        private InputStream inputStream;
+
+        @Override
+        public String getId() {
+            return id;
         }
 
-        try {
+        @Override
+        public void init() throws Exception {
+            process = ClosableProcesses.wrap(processBuilder.start());
+            inputStream = process.getInputStream();
+        }
+
+        @Override
+        public boolean doResponse() throws Exception {
+            byte[] bytes = process.read();
+            if (bytes == null) {
+                return true;
+            }
+
+            if (bytes.length > 0) {
+                handler.handle(bytes);
+            }
+            return false;
+        }
+
+        @Override
+        public void clear() {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (Throwable e) {
+                    logger.error("close input stream error, {}", id);
+                }
+            }
+
             if (process != null) {
-                process.destroy();
-                process = null;
+                try {
+                    process.destroy();
+                } catch (Throwable e) {
+                    logger.error("close process error, {}", id);
+                }
             }
-        } catch (Exception e) {
-            logger.error("destroy system task error", e);
         }
 
-        try {
-            if (future != null) {
-                future.cancel(true);
-                future = null;
-            }
-        } catch (Exception e) {
-            logger.error("destroy system task error", e);
+        @Override
+        public void finish() throws Exception {
+            int code = process.waitFor();
+            future.set(code);
+        }
+
+        @Override
+        public void error(Throwable t) {
+            future.setException(t);
         }
     }
 }

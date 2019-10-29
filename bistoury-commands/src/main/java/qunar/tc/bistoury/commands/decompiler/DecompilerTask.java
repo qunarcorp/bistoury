@@ -21,15 +21,17 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.SettableFuture;
 import com.ning.http.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.clientside.common.store.BistouryStore;
+import qunar.tc.bistoury.commands.AbstractTask;
+import qunar.tc.bistoury.commands.job.BytesJob;
+import qunar.tc.bistoury.commands.job.ContinueResponseJob;
 import qunar.tc.bistoury.common.*;
 import qunar.tc.bistoury.remoting.command.DecompilerCommand;
-import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 import qunar.tc.bistoury.remoting.netty.Task;
 
 import java.io.File;
@@ -39,7 +41,6 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -48,9 +49,8 @@ import java.util.jar.JarFile;
  * @date: 2019/3/1 10:31
  * @describe：
  */
-public class DecompilerTask implements Task {
+public class DecompilerTask extends AbstractTask implements Task {
     private static final Logger logger = LoggerFactory.getLogger(DecompilerTask.class);
-    private static final ListeningExecutorService agentExecutor = AgentRemotingExecutor.getExecutor();
 
     private static final String JAR = "jar";
     private static final String JAVA_FILE_SUFFIX = ".java";
@@ -63,8 +63,8 @@ public class DecompilerTask implements Task {
     private final DecompilerCommand command;
     private final ResponseHandler handler;
     private final long maxRunningMs;
-    private volatile ListenableFuture<Integer> future;
-    private Decompiler decompiler;
+
+    private final SettableFuture<Integer> future = SettableFuture.create();
 
     public DecompilerTask(String id, DecompilerCommand command, ResponseHandler handler, long maxRunningMs) {
         this.id = id;
@@ -77,40 +77,49 @@ public class DecompilerTask implements Task {
     }
 
     @Override
-    public ListenableFuture execute() {
-        this.future = agentExecutor.submit(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                decompiler = new Decompiler(DECOMPILER_RESULT_SAVER_DIRECTORY);
-                TypeResponse<String> typeResponse = new TypeResponse<>();
-                CodeProcessResponse<String> response = new CodeProcessResponse<>();
-                typeResponse.setData(response);
-                typeResponse.setType("decompilerclass");
-                try {
-                    final String className = command.getClassName();
-                    final String classPath = command.getClassPath();
-                    decompile(className, classPath, response);
-                } catch (Exception e) {
-                    response.setCode(-1);
-                    response.setMessage("反编译失败，" + e.getMessage());
-                    logger.error("decompiler error, command: {} ", command, e);
-                } finally {
-                    handler.handle(JacksonSerializer.serialize(typeResponse));
-                }
-                return null;
-            }
-        });
-        return this.future;
+    protected ContinueResponseJob createJob() {
+        return new Job();
     }
 
-    public synchronized void decompile(final String className, final String classPath, final CodeProcessResponse<String> response) throws IOException {
+    @Override
+    protected ListenableFuture<Integer> getResultFuture() {
+        return future;
+    }
+
+    private class Job extends BytesJob {
+
+        private Job() {
+            super(id, handler, future);
+        }
+
+        @Override
+        protected byte[] getBytes() throws Exception {
+            Decompiler decompiler = new Decompiler(DECOMPILER_RESULT_SAVER_DIRECTORY);
+            TypeResponse<String> typeResponse = new TypeResponse<>();
+            CodeProcessResponse<String> response = new CodeProcessResponse<>();
+            typeResponse.setData(response);
+            typeResponse.setType("decompilerclass");
+            try {
+                final String className = command.getClassName();
+                final String classPath = command.getClassPath();
+                decompile(decompiler, className, classPath, response);
+            } catch (Exception e) {
+                response.setCode(-1);
+                response.setMessage("反编译失败，" + e.getMessage());
+                logger.error("decompiler error, command: {} ", command, e);
+            }
+            return JacksonSerializer.serializeToBytes(typeResponse);
+        }
+    }
+
+    public synchronized void decompile(Decompiler decompiler, final String className, final String classPath, final CodeProcessResponse<String> response) throws IOException {
         String replace = classPath.replace("\\", "/");
         URL url = new URL(replace);
         String simpleName = className.substring(className.lastIndexOf(".") + 1);
         String classFileName = simpleName + UUID.randomUUID().toString();
 
         if (JAR.equals(url.getProtocol()) || url.getFile().indexOf(JAR_FILE_URL_SPLITTER) > 0) {
-            decompilerJar(classFileName, className, url);
+            decompilerJar(decompiler, classFileName, className, url);
         } else {
             classFileName = simpleName;
 
@@ -143,7 +152,7 @@ public class DecompilerTask implements Task {
         }
     }
 
-    private void decompilerJar(final String classFileName, final String className, final URL url) throws IOException {
+    private void decompilerJar(Decompiler decompiler, final String classFileName, final String className, final URL url) throws IOException {
         final String filePath = url.getFile();
         List<InputStream> jarFileStreams = Lists.newArrayList();
 
@@ -222,17 +231,5 @@ public class DecompilerTask implements Task {
     @Override
     public long getMaxRunningMs() {
         return maxRunningMs;
-    }
-
-    @Override
-    public void cancel() {
-        try {
-            if (future != null) {
-                future.cancel(true);
-                future = null;
-            }
-        } catch (Exception e) {
-            logger.error("cancel decompiler task error", e);
-        }
     }
 }

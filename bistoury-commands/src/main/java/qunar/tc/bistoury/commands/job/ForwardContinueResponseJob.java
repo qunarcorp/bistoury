@@ -27,7 +27,12 @@ public abstract class ForwardContinueResponseJob implements ContinueResponseJob 
     }
 
     @Override
-    public void finish() {
+    public void clear() {
+        delegate().clear();
+    }
+
+    @Override
+    public void finish() throws Exception {
         delegate().finish();
     }
 
