@@ -1,11 +1,11 @@
 package qunar.tc.bistoury.agent.common.job;
 
-import qunar.tc.bistoury.agent.common.WritableListener;
-
 /**
  * @author zhenyu.nie created on 2019 2019/10/16 17:57
  */
-public interface ResponseJobStore extends WritableListener {
+public interface ResponseJobStore {
+
+    void setWritable(boolean writable);
 
     void submit(ContinueResponseJob job);
 
@@ -14,4 +14,6 @@ public interface ResponseJobStore extends WritableListener {
     void resume(String id);
 
     void stop(String id);
+
+    void close();
 }

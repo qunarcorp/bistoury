@@ -36,7 +36,6 @@ public class DefaultRunningTask implements RunnableTask {
     @Override
     public final void cancel() {
         stop();
-        task.getResultFuture().cancel(true);
     }
 
     @Override

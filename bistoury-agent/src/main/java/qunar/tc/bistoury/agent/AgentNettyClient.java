@@ -27,7 +27,6 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import qunar.tc.bistoury.agent.common.WritableListener;
 import qunar.tc.bistoury.agent.common.job.DefaultResponseJobStore;
 import qunar.tc.bistoury.agent.common.job.ResponseJobStore;
 import qunar.tc.bistoury.commands.HeartbeatProcessor;
@@ -55,18 +54,15 @@ class AgentNettyClient {
 
     private final EventLoopGroup workGroup;
 
-    private final WritableListener writableListener;
-
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     private final SettableFuture<Void> started = SettableFuture.create();
 
     private volatile Channel channel;
 
-    public AgentNettyClient(ProxyConfig proxyConfig, EventLoopGroup workGroup, WritableListener writableListener) {
+    public AgentNettyClient(ProxyConfig proxyConfig, EventLoopGroup workGroup) {
         this.proxyConfig = proxyConfig;
         this.workGroup = workGroup;
-        this.writableListener = writableListener;
     }
 
     public void start() {
@@ -86,7 +82,7 @@ class AgentNettyClient {
                 new MetaRefreshTipProcessor(),
                 taskProcessor));
 
-        final ConnectionManagerHandler connectionManagerHandler = new ConnectionManagerHandler();
+        final ConnectionManagerHandler connectionManagerHandler = new ConnectionManagerHandler(jobStore);
 
         bootstrap.group(workGroup)
                 .channel(NioSocketChannel.class)
@@ -110,7 +106,7 @@ class AgentNettyClient {
                 if (future.isSuccess()) {
                     logger.info("bistoury netty client start success, {}", proxyConfig);
                     channel = future.channel();
-                    closeFuture(taskStore);
+                    closeFuture(jobStore, taskStore);
                     running.compareAndSet(false, true);
                     started.set(null);
                     heartbeatTask.start(channel, running);
@@ -137,10 +133,11 @@ class AgentNettyClient {
         return running.get();
     }
 
-    private void closeFuture(final TaskStore taskStore) {
+    private void closeFuture(final ResponseJobStore jobStore, final TaskStore taskStore) {
         channel.closeFuture().addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
+                jobStore.close();
                 taskStore.close();
             }
         });
@@ -148,6 +145,12 @@ class AgentNettyClient {
 
     @ChannelHandler.Sharable
     private class ConnectionManagerHandler extends ChannelDuplexHandler {
+
+        private final ResponseJobStore jobStore;
+
+        private ConnectionManagerHandler(ResponseJobStore jobStore) {
+            this.jobStore = jobStore;
+        }
 
         @Override
         public void disconnect(ChannelHandlerContext ctx, ChannelPromise future) throws Exception {
@@ -159,7 +162,6 @@ class AgentNettyClient {
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
             logger.info("agent netty client channel active, {}", ctx.channel());
-            writableListener.setWritable(true);
             super.channelActive(ctx);
         }
 
@@ -190,7 +192,7 @@ class AgentNettyClient {
         public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
             boolean writable = channel.isWritable();
             logger.info("agent writability changed to {}", writable);
-            writableListener.setWritable(writable);
+            jobStore.setWritable(writable);
             super.channelWritabilityChanged(ctx);
         }
     }
@@ -198,9 +200,8 @@ class AgentNettyClient {
     public void destroyAndSync() {
         if (running.compareAndSet(true, false)) {
             logger.warn("agent netty client destroy, {}", channel);
-            writableListener.setWritable(false);
             try {
-                channel.close().syncUninterruptibly();
+                channel.close();
             } catch (Exception e) {
                 logger.error("close channel error", e);
             }

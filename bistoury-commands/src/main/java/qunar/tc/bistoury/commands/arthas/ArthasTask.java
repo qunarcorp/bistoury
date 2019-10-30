@@ -150,6 +150,11 @@ public class ArthasTask implements Task {
         }
 
         @Override
+        public void cancel() {
+            future.cancel(true);
+        }
+
+        @Override
         public ListeningExecutorService getExecutor() {
             return executor;
         }

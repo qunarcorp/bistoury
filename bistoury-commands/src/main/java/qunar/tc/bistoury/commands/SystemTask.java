@@ -143,6 +143,11 @@ public class SystemTask implements Task {
         }
 
         @Override
+        public void cancel() {
+            future.cancel(true);
+        }
+
+        @Override
         public ListeningExecutorService getExecutor() {
             return AgentRemotingExecutor.getExecutor();
         }

@@ -19,5 +19,7 @@ public interface ContinueResponseJob {
 
     void error(Throwable t);
 
+    void cancel();
+
     ListeningExecutorService getExecutor();
 }

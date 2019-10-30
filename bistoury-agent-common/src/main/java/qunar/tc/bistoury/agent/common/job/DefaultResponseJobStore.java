@@ -26,10 +26,23 @@ public class DefaultResponseJobStore implements ResponseJobStore {
 
     private volatile CountDownLatch latch = new CountDownLatch(0);
 
+    private boolean isClosed = false;
+
     @Override
     public void submit(ContinueResponseJob job) {
-        PausedJob pausedJob = new PausedJob(job);
-        PausedJob old = jobs.putIfAbsent(pausedJob.getJob().getId(), pausedJob);
+        PausedJob old;
+        PausedJob pausedJob;
+
+        synchronized (this) {
+            if (isClosed) {
+                job.error(new IllegalStateException("job store closed"));
+                return;
+            }
+
+            pausedJob = new PausedJob(job);
+            old = jobs.putIfAbsent(pausedJob.getJob().getId(), pausedJob);
+        }
+
         if (old == null) {
             logger.debug("submit job {}", job.getId());
             pausedJob.start();
@@ -64,8 +77,25 @@ public class DefaultResponseJobStore implements ResponseJobStore {
     }
 
     @Override
+    public void close() {
+        synchronized (this) {
+            if (isClosed) {
+                return;
+            }
+
+            logger.info("close job store");
+            setWritable(false);
+            isClosed = true;
+        }
+
+        for (PausedJob pausedJob : jobs.values()) {
+            pausedJob.stop();
+        }
+    }
+
+    @Override
     public synchronized void setWritable(boolean writable) {
-        if (this.writable == writable) {
+        if (isClosed || this.writable == writable) {
             return;
         }
 
@@ -137,7 +167,7 @@ public class DefaultResponseJobStore implements ResponseJobStore {
             if (finishFuture != null) {
                 finishFuture.cancel(true);
             }
-            job.clear();
+            job.cancel();
             pausedJobs.remove(job.getId());
             jobs.remove(job.getId());
         }
@@ -258,6 +288,13 @@ public class DefaultResponseJobStore implements ResponseJobStore {
             logger.debug("job error {}", delegate.getId(), t);
             clear();
             super.error(t);
+        }
+
+        @Override
+        public void cancel() {
+            logger.debug("job cancel {}", delegate.getId());
+            clear();
+            super.cancel();
         }
     }
 }

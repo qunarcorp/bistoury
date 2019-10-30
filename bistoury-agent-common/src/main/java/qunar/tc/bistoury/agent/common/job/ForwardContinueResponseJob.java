@@ -44,6 +44,11 @@ public abstract class ForwardContinueResponseJob implements ContinueResponseJob 
     }
 
     @Override
+    public void cancel() {
+        delegate().cancel();
+    }
+
+    @Override
     public ListeningExecutorService getExecutor() {
         return delegate().getExecutor();
     }

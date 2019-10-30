@@ -67,4 +67,9 @@ public abstract class BytesJob implements ContinueResponseJob {
     public void error(Throwable t) {
         future.setException(t);
     }
+
+    @Override
+    public void cancel() {
+        future.cancel(true);
+    }
 }
