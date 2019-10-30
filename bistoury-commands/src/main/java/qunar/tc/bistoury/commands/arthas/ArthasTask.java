@@ -17,6 +17,7 @@
 
 package qunar.tc.bistoury.commands.arthas;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -32,6 +33,7 @@ import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.NamedThreadFactory;
 import qunar.tc.bistoury.remoting.netty.Task;
 
+import java.util.Set;
 import java.util.concurrent.Executors;
 
 /**
@@ -42,6 +44,8 @@ public class ArthasTask extends AbstractTask implements Task {
     private static final Logger logger = LoggerFactory.getLogger(ArthasTask.class);
 
     private static final ListeningExecutorService SHUTDOWN_EXECUTOR = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor(new NamedThreadFactory("shutdown_attach")));
+
+    private static final Set<String> SHUTDOWN_COMMANDS = ImmutableSet.of(BistouryConstants.SHUTDOWN_COMMAND, BistouryConstants.STOP_COMMAND);
 
     private final TelnetStore telnetStore;
 
@@ -91,7 +95,7 @@ public class ArthasTask extends AbstractTask implements Task {
     }
 
     private boolean isShutdownCommand(String realCommand) {
-        return BistouryConstants.SHUTDOWN_COMMAND.equalsIgnoreCase(realCommand) || BistouryConstants.STOP_COMMAND.equalsIgnoreCase(realCommand);
+        return SHUTDOWN_COMMANDS.contains(realCommand);
     }
 
     private class Job implements ContinueResponseJob {
