@@ -18,6 +18,7 @@
 package qunar.tc.bistoury.remoting.netty;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import qunar.tc.bistoury.agent.common.job.ContinueResponseJob;
 
 /**
  * @author zhenyu.nie created on 2018 2018/10/9 12:11
@@ -28,11 +29,7 @@ public interface Task {
 
     long getMaxRunningMs();
 
-    ListenableFuture<Integer> execute();
+    ContinueResponseJob createJob();
 
-    void pause();
-
-    void resume();
-
-    void cancel();
+    ListenableFuture<Integer> getResultFuture();
 }

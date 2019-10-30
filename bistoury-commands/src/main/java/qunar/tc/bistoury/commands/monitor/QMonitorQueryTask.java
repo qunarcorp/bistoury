@@ -18,16 +18,18 @@
 package qunar.tc.bistoury.commands.monitor;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
+import qunar.tc.bistoury.agent.common.job.BytesJob;
+import qunar.tc.bistoury.agent.common.job.ContinueResponseJob;
 import qunar.tc.bistoury.agent.common.util.Response;
-import qunar.tc.bistoury.commands.AbstractTask;
-import qunar.tc.bistoury.commands.job.BytesJob;
-import qunar.tc.bistoury.commands.job.ContinueResponseJob;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.remoting.command.MonitorCommand;
+import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
+import qunar.tc.bistoury.remoting.netty.Task;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +39,7 @@ import java.util.Map;
  * @date: 2019/1/9 15:27
  * @describe：
  */
-public class QMonitorQueryTask extends AbstractTask {
+public class QMonitorQueryTask implements Task {
 
     private static final Logger logger = LoggerFactory.getLogger(QMonitorQueryTask.class);
 
@@ -60,12 +62,12 @@ public class QMonitorQueryTask extends AbstractTask {
     }
 
     @Override
-    protected ContinueResponseJob createJob() {
+    public ContinueResponseJob createJob() {
         return new Job();
     }
 
     @Override
-    protected ListenableFuture<Integer> getResultFuture() {
+    public ListenableFuture<Integer> getResultFuture() {
         return future;
     }
 
@@ -78,6 +80,11 @@ public class QMonitorQueryTask extends AbstractTask {
         @Override
         protected byte[] getBytes() throws Exception {
             return getResponseBytes();
+        }
+
+        @Override
+        public ListeningExecutorService getExecutor() {
+            return AgentRemotingExecutor.getExecutor();
         }
     }
 

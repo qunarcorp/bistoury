@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.commands.job;
+package qunar.tc.bistoury.agent.common.job;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -6,7 +6,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
@@ -18,14 +17,6 @@ import java.util.concurrent.CountDownLatch;
 public class DefaultResponseJobStore implements ResponseJobStore {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultResponseJobStore.class);
-
-    private static final DefaultResponseJobStore INSTANCE = new DefaultResponseJobStore();
-
-    private static final ListeningExecutorService EXECUTOR = AgentRemotingExecutor.getExecutor();
-
-    public static ResponseJobStore getInstance() {
-        return INSTANCE;
-    }
 
     private final ConcurrentMap<String, PausedJob> jobs = Maps.newConcurrentMap();
 
@@ -78,7 +69,7 @@ public class DefaultResponseJobStore implements ResponseJobStore {
             return;
         }
 
-        logger.debug("change writable to {}", writable);
+        logger.info("change writable to {}", writable);
         this.writable = writable;
         if (writable) {
             latch.countDown();
@@ -101,7 +92,7 @@ public class DefaultResponseJobStore implements ResponseJobStore {
 
         private PausedJob(ContinueResponseJob job) {
             this.job = new WrappedJob(job);
-            this.executor = job.getExecutor() != null ? job.getExecutor() : EXECUTOR;
+            this.executor = job.getExecutor();
         }
 
         public ContinueResponseJob getJob() {

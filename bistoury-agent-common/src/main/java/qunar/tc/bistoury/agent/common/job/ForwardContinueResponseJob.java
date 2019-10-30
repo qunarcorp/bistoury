@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.commands.job;
+package qunar.tc.bistoury.agent.common.job;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 

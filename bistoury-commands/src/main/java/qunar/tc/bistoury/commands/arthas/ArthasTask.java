@@ -25,12 +25,12 @@ import com.google.common.util.concurrent.SettableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
-import qunar.tc.bistoury.commands.AbstractTask;
+import qunar.tc.bistoury.agent.common.job.ContinueResponseJob;
 import qunar.tc.bistoury.commands.arthas.telnet.Telnet;
 import qunar.tc.bistoury.commands.arthas.telnet.TelnetStore;
-import qunar.tc.bistoury.commands.job.ContinueResponseJob;
 import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.NamedThreadFactory;
+import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 import qunar.tc.bistoury.remoting.netty.Task;
 
 import java.util.Set;
@@ -39,7 +39,7 @@ import java.util.concurrent.Executors;
 /**
  * @author zhenyu.nie created on 2018 2018/10/15 18:55
  */
-public class ArthasTask extends AbstractTask implements Task {
+public class ArthasTask implements Task {
 
     private static final Logger logger = LoggerFactory.getLogger(ArthasTask.class);
 
@@ -81,16 +81,16 @@ public class ArthasTask extends AbstractTask implements Task {
     }
 
     @Override
-    protected ContinueResponseJob createJob() {
+    public ContinueResponseJob createJob() {
         if (isShutdownCommand(command.trim())) {
             return new Job(SHUTDOWN_EXECUTOR);
         } else {
-            return new Job(null);
+            return new Job(AgentRemotingExecutor.getExecutor());
         }
     }
 
     @Override
-    protected ListenableFuture<Integer> getResultFuture() {
+    public ListenableFuture<Integer> getResultFuture() {
         return future;
     }
 

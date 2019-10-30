@@ -21,17 +21,18 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
 import com.sun.management.OperatingSystemMXBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
-import qunar.tc.bistoury.commands.AbstractTask;
-import qunar.tc.bistoury.commands.job.BytesJob;
-import qunar.tc.bistoury.commands.job.ContinueResponseJob;
+import qunar.tc.bistoury.agent.common.job.BytesJob;
+import qunar.tc.bistoury.agent.common.job.ContinueResponseJob;
 import qunar.tc.bistoury.commands.perf.PerfData;
 import qunar.tc.bistoury.common.FileUtil;
 import qunar.tc.bistoury.common.JacksonSerializer;
+import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 import qunar.tc.bistoury.remoting.netty.Task;
 import sun.management.counter.Counter;
 
@@ -48,7 +49,7 @@ import java.util.Map;
  * @date: 2018/11/15 15:12
  * @describe：
  */
-public class HostTask extends AbstractTask implements Task {
+public class HostTask implements Task {
 
     private static final Logger logger = LoggerFactory.getLogger(HostTask.class);
 
@@ -86,12 +87,12 @@ public class HostTask extends AbstractTask implements Task {
     }
 
     @Override
-    protected ContinueResponseJob createJob() {
+    public ContinueResponseJob createJob() {
         return new Job();
     }
 
     @Override
-    protected ListenableFuture<Integer> getResultFuture() {
+    public ListenableFuture<Integer> getResultFuture() {
         return future;
     }
     
@@ -121,6 +122,11 @@ public class HostTask extends AbstractTask implements Task {
                 result.put("visuaGC", getVisuaGCInfo(mxBean.getCounters()));
                 return JacksonSerializer.serializeToBytes(result);
             }
+        }
+
+        @Override
+        public ListeningExecutorService getExecutor() {
+            return AgentRemotingExecutor.getExecutor();
         }
     }
 

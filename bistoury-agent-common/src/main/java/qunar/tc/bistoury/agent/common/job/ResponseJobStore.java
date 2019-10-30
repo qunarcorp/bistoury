@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.commands.job;
+package qunar.tc.bistoury.agent.common.job;
 
 import qunar.tc.bistoury.agent.common.WritableListener;
 

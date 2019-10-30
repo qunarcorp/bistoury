@@ -28,6 +28,8 @@ import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.WritableListener;
+import qunar.tc.bistoury.agent.common.job.DefaultResponseJobStore;
+import qunar.tc.bistoury.agent.common.job.ResponseJobStore;
 import qunar.tc.bistoury.commands.HeartbeatProcessor;
 import qunar.tc.bistoury.commands.MetaRefreshProcessor;
 import qunar.tc.bistoury.commands.MetaRefreshTipProcessor;
@@ -74,9 +76,15 @@ class AgentNettyClient {
         final IdleStateHandler idleStateHandler = new IdleStateHandler(heartbeatTimeoutSec, 0, 0, TimeUnit.SECONDS);
 
         List<TaskFactory> taskFactories = ImmutableList.copyOf(ServiceLoader.load(TaskFactory.class));
-        final DefaultTaskStore taskStore = new DefaultTaskStore();
-        TaskProcessor taskProcessor = new TaskProcessor(taskStore, taskFactories);
-        final RequestHandler requestHandler = new RequestHandler(ImmutableList.<Processor>of(new CancelProcessor(taskStore), new HeartbeatProcessor(), new MetaRefreshProcessor(), new MetaRefreshTipProcessor(), taskProcessor));
+        final TaskStore taskStore = new DefaultTaskStore();
+        final ResponseJobStore jobStore = new DefaultResponseJobStore();
+        TaskProcessor taskProcessor = new TaskProcessor(jobStore, taskStore, taskFactories);
+        final RequestHandler requestHandler = new RequestHandler(ImmutableList.<Processor>of(
+                new CancelProcessor(taskStore),
+                new HeartbeatProcessor(),
+                new MetaRefreshProcessor(),
+                new MetaRefreshTipProcessor(),
+                taskProcessor));
 
         final ConnectionManagerHandler connectionManagerHandler = new ConnectionManagerHandler();
 
@@ -129,7 +137,7 @@ class AgentNettyClient {
         return running.get();
     }
 
-    private void closeFuture(final DefaultTaskStore taskStore) {
+    private void closeFuture(final TaskStore taskStore) {
         channel.closeFuture().addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
@@ -181,15 +189,16 @@ class AgentNettyClient {
         @Override
         public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
             boolean writable = channel.isWritable();
-            logger.warn("agent writability changed to {}", writable);
+            logger.info("agent writability changed to {}", writable);
             writableListener.setWritable(writable);
             super.channelWritabilityChanged(ctx);
         }
     }
 
-    public synchronized void destroyAndSync() {
+    public void destroyAndSync() {
         if (running.compareAndSet(true, false)) {
             logger.warn("agent netty client destroy, {}", channel);
+            writableListener.setWritable(false);
             try {
                 channel.close().syncUninterruptibly();
             } catch (Exception e) {

@@ -21,18 +21,19 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.agent.common.cpujstack.KvUtils;
+import qunar.tc.bistoury.agent.common.job.BytesJob;
+import qunar.tc.bistoury.agent.common.job.ContinueResponseJob;
 import qunar.tc.bistoury.agent.common.kv.KvDb;
 import qunar.tc.bistoury.agent.common.util.DateUtils;
-import qunar.tc.bistoury.commands.AbstractTask;
-import qunar.tc.bistoury.commands.job.BytesJob;
-import qunar.tc.bistoury.commands.job.ContinueResponseJob;
 import qunar.tc.bistoury.common.JacksonSerializer;
+import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 import qunar.tc.bistoury.remoting.netty.Task;
 
 import java.util.List;
@@ -41,7 +42,7 @@ import java.util.Map;
 /**
  * @author zhenyu.nie created on 2019 2019/1/9 17:39
  */
-public class CpuTimeTask extends AbstractTask implements Task {
+public class CpuTimeTask implements Task {
 
     private static final Logger logger = LoggerFactory.getLogger(CpuTimeTask.class);
 
@@ -83,12 +84,12 @@ public class CpuTimeTask extends AbstractTask implements Task {
     }
 
     @Override
-    protected ContinueResponseJob createJob() {
+    public ContinueResponseJob createJob() {
         return new Job();
     }
 
     @Override
-    protected ListenableFuture<Integer> getResultFuture() {
+    public ListenableFuture<Integer> getResultFuture() {
         return future;
     }
 
@@ -122,6 +123,11 @@ public class CpuTimeTask extends AbstractTask implements Task {
             map.put("start", DateUtils.TIME_FORMATTER.print(start));
             map.put("end", DateUtils.TIME_FORMATTER.print(end));
             return JacksonSerializer.serializeToBytes(map);
+        }
+
+        @Override
+        public ListeningExecutorService getExecutor() {
+            return AgentRemotingExecutor.getExecutor();
         }
     }
 

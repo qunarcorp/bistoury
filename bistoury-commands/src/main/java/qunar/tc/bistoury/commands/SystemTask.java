@@ -25,7 +25,8 @@ import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ClosableProcess;
 import qunar.tc.bistoury.agent.common.ClosableProcesses;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
-import qunar.tc.bistoury.commands.job.ContinueResponseJob;
+import qunar.tc.bistoury.agent.common.job.ContinueResponseJob;
+import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 import qunar.tc.bistoury.remoting.netty.Task;
 
 import java.io.File;
@@ -34,7 +35,7 @@ import java.io.InputStream;
 /**
  * @author zhenyu.nie created on 2018 2018/10/9 12:12
  */
-public class SystemTask extends AbstractTask implements Task {
+public class SystemTask implements Task {
 
     private static final Logger logger = LoggerFactory.getLogger(SystemTask.class);
 
@@ -72,12 +73,12 @@ public class SystemTask extends AbstractTask implements Task {
     }
 
     @Override
-    protected ContinueResponseJob createJob() {
+    public ContinueResponseJob createJob() {
         return new Job();
     }
 
     @Override
-    protected ListenableFuture<Integer> getResultFuture() {
+    public ListenableFuture<Integer> getResultFuture() {
         return future;
     }
 
@@ -143,7 +144,7 @@ public class SystemTask extends AbstractTask implements Task {
 
         @Override
         public ListeningExecutorService getExecutor() {
-            return null;
+            return AgentRemotingExecutor.getExecutor();
         }
     }
 }

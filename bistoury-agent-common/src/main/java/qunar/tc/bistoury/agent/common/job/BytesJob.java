@@ -1,9 +1,7 @@
-package qunar.tc.bistoury.commands.job;
+package qunar.tc.bistoury.agent.common.job;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
-import qunar.tc.bistoury.commands.arthas.telnet.CommunicateUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -13,6 +11,8 @@ import java.util.Arrays;
  * @author zhenyu.nie created on 2019 2019/10/28 14:19
  */
 public abstract class BytesJob implements ContinueResponseJob {
+
+    private static final int BUFFER_SIZE = 4 * 1024;
 
     private final String id;
 
@@ -43,9 +43,9 @@ public abstract class BytesJob implements ContinueResponseJob {
 
     @Override
     public boolean doResponse() throws Exception {
-        byte[] bytes = new byte[CommunicateUtil.DEFAULT_BUFFER_SIZE];
+        byte[] bytes = new byte[BUFFER_SIZE];
         int count = inputStream.read(bytes);
-        if (count == CommunicateUtil.DEFAULT_BUFFER_SIZE) {
+        if (count == BUFFER_SIZE) {
             handler.handle(bytes);
         } else if (count > 0) {
             handler.handle(Arrays.copyOf(bytes, count));
@@ -66,10 +66,5 @@ public abstract class BytesJob implements ContinueResponseJob {
     @Override
     public void error(Throwable t) {
         future.setException(t);
-    }
-
-    @Override
-    public ListeningExecutorService getExecutor() {
-        return null;
     }
 }

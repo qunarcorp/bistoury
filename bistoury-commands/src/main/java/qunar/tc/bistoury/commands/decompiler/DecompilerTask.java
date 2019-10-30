@@ -21,17 +21,18 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
 import com.ning.http.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
+import qunar.tc.bistoury.agent.common.job.BytesJob;
+import qunar.tc.bistoury.agent.common.job.ContinueResponseJob;
 import qunar.tc.bistoury.clientside.common.store.BistouryStore;
-import qunar.tc.bistoury.commands.AbstractTask;
-import qunar.tc.bistoury.commands.job.BytesJob;
-import qunar.tc.bistoury.commands.job.ContinueResponseJob;
 import qunar.tc.bistoury.common.*;
 import qunar.tc.bistoury.remoting.command.DecompilerCommand;
+import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 import qunar.tc.bistoury.remoting.netty.Task;
 
 import java.io.File;
@@ -49,7 +50,7 @@ import java.util.jar.JarFile;
  * @date: 2019/3/1 10:31
  * @describe：
  */
-public class DecompilerTask extends AbstractTask implements Task {
+public class DecompilerTask implements Task {
     private static final Logger logger = LoggerFactory.getLogger(DecompilerTask.class);
 
     private static final String JAR = "jar";
@@ -77,12 +78,12 @@ public class DecompilerTask extends AbstractTask implements Task {
     }
 
     @Override
-    protected ContinueResponseJob createJob() {
+    public ContinueResponseJob createJob() {
         return new Job();
     }
 
     @Override
-    protected ListenableFuture<Integer> getResultFuture() {
+    public ListenableFuture<Integer> getResultFuture() {
         return future;
     }
 
@@ -109,6 +110,11 @@ public class DecompilerTask extends AbstractTask implements Task {
                 logger.error("decompiler error, command: {} ", command, e);
             }
             return JacksonSerializer.serializeToBytes(typeResponse);
+        }
+
+        @Override
+        public ListeningExecutorService getExecutor() {
+            return AgentRemotingExecutor.getExecutor();
         }
     }
 

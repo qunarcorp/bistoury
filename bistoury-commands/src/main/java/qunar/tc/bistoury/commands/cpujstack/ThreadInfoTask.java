@@ -21,17 +21,18 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.SettableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.agent.common.cpujstack.KvUtils;
 import qunar.tc.bistoury.agent.common.cpujstack.ThreadInfo;
+import qunar.tc.bistoury.agent.common.job.BytesJob;
+import qunar.tc.bistoury.agent.common.job.ContinueResponseJob;
 import qunar.tc.bistoury.agent.common.kv.KvDb;
-import qunar.tc.bistoury.commands.AbstractTask;
-import qunar.tc.bistoury.commands.job.BytesJob;
-import qunar.tc.bistoury.commands.job.ContinueResponseJob;
 import qunar.tc.bistoury.common.JacksonSerializer;
+import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 import qunar.tc.bistoury.remoting.netty.Task;
 
 import java.util.Map;
@@ -39,7 +40,7 @@ import java.util.Map;
 /**
  * @author zhenyu.nie created on 2019 2019/1/9 19:35
  */
-public class ThreadInfoTask extends AbstractTask implements Task {
+public class ThreadInfoTask implements Task {
 
     private static final Logger logger = LoggerFactory.getLogger(ThreadInfoTask.class);
 
@@ -77,12 +78,12 @@ public class ThreadInfoTask extends AbstractTask implements Task {
     }
 
     @Override
-    protected ContinueResponseJob createJob() {
+    public ContinueResponseJob createJob() {
         return new Job();
     }
 
     @Override
-    protected ListenableFuture<Integer> getResultFuture() {
+    public ListenableFuture<Integer> getResultFuture() {
         return future;
     }
 
@@ -108,6 +109,11 @@ public class ThreadInfoTask extends AbstractTask implements Task {
             map.put("jstack", Strings.nullToEmpty(jstack));
 
             return JacksonSerializer.serializeToBytes(map);
+        }
+
+        @Override
+        public ListeningExecutorService getExecutor() {
+            return AgentRemotingExecutor.getExecutor();
         }
     }
 

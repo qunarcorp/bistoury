@@ -22,7 +22,7 @@ package qunar.tc.bistoury.remoting.netty;
  */
 public interface TaskStore {
 
-    boolean register(Task task);
+    boolean register(RunnableTask task);
 
     void finish(String id);
 
