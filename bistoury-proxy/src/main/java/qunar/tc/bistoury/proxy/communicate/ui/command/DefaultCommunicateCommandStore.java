@@ -43,12 +43,13 @@ public class DefaultCommunicateCommandStore implements CommunicateCommandStore {
     }
 
     private void registerCommandProcessor(UiRequestCommand command) {
-        final Set<Integer> codes = command.getCodes();
-        final int minAgentVersion = command.getMinAgentVersion();
-        final boolean supportMulti = command.supportMulti();
+        Set<Integer> codes = command.getCodes();
+        int minAgentVersion = command.getMinAgentVersion();
+        boolean supportMulti = command.supportMulti();
+        boolean supportPause = command.supportPause();
         CommunicateCommandProcessor processor = command.getProcessor();
         for (Integer code : codes) {
-            commandMap.put(code, new CommunicateCommand(code, minAgentVersion, supportMulti, processor));
+            commandMap.put(code, new CommunicateCommand(code, minAgentVersion, supportMulti, supportPause, processor));
             logger.info("register communicate command processor, code: {}, minAgentVersion: {}, supportMulti: {}, processor: {}", code, minAgentVersion, supportMulti, processor.getClass().getName());
         }
     }
@@ -64,7 +65,7 @@ public class DefaultCommunicateCommandStore implements CommunicateCommandStore {
 
     @Override
     public Optional<CommunicateCommand> getCommunicateCommandByOldCode(int oldCode) {
-        com.google.common.base.Optional<CommandCode> optional = CommandCode.valueOfOldCode(oldCode);
+        Optional<CommandCode> optional = CommandCode.valueOfOldCode(oldCode);
         if (optional.isPresent()) {
             int code = optional.get().getCode();
             return getCommunicateCommand(code);

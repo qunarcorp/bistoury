@@ -38,6 +38,8 @@ public interface Session {
 
     String getId();
 
+    boolean isSupportPause();
+
     RequestData getRequestData();
 
     AgentConnection getAgentConnection();

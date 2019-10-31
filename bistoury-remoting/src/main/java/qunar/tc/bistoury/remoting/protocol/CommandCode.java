@@ -52,7 +52,10 @@ public enum CommandCode {
     REQ_TYPE_CPU_THREAD_NUM(308, 22),
 
     REQ_TYPE_MONITOR(401, 40),
-    REQ_TYPE_QMONITOR_QUERY(402, 41);
+    REQ_TYPE_QMONITOR_QUERY(402, 41),
+
+    REQ_TYPE_JOB_PAUSE(601, 601),
+    REQ_TYPE_JOB_RESUME(602, 602);
 
     private int code;
     private int oldCode;
@@ -71,12 +74,12 @@ public enum CommandCode {
         this.oldCode = oldCode;
     }
 
-    public static Optional<CommandCode> valueOfOldCode(int oldCode) {
+    public static java.util.Optional<CommandCode> valueOfOldCode(int oldCode) {
         CommandCode commandCode = oldCodeMap.get(oldCode);
         if (commandCode == null) {
-            return Optional.absent();
+            return java.util.Optional.empty();
         }
-        return Optional.of(commandCode);
+        return java.util.Optional.of(commandCode);
     }
 
     public static Optional<CommandCode> valueOfCode(int code) {

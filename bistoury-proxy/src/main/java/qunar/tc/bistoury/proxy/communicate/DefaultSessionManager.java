@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
 import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.UiConnection;
+import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommand;
 import qunar.tc.bistoury.proxy.generator.IdGenerator;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
 import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
@@ -56,9 +57,9 @@ public class DefaultSessionManager implements SessionManager {
     private final ConcurrentMap<Connection, Set<Connection>> agentConnectionToUiConnectionMapping = Maps.newConcurrentMap();
 
     @Override
-    public Session create(RequestData requestData, AgentConnection agentConnection, UiConnection uiConnection) {
+    public Session create(CommunicateCommand command, RequestData requestData, AgentConnection agentConnection, UiConnection uiConnection) {
         String id = sessionIdGenerator.generateId();
-        Session session = new DefaultSession(id, requestData, agentConnection, uiConnection);
+        Session session = new DefaultSession(id, command.isSupportPause(), requestData, agentConnection, uiConnection);
         Session oldSession = sessions.putIfAbsent(id, session);
         if (oldSession != null) {
             return oldSession;

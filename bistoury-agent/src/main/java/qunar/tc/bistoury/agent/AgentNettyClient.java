@@ -76,6 +76,8 @@ class AgentNettyClient {
         final ResponseJobStore jobStore = new DefaultResponseJobStore();
         TaskProcessor taskProcessor = new TaskProcessor(jobStore, taskStore, taskFactories);
         final RequestHandler requestHandler = new RequestHandler(ImmutableList.<Processor>of(
+                new JobPauseProcessor(jobStore),
+                new JobResumeProcessor(jobStore),
                 new CancelProcessor(taskStore),
                 new HeartbeatProcessor(),
                 new MetaRefreshProcessor(),

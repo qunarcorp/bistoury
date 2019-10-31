@@ -18,7 +18,6 @@
 package qunar.tc.bistoury.proxy.communicate.ui.handler;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Optional;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -33,6 +32,7 @@ import qunar.tc.bistoury.remoting.protocol.CommandCode;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author zhenyu.nie created on 2019 2019/5/16 15:43

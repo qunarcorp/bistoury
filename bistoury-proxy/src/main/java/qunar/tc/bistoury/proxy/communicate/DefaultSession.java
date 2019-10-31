@@ -38,6 +38,8 @@ public class DefaultSession implements Session {
 
     private final String id;
 
+    private final boolean supportPause;
+
     private final RequestData requestData;
 
     private final AgentConnection agentConnection;
@@ -48,8 +50,9 @@ public class DefaultSession implements Session {
 
     private final AtomicBoolean end = new AtomicBoolean(false);
 
-    public DefaultSession(String id, RequestData requestData, AgentConnection agentConnection, UiConnection uiConnection) {
+    public DefaultSession(String id, boolean supportPause, RequestData requestData, AgentConnection agentConnection, UiConnection uiConnection) {
         this.id = id;
+        this.supportPause = supportPause;
         this.requestData = requestData;
         this.agentConnection = agentConnection;
         this.uiConnection = uiConnection;
@@ -125,6 +128,11 @@ public class DefaultSession implements Session {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public boolean isSupportPause() {
+        return supportPause;
     }
 
     @Override
