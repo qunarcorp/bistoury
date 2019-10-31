@@ -1,6 +1,9 @@
 package qunar.tc.bistoury.instrument.client.profiler.sampling;
 
+import com.taobao.middleware.logger.Logger;
+import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
+import qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.task.DumpTask;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.task.ProfilerTask;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.task.Task;
@@ -13,28 +16,26 @@ import java.io.File;
  */
 public class Manager {
 
-    private static final boolean isDebugMode = true;
+    private static final Logger logger = BistouryLoggger.getLogger();
 
-    private static String dumpDir = System.getProperty("user.home") + File.separator + "bistoury-profiler";
+    private static final boolean isDebugMode = true;
 
     public static final String profilerThreadPoolName = "bistoury-profile";
 
     public static final String profilerThreadPoolDumpName = "bistoury-profile-dump";
 
-    public static final String runnableDataPath = getFullPath("runnable-traces.txt");
-    public static final String filterRunnableDataPath = getFullPath("filter-runnable-traces.txt");
+    private static final String runnableDataPath = "runnable-traces.txt";
+    private static final String filterRunnableDataPath = "filter-runnable-traces.txt";
+    private static final String blockedDataPath = "blocked-traces.txt";
+    private static final String filterBlockedDataPath = "filter-blocked-traces.txt";
+    private static final String timedWaitingDataPath = "timed-waiting-traces.txt";
+    private static final String filterTimedWaitingDataPath = "filter-timed-waiting-traces.txt";
+    private static final String waitingDataPath = "waiting-traces.txt";
+    private static final String filterWaitingDataPath = "filter-waiting-traces.txt";
+    private static final String allStatePath = "all-state-traces.txt";
+    private static final String filterAllStatePath = "filter-all-state-traces.txt";
 
-    public static final String blockedDataPath = getFullPath("blocked-traces.txt");
-    public static final String filterBlockedDataPath = getFullPath("filter-blocked-traces.txt");
-
-    public static final String timedWaitingDataPath = getFullPath("timed-waiting-traces.txt");
-    public static final String filterTimedWaitingDataPath = getFullPath("filter-timed-waiting-traces.txt");
-
-    public static final String waitingDataPath = getFullPath("waiting-traces.txt");
-    public static final String filterWaitingDataPath = getFullPath("filter-waiting-traces.txt");
-
-    public static final String allStatePath = getFullPath("all-state-traces.txt");
-    public static final String filterAllStatePath = getFullPath("filter-all-state-traces.txt");
+    private static volatile String profilerId;
 
     private static final Trie compactPrefixPackage = new Trie();
 
@@ -52,11 +53,6 @@ public class Manager {
         compactPrefixPackage.insert("com.google.");
         compactPrefixPackage.insert("ch.qos.");
         compactPrefixPackage.insert("org.slf4j.");
-
-        if (isDebugMode) {
-            new File(dumpDir).delete();
-        }
-        new File(dumpDir).mkdirs();
     }
 
     public static boolean isCompactClass(String className) {
@@ -67,7 +63,22 @@ public class Manager {
 
     private static Task dumpTask;
 
-    public static synchronized void init(int durationSeconds, int frequencyMillis) {
+    private static void createDumpPath(String tempDir) {
+        ProfilerConstants.PROFILER_ROOT_PATH = tempDir + File.separator + "bistoury-profiler";
+        ProfilerConstants.PROFILER_TEMP_PATH = tempDir + File.separator + "bistoury-profiler" + File.separator + "tmp";
+
+        if (isDebugMode) {
+            new File(ProfilerConstants.PROFILER_ROOT_PATH).delete();
+            new File(ProfilerConstants.PROFILER_TEMP_PATH).delete();
+        }
+        new File(ProfilerConstants.PROFILER_ROOT_PATH).mkdirs();
+        new File(ProfilerConstants.PROFILER_TEMP_PATH).mkdirs();
+    }
+
+    public static synchronized void init(int durationSeconds, int frequencyMillis, String profilerId, String tempDir) {
+        createDumpPath(tempDir);
+
+        Manager.profilerId = profilerId;
         profilerTask = new ProfilerTask(frequencyMillis);
         dumpTask = new DumpTask(durationSeconds);
 
@@ -76,18 +87,40 @@ public class Manager {
         AgentProfilerContext.startProfiling();
     }
 
+
     public synchronized static void stop() {
-        if (profilerTask != null) {
-            profilerTask.destroy();
-            profilerTask = null;
-        }
+        checkProfilerState();
 
-        if (dumpTask != null) {
-            dumpTask.destroy();
-            dumpTask = null;
-        }
-
+        stopTask(profilerTask);
+        stopTask(dumpTask);
         AgentProfilerContext.stopProfiling();
+    }
+
+    public static void renameResult() {
+        File preDumpPath = new File(ProfilerConstants.PROFILER_TEMP_PATH + File.separator + profilerId);
+        File realDumpPath = new File(ProfilerConstants.PROFILER_ROOT_PATH + File.separator + profilerId);
+        preDumpPath.renameTo(realDumpPath);
+    }
+
+    private static void checkProfilerState() {
+        long startTime = AgentProfilerContext.getStartTime();
+        long curMillis = System.currentTimeMillis();
+        long duration = curMillis - startTime;
+        if (duration < ProfilerConstants.MIN_DURATION_MILLIS) {
+            String detailMsg = "profiler duration is too short. duration: " + duration / 1000 +
+                    "s. min duration must " + ProfilerConstants.MIN_DURATION_MILLIS / 1000 + "s";
+            throw new IllegalStateException(detailMsg);
+        }
+    }
+
+    private static void stopTask(Task task) {
+        try {
+            if (task != null) {
+                task.stop();
+            }
+        } catch (Exception e) {
+            logger.error("", "destroy task error.", e);
+        }
     }
 
     public static boolean isDebugMode() {
@@ -95,6 +128,48 @@ public class Manager {
     }
 
     private static String getFullPath(String fileName) {
-        return dumpDir + File.separator + fileName;
+        String profilerIdPath = ProfilerConstants.PROFILER_TEMP_PATH + File.separator + profilerId;
+        new File(ProfilerConstants.PROFILER_TEMP_PATH + File.separator + profilerId).mkdirs();
+        return profilerIdPath + File.separator + fileName;
+    }
+
+    public static String getRunnableDataPath() {
+        return getFullPath(runnableDataPath);
+    }
+
+    public static String getFilterRunnableDataPath() {
+        return getFullPath(filterRunnableDataPath);
+    }
+
+    public static String getBlockedDataPath() {
+        return getFullPath(blockedDataPath);
+    }
+
+    public static String getFilterBlockedDataPath() {
+        return getFullPath(filterBlockedDataPath);
+    }
+
+    public static String getTimedWaitingDataPath() {
+        return getFullPath(timedWaitingDataPath);
+    }
+
+    public static String getFilterTimedWaitingDataPath() {
+        return getFullPath(filterTimedWaitingDataPath);
+    }
+
+    public static String getWaitingDataPath() {
+        return getFullPath(waitingDataPath);
+    }
+
+    public static String getFilterWaitingDataPath() {
+        return getFullPath(filterWaitingDataPath);
+    }
+
+    public static String getAllStatePath() {
+        return getFullPath(allStatePath);
+    }
+
+    public static String getFilterAllStatePath() {
+        return getFullPath(filterAllStatePath);
     }
 }

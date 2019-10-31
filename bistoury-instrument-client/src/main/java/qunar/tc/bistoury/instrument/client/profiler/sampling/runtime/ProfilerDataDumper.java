@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AtomicLongMap;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
-import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.Manager;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.runtime.cpu.DumpData;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.runtime.method.MethodCache;
@@ -40,16 +39,17 @@ public class ProfilerDataDumper {
             logger.info("dumpData: {}", dumpData);
         }
 
-        doDump(dumpData.getBlockedCpuTime(), Manager.blockedDataPath, false);
-        doDump(dumpData.getBlockedCpuTime(), Manager.filterBlockedDataPath, true);
-        doDump(dumpData.getRunnableCpuTime(), Manager.runnableDataPath, false);
-        doDump(dumpData.getRunnableCpuTime(), Manager.filterRunnableDataPath, true);
-        doDump(dumpData.getTimedWaitingCpuTime(), Manager.timedWaitingDataPath, false);
-        doDump(dumpData.getTimedWaitingCpuTime(), Manager.filterTimedWaitingDataPath, true);
-        doDump(dumpData.getWaitingCpuTime(), Manager.waitingDataPath, false);
-        doDump(dumpData.getWaitingCpuTime(), Manager.filterWaitingDataPath, true);
+        doDump(dumpData.getBlockedCpuTime(), Manager.getBlockedDataPath(), false);
+        doDump(dumpData.getBlockedCpuTime(), Manager.getFilterBlockedDataPath(), true);
+        doDump(dumpData.getRunnableCpuTime(), Manager.getRunnableDataPath(), false);
+        doDump(dumpData.getRunnableCpuTime(), Manager.getFilterRunnableDataPath(), true);
+        doDump(dumpData.getTimedWaitingCpuTime(), Manager.getTimedWaitingDataPath(), false);
+        doDump(dumpData.getTimedWaitingCpuTime(), Manager.getFilterTimedWaitingDataPath(), true);
+        doDump(dumpData.getWaitingCpuTime(), Manager.getWaitingDataPath(), false);
+        doDump(dumpData.getWaitingCpuTime(), Manager.getFilterWaitingDataPath(), true);
 
         dumpAllState(dumpData);
+        Manager.renameResult();
     }
 
     private void dumpAllState(DumpData dumpData) {
@@ -61,8 +61,8 @@ public class ProfilerDataDumper {
                 allStateMap.addAndGet(entry.getKey(), entry.getValue());
             }
         }
-        doDump(allStateMap.asMap(), Manager.allStatePath, false);
-        doDump(allStateMap.asMap(), Manager.filterAllStatePath, true);
+        doDump(allStateMap.asMap(), Manager.getAllStatePath(), false);
+        doDump(allStateMap.asMap(), Manager.getFilterAllStatePath(), true);
     }
 
     private void doDump(Map<Integer, Long> cpuTimes, String dumpFile, boolean isFilter) {

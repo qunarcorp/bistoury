@@ -17,6 +17,8 @@
 
 package qunar.tc.bistoury.common;
 
+import java.io.File;
+
 /**
  * @author zhenyu.nie created on 2018 2018/11/28 19:59
  */
@@ -53,11 +55,23 @@ public class BistouryConstants {
 
     public static final String REQ_AGENT_INFO = "agentinfopush";
 
-    public static final String REQ_PROFILER_ADD = "profileradd";
+    public static final String REQ_PROFILER_START = "profilerstart";
+
+    public static final String REQ_PROFILER_STOP = "profilerstop";
+
+    public static final String REQ_PROFILER_FILE_SEARCH = "profilerfilesearch";
+
+    public static final String REQ_PROFILER_STATE_SEARCH = "profilerstatesearch";
 
     public static final String BISTOURY_COMMAND_THREAD_NAME = "bistoury-command-execute-daemon";
 
     public static final String SPY_CLASSNAME = "qunar.tc.bistoury.instrument.spy.BistourySpys1";
+
+    public static final String TMP_DIR = System.getProperty("java.io.tmpdir");
+
+    public static final String PROFILER_ROOT_PATH = System.getProperty("java.io.tmpdir") + File.separator + "bistoury-profiler";
+
+    public static final String PROFILER_TEMP_PATH = System.getProperty("java.io.tmpdir") + File.separator + "bistoury-profiler" + File.separator + "tmp";
 
     // todo: 先这么写吧
     public static final String CURRENT_VERSION = "2.0.6";

@@ -23,6 +23,14 @@ public class ProfilerFactory {
         }
     }
 
+    private static String getProfilerId(Map<String, Object> config) {
+        String profilerId = (String) config.get(ProfilerConstants.PROFILER_ID);
+        if (profilerId == null) {
+            throw new IllegalArgumentException("no profiler id.");
+        }
+        return profilerId;
+    }
+
     private static Mode getMode(Mode mode) {
         if (mode == null) {
             return Mode.sampler;
@@ -33,8 +41,10 @@ public class ProfilerFactory {
     private static Profiler getSamplingProfiler(Map<String, Object> config) {
         Integer frequencyMiilis = (Integer) config.get(ProfilerConstants.FREQUENCY);
         Integer durationSeconds = (Integer) config.get(ProfilerConstants.DURATION);
+        String tempDir = (String) config.get(ProfilerConstants.TMP_DIR);
         frequencyMiilis = frequencyMiilis == null ? DEFAULT_FREQUENCY_MIILIS : frequencyMiilis;
         durationSeconds = durationSeconds == null ? DEFAULT_DURATION_SECONDS : durationSeconds;
-        return new SamplingProfiler(durationSeconds, frequencyMiilis);
+        tempDir = tempDir == null ? System.getProperty("java.io.tmpdir") : tempDir;
+        return new SamplingProfiler(durationSeconds, frequencyMiilis, getProfilerId(config), tempDir);
     }
 }

@@ -26,6 +26,7 @@
     <script type="text/javascript" src="js/tripledes.js?version=2.0.2"></script>
     <script type="text/javascript" src="js/mode-ecb.js?version=2.0.2"></script>
     <script type="text/javascript" src="js/machine.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/profiler.js?version=2.0.2"></script>
     <script type="text/javascript" src="js/header.js?version=2.0.2"></script>
     <script type="text/javascript" src="js/spop.min.js?version=2.0.2"></script>
     <script type="text/javascript" src="js/bistoury.js?version=2.0.2"></script>
@@ -50,6 +51,7 @@
                             <li role="presentation" id="jvm-info-menu"><a href="#">jvm信息</a></li>
                             <li role="presentation" id="thread-info-menu"><a href="#">Thread Dump</a></li>
                             <li role="presentation" id="jstack-dump-menu"><a>线程级CPU监控</a></li>
+                            <li role="presentation" id="cpu-profiler-menu"><a href="#">性能分析</a></li>
                         </ul>
                     </div>
                 </nav>
@@ -377,7 +379,8 @@
                             </div>
                             <div id="jvm-heap-histo" class="jvm-tab">
                                 <div class="col-md-12">
-                                    <p>查询堆对象统计可以选择参数，默认使用 -all。选择后可点击 <i class="glyphicon glyphicon-refresh"></i>（刷新图标）重新查询</p>
+                                    <p>查询堆对象统计可以选择参数，默认使用 -all。选择后可点击 <i class="glyphicon glyphicon-refresh"></i>（刷新图标）重新查询
+                                    </p>
                                     <!--<p>可以通过选择查询时间，查询最近三天中的 heap histo，采用的参数为 -all，选择时间后点击查询按钮查询历史 heap histo</p>-->
                                     <p style="color: red">注意：-live 参数会导致应用进行一次 full gc，请谨慎使用。</p>
                                     <p><a target="_blank"
@@ -496,6 +499,19 @@
                     </div>
                     <div id="process-panel" class="tab"></div>
                     <div id="jstack-dump-panel" class="tab"></div>
+                    <div id="cpu-profiler" class="tab">
+                        <button id="btn_start_profiler" type="button" class="btn btn-primary" onclick="startProfiler()">
+                            开始
+                        </button>
+                        <button id="btn_stop_profiler" type="button" class="btn btn-primary"
+                                onclick="stopProfiler(111)">手动结束
+                        </button>
+                        <button id="btn_analyze_profiler" type="button" class="btn btn-primary"
+                                onclick="analyzeProfiler(111)">分析
+                        </button>
+                        <a id="btn_result" class="btn btn-primary" href="html/report.html?profilerId=111"
+                           target="_blank">查看结果</a>
+                    </div>
                 </div>
             </div>
         </div>

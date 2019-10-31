@@ -17,26 +17,31 @@
 
 package qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.processor;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.common.BistouryConstants;
+import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
+import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
 import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.AbstractCommand;
+import qunar.tc.bistoury.proxy.service.ProfilerService;
+import qunar.tc.bistoury.proxy.service.ProfilerStateManager;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
+import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.serverside.agile.Conf;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 
-import org.springframework.stereotype.Service;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author zhenyu.nie created on 2019 2019/5/22 12:22
@@ -62,6 +67,15 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
     private String defaultCmInfoFilePath = DEFAULT_RELEASE_INFO_PATH;
     private Conf conf;
 
+    @Resource
+    private ProfilerService profilerService;
+
+    @Resource
+    private AgentConnectionStore agentConnectionStore;
+
+    @Resource
+    private ProfilerStateManager profilerStateManager;
+
     @PostConstruct
     public void init() {
         DynamicConfigLoader.<LocalDynamicConfig>load("releaseInfo_config.properties", false)
@@ -79,12 +93,27 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
                 CommandCode.REQ_TYPE_JAR_INFO.getCode(),
                 CommandCode.REQ_TYPE_CONFIG.getCode(),
                 CommandCode.REQ_TYPE_JAR_DEBUG.getCode(),
-                CommandCode.REQ_TYPE_PROFILER.getCode());
+                CommandCode.REQ_TYPE_PROFILER_START.getCode(),
+                CommandCode.REQ_TYPE_PROFILER_STOP.getCode());
     }
 
     @Override
     protected String prepareCommand(RequestData<String> data, String agentId) {
-        return encodeCommand(data.getCommand(), data.getApp()) + BistouryConstants.PID_PARAM + BistouryConstants.FILL_PID;
+        String command;
+        if (CommandCode.REQ_TYPE_PROFILER_START.getCode() == data.getType()) {
+            command = prepareProfilerStart(data.getCommand(), agentId);
+        } else {
+            command = encodeCommand(data.getCommand(), data.getApp());
+        }
+        return command + BistouryConstants.PID_PARAM + BistouryConstants.FILL_PID;
+    }
+
+    private String prepareProfilerStart(String command, String agentId) {
+        String profilerId = profilerService.startProfiler(agentId);
+        Optional<AgentConnection> agentConnRef = agentConnectionStore.getConnection(agentId);
+        agentConnRef.ifPresent(agentConnection -> profilerStateManager.register(agentConnection, command, profilerId));
+        return BistouryConstants.REQ_PROFILER_START + " " + profilerId
+                + command.substring(BistouryConstants.REQ_PROFILER_START.length());
     }
 
     @Override
@@ -122,6 +151,13 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
             default:
                 return command;
         }
+    }
+
+
+    @Override
+    public Datagram prepareResponse(Datagram datagram) {
+        System.out.println(datagram.getHeader().getId());
+        return super.prepareResponse(datagram);
     }
 
     private static String encode(String input) {

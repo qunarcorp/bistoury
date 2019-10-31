@@ -23,6 +23,8 @@ import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.commands.arthas.telnet.ArthasTelnetStore;
 import qunar.tc.bistoury.commands.arthas.telnet.DebugTelnetStore;
 import qunar.tc.bistoury.commands.arthas.telnet.TelnetStore;
+import qunar.tc.bistoury.common.BistouryConstants;
+import qunar.tc.bistoury.common.URLCoder;
 import qunar.tc.bistoury.remoting.netty.Task;
 import qunar.tc.bistoury.remoting.netty.TaskFactory;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
@@ -55,6 +57,9 @@ public class ArthasTaskFactory implements TaskFactory<String> {
                 .put(CommandCode.REQ_TYPE_MONITOR.getCode(), debugTelnetStore)
                 .put(CommandCode.REQ_TYPE_JAR_INFO.getCode(), debugTelnetStore)
                 .put(CommandCode.REQ_TYPE_CONFIG.getCode(), debugTelnetStore)
+                .put(CommandCode.REQ_TYPE_PROFILER_START.getCode(), debugTelnetStore)
+                .put(CommandCode.REQ_TYPE_PROFILER_STOP.getCode(), debugTelnetStore)
+                .put(CommandCode.REQ_TYPE_PROFILER_STATE_SEARCH.getCode(), debugTelnetStore)
                 .build();
     }
 
@@ -97,6 +102,12 @@ public class ArthasTaskFactory implements TaskFactory<String> {
             return null;
         }
 
+        if (header.getCode() == CommandCode.REQ_TYPE_PROFILER_START.getCode()) {
+            //增加target vm临时文件夹参数给
+            realCommand = realCommand + " -t " + URLCoder.encode(BistouryConstants.TMP_DIR);
+        }
+
         return new ArthasTask(storeMapping.get(header.getCode()), header.getId(), header.getMaxRunningMs(), pid, realCommand, handler);
     }
+
 }

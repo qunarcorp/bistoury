@@ -43,7 +43,10 @@ $(document).ready(function () {
             "sysenv",
             "ognl",
             "mc",
-            "mbean"
+            "mbean",
+            "profilerstart",
+            "profilerstop",
+            "profilersearch"
         ];
 
         var debugCommand = [
@@ -348,7 +351,11 @@ $(document).ready(function () {
                         jqconsole.Focus();
                         startNewLine();
                     })
-                    $('#host-select-' + tid).chosen({"width": "calc(100% - 60px)", search_contains: true, allow_single_deselect: true});
+                    $('#host-select-' + tid).chosen({
+                        "width": "calc(100% - 60px)",
+                        search_contains: true,
+                        allow_single_deselect: true
+                    });
                     $('.console').focus();
 
                     var fullScreenBtn = $("<button></button>").addClass("btn btn-info btn-sm").css("float", "right").css("height", "32px").css("max-width", "55px").append("全屏");

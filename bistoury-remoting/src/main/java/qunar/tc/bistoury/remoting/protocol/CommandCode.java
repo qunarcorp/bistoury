@@ -54,7 +54,10 @@ public enum CommandCode {
     REQ_TYPE_MONITOR(401, 40),
     REQ_TYPE_QMONITOR_QUERY(402, 41),
 
-    REQ_TYPE_PROFILER(501, -1);
+    REQ_TYPE_PROFILER_START(501, 51),
+    REQ_TYPE_PROFILER_STOP(502, 52),
+    REQ_TYPE_PROFILER_STATE_SEARCH(503, 53),
+    REQ_TYPE_PROFILER_FILE_SEARCH(504, 54);
 
     private int code;
     private int oldCode;

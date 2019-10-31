@@ -7,6 +7,6 @@ public interface Task {
 
     void init();
 
-    void destroy();
+    void stop();
 
 }

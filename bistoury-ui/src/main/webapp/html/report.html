@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+<div>
+    <embed id="svg-file">
+</div>
+<div class="radioAlign">
+    <input type="radio" name="state" onclick="chooseSvg('runnable',true)" checked="true"/><label
+        class="svgLabel">runnable&nbsp;state(compact)</label>
+    <input type="radio" name="state" onclick="chooseSvg('waiting',true)"/><label
+        class="svgLabel">waiting&nbsp;state(compact)</label>
+    <input type="radio" name="state" onclick="chooseSvg('blocked',true)"/><label
+        class="svgLabel">blocked&nbsp;state(compact)</label>
+    <input type="radio" name="state" onclick="chooseSvg('timed-waiting',true)"/><label
+        class="svgLabel">timed&nbsp;waiting&nbsp;state(compact)</label>
+    <input type="radio" name="state" onclick="chooseSvg('all',true)"/><label
+        class="svgLabel">all&nbsp;state(compact)</label>
+    </br>
+    </br>
+    <input type="radio" name="state" onclick="chooseSvg('runnable',false)"/><label
+        class="svgLabel">runnable&nbsp;state</label>
+    <input type="radio" name="state" onclick="chooseSvg('waiting',false)"/><label
+        class="svgLabel">waiting&nbsp;state</label>
+    <input type="radio" name="state" onclick="chooseSvg('blocked',false)"/><label
+        class="svgLabel">blocked&nbsp;state</label>
+    <input type="radio" name="state" onclick="chooseSvg('timed-waiting',false)"/><label
+        class="svgLabel">timed&nbsp;waiting&nbsp;state</label>
+    <input type="radio" name="state" onclick="chooseSvg('all',false)"/><label
+        class="svgLabel">all&nbsp;state</label>
+</div>
+</body>
+
+<script>
+    window.onload = function () {
+        chooseSvg('runnable', true);
+    };
+
+    function chooseSvg(state, isCompact) {
+        var prefix = "";
+        if (isCompact) {
+            prefix = "filter-"
+        }
+
+        var url = "/profiler/download.do";
+        var fileName = prefix + chooseSvgFile(state);
+        var profilerId = getProfilerId();
+        url = url + "?profilerId=" + profilerId + "&svgName=" + fileName;
+
+        document.getElementById("svg-file").src = url;
+
+        var source = document.getElementById("svg-file");
+        var clone = source.cloneNode(true);
+        source.parentNode.replaceChild(clone, source)
+    }
+
+    function chooseSvgFile(state) {
+        switch (state) {
+            case "runnable":
+                return "runnable-traces.svg";
+            case "waiting":
+                return "waiting-traces.svg";
+            case "blocked":
+                return "blocked-traces.svg";
+            case "timed-waiting":
+                return "timed-waiting-traces.svg";
+            case "all":
+                return "all-state-traces.svg";
+        }
+    }
+
+    function getProfilerId() {
+        return getParam("profilerId");
+    }
+
+    function getParam(key) {
+        var url = new URL(location.href);
+        return url.searchParams.get(key);
+    }
+</script>
+<style type="text/css">
+    .svgLabel {
+        width: 80px;
+        display: inline-table;
+    }
+</style>
+
+</html>

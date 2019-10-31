@@ -435,6 +435,8 @@ $(document).ready(function () {
                 $("#file-content-modal").modal('hide');
                 bistoury.error(res.message);
             }
+        } else if (resType === "profilerstart" || resType === "profilerstop" || resType === "profilersearch") {
+            buildProfiler(result);
         }
     }
 
@@ -531,36 +533,58 @@ $(document).ready(function () {
     }
 
     function getAllThreads() {
-        bistouryWS.send(currentHost, 11, "0@-1@-1", {type: 0, maxDepth: -1, threadId: -1}, keepRunningFun, handleResult);
+        bistouryWS.send(currentHost, 11, "0@-1@-1", {
+            type: 0,
+            maxDepth: -1,
+            threadId: -1
+        }, keepRunningFun, handleResult);
         //send(currentHost, 11, "0@-1@-1")
     }
 
     function getThreadDetail(threadId) {
         var maxDepth = $("#thread-max-depth").val();
         //send(currentHost, 11, "1@" + threadId + "@" + maxDepth);
-        bistouryWS.send(currentHost, 11, "1@" + threadId + "@" + maxDepth, {type: 1, maxDepth: maxDepth, threadId: threadId}, keepRunningFun, handleResult)
+        bistouryWS.send(currentHost, 11, "1@" + threadId + "@" + maxDepth, {
+            type: 1,
+            maxDepth: maxDepth,
+            threadId: threadId
+        }, keepRunningFun, handleResult)
     }
 
     function getThreadDump() {
         var maxDepth = $("#thread-max-depth").val();
         //send(currentHost, 11, "2@-1@" + maxDepth);
-        bistouryWS.send(currentHost, 11, "2@-1@" + maxDepth, {type: 2, maxDepth: maxDepth, threadId: -1}, keepRunningFun, handleResult)
+        bistouryWS.send(currentHost, 11, "2@-1@" + maxDepth, {
+            type: 2,
+            maxDepth: maxDepth,
+            threadId: -1
+        }, keepRunningFun, handleResult)
     }
 
     function getDeadLock() {
         var maxDepth = $("#thread-max-depth").val();
         //send(currentHost, 11, "3@-1@" + maxDepth)
-        bistouryWS.send(currentHost, 11, "3@-1@" + maxDepth, {type: 3, maxDepth: maxDepth, threadId: -1}, keepRunningFun, handleResult)
+        bistouryWS.send(currentHost, 11, "3@-1@" + maxDepth, {
+            type: 3,
+            maxDepth: maxDepth,
+            threadId: -1
+        }, keepRunningFun, handleResult)
     }
 
     function getHeapHisto(timestamp) {
         $('#jvm-heap-histo-table').bootstrapTable('removeAll');
         var param = $("#heap-histo-param").val();
         if (timestamp) {
-            bistouryWS.send(currentHost, 12, "heaphisto " + param + " " + timestamp, {param: param, timestamp: timestamp}, keepRunningFun, handleResult);
+            bistouryWS.send(currentHost, 12, "heaphisto " + param + " " + timestamp, {
+                param: param,
+                timestamp: timestamp
+            }, keepRunningFun, handleResult);
             //send(currentHost, 12, "heaphisto " + param + " " + timestamp);
         } else {
-            bistouryWS.send(currentHost, 12, "heaphisto " + param + " " + -1, {param: param, timestamp: -1}, keepRunningFun, handleResult)
+            bistouryWS.send(currentHost, 12, "heaphisto " + param + " " + -1, {
+                param: param,
+                timestamp: -1
+            }, keepRunningFun, handleResult)
             //send(currentHost, 12, "heaphisto " + param + " " + -1);
         }
     }
@@ -934,6 +958,12 @@ $(document).ready(function () {
             bistoury.info("点击刷新图标查询数据");
             //getHeapHisto();
         }
+    });
+
+    $("#cpu-profiler-menu").click(function () {
+        removeActiveClass();
+        $("#cpu-profiler-menu").addClass("active");
+        $("#cpu-profiler").show();
     });
 
     $("#heap-histo-search").click(function () {

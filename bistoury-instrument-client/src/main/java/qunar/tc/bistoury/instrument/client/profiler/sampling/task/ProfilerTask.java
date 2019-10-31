@@ -20,6 +20,8 @@ public class ProfilerTask implements Task {
 
     private final int frequency;
 
+    private volatile boolean isStop = false;
+
     public ProfilerTask(int frequency) {
         this.frequency = frequency;
     }
@@ -49,7 +51,8 @@ public class ProfilerTask implements Task {
     }
 
     @Override
-    public void destroy() {
+    public void stop() {
+        isStop = true;
         profilerExecutor.shutdown();
     }
 }

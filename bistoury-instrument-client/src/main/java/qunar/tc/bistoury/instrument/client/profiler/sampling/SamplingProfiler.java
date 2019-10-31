@@ -18,11 +18,17 @@ public class SamplingProfiler implements Profiler {
 
     private final int frequencyMillis;
 
+    private final String profilerId;
+
+    private final String tempDir;
+
     private volatile InstrumentInfo instrumentInfo;
 
-    public SamplingProfiler(int durationSeconds, int frequencyMillis) {
+    public SamplingProfiler(int durationSeconds, int frequencyMillis, String profilerId, String tempDir) {
         this.durationSeconds = durationSeconds;
         this.frequencyMillis = frequencyMillis;
+        this.profilerId = profilerId;
+        this.tempDir = tempDir;
     }
 
     @Override
@@ -31,7 +37,7 @@ public class SamplingProfiler implements Profiler {
         logger.info("start add sampling profiler.");
         try {
             lock.lock();
-            Manager.init(durationSeconds, frequencyMillis);
+            Manager.init(durationSeconds, frequencyMillis, profilerId, tempDir);
         } finally {
             lock.unlock();
         }

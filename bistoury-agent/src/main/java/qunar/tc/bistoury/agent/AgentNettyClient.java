@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.commands.HeartbeatProcessor;
 import qunar.tc.bistoury.commands.MetaRefreshProcessor;
 import qunar.tc.bistoury.commands.MetaRefreshTipProcessor;
+import qunar.tc.bistoury.commands.profiler.ProfilerFileSearchProcessor;
 import qunar.tc.bistoury.remoting.coder.AgentDecoder;
 import qunar.tc.bistoury.remoting.coder.AgentEncoder;
 import qunar.tc.bistoury.remoting.netty.*;
@@ -72,7 +73,7 @@ class AgentNettyClient {
         List<TaskFactory> taskFactories = ImmutableList.copyOf(ServiceLoader.load(TaskFactory.class));
         final DefaultTaskStore taskStore = new DefaultTaskStore();
         TaskProcessor taskProcessor = new TaskProcessor(taskStore, taskFactories);
-        final RequestHandler requestHandler = new RequestHandler(ImmutableList.<Processor>of(new CancelProcessor(taskStore), new HeartbeatProcessor(), new MetaRefreshProcessor(), new MetaRefreshTipProcessor(), taskProcessor));
+        final RequestHandler requestHandler = new RequestHandler(ImmutableList.<Processor>of(new CancelProcessor(taskStore), new HeartbeatProcessor(), new MetaRefreshProcessor(), new MetaRefreshTipProcessor(), new ProfilerFileSearchProcessor(), taskProcessor));
 
         final ConnectionManagerHandler connectionManagerHandler = new ConnectionManagerHandler();
 

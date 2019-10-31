@@ -44,7 +44,9 @@ public class DefaultCodeTypeMappingStore implements CodeTypeMappingStore {
                 REQ_TYPE_MONITOR.getCode(),
                 REQ_TYPE_JAR_INFO.getCode(),
                 REQ_TYPE_CONFIG.getCode(),
-                REQ_TYPE_JAR_DEBUG.getCode()));
+                REQ_TYPE_JAR_DEBUG.getCode(),
+                REQ_TYPE_PROFILER_STOP.getCode(),
+                REQ_TYPE_PROFILER_START.getCode()));
 
         //jstack
         register(CpuTimeCommand.class, ImmutableSet.of(REQ_TYPE_CPU_JSTACK_TIMES.getCode()));
@@ -74,6 +76,9 @@ public class DefaultCodeTypeMappingStore implements CodeTypeMappingStore {
         register(stringClass, ImmutableSet.of(REQ_TYPE_REFRESH_TIP.getCode()));
         //cancel
         register(stringClass, ImmutableSet.of(REQ_TYPE_CANCEL.getCode()));
+        //profiler search
+        register(ProfilerSearchCommand.class, ImmutableSet.of(REQ_TYPE_PROFILER_STATE_SEARCH.getCode()));
+        register(ProfilerSearchCommand.class, ImmutableSet.of(REQ_TYPE_PROFILER_FILE_SEARCH.getCode()));
 
     }
 

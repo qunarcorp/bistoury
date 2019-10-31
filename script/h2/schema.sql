@@ -71,3 +71,20 @@ create table `bistoury_user`(
     password varchar(100) not null default '' comment '用户密码',
     constraint  uniq_user_code unique (user_code)
 )CHARSET = utf8mb4;
+
+DROP TABLE if exists `bistoury_profiler`;
+ create TABLE `bistoury_profiler`
+(
+    `id`          int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键id',
+    `profiler_id` varchar(32)      NOT NULL COMMENT '性能分析对应的id',
+    `operator`    varchar(50)      NOT NULL DEFAULT '' COMMENT '操作用户code',
+    `app_code`    varchar(50)               DEFAULT '' not null COMMENT '对应的appCode',
+    `agent_id`    VARCHAR(32)               DEFAULT '' NOT NULL COMMENT 'agent机器对应的id',
+    `pid`         int(10) unsigned NOT NULL COMMENT '目标vm对应的pid',
+    `start_time`  timestamp        NOT NULL COMMENT '性能分析开始时间',
+    `update_time` timestamp        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    `state`       int(3) unsigned  NOT NULL  COMMENT '状态,0: 开始, 1: 已结束',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uniq_profiler_id` (`profiler_id`),
+    index idx_app_code_agent_id(app_code, agent_id)
+)CHARSET = utf8mb4;
