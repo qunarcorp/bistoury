@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.sun.management.OperatingSystemMXBean;
 import com.sun.tools.attach.VirtualMachine;
+import qunar.tc.bistoury.agent.common.job.ContinueResponseJob;
 import qunar.tc.bistoury.commands.host.HostTask;
 import qunar.tc.bistoury.commands.perf.PerfData;
 import sun.management.counter.Counter;
@@ -37,8 +38,9 @@ public class JVMTest {
         //new JVMTest();
         //getJvmInfo();
         final CountDownLatch latch = new CountDownLatch(1);
-        HostTask hostTask = new HostTask(UUID.randomUUID().toString(), 78233, new ConsoleResponseHandler(), 5000L);
-        ListenableFuture<Integer> future = hostTask.execute();
+        HostTask hostTask = new HostTask(UUID.randomUUID().toString(), 10995, new ConsoleResponseHandler(), 5000L);
+        ContinueResponseJob job = hostTask.createJob();
+        ListenableFuture<Integer> future = hostTask.getResultFuture();
         Futures.addCallback(future, new FutureCallback<Integer>() {
             @Override
             public void onSuccess(Integer result) {
