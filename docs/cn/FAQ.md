@@ -40,7 +40,7 @@
 
 可以通过`quick_start.sh`脚本中的-i参数指定当前的ip。
 
-例子 :
+例子 : 其中`1024`为你要诊断的应用的进程号
 ```
 ./quick_start.sh -i 127.0.0.1 -p 1024 start
 ```
@@ -58,6 +58,7 @@
 解决办法就是指定一下相应的类名，因为不能是agent使用到的类，推荐使用用户自身中间件jar包或者spring中类（注意要是已加载的类），如果使用业务类，可能导致小部分功能不可用。
 
 例子 :
+其中`1024`为你要诊断的应用的进程号
 ![./quick_start.sh -c org.springframework.web.servlet.DispatcherServlet(不要照抄) -p 1024 start](../image/cannot_lib_class.png)
 
 如果自身依赖中有相应的类，但是还是报"`can not find lib class`"，这种情况应该是类没有加载。
