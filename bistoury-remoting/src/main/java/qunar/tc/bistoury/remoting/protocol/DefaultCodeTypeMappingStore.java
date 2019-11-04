@@ -74,6 +74,10 @@ public class DefaultCodeTypeMappingStore implements CodeTypeMappingStore {
         register(stringClass, ImmutableSet.of(REQ_TYPE_REFRESH_TIP.getCode()));
         //cancel
         register(stringClass, ImmutableSet.of(REQ_TYPE_CANCEL.getCode()));
+        //job pause
+        register(stringClass, ImmutableSet.of(REQ_TYPE_JOB_PAUSE.getCode()));
+        //job resume
+        register(stringClass, ImmutableSet.of(REQ_TYPE_JOB_RESUME.getCode()));
 
     }
 
