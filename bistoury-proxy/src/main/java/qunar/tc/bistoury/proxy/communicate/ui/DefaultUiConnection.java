@@ -56,7 +56,7 @@ public class DefaultUiConnection extends AbstractConnection implements UiConnect
             return;
         }
 
-        logger.info("channel writable change, {}", channel);
+        logger.info("channel writable change, {}->{}, {}", this.writable, writable, channel);
         this.writable = writable;
         notifyWritableChange(writable);
     }
