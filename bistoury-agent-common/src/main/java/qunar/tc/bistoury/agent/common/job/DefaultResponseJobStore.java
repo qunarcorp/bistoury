@@ -40,18 +40,18 @@ public class DefaultResponseJobStore implements ResponseJobStore {
             }
 
             pausedJob = new PausedJob(job);
-            old = jobs.putIfAbsent(pausedJob.getJob().getId(), pausedJob);
+            old = jobs.putIfAbsent(pausedJob.getId(), pausedJob);
         }
 
         if (old == null) {
-            logger.debug("submit job {}", job.getId());
+            logger.info("submit job {}", job.getId());
             pausedJob.start();
         }
     }
 
     @Override
     public void pause(String id) {
-        logger.debug("pause job {}", id);
+        logger.info("try pause job {}", id);
         PausedJob pausedJob = jobs.get(id);
         if (pausedJob != null) {
             pausedJob.paused();
@@ -60,7 +60,7 @@ public class DefaultResponseJobStore implements ResponseJobStore {
 
     @Override
     public void resume(String id) {
-        logger.debug("resume job {}", id);
+        logger.info("try resume job {}", id);
         PausedJob pausedJob = jobs.get(id);
         if (pausedJob != null) {
             pausedJob.resume();
@@ -69,7 +69,7 @@ public class DefaultResponseJobStore implements ResponseJobStore {
 
     @Override
     public void stop(String id) {
-        logger.debug("stop job {}", id);
+        logger.info("try stop job {}", id);
         PausedJob pausedJob = jobs.get(id);
         if (pausedJob != null) {
             pausedJob.stop();
@@ -125,8 +125,12 @@ public class DefaultResponseJobStore implements ResponseJobStore {
             this.executor = job.getExecutor();
         }
 
-        public ContinueResponseJob getJob() {
-            return job;
+        public String getId() {
+            return job.getId();
+        }
+
+        public void init() throws Exception {
+            job.init();
         }
 
         public synchronized void start() {
@@ -139,9 +143,13 @@ public class DefaultResponseJobStore implements ResponseJobStore {
 
         public synchronized void paused() {
             if (!this.paused) {
-                logger.debug("job paused {}", job.getId());
+                logger.debug("paused job {}", job.getId());
                 this.paused = true;
             }
+        }
+
+        public boolean doResponse() throws Exception {
+            return job.doResponse();
         }
 
         public synchronized void resume() {
@@ -151,25 +159,49 @@ public class DefaultResponseJobStore implements ResponseJobStore {
 
             this.paused = false;
             boolean removed = pausedJobs.remove(job.getId());
-            logger.debug("job resume {}, {}", removed, job.getId());
+            logger.debug("resume job {}, {}", removed, job.getId());
             if (removed) {
                 this.finishFuture = executor.submit(new JobRunner(this));
             }
         }
 
-        public synchronized void stop() {
-            if (stopped) {
-                return;
-            }
+        public void stop() {
+            synchronized (PausedJob.this) {
+                if (stopped) {
+                    return;
+                }
 
-            logger.debug("job stop {}", job.getId());
-            stopped = true;
-            if (finishFuture != null) {
-                finishFuture.cancel(true);
+                logger.debug("stop job {}", job.getId());
+                stopped = true;
+                if (finishFuture != null) {
+                    finishFuture.cancel(true);
+                }
+                clear();
             }
             job.cancel();
-            pausedJobs.remove(job.getId());
-            jobs.remove(job.getId());
+        }
+
+        public void finish() throws Exception {
+            synchronized (PausedJob.this) {
+                if (stopped) {
+                    return;
+                }
+                logger.debug("finish job {}", job.getId());
+                clear();
+            }
+            job.finish();
+        }
+
+        public void error(Throwable t) {
+            synchronized (PausedJob.this) {
+                if (stopped) {
+                    return;
+                }
+
+                logger.debug("error job {}", job.getId(), t);
+                clear();
+            }
+            job.error(t);
         }
 
         public synchronized boolean isStopped() {
@@ -182,12 +214,17 @@ public class DefaultResponseJobStore implements ResponseJobStore {
             }
 
             if (paused) {
-                logger.debug("job do pause {}", job.getId());
+                logger.debug("do pause job {}", job.getId());
                 pausedJobs.add(job.getId());
                 finishFuture = null;
                 return true;
             }
             return false;
+        }
+
+        private void clear() {
+            pausedJobs.remove(job.getId());
+            jobs.remove(job.getId());
         }
     }
 
@@ -201,19 +238,16 @@ public class DefaultResponseJobStore implements ResponseJobStore {
 
         @Override
         public void run() {
-            logger.debug("run job {}", job.getJob().getId());
+            logger.debug("run job {}", job.getId());
             try {
                 if (job.isStopped()) {
                     return;
                 }
 
-                job.getJob().init();
+                job.init();
                 doRun();
             } catch (Throwable t) {
-                logger.debug("error job {}", job.getJob().getId(), t);
-                if (!job.isStopped()) {
-                    job.getJob().error(t);
-                }
+                job.error(t);
             }
         }
 
@@ -221,16 +255,13 @@ public class DefaultResponseJobStore implements ResponseJobStore {
             while (true) {
                 latch.await();
                 if (job.isStopped() || job.doPausedIfNeed()) {
-                    logger.debug("stop or paused job {}", job.getJob().getId());
+                    logger.debug("stop or paused job {}", job.getId());
                     return;
                 }
 
-                boolean end = job.getJob().doResponse();
+                boolean end = job.doResponse();
                 if (end) {
-                    logger.debug("finish job {}", job.getJob().getId());
-                    if (!job.isStopped()) {
-                        job.getJob().finish();
-                    }
+                    job.finish();
                     return;
                 }
             }
@@ -296,5 +327,16 @@ public class DefaultResponseJobStore implements ResponseJobStore {
             clear();
             super.cancel();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "DefaultResponseJobStore{" +
+                "jobs=" + jobs +
+                ", pausedJobs=" + pausedJobs +
+                ", writable=" + writable +
+                ", latch=" + latch +
+                ", isClosed=" + isClosed +
+                '}';
     }
 }
