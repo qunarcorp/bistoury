@@ -31,8 +31,6 @@ import static qunar.tc.bistoury.remoting.protocol.CommandCode.*;
  */
 public class DefaultCodeTypeMappingStore implements CodeTypeMappingStore {
 
-    private final Map<Class<?>, Set<Integer>> typeCodeMappings = Maps.newHashMap();
-
     private final Map<Integer, Class<?>> codeTypeMappings = Maps.newHashMap();
 
     DefaultCodeTypeMappingStore() {
