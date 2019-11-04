@@ -44,7 +44,7 @@ public class DefaultResponseJobStore implements ResponseJobStore {
         }
 
         if (old == null) {
-            logger.info("submit job {}", job.getId());
+            logger.info("submit job {}", pausedJob.getId());
             pausedJob.start();
         }
     }
@@ -143,7 +143,7 @@ public class DefaultResponseJobStore implements ResponseJobStore {
 
         public synchronized void paused() {
             if (!this.paused) {
-                logger.debug("paused job {}", job.getId());
+                logger.debug("paused job {}", getId());
                 this.paused = true;
             }
         }
@@ -158,8 +158,8 @@ public class DefaultResponseJobStore implements ResponseJobStore {
             }
 
             this.paused = false;
-            boolean removed = pausedJobs.remove(job.getId());
-            logger.debug("resume job {}, {}", removed, job.getId());
+            boolean removed = pausedJobs.remove(getId());
+            logger.debug("resume job {}, {}", removed, getId());
             if (removed) {
                 this.finishFuture = executor.submit(new JobRunner(this));
             }
@@ -171,12 +171,12 @@ public class DefaultResponseJobStore implements ResponseJobStore {
                     return;
                 }
 
-                logger.debug("stop job {}", job.getId());
+                logger.debug("stop job {}", getId());
                 stopped = true;
                 if (finishFuture != null) {
                     finishFuture.cancel(true);
                 }
-                clear();
+                removeFromStore();
             }
             job.cancel();
         }
@@ -186,8 +186,8 @@ public class DefaultResponseJobStore implements ResponseJobStore {
                 if (stopped) {
                     return;
                 }
-                logger.debug("finish job {}", job.getId());
-                clear();
+                logger.debug("finish job {}", getId());
+                removeFromStore();
             }
             job.finish();
         }
@@ -198,8 +198,8 @@ public class DefaultResponseJobStore implements ResponseJobStore {
                     return;
                 }
 
-                logger.debug("error job {}", job.getId(), t);
-                clear();
+                logger.debug("error job {}", getId(), t);
+                removeFromStore();
             }
             job.error(t);
         }
@@ -214,17 +214,17 @@ public class DefaultResponseJobStore implements ResponseJobStore {
             }
 
             if (paused) {
-                logger.debug("do pause job {}", job.getId());
-                pausedJobs.add(job.getId());
+                logger.debug("do pause job {}", getId());
+                pausedJobs.add(getId());
                 finishFuture = null;
                 return true;
             }
             return false;
         }
 
-        private void clear() {
-            pausedJobs.remove(job.getId());
-            jobs.remove(job.getId());
+        private void removeFromStore() {
+            pausedJobs.remove(getId());
+            jobs.remove(getId());
         }
     }
 
