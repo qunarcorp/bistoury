@@ -74,12 +74,12 @@ public enum CommandCode {
         this.oldCode = oldCode;
     }
 
-    public static java.util.Optional<CommandCode> valueOfOldCode(int oldCode) {
+    public static Optional<CommandCode> valueOfOldCode(int oldCode) {
         CommandCode commandCode = oldCodeMap.get(oldCode);
         if (commandCode == null) {
-            return java.util.Optional.empty();
+            return Optional.absent();
         }
-        return java.util.Optional.of(commandCode);
+        return Optional.of(commandCode);
     }
 
     public static Optional<CommandCode> valueOfCode(int code) {

@@ -65,7 +65,7 @@ public class DefaultCommunicateCommandStore implements CommunicateCommandStore {
 
     @Override
     public Optional<CommunicateCommand> getCommunicateCommandByOldCode(int oldCode) {
-        Optional<CommandCode> optional = CommandCode.valueOfOldCode(oldCode);
+        com.google.common.base.Optional<CommandCode> optional = CommandCode.valueOfOldCode(oldCode);
         if (optional.isPresent()) {
             int code = optional.get().getCode();
             return getCommunicateCommand(code);
