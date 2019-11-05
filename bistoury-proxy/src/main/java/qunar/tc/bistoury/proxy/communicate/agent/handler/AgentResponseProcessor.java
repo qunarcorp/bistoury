@@ -18,7 +18,6 @@
 package qunar.tc.bistoury.proxy.communicate.agent.handler;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -83,9 +82,9 @@ public class AgentResponseProcessor implements AgentMessageProcessor {
             ByteBuf body = datagram.getBody();
             byte[] data = new byte[body.readableBytes()];
             body.readBytes(data);
-            TypeResponse<String> profilerInfo = JacksonSerializer.deSerialize(data, new TypeReference<TypeResponse<String>>() {
+            TypeResponse<Map<String, Object>> profilerInfoType = JacksonSerializer.deSerialize(data, new TypeReference<TypeResponse<Map<String, Object>>>() {
             });
-            profilerStateManager.dealProfiler(profilerId, profilerInfo);
+            profilerStateManager.dealProfiler(profilerId, profilerInfoType);
         }
         return isProfilerResponse;
     }

@@ -1,16 +1,16 @@
 package qunar.tc.bistoury.proxy.service;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.common.BistouryConstants;
-import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.common.TypeResponse;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
-import qunar.tc.bistoury.remoting.command.ProfilerSearchCommand;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.remoting.protocol.PayloadHolder;
@@ -25,6 +25,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static qunar.tc.bistoury.common.BistouryConstants.*;
 
 /**
  * @author cai.wen created on 2019/10/30 16:54
@@ -41,6 +43,8 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
     private static final int defaultAdditionalSeconds = 60;
 
     private static final Splitter SPACE_SPLITTER = Splitter.on(" ").trimResults().omitEmptyStrings();
+
+    private static final Joiner SPACE_JOINER = Joiner.on(" ").skipNulls();
 
     @Resource
     private ProfilerService profilerService;
@@ -63,14 +67,14 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
     }
 
     private void waitStopState() {
-        changeState(Profiler.State.start, Profiler.State.start_exception, readyDatagrams);
+        changeState(Profiler.State.start, readyDatagrams);
     }
 
     private void waitStartState() {
-        changeState(Profiler.State.stop, Profiler.State.stop_exception, profilingDatagrams);
+        changeState(Profiler.State.stop, profilingDatagrams);
     }
 
-    private void changeState(Profiler.State normalState, Profiler.State exceptionalState, Map<String, ProfilerDatagramHolder> datagramHolderMap) {
+    private void changeState(Profiler.State normalState, Map<String, ProfilerDatagramHolder> datagramHolderMap) {
         List<String> needRemoveIds = new ArrayList<>();
         for (Map.Entry<String, ProfilerDatagramHolder> datagramEntry : datagramHolderMap.entrySet()) {
             String profilerId = datagramEntry.getKey();
@@ -80,14 +84,12 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
                 profilerService.changeState(profilerId, normalState);
                 continue;
             }
-            datagramHolder.decreaseTime(delay);
+            datagramHolder.decreaseTime();
             agentConnectionStore.getConnection(datagramHolder.agentId)
                     .ifPresent(agentConn -> agentConn.write(datagramHolder.datagram));
         }
         for (String profilerId : needRemoveIds) {
-            profilerService.changeState(profilerId, exceptionalState);
             datagramHolderMap.remove(profilerId);
-            forceStop(profilerId);
         }
     }
 
@@ -103,7 +105,7 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
         profilerIdCache.put(profilerId, obj);
 
         int readyDuration = 60;
-        ProfilerDatagramHolder readyHolder = createStateSearchHolder(agentId, profilerId, readyDuration);
+        ProfilerDatagramHolder readyHolder = createStartStateSearchHolder(agentId, profilerId, readyDuration);
         readyDatagrams.put(profilerId, readyHolder);
         return profilerId;
     }
@@ -114,26 +116,37 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
     }
 
     @Override
-    public void dealProfiler(String profilesId, TypeResponse<String> response) {
+    public void dealProfiler(String profilesId, TypeResponse<Map<String, Object>> response) {
         String type = response.getType();
         if (type == null) {
             return;
         }
         if (BistouryConstants.REQ_PROFILER_STATE_SEARCH.equals(type)) {
-            if (Boolean.parseBoolean(response.getData().getData())) {
+            Map<String, Object> data = response.getData().getData();
+            String stateSearchType = (String) data.get("type");
+            Boolean state = (Boolean) data.get("state");
+            if (!state) {
+                return;
+            }
+            if (REQ_PROFILER_START_STATE_SEARCH.equals(stateSearchType)) {
                 readyDatagrams.remove(profilesId);
                 profilerService.startProfiler(profilesId);
 
                 Profiler profiler = profilerService.getProfilerRecord(profilesId);
                 int profilingDuration = profiler.getDuration() + defaultAdditionalSeconds;
-                ProfilerDatagramHolder profilingHolder = createStopStateSearchDatagram(profiler.getAgentId(), profilesId, profilingDuration);
+                ProfilerDatagramHolder profilingHolder = createFinishStateSearchHolder(profiler.getAgentId(), profilesId, profilingDuration);
                 profilingDatagrams.put(profiler.getProfilerId(), profilingHolder);
-            }
-        } else if (BistouryConstants.REQ_PROFILER_FINISH_STATE_SEARCH.equals(type)) {
-            if (Boolean.parseBoolean(response.getData().getData())) {
+            } else if (BistouryConstants.REQ_PROFILER_FINNSH_STATE_SEARCH.equals(stateSearchType)) {
                 profilingDatagrams.remove(profilesId);
                 profilerService.stopProfiler(profilesId);
             }
+        } else if (REQ_PROFILER_STOP.equals(type)) {
+            Map<String, Object> data = response.getData().getData();
+            Boolean state = (Boolean) data.get("state");
+            if (!state) {
+                return;
+            }
+            profilerService.stopProfiler(profilesId);
         }
     }
 
@@ -143,32 +156,49 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
     }
 
     @Override
-    public void forceStop(String profilerId) {
+    public void searchStopState(String profilerId) {
+        profilerIdCache.put(profilerId, obj);
         Profiler profiler = profilerService.getProfilerRecord(profilerId);
-        profilerService.changeState(profilerId, Profiler.State.stop_exception);
-
         String agentId = profiler.getAgentId();
-        Datagram datagram = createStateSearchDatagram(profilerId);
+        Datagram datagram = createFinishStateSearchDatagram(profilerId);
         agentConnectionStore.getConnection(agentId)
                 .ifPresent(agentConn -> agentConn.write(datagram));
     }
 
-    private ProfilerDatagramHolder createStopStateSearchDatagram(String agentId, String profilerId, int duration) {
-        String content = JacksonSerializer.serialize(new ProfilerSearchCommand(profilerId));
-        PayloadHolder searchHolder = new RequestPayloadHolder(content);
-        Datagram dumpDatagram = RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_PROFILER_FINISH_STATE_SEARCH.getCode(), profilerId, searchHolder);
-        return new ProfilerDatagramHolder(agentId, profilerId, dumpDatagram, duration);
+    @Override
+    public void forceStop(String agentId, String profilerId) {
+        profilerIdCache.put(profilerId, obj);
+        Datagram datagram = createStopDatagram(profilerId);
+        agentConnectionStore.getConnection(agentId)
+                .ifPresent(agentConn -> agentConn.write(datagram));
     }
 
-    private ProfilerDatagramHolder createStateSearchHolder(String agentId, String profilerId, int duration) {
-        Datagram searchDatagram = createStateSearchDatagram(profilerId);
+    private ProfilerDatagramHolder createFinishStateSearchHolder(String agentId, String profilerId, int duration) {
+        Datagram datagram = createFinishStateSearchDatagram(profilerId);
+        return new ProfilerDatagramHolder(agentId, profilerId, datagram, duration);
+    }
+
+    private Datagram createFinishStateSearchDatagram(String profilerId) {
+        List<String> command = ImmutableList.of(REQ_PROFILER_STATE_SEARCH, profilerId, PID_PARAM + FILL_PID, REQ_PROFILER_FINNSH_STATE_SEARCH);
+        PayloadHolder searchHolder = new RequestPayloadHolder(SPACE_JOINER.join(command));
+        return RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_PROFILER_STATE_SEARCH.getCode(), profilerId, searchHolder);
+    }
+
+    private ProfilerDatagramHolder createStartStateSearchHolder(String agentId, String profilerId, int duration) {
+        Datagram searchDatagram = createStartStateSearchDatagram(profilerId);
         return new ProfilerDatagramHolder(agentId, profilerId, searchDatagram, duration);
     }
 
-    private Datagram createStateSearchDatagram(String profilerId) {
-        PayloadHolder holder = new RequestPayloadHolder(
-                BistouryConstants.REQ_PROFILER_STATE_SEARCH + " " + profilerId + "" + BistouryConstants.PID_PARAM + BistouryConstants.FILL_PID);
+    private Datagram createStartStateSearchDatagram(String profilerId) {
+        List<String> command = ImmutableList.of(REQ_PROFILER_STATE_SEARCH, profilerId, PID_PARAM + FILL_PID, REQ_PROFILER_START_STATE_SEARCH);
+        PayloadHolder holder = new RequestPayloadHolder(SPACE_JOINER.join(command));
         return RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_PROFILER_STATE_SEARCH.getCode(), profilerId, holder);
+    }
+
+    private Datagram createStopDatagram(String profilerId) {
+        List<String> command = ImmutableList.of(REQ_PROFILER_STOP, profilerId, PID_PARAM + FILL_PID);
+        PayloadHolder holder = new RequestPayloadHolder(SPACE_JOINER.join(command));
+        return RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_PROFILER_STOP.getCode(), profilerId, holder);
     }
 
     private int getDuration(String command) {
@@ -199,8 +229,8 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
             this.time = new AtomicInteger(-duration);
         }
 
-        private void decreaseTime(int value) {
-            time.addAndGet(value);
+        private void decreaseTime() {
+            time.addAndGet(delay);
         }
 
         private boolean isExpired() {

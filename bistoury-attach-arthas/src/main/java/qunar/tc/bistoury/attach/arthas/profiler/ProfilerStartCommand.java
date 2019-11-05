@@ -6,13 +6,14 @@ import com.taobao.arthas.core.shell.command.CommandProcess;
 import com.taobao.middleware.cli.annotations.Argument;
 import com.taobao.middleware.cli.annotations.Name;
 import com.taobao.middleware.cli.annotations.Option;
-import com.taobao.middleware.logger.Logger;
-import qunar.tc.bistoury.attach.common.BistouryLoggger;
+import qunar.tc.bistoury.attach.arthas.util.TypeResponseResult;
+import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
 import qunar.tc.bistoury.common.*;
 import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
 import qunar.tc.bistoury.instrument.client.profiler.Mode;
 import qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -22,9 +23,9 @@ import java.util.Map;
 @Name(BistouryConstants.REQ_PROFILER_START)
 public class ProfilerStartCommand extends AnnotatedCommand {
 
-    private static final Logger logger = BistouryLoggger.getLogger();
-
     private Mode mode;
+
+    private String profilerId;
 
     private final Map<String, Object> config = Maps.newHashMapWithExpectedSize(2);
 
@@ -47,6 +48,7 @@ public class ProfilerStartCommand extends AnnotatedCommand {
 
     @Argument(index = 0, argName = "id")
     public void setId(String id) {
+        this.profilerId = id;
         config.put(ProfilerConstants.PROFILER_ID, id);
     }
 
@@ -57,13 +59,10 @@ public class ProfilerStartCommand extends AnnotatedCommand {
 
     @Override
     public void process(CommandProcess process) {
-        logger.info("receive profiler add command, mode: {}, config: {}", mode, config);
-        CodeProcessResponse<String> response = new CodeProcessResponse<>();
-        TypeResponse<String> typeResponse = new TypeResponse<>();
-        typeResponse.setType(BistouryConstants.REQ_PROFILER_START);
-        typeResponse.setData(response);
-        response.setId((String) config.get(ProfilerConstants.PROFILER_ID));
-
+        BistouryLoggerHelper.info("receive profiler add command, mode: {}, config: {}", mode, config);
+        Map<String, Object> result = new HashMap<>();
+        TypeResponse typeResponse = TypeResponseResult.create(result, BistouryConstants.REQ_PROFILER_START);
+        CodeProcessResponse response = typeResponse.getData();
         try {
             if (AgentProfilerContext.isProfiling()) {
                 response.setMessage("target vm is profiling.");
@@ -74,9 +73,10 @@ public class ProfilerStartCommand extends AnnotatedCommand {
             ProfilerClient profilerClient = ProfilerClients.getInstance();
             profilerClient.startProfiling(mode, config);
             response.setCode(0);
-            response.setData("add profiler success.");
+            result.put("profilerId", profilerId);
+            response.setMessage("add profiler success.");
         } catch (Exception e) {
-            logger.error("profiler add error. mode: {}, config: {}", mode.toString(), config, e);
+            BistouryLoggerHelper.error(e, "profiler add error. mode: {}, config: {}", mode, config);
             response.setMessage("add profiler error. reason:" + e.getMessage());
         } finally {
             process.write(URLCoder.encode(JacksonSerializer.serialize(typeResponse)));

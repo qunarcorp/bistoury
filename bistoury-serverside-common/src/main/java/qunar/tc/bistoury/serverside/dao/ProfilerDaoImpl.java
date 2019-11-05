@@ -25,21 +25,19 @@ public class ProfilerDaoImpl implements ProfilerDao {
 
     private static final String DELETE_PROFILER_STATE_SQL = "delete from bistoury_profiler  where profiler_id=?";
 
-    private static final String SELECT_PROFILER_BY_AGENT_ID_SQL = "select * from bistoury_profiler where app_code=? and agent_id=?";
-
-    private static final String SELECT_PROFILER_BY_STATE_SQL = "select * from bistoury_profiler where state=?";
+    private static final String SELECT_PROFILER_BY_STATE_SQL = "select * from bistoury_profiler where state=? and start_time>DATE_SUB(CURDATE(), INTERVAL 2 hour ) ";
 
     private static final String SELECT_PROFILER_BY_PROFILER_ID_SQL = "select * from bistoury_profiler where profiler_id=?";
 
-    private static final String SELECT_LAST_three_DAY_record = "SELECT * FROM bistoury_profiler " +
-            "where start_time>DATE_SUB(CURDATE(), INTERVAL 3 day ) and app_code=? and agent_id=? " +
+    private static final String SELECT_LAST_THREE_DAY_RECORD = "SELECT * FROM bistoury_profiler " +
+            "where  app_code=? and agent_id=? and start_time>DATE_SUB(CURDATE(), INTERVAL 3 day ) " +
             "order by start_time desc";
 
     private JdbcTemplate jdbcTemplate = JdbcTemplateHolder.getOrCreateJdbcTemplate();
 
     @Override
     public List<Profiler> getProfilerRecords(String app, String agentId) {
-        return jdbcTemplate.query(SELECT_LAST_three_DAY_record, PROFILER_ROW_MAPPER, app, agentId);
+        return jdbcTemplate.query(SELECT_LAST_THREE_DAY_RECORD, PROFILER_ROW_MAPPER, app, agentId);
     }
 
     @Override

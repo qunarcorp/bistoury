@@ -3,6 +3,8 @@ package qunar.tc.bistoury.ui.service;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
 import com.ning.http.client.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.common.NamedThreadFactory;
 import qunar.tc.bistoury.serverside.bean.Profiler;
@@ -14,6 +16,7 @@ import javax.annotation.Resource;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +28,8 @@ import java.util.stream.Collectors;
 @Service
 public class ProfilerStateManager {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProfilerStateManager.class);
+
     private static final AsyncHttpClient httpClient = new AsyncHttpClient(
             new AsyncHttpClientConfig.Builder()
                     .setConnectTimeout(3000)
@@ -33,7 +38,9 @@ public class ProfilerStateManager {
     private static final ScheduledExecutorService executor =
             Executors.newScheduledThreadPool(1, new NamedThreadFactory("clear-expired-profiler-record"));
 
-    private static final String profilerStopUrl = "http://%s:%d/proxy/profiler/stop?profilerId=%s";
+    private static final String profilerForceStopUrl = "http://%s:%d/proxy/profiler/stop?profilerId=%s&agentId=%s";
+
+    private static final String profilerStopStateSearchUrl = "http://%s:%d/proxy/profiler/searchStopState?profilerId=%s";
 
     @Resource
     private ProfilerService profilerService;
@@ -47,14 +54,27 @@ public class ProfilerStateManager {
 
     @PostConstruct
     public void init() {
+        Random random = new Random(60);
         executor.scheduleAtFixedRate(() -> {
-                    proxyInfos = getAllProxyInfo();
-                    currentTimeMillis = System.currentTimeMillis();
-                    profilerService.getProfilersByState(Profiler.State.ready.code)
-                            .forEach(profiler -> stop(profiler.getProfilerId(), profiler.getStartTime(), 60));
-                },
-                60, 60, TimeUnit.SECONDS);
+            proxyInfos = getAllProxyInfo();
+            currentTimeMillis = System.currentTimeMillis();
+            profilerService.getProfilersByState(Profiler.State.ready.code)
+                    .forEach(profiler -> stop(profiler.getProfilerId(), profiler.getStartTime(), 60));
+            profilerService.getProfilersByState(Profiler.State.start.code)
+                    .forEach(profiler -> searchStopState(profiler.getProfilerId(), profiler.getStartTime(), profiler.getDuration() + 60));
+        }, random.nextInt(61), 60, TimeUnit.SECONDS);
 
+    }
+
+    private void searchStopState(String profilerId, Timestamp startTime, int durationSeconds) {
+        try {
+            long startMillis = startTime.getTime();
+            if (currentTimeMillis - durationSeconds * 1000 > startMillis) {
+                proxyInfos.forEach(proxyInfo -> sendStopStateSearchRequests(proxyInfo, profilerId));
+            }
+        } catch (Exception e) {
+            LOGGER.error("stop profiler error. profilerId: {}", profilerId, e);
+        }
     }
 
     private List<ProxyInfo> getAllProxyInfo() {
@@ -66,14 +86,25 @@ public class ProfilerStateManager {
     }
 
     public void stop(String profilerId, Timestamp startTime, int durationSeconds) {
-        long startMillis = startTime.getTime();
-        if (currentTimeMillis - durationSeconds * 1000 > startMillis) {
-            proxyInfos.forEach(proxyInfo -> sendForceStopRequests(proxyInfo, profilerId));
+        try {
+            long startMillis = startTime.getTime();
+            if (currentTimeMillis - durationSeconds * 1000 > startMillis) {
+                proxyInfos.forEach(proxyInfo -> sendForceStopRequests(proxyInfo, profilerId));
+            }
+        } catch (Exception e) {
+            LOGGER.error("stop profiler error. profilerId: {}", profilerId, e);
         }
     }
 
     private void sendForceStopRequests(ProxyInfo proxyInfo, String profilerId) {
-        String url = String.format(profilerStopUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId);
+        String agentId = profilerService.getProfilerRecord(profilerId).getAgentId();
+        String url = String.format(profilerForceStopUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId, agentId);
+        Request request = httpClient.preparePost(url).build();
+        httpClient.executeRequest(request);
+    }
+
+    private void sendStopStateSearchRequests(ProxyInfo proxyInfo, String profilerId) {
+        String url = String.format(profilerStopStateSearchUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId);
         Request request = httpClient.preparePost(url).build();
         httpClient.executeRequest(request);
     }

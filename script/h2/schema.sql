@@ -82,7 +82,7 @@ create TABLE `bistoury_profiler`
     `agent_id`    VARCHAR(32)               DEFAULT '' NOT NULL COMMENT 'agent机器对应的id',
     `duration`    int(10)                   NOT NULL COMMENT '性能分析时长',
     `pid`         int(10) unsigned NOT NULL COMMENT '目标vm对应的pid',
-    `start_time`  timestamp        NOT NULL COMMENT '性能分析开始时间',
+    `start_time`  timestamp        NOT NULL DEFAULT '1970-01-01 08:00:01' COMMENT '性能分析开始时间',
     `update_time` timestamp        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `state`       int(3) unsigned  NOT NULL  COMMENT '状态,0: 开始, 1: 已结束',
     PRIMARY KEY (`id`),

@@ -1,22 +1,24 @@
 package qunar.tc.bistoury.attach.arthas.profiler;
 
+import com.google.common.base.Strings;
 import com.taobao.arthas.core.shell.command.AnnotatedCommand;
 import com.taobao.arthas.core.shell.command.CommandProcess;
 import com.taobao.middleware.cli.annotations.Argument;
 import com.taobao.middleware.cli.annotations.Name;
-import com.taobao.middleware.logger.Logger;
-import qunar.tc.bistoury.attach.common.BistouryLoggger;
+import qunar.tc.bistoury.attach.arthas.util.TypeResponseResult;
+import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
 import qunar.tc.bistoury.common.*;
 import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.Manager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author cai.wen created on 2019/10/25 11:12
  */
 @Name(BistouryConstants.REQ_PROFILER_STOP)
 public class ProfilerStopCommand extends AnnotatedCommand {
-
-    private static final Logger logger = BistouryLoggger.getLogger();
 
     private String id;
 
@@ -27,38 +29,39 @@ public class ProfilerStopCommand extends AnnotatedCommand {
 
     @Override
     public void process(CommandProcess process) {
-        logger.info("receive profiler stop command. id: {}", id);
-        CodeProcessResponse<String> response = new CodeProcessResponse<>();
-        TypeResponse<String> typeResponse = new TypeResponse<>();
-        typeResponse.setType(BistouryConstants.REQ_PROFILER_STOP);
-        typeResponse.setData(response);
-
+        BistouryLoggerHelper.info("receive profiler stop command. id: {}", id);
+        Map<String, Object> result = new HashMap<>();
+        TypeResponse typeResponse = TypeResponseResult.create(result, BistouryConstants.REQ_PROFILER_STOP);
+        CodeProcessResponse response = typeResponse.getData();
 
         try {
             if (!AgentProfilerContext.isProfiling()) {
                 response.setMessage("target vm is already stop.");
                 response.setCode(-1);
+                result.put("state", true);
                 return;
             }
 
             final String curProfilerId = AgentProfilerContext.getProfilerId();
-            if (curProfilerId.isEmpty() || !curProfilerId.equals(id)) {
+            if (Strings.isNullOrEmpty(id) || !id.equals(curProfilerId)) {
                 response.setMessage("error profiler id.");
                 response.setCode(-1);
+                result.put("state", true);
                 return;
             }
 
             Manager.stop();
+            result.put("profilerId", id);
+            result.put("state", true);
             response.setCode(0);
-            response.setData("stop profiler success.");
+            response.setMessage("stop profiler success.");
         } catch (Exception e) {
             response.setCode(-1);
             response.setMessage("stop profiler error. reason: " + e.getMessage());
-            logger.error("", "profiler stop error.");
+            BistouryLoggerHelper.error(e, "stop profiler error. id: {}", id);
         } finally {
             process.write(URLCoder.encode(JacksonSerializer.serialize(typeResponse)));
             process.end();
         }
-
     }
 }

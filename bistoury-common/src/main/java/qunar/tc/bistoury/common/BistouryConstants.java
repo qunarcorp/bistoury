@@ -59,9 +59,11 @@ public class BistouryConstants {
 
     public static final String REQ_PROFILER_STOP = "profilerstop";
 
-    public static final String REQ_PROFILER_FINISH_STATE_SEARCH = "profilerfinish";
-
     public static final String REQ_PROFILER_STATE_SEARCH = "profilerstatesearch";
+
+    public static final String REQ_PROFILER_START_STATE_SEARCH = "profilerstartsearch";
+
+    public static final String REQ_PROFILER_FINNSH_STATE_SEARCH = "profilerfinishsearch";
 
     public static final String BISTOURY_COMMAND_THREAD_NAME = "bistoury-command-execute-daemon";
 

@@ -117,7 +117,7 @@ public class ProfilerController {
         return Optional.empty();
     }
 
-    private static final Splitter COLON_SPlITTER = Splitter.on(":");
+    private static final Splitter COLON_SPLITTER = Splitter.on(":");
 
     @GetMapping("/download")
     public void forwardSvgFile(@RequestParam("profilerId") String profilerId,
@@ -131,7 +131,7 @@ public class ProfilerController {
         response.setContentType("image/svg+xml");
         ServletOutputStream responseOutputStream = response.getOutputStream();
 
-        List<String> info = COLON_SPlITTER.splitToList(proxyUrl);
+        List<String> info = COLON_SPLITTER.splitToList(proxyUrl);
         String proxyIp = info.get(0);
         int tomcatPort = Integer.parseInt(info.get(1));
         responseOutputStream.write(getSvgFile(new ProxyInfo(proxyIp, tomcatPort, 0), profilerId, svgName));
@@ -150,8 +150,7 @@ public class ProfilerController {
             return ResultHelper.fail("分析失败");
         }
         String proxyUrl = proxyInfo.getIp() + ":" + proxyInfo.getTomcatPort();
-        Map<String, String> result = ImmutableMap.of("profilerId", profilerId,
-                "proxyUrl", proxyUrl);
+        Map<String, String> result = ImmutableMap.of("profilerId", profilerId, "proxyUrl", proxyUrl);
         return ResultHelper.success(result);
     }
 

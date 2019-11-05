@@ -77,13 +77,11 @@ function handleResult(content) {
 
 function buildProfiler(result) {
     var resType = result.type;
-    var currentHost = $('#menu').treeview('getSelected')[0].value;
-    var agentId = currentHost.ip;
     console.log("result: " + result);
     if (resType === "profilerstart") {
         var data = result.data;
         if (data.code === 0) {
-            initProfiler(data.id);
+            initProfiler(data.data.profilerId);
             bistoury.success("开始性能分析")
         } else {
             initState();
@@ -92,20 +90,9 @@ function buildProfiler(result) {
     } else if (resType === "profilerstop") {
         var data = result.data;
         if (data.code === 0) {
-            // stopInterval();
-            // bistoury.success("手动停止性能分析成功")
-            // initAnalysisState();
-            // searchProfilerHistory(agentId);
+
         } else {
             bistoury.error("手动停止性能分析失败: " + data.message)
-        }
-    } else if (resType === "profilersearch") {
-        if (result.code === 0 && result.data) {
-
-            bistoury.success("性能分析正常停止,可进行下一步操作.");
-            stopInterval();
-            initAnalysisState();
-            searchProfilerHistory(agentId);
         }
     }
 }

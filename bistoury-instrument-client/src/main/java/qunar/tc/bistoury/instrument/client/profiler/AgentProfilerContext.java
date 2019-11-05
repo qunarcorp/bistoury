@@ -9,7 +9,7 @@ public class AgentProfilerContext {
 
     private static long startTime = -1;
 
-    private static String profilerId;
+    private static String profilerId ;
 
     public synchronized static void stopProfiling() {
         startTime = -1;

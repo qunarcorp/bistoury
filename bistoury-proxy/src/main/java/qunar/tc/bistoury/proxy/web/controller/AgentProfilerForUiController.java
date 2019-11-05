@@ -71,17 +71,30 @@ public class AgentProfilerForUiController {
         return ResultHelper.success(ProfilerAnalyzer.getInstance().isDone(profilerId));
     }
 
-    @RequestMapping("/stop")
+    @RequestMapping("/searchStopState")
     @ResponseBody
-    public Object stop(String profilerId) {
+    public Object searchStopState(String profilerId) {
         try {
-            profilerStateManager.forceStop(profilerId);
+            profilerStateManager.searchStopState(profilerId);
         } catch (Exception e) {
-            LOGGER.error("force stop profiler id error.profiler id: {}", profilerId, e);
+            LOGGER.error("search stop state error.profiler id: {}", profilerId, e);
             ResultHelper.fail(e.getMessage());
         }
         return ResultHelper.success();
     }
+
+    @RequestMapping("/stop")
+    @ResponseBody
+    public Object forceStop(String agentId, String profilerId) {
+        try {
+            profilerStateManager.forceStop(agentId, profilerId);
+        } catch (Exception e) {
+            LOGGER.error("force stop profiler error.profiler id: {}", profilerId, e);
+            ResultHelper.fail(e.getMessage());
+        }
+        return ResultHelper.success();
+    }
+
 
     private Path getSvgFile(String profilerId, String svgName) {
         return Paths.get(BistouryConstants.PROFILER_ROOT_PATH, profilerId, svgName);
