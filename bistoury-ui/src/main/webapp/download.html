@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bistoury文件下载</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/bootstrap.min.css?version=2.0.2">
+    <link rel="stylesheet" href="css/bootstrap-treeview.css?version=2.0.2">
+    <link rel="stylesheet" href="css/bootstrap-table.css?version=2.0.2">
+    <link rel="stylesheet" href="css/main.css?version=2.0.2"/>
+    <link rel="stylesheet" href="css/menu.css?version=2.0.2"/>
+    <link rel="stylesheet" href="css/spop.min.css?version=2.0.2">
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/base64.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/websocket.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/bootstrap-treeview.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/bootstrap-table.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/bootstrap-table-zh-CN.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/jsencrypt.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/tripledes.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/mode-ecb.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/header.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/spop.min.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/bistoury.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/download.js?version=2.0.2"></script>
+</head>
+<body>
+<div>
+    <div class="col-md-12 header" id="header">
+
+    </div>
+    <div class="help-container">
+        <div class="menu" id="menu">
+
+        </div>
+        <div class="content">
+            <div class="tab">
+                <div>
+                    <div id="download-table-toolbar" style="margin-right: 12px;">
+                        <!--<form class="form-inline">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="list_file" id="list-all-file" value="all">
+                                    显示全部
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="list_file" id="list-log-file" value="log" checked>
+                                    显示日志文件
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="list_file" id="list-dump-file" value="dump">
+                                    显示dump文件
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="list_file" id="list-other-file" value="other">
+                                    其他
+                                </label>
+                            </div>
+                        </form>-->
+                        <div class="btn-group" role="group" aria-label="list-file" id="list-file-btn">
+                            <button type="button" class="btn btn-default" id="list-all-file">显示全部</button>
+                            <button type="button" class="btn btn-default active" id="list-log-file">显示日志文件</button>
+                            <button type="button" class="btn btn-default" id="list-dump-file">显示dump文件</button>
+                            <button type="button" class="btn btn-default" id="list-other-file">其他</button>
+                        </div>
+                    </div>
+                    <table id="download-file-table" class="table table-hover" style="table-layout:fixed;"></table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -50,13 +50,19 @@ public final class FileUtil {
      */
     public static List<String> listFile(File file) {
         List<String> result = new ArrayList<>();
-        listFile(result, file);
+        if (file.exists()) {
+            listFile(result, file);
+        }
         return result;
     }
 
     public static List<File> listFile(File file, Predicate<File> filter) {
         List<File> result = Lists.newArrayList();
-        listFile(result, file, filter);
+
+        if (file.exists()) {
+            listFile(result, file, filter);
+        }
+
         return result;
     }
 
