@@ -17,18 +17,27 @@
 
 package qunar.tc.bistoury.proxy.communicate.agent.handler;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import qunar.tc.bistoury.common.JacksonSerializer;
+import qunar.tc.bistoury.common.TypeResponse;
 import qunar.tc.bistoury.proxy.communicate.Session;
 import qunar.tc.bistoury.proxy.communicate.SessionManager;
+import qunar.tc.bistoury.proxy.service.ProfilerStateManager;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.remoting.protocol.ResponseCode;
 
+import java.util.Map;
 import java.util.Set;
+
+import static qunar.tc.bistoury.remoting.protocol.ResponseCode.RESP_TYPE_CONTENT;
 
 /**
  * @author zhenyu.nie created on 2019 2019/5/14 18:12
@@ -41,10 +50,13 @@ public class AgentResponseProcessor implements AgentMessageProcessor {
     @Autowired
     private SessionManager sessionManager;
 
+    @Autowired
+    private ProfilerStateManager profilerStateManager;
+
     @Override
     public Set<Integer> codes() {
         return ImmutableSet.of(
-                ResponseCode.RESP_TYPE_CONTENT.getCode(),
+                RESP_TYPE_CONTENT.getCode(),
                 ResponseCode.RESP_TYPE_EXCEPTION.getCode(),
                 ResponseCode.RESP_TYPE_SINGLE_END.getCode()
         );
@@ -57,7 +69,24 @@ public class AgentResponseProcessor implements AgentMessageProcessor {
         if (session != null) {
             session.writeToUi(message);
         } else {
-            logger.warn("id [{}] can not get session, write response fail, {}", id, ctx.channel());
+            if (!canIgnore(message)) {
+                logger.warn("id [{}] can not get session, write response fail, {}", id, ctx.channel());
+            }
         }
+    }
+
+    private boolean canIgnore(Datagram datagram) {
+        String profilerId = datagram.getHeader().getId();
+        boolean isProfilerResponse = profilerStateManager.isProfilerRequest(profilerId);
+        if (isProfilerResponse && datagram.getHeader().getCode() == RESP_TYPE_CONTENT.getCode()) {
+
+            ByteBuf body = datagram.getBody();
+            byte[] data = new byte[body.readableBytes()];
+            body.readBytes(data);
+            TypeResponse<String> profilerInfo = JacksonSerializer.deSerialize(data, new TypeReference<TypeResponse<String>>() {
+            });
+            profilerStateManager.dealProfiler(profilerId, profilerInfo);
+        }
+        return isProfilerResponse;
     }
 }

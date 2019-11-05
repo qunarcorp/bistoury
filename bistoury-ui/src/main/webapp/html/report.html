@@ -45,7 +45,8 @@
         var url = "/profiler/download.do";
         var fileName = prefix + chooseSvgFile(state);
         var profilerId = getProfilerId();
-        url = url + "?profilerId=" + profilerId + "&svgName=" + fileName;
+        var proxyUrl = getProxyUrl();
+        url = url + "?profilerId=" + profilerId + "&svgName=" + fileName + "&proxyUrl=" + proxyUrl;
 
         document.getElementById("svg-file").src = url;
 
@@ -71,6 +72,10 @@
 
     function getProfilerId() {
         return getParam("profilerId");
+    }
+
+    function getProxyUrl() {
+        return getParam("proxyUrl");
     }
 
     function getParam(key) {

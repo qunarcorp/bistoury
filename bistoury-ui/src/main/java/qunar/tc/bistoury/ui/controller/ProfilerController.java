@@ -1,5 +1,8 @@
 package qunar.tc.bistoury.ui.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.AsyncHttpClientConfig;
@@ -9,9 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import qunar.tc.bistoury.serverside.dao.ProfilerDao;
-import qunar.tc.bistoury.serverside.dao.ProfilerDaoImpl;
+import qunar.tc.bistoury.common.JacksonSerializer;
+import qunar.tc.bistoury.serverside.bean.ApiResult;
+import qunar.tc.bistoury.serverside.bean.Profiler;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
+import qunar.tc.bistoury.ui.service.ProfilerService;
 import qunar.tc.bistoury.ui.service.ProxyService;
 import qunar.tc.bistoury.ui.util.ProxyInfo;
 import qunar.tc.bistoury.ui.util.ProxyInfoParse;
@@ -20,8 +25,9 @@ import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
+import java.util.stream.Collectors;
 
 
 /**
@@ -34,26 +40,89 @@ public class ProfilerController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProfilerController.class);
 
     private static final AsyncHttpClient httpClient = new AsyncHttpClient(
-            new AsyncHttpClientConfig.Builder().setReadTimeout(30000).build());
+            new AsyncHttpClientConfig.Builder()
+                    .setConnectTimeout(3000)
+                    .setReadTimeout(30000).build());
 
-    private static final String profilerSvgUrl = "http://%s:%d/proxy/agent/profiler/svg?profilerId=%s&svgName=%s";
+    private static final String profilerSvgUrl = "http://%s:%d/proxy/profiler/svg?profilerId=%s&svgName=%s";
 
-    private static final String profilerResultUrl = "http://%s:%d/proxy/agent/profiler/result?profilerId=%s";
+    private static final String profilerResultUrl = "http://%s:%d/proxy/profiler/result?profilerId=%s";
 
-    private final ProfilerDao profilerDao = new ProfilerDaoImpl();
+    private static final String profilerIsAnalyzedUrl = "http://%s:%d/proxy/profiler/analysis/state?profilerId=%s";
 
     @Resource
     private ProxyService proxyService;
 
+    @Resource
+    private ProfilerService profilerService;
+
+    //todo 改成通用的json对象
+    //todo get random修改
     @PostMapping("/state")
     @ResponseBody
     public Object requestProfilerState(String profilerId) {
-        return profilerDao.getProfilerRecord(profilerId);
+        return profilerService.getProfilerRecord(profilerId);
     }
+
+    @PostMapping("/analysis/state")
+    @ResponseBody
+    public Object analyzeProfilerState(String profilerId) {
+        Optional<ProxyInfo> proxyRef = getAnalyzedProxyForProfiler(profilerId);
+        return proxyRef.map(ResultHelper::success)
+                .orElseGet(ResultHelper::success);
+    }
+
+    @GetMapping("/records")
+    @ResponseBody
+    public Object lastThreeDaysProfiler(String agentId) {
+        List<Profiler> profilers = profilerService.getProfilerRecords("", agentId);
+        profilers = profilers.stream()
+                .filter(profiler -> profiler.getState() == Profiler.State.stop)
+                .collect(Collectors.toList());
+        return ResultHelper.success(profilers);
+    }
+
+    @GetMapping("/last")
+    @ResponseBody
+    public Object lastProfiler(String agentId) {
+        Profiler profiler = profilerService.getLastProfilerRecord("", agentId);
+        if (profiler == null || profiler.getState() != Profiler.State.start) {
+            return ResultHelper.success();
+        }
+        Optional<ProxyInfo> proxyRef = getAnalyzedProxyForProfiler(profiler.getProfilerId());
+        if (proxyRef.isPresent()) {
+            profiler.setState(Profiler.State.analyzed);
+        }
+        return ResultHelper.success(profiler);
+    }
+
+    private final TypeReference analyzerResponse = new TypeReference<ApiResult<Boolean>>() {
+    };
+
+    private Optional<ProxyInfo> getAnalyzedProxyForProfiler(String profilerId) {
+        List<String> proxyWebSocketUrls = proxyService.getAllProxyUrls();
+        for (String proxyWebSocketUrl : proxyWebSocketUrls) {
+            Optional<ProxyInfo> proxyRef = ProxyInfoParse.parseProxyInfo(proxyWebSocketUrl);
+            if (!proxyRef.isPresent()) {
+                continue;
+            }
+            ProxyInfo proxyInfo = proxyRef.get();
+            String url = String.format(profilerIsAnalyzedUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId);
+            byte[] content = getBytesFromUrl(url);
+            ApiResult<Boolean> response = JacksonSerializer.deSerialize(content, analyzerResponse);
+            if (response.getData()) {
+                return proxyRef;
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static final Splitter COLON_SPlITTER = Splitter.on(":");
 
     @GetMapping("/download")
     public void forwardSvgFile(@RequestParam("profilerId") String profilerId,
                                @RequestParam("svgName") String svgName,
+                               @RequestParam("proxyUrl") String proxyUrl,
                                HttpServletResponse response) throws Exception {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Cache-Control", "no-store");
@@ -61,7 +130,11 @@ public class ProfilerController {
         response.setDateHeader("Expires", 0);
         response.setContentType("image/svg+xml");
         ServletOutputStream responseOutputStream = response.getOutputStream();
-        responseOutputStream.write(getSvgFile(new ProxyInfo("127.0.0.1", 9090, 9090), profilerId, svgName));
+
+        List<String> info = COLON_SPlITTER.splitToList(proxyUrl);
+        String proxyIp = info.get(0);
+        int tomcatPort = Integer.parseInt(info.get(1));
+        responseOutputStream.write(getSvgFile(new ProxyInfo(proxyIp, tomcatPort, 0), profilerId, svgName));
         responseOutputStream.flush();
         responseOutputStream.close();
     }
@@ -69,14 +142,17 @@ public class ProfilerController {
     @PostMapping("analyze")
     @ResponseBody
     public Object analyzeProfiler(@RequestParam("profilerId") String profilerId) {
-        ProxyInfo proxyInfo = getRandomProxy();
+        ProxyInfo proxyInfo = getProxyForAgent();
         try {
             String url = String.format(profilerResultUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId);
             getAnalyzerResult(url);
         } catch (Exception e) {
             return ResultHelper.fail("分析失败");
         }
-        return ResultHelper.success();
+        String proxyUrl = proxyInfo.getIp() + ":" + proxyInfo.getTomcatPort();
+        Map<String, String> result = ImmutableMap.of("profilerId", profilerId,
+                "proxyUrl", proxyUrl);
+        return ResultHelper.success(result);
     }
 
     private void getAnalyzerResult(String url) {
@@ -93,17 +169,11 @@ public class ProfilerController {
     }
 
 
-    private ProxyInfo getRandomProxy() {
+    private ProxyInfo getProxyForAgent() {
         List<String> proxyWebSocketUrls = proxyService.getAllProxyUrls();
-        int randomIndex = new Random().nextInt(proxyWebSocketUrls.size());
-        String proxyUrl = proxyWebSocketUrls.get(randomIndex);
-        Optional<ProxyInfo> proxyRef = ProxyInfoParse.parseProxyInfo(proxyUrl);
-        if (proxyRef.isPresent()) {
-            return proxyRef.get();
-        }
 
         for (String proxyWebSocketUrl : proxyWebSocketUrls) {
-            proxyRef = ProxyInfoParse.parseProxyInfo(proxyWebSocketUrl);
+            Optional<ProxyInfo> proxyRef = ProxyInfoParse.parseProxyInfo(proxyWebSocketUrl);
             if (!proxyRef.isPresent()) {
                 continue;
             }
@@ -125,8 +195,7 @@ public class ProfilerController {
             return ByteStreams.toByteArray(response.getResponseBodyAsStream());
         } catch (Exception e) {
             LOGGER.error("get byte from proxy error.", e);
-            throw new RuntimeException("get svg file error. " + e.getMessage());
+            throw new RuntimeException("get content error. " + e.getMessage());
         }
     }
-
 }

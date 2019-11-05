@@ -1,5 +1,8 @@
 package qunar.tc.bistoury.serverside.bean;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -19,11 +22,13 @@ public class Profiler {
 
     private int pid;
 
-    private Date startTime;
+    private Timestamp startTime;
 
-    private Date updateTime;
+    private Timestamp updateTime;
 
     private State state;
+
+    private int duration;
 
     public State getState() {
         return state;
@@ -81,27 +86,37 @@ public class Profiler {
         this.pid = pid;
     }
 
-    public Date getStartTime() {
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    public Timestamp getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(Timestamp startTime) {
         this.startTime = startTime;
     }
 
-    public Date getUpdateTime() {
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    public Timestamp getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(Date updateTime) {
+    public void setUpdateTime(Timestamp updateTime) {
         this.updateTime = updateTime;
     }
 
-    public static enum State {
+    public int getDuration() {
+        return duration;
+    }
 
-        start(0),  stop(1);
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
 
-        private final int code;
+    public enum State {
+
+        start(0), stop(1), ready(2), analyzed(3), start_exception(4), stop_exception(4);
+
+        public final int code;
 
         State(int code) {
             this.code = code;

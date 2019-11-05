@@ -9,6 +9,8 @@ public class AgentProfilerContext {
 
     private static long startTime = -1;
 
+    private static String profilerId;
+
     public synchronized static void stopProfiling() {
         startTime = -1;
         isProfiling = false;
@@ -25,6 +27,14 @@ public class AgentProfilerContext {
 
     public synchronized static long getStartTime() {
         return startTime;
+    }
+
+    public synchronized static String getProfilerId() {
+        return profilerId;
+    }
+
+    public synchronized static void setProfilerId(String profilerId) {
+        AgentProfilerContext.profilerId = profilerId;
     }
 
 }

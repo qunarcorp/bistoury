@@ -8,6 +8,7 @@ import java.util.List;
  * @author cai.wen created on 2019/10/30 14:52
  */
 public interface ProfilerDao {
+
     List<Profiler> getProfilerRecords(String app, String agentId);
 
     Profiler getLastProfilerRecord(String app, String agentId);
@@ -16,5 +17,13 @@ public interface ProfilerDao {
 
     void stopProfiler(String profilerId);
 
-    void startProfiler(Profiler profiler);
+    void changeState(Profiler.State state, String profilerId);
+
+    void deleteProfiler(String profilerId);
+
+    void startProfiler(String profilerId);
+
+    void prepareProfiler(Profiler profiler);
+
+    List<Profiler> getProfilersByState(int state);
 }

@@ -59,7 +59,7 @@ public class BistouryConstants {
 
     public static final String REQ_PROFILER_STOP = "profilerstop";
 
-    public static final String REQ_PROFILER_FILE_SEARCH = "profilerfilesearch";
+    public static final String REQ_PROFILER_FINISH_STATE_SEARCH = "profilerfinish";
 
     public static final String REQ_PROFILER_STATE_SEARCH = "profilerstatesearch";
 

@@ -53,6 +53,7 @@ public class Manager {
         compactPrefixPackage.insert("com.google.");
         compactPrefixPackage.insert("ch.qos.");
         compactPrefixPackage.insert("org.slf4j.");
+        compactPrefixPackage.insert("io.termd.core.");
     }
 
     public static boolean isCompactClass(String className) {
@@ -72,15 +73,15 @@ public class Manager {
             new File(ProfilerConstants.PROFILER_TEMP_PATH).delete();
         }
         new File(ProfilerConstants.PROFILER_ROOT_PATH).mkdirs();
-        new File(ProfilerConstants.PROFILER_TEMP_PATH).mkdirs();
+        new File(ProfilerConstants.PROFILER_TEMP_PATH + File.separator + profilerId).mkdirs();
     }
 
     public static synchronized void init(int durationSeconds, int frequencyMillis, String profilerId, String tempDir) {
-        createDumpPath(tempDir);
-
         Manager.profilerId = profilerId;
+        AgentProfilerContext.setProfilerId(profilerId);
         profilerTask = new ProfilerTask(frequencyMillis);
         dumpTask = new DumpTask(durationSeconds);
+        createDumpPath(tempDir);
 
         profilerTask.init();
         dumpTask.init();
@@ -103,14 +104,14 @@ public class Manager {
     }
 
     private static void checkProfilerState() {
-        long startTime = AgentProfilerContext.getStartTime();
-        long curMillis = System.currentTimeMillis();
-        long duration = curMillis - startTime;
-        if (duration < ProfilerConstants.MIN_DURATION_MILLIS) {
-            String detailMsg = "profiler duration is too short. duration: " + duration / 1000 +
-                    "s. min duration must " + ProfilerConstants.MIN_DURATION_MILLIS / 1000 + "s";
-            throw new IllegalStateException(detailMsg);
-        }
+//        long startTime = AgentProfilerContext.getStartTime();
+//        long curMillis = System.currentTimeMillis();
+//        long duration = curMillis - startTime;
+//        if (duration < ProfilerConstants.MIN_DURATION_MILLIS) {
+//            String detailMsg = "profiler duration is too short. duration: " + duration / 1000 +
+//                    "s. min duration must " + ProfilerConstants.MIN_DURATION_MILLIS / 1000 + "s";
+//            throw new IllegalStateException(detailMsg);
+//        }
     }
 
     private static void stopTask(Task task) {
@@ -129,7 +130,6 @@ public class Manager {
 
     private static String getFullPath(String fileName) {
         String profilerIdPath = ProfilerConstants.PROFILER_TEMP_PATH + File.separator + profilerId;
-        new File(ProfilerConstants.PROFILER_TEMP_PATH + File.separator + profilerId).mkdirs();
         return profilerIdPath + File.separator + fileName;
     }
 

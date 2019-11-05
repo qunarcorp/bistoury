@@ -37,6 +37,16 @@ html, body {
     width: 50%;
 }
 
+.content .panel-profiler-left {
+    width: 40%;
+    float: left;
+}
+
+.content .panel-profiler-right {
+    width: 55%;
+    float: right;
+}
+
 .content .panel-right {
     width: 49%;
     margin-left: 1%;

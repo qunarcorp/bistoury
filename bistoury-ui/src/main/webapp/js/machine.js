@@ -964,6 +964,7 @@ $(document).ready(function () {
         removeActiveClass();
         $("#cpu-profiler-menu").addClass("active");
         $("#cpu-profiler").show();
+        initNoStartState();
     });
 
     $("#heap-histo-search").click(function () {

@@ -9,11 +9,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.proxy.service.ProfilerAnalyzer;
 import qunar.tc.bistoury.proxy.service.ProfilerDataManager;
+import qunar.tc.bistoury.proxy.service.ProfilerStateManager;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 
 import javax.annotation.Resource;
@@ -26,14 +26,14 @@ import java.nio.file.Paths;
  * @author cai.wen created on 2019/10/25 16:52
  */
 @Controller
-@RequestMapping("/proxy/agent/profiler")
-public class AgentProfilerController {
+@RequestMapping("/proxy/profiler")
+public class AgentProfilerForUiController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AgentProfilerController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AgentProfilerForUiController.class);
 
     @RequestMapping("/svg")
-    public ResponseEntity<byte[]> download(@RequestParam("profilerId") String profilerId,
-                                           @RequestParam("svgName") String svgName,
+    public ResponseEntity<byte[]> download(String profilerId,
+                                           String svgName,
                                            HttpServletResponse response) throws Exception {
         response.setCharacterEncoding("UTF-8");
         HttpHeaders headers = new HttpHeaders();
@@ -46,9 +46,12 @@ public class AgentProfilerController {
     @Resource
     private ProfilerDataManager profilerDataManager;
 
+    @Resource
+    private ProfilerStateManager profilerStateManager;
+
     @RequestMapping("/result")
     @ResponseBody
-    public Object result(@RequestParam("profilerId") String profilerId) {
+    public Object result(String profilerId) {
         if (Strings.isNullOrEmpty(profilerId)) {
             return ResultHelper.fail("profiler id is empty.");
         }
@@ -58,6 +61,24 @@ public class AgentProfilerController {
         } catch (Exception e) {
             LOGGER.error("analyze result error. profiler id: {}", profilerId);
             throw e;
+        }
+        return ResultHelper.success();
+    }
+
+    @RequestMapping("/analysis/state")
+    @ResponseBody
+    public Object getAnalysisState(String profilerId) {
+        return ResultHelper.success(ProfilerAnalyzer.getInstance().isDone(profilerId));
+    }
+
+    @RequestMapping("/stop")
+    @ResponseBody
+    public Object stop(String profilerId) {
+        try {
+            profilerStateManager.forceStop(profilerId);
+        } catch (Exception e) {
+            LOGGER.error("force stop profiler id error.profiler id: {}", profilerId, e);
+            ResultHelper.fail(e.getMessage());
         }
         return ResultHelper.success();
     }

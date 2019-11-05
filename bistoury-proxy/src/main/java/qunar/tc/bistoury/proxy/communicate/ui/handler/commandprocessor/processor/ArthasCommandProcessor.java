@@ -109,9 +109,7 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
     }
 
     private String prepareProfilerStart(String command, String agentId) {
-        String profilerId = profilerService.startProfiler(agentId);
-        Optional<AgentConnection> agentConnRef = agentConnectionStore.getConnection(agentId);
-        agentConnRef.ifPresent(agentConnection -> profilerStateManager.register(agentConnection, command, profilerId));
+        String profilerId = profilerStateManager.register(agentId, command);
         return BistouryConstants.REQ_PROFILER_START + " " + profilerId
                 + command.substring(BistouryConstants.REQ_PROFILER_START.length());
     }
@@ -153,10 +151,10 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
         }
     }
 
-
     @Override
     public Datagram prepareResponse(Datagram datagram) {
-        System.out.println(datagram.getHeader().getId());
+        //todo 测试
+        System.out.println("code: " + datagram.getHeader().getCode());
         return super.prepareResponse(datagram);
     }
 

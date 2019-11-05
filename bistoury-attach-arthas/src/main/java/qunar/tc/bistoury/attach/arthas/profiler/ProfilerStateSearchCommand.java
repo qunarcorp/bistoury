@@ -34,10 +34,10 @@ public class ProfilerStateSearchCommand extends AnnotatedCommand {
 
         try {
             if (AgentProfilerContext.isProfiling()) {
-                response.setData("profiler is stop.");
+                response.setData("true");
                 response.setCode(0);
             } else {
-                response.setMessage("profiler is profiling.");
+                response.setData("false");
                 response.setCode(-1);
             }
         } finally {

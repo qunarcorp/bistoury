@@ -73,13 +73,14 @@ create table `bistoury_user`(
 )CHARSET = utf8mb4;
 
 DROP TABLE if exists `bistoury_profiler`;
- create TABLE `bistoury_profiler`
+create TABLE `bistoury_profiler`
 (
     `id`          int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键id',
     `profiler_id` varchar(32)      NOT NULL COMMENT '性能分析对应的id',
     `operator`    varchar(50)      NOT NULL DEFAULT '' COMMENT '操作用户code',
     `app_code`    varchar(50)               DEFAULT '' not null COMMENT '对应的appCode',
     `agent_id`    VARCHAR(32)               DEFAULT '' NOT NULL COMMENT 'agent机器对应的id',
+    `duration`    int(10)                   NOT NULL COMMENT '性能分析时长',
     `pid`         int(10) unsigned NOT NULL COMMENT '目标vm对应的pid',
     `start_time`  timestamp        NOT NULL COMMENT '性能分析开始时间',
     `update_time` timestamp        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',

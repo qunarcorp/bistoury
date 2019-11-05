@@ -12,4 +12,8 @@ public class ProfilerUtils {
     public static boolean isDone(final String profilerId) {
         return new File(BistouryConstants.PROFILER_ROOT_PATH, profilerId).exists();
     }
+
+    public static boolean isStart(final String profilerId) {
+        return new File(BistouryConstants.PROFILER_TEMP_PATH, profilerId).exists();
+    }
 }

@@ -500,17 +500,65 @@
                     <div id="process-panel" class="tab"></div>
                     <div id="jstack-dump-panel" class="tab"></div>
                     <div id="cpu-profiler" class="tab">
-                        <button id="btn_start_profiler" type="button" class="btn btn-primary" onclick="startProfiler()">
-                            开始
-                        </button>
-                        <button id="btn_stop_profiler" type="button" class="btn btn-primary"
-                                onclick="stopProfiler(111)">手动结束
-                        </button>
-                        <button id="btn_analyze_profiler" type="button" class="btn btn-primary"
-                                onclick="analyzeProfiler(111)">分析
-                        </button>
-                        <a id="btn_result" class="btn btn-primary" href="html/report.html?profilerId=111"
-                           target="_blank">查看结果</a>
+                        <div>
+                            <div class="panel-default panel-profiler-left">
+                                <div class="panel-heading">
+                                    当前性能分析状态
+                                </div>
+                                <div class="panel-body">
+                                    <table class="table table-hover">
+                                        <colgroup>
+                                            <col name="" width="23%">
+                                            <col name="" width="23%">
+                                            <col name="" width="23%">
+                                            <col name="" width="23%">
+                                        </colgroup>
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                                <button id="btn_start_profiler" type="button"
+                                                        class="btn btn-primary btn-block"
+                                                        onclick="startProfiler()">
+                                                    开始
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button id="btn_stop_profiler" type="button"
+                                                        class="btn btn-primary btn-block"
+                                                        onclick="stopProfiler()">手动结束
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button id="btn_analyze_profiler" type="button"
+                                                        class="btn btn-primary btn-block"
+                                                        onclick="analyzeProfiler()">分析
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <a id="btn_result" class="btn btn-primary btn-block"
+                                                   href="html/report.html?profilerId=111"
+                                                   target="_blank">查看结果</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="panel-default panel-profiler-right">
+                                <div class="panel-heading">
+                                    最近3天性能分析记录
+                                </div>
+                                <div class="panel-body">
+                                    <table class="table table-hover" id="profiler-history">
+                                        <colgroup>
+                                            <col name="" width="10%">
+                                        </colgroup>
+                                        <tbody id="history-body">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -575,6 +623,66 @@
                     <div class="col-md-12" id="file-content-panel">
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal model-profiler" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="model-profiler-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-4">
+                        <button type="button" id="btn-history-analysis" class="btn btn-primary btn-block">分析</button>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-4">
+                        <a id="btn-history-result" type="button" target="_blank"
+                           class="btn btn-primary btn-block">查看结果</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal model-profiler-setting" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">配置</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group">
+                    模式:
+                    <select id="profiler-mode" style="margin-left:40px">
+                        <option value="0">抽样</option>
+                    </select>
+                </div>
+                <div class="list-group">
+                    时长:
+                    <input type="number" id="profiler-duration" min="0" value="120" max="1800" style="margin-left:40px">&nbsp;(s)
+                </div>
+                <div class="list-group">
+                    频率:
+                    <input type="number" id="profiler-frequency" min="5" value="20" max="1800" style="margin-left:40px">&nbsp;(ms)
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="doStartProfiler()">start</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

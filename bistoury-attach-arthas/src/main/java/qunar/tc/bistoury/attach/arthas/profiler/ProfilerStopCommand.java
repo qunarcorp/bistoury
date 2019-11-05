@@ -41,6 +41,13 @@ public class ProfilerStopCommand extends AnnotatedCommand {
                 return;
             }
 
+            final String curProfilerId = AgentProfilerContext.getProfilerId();
+            if (curProfilerId.isEmpty() || !curProfilerId.equals(id)) {
+                response.setMessage("error profiler id.");
+                response.setCode(-1);
+                return;
+            }
+
             Manager.stop();
             response.setCode(0);
             response.setData("stop profiler success.");
