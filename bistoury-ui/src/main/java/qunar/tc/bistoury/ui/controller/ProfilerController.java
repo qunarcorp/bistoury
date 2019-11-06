@@ -56,15 +56,13 @@ public class ProfilerController {
     @Resource
     private ProfilerService profilerService;
 
-    //todo 改成通用的json对象
-    //todo get random修改
-    @PostMapping("/state")
+    @GetMapping("/get")
     @ResponseBody
-    public Object requestProfilerState(String profilerId) {
-        return profilerService.getProfilerRecord(profilerId);
+    public Object requestProfiler(String profilerId) {
+        return ResultHelper.success(profilerService.getProfilerRecord(profilerId));
     }
 
-    @PostMapping("/analysis/state")
+    @GetMapping("/analysis/state")
     @ResponseBody
     public Object analyzeProfilerState(String profilerId) {
         Optional<ProxyInfo> proxyRef = getAnalyzedProxyForProfiler(profilerId);

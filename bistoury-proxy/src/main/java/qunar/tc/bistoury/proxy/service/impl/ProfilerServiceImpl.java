@@ -4,7 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import qunar.tc.bistoury.proxy.service.ProfilerService;
+import qunar.tc.bistoury.proxy.service.profiler.ProfilerService;
 import qunar.tc.bistoury.serverside.bean.Profiler;
 import qunar.tc.bistoury.serverside.dao.ProfilerDao;
 import qunar.tc.bistoury.serverside.dao.ProfilerDaoImpl;

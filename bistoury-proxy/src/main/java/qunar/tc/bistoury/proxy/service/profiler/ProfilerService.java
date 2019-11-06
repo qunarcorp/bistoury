@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.proxy.service;
+package qunar.tc.bistoury.proxy.service.profiler;
 
 import qunar.tc.bistoury.serverside.bean.Profiler;
 

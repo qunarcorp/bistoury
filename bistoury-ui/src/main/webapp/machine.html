@@ -518,7 +518,7 @@
                                             <td>
                                                 <button id="btn_start_profiler" type="button"
                                                         class="btn btn-primary btn-block"
-                                                        onclick="startProfiler()">
+                                                        onclick="openStartSettingModel()">
                                                     开始
                                                 </button>
                                             </td>
@@ -531,7 +531,7 @@
                                             <td>
                                                 <button id="btn_analyze_profiler" type="button"
                                                         class="btn btn-primary btn-block"
-                                                        onclick="analyzeProfiler()">分析
+                                                        onclick="analyzeCurrentProfiler()">分析
                                                 </button>
                                             </td>
                                             <td>
@@ -681,7 +681,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="doStartProfiler()">start</button>
+                <button type="button" class="btn btn-primary" onclick="startProfiler()">start</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

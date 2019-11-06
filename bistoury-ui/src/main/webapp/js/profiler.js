@@ -6,13 +6,11 @@ var intervalId;
 
 var START_STATE = "start";
 var STOP_STATE = "stop";
-var READY_STATE = "ready";
 var ANALYZED_STATE = "analyzed";
 
 var proxyUrl;
 
-
-function doStartProfiler() {
+function startProfiler() {
     var duration = $("#profiler-duration").val();
     var frequency = $("#profiler-frequency").val();
     console.log("start profiler.");
@@ -29,79 +27,29 @@ function doStartProfiler() {
     $(".model-profiler-setting").modal("hide");
 }
 
-function startProfiler() {
+function openStartSettingModel() {
     $(".model-profiler-setting").modal("show");
 }
 
-function sendStopCommand() {
-    var currentHost = $('#menu').treeview('getSelected')[0].value;
-    var command = "profilerstop " + globalProfilerId;
-    bistouryWS.sendCommand(currentHost, REQ_TYPE_PROFILER_STOP, command, stop, handleResult);
-}
-
-function stopProfiler() {
-    console.log("stop profiler.");
-    sendStopCommand(globalProfilerId);
-}
-
-function analyzeProfiler() {
+function analyzeCurrentProfiler() {
     console.log("analyze profiler");
     analyze(globalProfilerId);
 }
 
-function sendStartCommand(duration, frequency) {
-    var currentHost = $('#menu').treeview('getSelected')[0].value;
-    var command = "profilerstart -m 0";
-    command += " -d " + duration;
-    command += " -f " + frequency;
-    bistouryWS.sendCommand(currentHost, REQ_TYPE_PROFILER, command, stop, handleResult);
-}
-
-function initProfiler(profilerId) {
+function initCurrentProfilerTable(profilerId) {
     globalProfilerId = profilerId;
     var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
     $("#btn_result").prop("href", reportUrl);
     startInterval();
 }
 
-function handleResult(content) {
-    if (!content) {
-        return;
-    }
-    var result = JSON.parse(content);
-    if (!result) {
-        return;
-    }
-    buildProfiler(result);
-}
-
-function buildProfiler(result) {
-    var resType = result.type;
-    console.log("result: " + result);
-    if (resType === "profilerstart") {
-        var data = result.data;
-        if (data.code === 0) {
-            initProfiler(data.data.profilerId);
-            bistoury.success("开始性能分析")
-        } else {
-            initState();
-            bistoury.error("添加性能分析失败, " + data.message)
-        }
-    } else if (resType === "profilerstop") {
-        var data = result.data;
-        if (data.code === 0) {
-
-        } else {
-            bistoury.error("手动停止性能分析失败: " + data.message)
-        }
-    }
-}
 
 function initHistoryEndState(profilerId) {
     $("#btn-history-analysis").attr("disabled", true);
-    $("#btn-history-result").attr("disabled", false);
+    var history_result_btn = $("#btn-history-result");
+    history_result_btn.attr("disabled", false);
     var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
-    $("#btn-history-result").prop("href", reportUrl);
+    history_result_btn.prop("href", reportUrl);
 }
 
 function analyze(profilerId) {
@@ -118,9 +66,10 @@ function analyze(profilerId) {
                 bistoury.success("分析结果成功");
                 if (globalProfilerId === profilerId) {
                     var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
-                    $("#btn-history-result").attr("disabled", false);
+                    var history_result_btn = $("#btn-history-result");
+                    history_result_btn.attr("disabled", false);
                     $("#btn_result").prop("href", reportUrl);
-                    $("#btn-history-result").prop("href", reportUrl);
+                    history_result_btn.prop("href", reportUrl);
                     initEndState();
                 } else {
                     initHistoryEndState(profilerId);
@@ -136,66 +85,50 @@ function analyze(profilerId) {
 
 function searchProfilerState() {
     $.ajax({
-        "url": "profiler/state.do",
-        "type": "post",
+        "url": "profiler/get.do",
+        "type": "get",
         "dataType": 'JSON',
         "data": {
             profilerId: globalProfilerId
         },
-        success: function (ret) {
-            if (ret.state === "stop") {
-                bistoury.success("性能监控正常停止");
-                initAnalysisState();
-                stopInterval();
-                var currentHost = $('#menu').treeview('getSelected')[0].value;
-                var agentId = currentHost.ip;
-                searchProfilerHistory(agentId);
+        success: function (res) {
+            if (res.status === 0) {
+                if (res.data.state === STOP_STATE) {
+                    bistoury.success("性能监控正常停止");
+                    initAnalysisState();
+                    stopInterval();
+                    var agentId = getAgentId();
+                    searchProfilerHistory(agentId);
+                }
             }
         }
     })
 }
-
-function searchAgentProfilerState() {
-    var currentHost = $('#menu').treeview('getSelected')[0].value;
-    var agentId = currentHost.ip;
-    $.ajax({
-        "url": "profiler/agent/state.do",
-        "type": "post",
-        "dataType": 'JSON',
-        async: false,
-        "data": {
-            agentId: agentId
-        },
-        success: function (ret) {
-            if (ret.status === 0) {
-
-            }
-        }
-    })
-}
-
 
 function searchAnalysisState(profilerId) {
     var proxy;
     $.ajax({
         "url": "profiler/analysis/state.do",
-        "type": "post",
+        "type": "get",
         "dataType": 'JSON',
         async: false,
         "data": {
             profilerId: profilerId
         },
         success: function (ret) {
-            console.log(ret.data);
-            proxy = ret.data;
-            if (ret.data == null) {
-                $("#btn-history-result").attr("disabled", true);
-                return;
+            if (ret.status === 0) {
+                proxy = ret.data;
+                var history_result_btn = $("#btn-history-result");
+                if (ret.data == null) {
+                    history_result_btn.attr("disabled", true);
+                    return;
+                }
+
+                history_result_btn.attr("disabled", false);
+                proxyUrl = ret.data.ip + ":" + ret.data.tomcatPort;
+                var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
+                history_result_btn.prop("href", reportUrl);
             }
-            $("#btn-history-result").attr("disabled", false);
-            proxyUrl = ret.data.ip + ":" + ret.data.tomcatPort;
-            var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
-            $("#btn-history-result").prop("href", reportUrl);
         }
     })
     return proxy;
@@ -220,20 +153,6 @@ function searchLastProfiler(agentId) {
     return lastProfiler;
 }
 
-function initHistoryTable(data) {
-    $("#history-body").empty();
-    data.forEach(function (profiler) {
-        var aElement = document.createElement("a");
-        var trElement = document.createElement('tr')
-        var tdElement = document.createElement("td");
-        aElement.text = profiler.startTime;
-        aElement.setAttribute("onclick", "showHistory('" + profiler.profilerId + "','" + profiler.startTime + "')")
-        trElement.appendChild(tdElement);
-        tdElement.appendChild(aElement);
-        $("#history-body").append(trElement);
-    });
-}
-
 function searchProfilerHistory(agentId) {
     $.ajax({
         "url": "profiler/records.do",
@@ -251,11 +170,40 @@ function searchProfilerHistory(agentId) {
     });
 }
 
+function showHistory(profilerId, startTime) {
+    historyProfilerId = profilerId;
+    var proxy = searchAnalysisState(profilerId);
+    $("#model-profiler-title").text("开始时间: " + startTime);
+    var history_analysis_btn = $("#btn-history-analysis");
+    if (proxy != null) {
+        history_analysis_btn.attr("disabled", true);
+    } else {
+        history_analysis_btn.attr("disabled", false);
+    }
+    $(".model-profiler").modal("show");
+    history_analysis_btn.attr("onclick", "analyze('" + profilerId + "')");
+    var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
+    $("#btn-history-result").prop("href", reportUrl);
+}
+
+function initHistoryTable(data) {
+    $("#history-body").empty();
+    data.forEach(function (profiler) {
+        var aElement = document.createElement("a");
+        var trElement = document.createElement('tr')
+        var tdElement = document.createElement("td");
+        aElement.text = profiler.startTime;
+        aElement.setAttribute("onclick", "showHistory('" + profiler.profilerId + "','" + profiler.startTime + "')")
+        trElement.appendChild(tdElement);
+        tdElement.appendChild(aElement);
+        $("#history-body").append(trElement);
+    });
+}
+
 function initNoStartState() {
     var currentHost = $('#menu').treeview('getSelected')[0].value;
     var agentId = currentHost.ip;
     var lastProfiler = searchLastProfiler(agentId);
-
 
     searchProfilerHistory(agentId);
     if (lastProfiler == null) {
@@ -266,12 +214,11 @@ function initNoStartState() {
     globalProfilerId = lastProfiler.profilerId;
     if (lastProfiler.state === START_STATE) {
         initStartState();
-        initProfiler(globalProfilerId);
+        initCurrentProfilerTable(globalProfilerId);
     } else if (lastProfiler.state === ANALYZED_STATE) {
         initEndState();
     }
 }
-
 
 function initState() {
     $('#btn_start_profiler').prop('disabled', false);
@@ -292,9 +239,6 @@ function initAnalysisState() {
     $('#btn_stop_profiler').prop('disabled', true);
     $('#btn_analyze_profiler').prop('disabled', false);
     $('#btn_result').addClass("disabled");
-    // var currentHost = $('#menu').treeview('getSelected')[0].value;
-    // var agentId = currentHost.ip;
-    // searchProfilerHistory(agentId);
 }
 
 function initEndState() {
@@ -312,20 +256,66 @@ function stopInterval() {
 
 function startInterval() {
     stopInterval();
-    intervalId = setInterval(searchProfilerState, 3000);
+    intervalId = setInterval(searchProfilerState, 10000);
 }
 
-function showHistory(profilerId, startTime) {
-    historyProfilerId = profilerId;
-    var proxy = searchAnalysisState(profilerId);
-    $("#model-profiler-title").text("开始时间: " + startTime);
-    if (proxy != null) {
-        $("#btn-history-analysis").attr("disabled", true);
-    } else {
-        $("#btn-history-analysis").attr("disabled", false);
+function handleResult(content) {
+    if (!content) {
+        return;
     }
-    $(".model-profiler").modal("show");
-    $("#btn-history-analysis").attr("onclick", "analyze('" + profilerId + "')");
-    var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
-    $("#btn-history-result").prop("href", reportUrl);
+    var result = JSON.parse(content);
+    if (!result) {
+        return;
+    }
+    buildProfiler(result);
+}
+
+function buildProfiler(result) {
+    var resType = result.type;
+    console.log("result: " + result);
+    if (resType === "profilerstart") {
+        var data = result.data;
+        if (data.code === 0) {
+            initCurrentProfilerTable(data.data.profilerId);
+            bistoury.success("开始性能分析")
+        } else {
+            initState();
+            bistoury.error("添加性能分析失败, " + data.message)
+        }
+    } else if (resType === "profilerstop") {
+        var data = result.data;
+        if (data.code === 0) {
+
+        } else {
+            bistoury.error("手动停止性能分析失败: " + data.message)
+        }
+    }
+}
+
+function getCurrentHost() {
+    return $('#menu').treeview('getSelected')[0].value;
+}
+
+function getAgentId() {
+    var currentHost = $('#menu').treeview('getSelected')[0].value;
+    return currentHost.ip;
+}
+
+function sendStopCommand() {
+    var currentHost = getCurrentHost();
+    var command = "profilerstop " + globalProfilerId;
+    bistouryWS.sendCommand(currentHost, REQ_TYPE_PROFILER_STOP, command, stop, handleResult);
+}
+
+function stopProfiler() {
+    console.log("stop profiler.");
+    sendStopCommand(globalProfilerId);
+}
+
+function sendStartCommand(duration, frequency) {
+    var currentHost = $('#menu').treeview('getSelected')[0].value;
+    var command = "profilerstart -m 0";
+    command += " -d " + duration;
+    command += " -f " + frequency;
+    bistouryWS.sendCommand(currentHost, REQ_TYPE_PROFILER, command, stop, handleResult);
 }

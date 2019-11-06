@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.proxy.service;
+package qunar.tc.bistoury.proxy.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;

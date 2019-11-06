@@ -1,21 +1,18 @@
-package qunar.tc.bistoury.proxy.service;
+package qunar.tc.bistoury.proxy.service.impl;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.TypeResponse;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
-import qunar.tc.bistoury.remoting.protocol.CommandCode;
+import qunar.tc.bistoury.proxy.service.profiler.ProfilerDatagramHolder;
+import qunar.tc.bistoury.proxy.service.profiler.ProfilerService;
+import qunar.tc.bistoury.proxy.service.profiler.ProfilerStateManager;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
-import qunar.tc.bistoury.remoting.protocol.PayloadHolder;
-import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
-import qunar.tc.bistoury.remoting.protocol.payloadHolderImpl.RequestPayloadHolder;
 import qunar.tc.bistoury.serverside.bean.Profiler;
 
 import javax.annotation.PostConstruct;
@@ -24,9 +21,10 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static qunar.tc.bistoury.common.BistouryConstants.*;
+import static qunar.tc.bistoury.common.BistouryConstants.REQ_PROFILER_START_STATE_SEARCH;
+import static qunar.tc.bistoury.common.BistouryConstants.REQ_PROFILER_STOP;
+import static qunar.tc.bistoury.proxy.util.ProfilerDatagramHelper.*;
 
 /**
  * @author cai.wen created on 2019/10/30 16:54
@@ -44,11 +42,6 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
 
     private static final Splitter SPACE_SPLITTER = Splitter.on(" ").trimResults().omitEmptyStrings();
 
-    private static final Joiner SPACE_JOINER = Joiner.on(" ").skipNulls();
-
-    @Resource
-    private ProfilerService profilerService;
-
     private final Object obj = new Object();
 
     private final Cache<String, Object> profilerIdCache = CacheBuilder.newBuilder()
@@ -56,6 +49,9 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
             .build();
 
     private static final int delay = 3;
+
+    @Resource
+    private ProfilerService profilerService;
 
     @Resource
     private AgentConnectionStore agentConnectionStore;
@@ -84,9 +80,9 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
                 profilerService.changeState(profilerId, normalState);
                 continue;
             }
-            datagramHolder.decreaseTime();
-            agentConnectionStore.getConnection(datagramHolder.agentId)
-                    .ifPresent(agentConn -> agentConn.write(datagramHolder.datagram));
+            datagramHolder.decreaseTime(delay);
+            agentConnectionStore.getConnection(datagramHolder.getAgentId())
+                    .ifPresent(agentConn -> agentConn.write(datagramHolder.getDatagram()));
         }
         for (String profilerId : needRemoveIds) {
             datagramHolderMap.remove(profilerId);
@@ -103,7 +99,6 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
         }
 
         profilerIdCache.put(profilerId, obj);
-
         int readyDuration = 60;
         ProfilerDatagramHolder readyHolder = createStartStateSearchHolder(agentId, profilerId, readyDuration);
         readyDatagrams.put(profilerId, readyHolder);
@@ -151,11 +146,6 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
     }
 
     @Override
-    public void startProfiler(String profilesId) {
-
-    }
-
-    @Override
     public void searchStopState(String profilerId) {
         profilerIdCache.put(profilerId, obj);
         Profiler profiler = profilerService.getProfilerRecord(profilerId);
@@ -178,27 +168,9 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
         return new ProfilerDatagramHolder(agentId, profilerId, datagram, duration);
     }
 
-    private Datagram createFinishStateSearchDatagram(String profilerId) {
-        List<String> command = ImmutableList.of(REQ_PROFILER_STATE_SEARCH, profilerId, PID_PARAM + FILL_PID, REQ_PROFILER_FINNSH_STATE_SEARCH);
-        PayloadHolder searchHolder = new RequestPayloadHolder(SPACE_JOINER.join(command));
-        return RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_PROFILER_STATE_SEARCH.getCode(), profilerId, searchHolder);
-    }
-
     private ProfilerDatagramHolder createStartStateSearchHolder(String agentId, String profilerId, int duration) {
         Datagram searchDatagram = createStartStateSearchDatagram(profilerId);
         return new ProfilerDatagramHolder(agentId, profilerId, searchDatagram, duration);
-    }
-
-    private Datagram createStartStateSearchDatagram(String profilerId) {
-        List<String> command = ImmutableList.of(REQ_PROFILER_STATE_SEARCH, profilerId, PID_PARAM + FILL_PID, REQ_PROFILER_START_STATE_SEARCH);
-        PayloadHolder holder = new RequestPayloadHolder(SPACE_JOINER.join(command));
-        return RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_PROFILER_STATE_SEARCH.getCode(), profilerId, holder);
-    }
-
-    private Datagram createStopDatagram(String profilerId) {
-        List<String> command = ImmutableList.of(REQ_PROFILER_STOP, profilerId, PID_PARAM + FILL_PID);
-        PayloadHolder holder = new RequestPayloadHolder(SPACE_JOINER.join(command));
-        return RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_PROFILER_STOP.getCode(), profilerId, holder);
     }
 
     private int getDuration(String command) {
@@ -210,47 +182,6 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
             }
         }
         return 30;
-    }
-
-    private static class ProfilerDatagramHolder {
-
-        private final AtomicInteger time;
-
-        private final Datagram datagram;
-
-        private final String profilerId;
-
-        private final String agentId;
-
-        private ProfilerDatagramHolder(String agentId, String profilerId, Datagram datagram, int duration) {
-            this.datagram = datagram;
-            this.profilerId = profilerId;
-            this.agentId = agentId;
-            this.time = new AtomicInteger(-duration);
-        }
-
-        private void decreaseTime() {
-            time.addAndGet(delay);
-        }
-
-        private boolean isExpired() {
-            return time.get() > 0;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ProfilerDatagramHolder that = (ProfilerDatagramHolder) o;
-            return Objects.equals(datagram, that.datagram) &&
-                    Objects.equals(profilerId, that.profilerId) &&
-                    Objects.equals(agentId, that.agentId);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(datagram, profilerId, agentId);
-        }
     }
 }
 

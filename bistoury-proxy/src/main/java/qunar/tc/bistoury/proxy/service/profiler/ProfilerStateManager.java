@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.proxy.service;
+package qunar.tc.bistoury.proxy.service.profiler;
 
 import qunar.tc.bistoury.common.TypeResponse;
 
@@ -14,8 +14,6 @@ public interface ProfilerStateManager {
     boolean isProfilerRequest(String id);
 
     void dealProfiler(String profilesId, TypeResponse<Map<String, Object>> config);
-
-    void startProfiler(String profilesId);
 
     void searchStopState(String profilerId);
 

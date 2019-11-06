@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.proxy.service;
+package qunar.tc.bistoury.proxy.service.profiler;
 
 /**
  * @author cai.wen created on 2019/10/30 10:22

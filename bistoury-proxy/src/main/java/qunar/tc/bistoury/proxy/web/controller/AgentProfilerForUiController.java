@@ -11,9 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import qunar.tc.bistoury.common.BistouryConstants;
-import qunar.tc.bistoury.proxy.service.ProfilerAnalyzer;
-import qunar.tc.bistoury.proxy.service.ProfilerDataManager;
-import qunar.tc.bistoury.proxy.service.ProfilerStateManager;
+import qunar.tc.bistoury.proxy.util.ProfilerAnalyzer;
+import qunar.tc.bistoury.proxy.service.profiler.ProfilerDataManager;
+import qunar.tc.bistoury.proxy.service.profiler.ProfilerStateManager;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 
 import javax.annotation.Resource;

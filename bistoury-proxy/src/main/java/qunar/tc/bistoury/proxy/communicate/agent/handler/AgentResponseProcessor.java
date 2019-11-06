@@ -29,7 +29,7 @@ import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.common.TypeResponse;
 import qunar.tc.bistoury.proxy.communicate.Session;
 import qunar.tc.bistoury.proxy.communicate.SessionManager;
-import qunar.tc.bistoury.proxy.service.ProfilerStateManager;
+import qunar.tc.bistoury.proxy.service.profiler.ProfilerStateManager;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.remoting.protocol.ResponseCode;
 
