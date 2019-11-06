@@ -27,6 +27,8 @@ public interface MetaStore {
 
     void update(Map<String, String> attrs);
 
+    void addListener(Listener listener);
+
     Map<String, String> getAgentInfo();
 
     String getStringProperty(String name);

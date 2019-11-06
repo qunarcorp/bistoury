@@ -17,6 +17,10 @@
 
 package qunar.tc.bistoury.agent.task.agentInfo;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +33,8 @@ import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.common.URLCoder;
 import qunar.tc.bistoury.common.VersionUtil;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -53,6 +59,10 @@ public class TaskRunner implements Runnable {
     private static final String AGENT_PUSH_INTERVAL_MIN = "agent.push.interval.min";
     private static final int DEFAULT_AGENT_INFO_PUSH_INTERVAL_MINUTES = 1;
 
+    private static final String PUSH_PROPERTIES_LIMIT = "push.properties.limit";
+
+    private static final Splitter PUSH_LIMIT_SPLITTER = Splitter.on("|").trimResults().omitEmptyStrings();
+
     private ListeningScheduledExecutorService executor;
 
     TaskRunner(ListeningScheduledExecutorService executor) {
@@ -65,12 +75,34 @@ public class TaskRunner implements Runnable {
         if (telnet != null) {
             try {
                 Map<String, String> info = META_STORE.getAgentInfo();
-                push(info, telnet);
+                push(filterInfo(info), telnet);
             } finally {
                 telnet.close();
             }
         }
-        executor.schedule(this, getAgentInfoPushIntervalMinutes(), TimeUnit.MINUTES);
+        executor.schedule(this, getAgentInfoPushIntervalMinutes() * 20, TimeUnit.SECONDS);
+    }
+
+    private Map<String, String> filterInfo(Map<String, String> info) {
+
+        HashMap<String, String> newInfo = Maps.newHashMap(info);
+
+        String limit = newInfo.get(PUSH_PROPERTIES_LIMIT);
+        if (Strings.isNullOrEmpty(limit)) {
+            newInfo.remove(PUSH_PROPERTIES_LIMIT);
+            return ImmutableMap.copyOf(newInfo);
+        }
+        List<String> limitList = PUSH_LIMIT_SPLITTER.splitToList(limit);
+        if (limitList.size() == 0) {
+            newInfo.remove(PUSH_PROPERTIES_LIMIT);
+            return ImmutableMap.copyOf(newInfo);
+        }
+
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+        for (String key : limitList) {
+            builder.put(key, newInfo.get(key));
+        }
+        return builder.build();
     }
 
     private int getAgentInfoPushIntervalMinutes() {
