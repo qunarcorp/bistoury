@@ -72,13 +72,13 @@ public class DefaultSessionManager implements SessionManager {
         }, MoreExecutors.directExecutor());
 
         uiConnection.closeFuture().addListener(() -> agentConnectionToUiConnectionMapping
-                .getOrDefault(agentConnection, Collections.emptySet())
-                .remove(uiConnection),
+                        .getOrDefault(agentConnection, Collections.emptySet())
+                        .remove(uiConnection),
                 MoreExecutors.directExecutor());
 
         doWithConnectionClose(uiConnection, uiConnectionToSessionsMapping, session, theSession -> {
             theSession.writeToAgent(RemotingBuilder.buildRequestDatagram(
-                    CommandCode.REQ_TYPE_CANCEL.getCode(), theSession.getId(), new RequestPayloadHolder("")));
+                    CommandCode.REQ_TYPE_CANCEL.getCode(), sessionIdGenerator.generateId(), new RequestPayloadHolder(theSession.getId())));
             theSession.broken();
         });
         doWithConnectionClose(agentConnection, agentConnectionToUiConnectionMapping, uiConnection, Connection::close);
