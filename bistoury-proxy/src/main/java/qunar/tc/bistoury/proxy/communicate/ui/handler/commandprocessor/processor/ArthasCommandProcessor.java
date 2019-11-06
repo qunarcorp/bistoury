@@ -149,13 +149,6 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
         }
     }
 
-    @Override
-    public Datagram prepareResponse(Datagram datagram) {
-        //todo 测试
-        System.out.println("code: " + datagram.getHeader().getCode());
-        return super.prepareResponse(datagram);
-    }
-
     private static String encode(String input) {
         try {
             return URLEncoder.encode(input, "utf8");

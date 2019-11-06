@@ -103,7 +103,7 @@ public class ArthasTaskFactory implements TaskFactory<String> {
         }
 
         if (header.getCode() == CommandCode.REQ_TYPE_PROFILER_START.getCode()) {
-            //增加target vm临时文件夹参数给
+            //增加target vm临时文件夹参数
             realCommand = realCommand + " -t " + URLCoder.encode(BistouryConstants.TMP_DIR);
         }
 

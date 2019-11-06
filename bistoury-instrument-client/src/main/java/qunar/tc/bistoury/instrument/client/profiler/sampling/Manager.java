@@ -90,8 +90,6 @@ public class Manager {
 
 
     public synchronized static void stop() {
-        checkProfilerState();
-
         stopTask(profilerTask);
         stopTask(dumpTask);
         AgentProfilerContext.stopProfiling();
@@ -101,17 +99,6 @@ public class Manager {
         File preDumpPath = new File(ProfilerConstants.PROFILER_TEMP_PATH + File.separator + profilerId);
         File realDumpPath = new File(ProfilerConstants.PROFILER_ROOT_PATH + File.separator + profilerId);
         preDumpPath.renameTo(realDumpPath);
-    }
-
-    private static void checkProfilerState() {
-//        long startTime = AgentProfilerContext.getStartTime();
-//        long curMillis = System.currentTimeMillis();
-//        long duration = curMillis - startTime;
-//        if (duration < ProfilerConstants.MIN_DURATION_MILLIS) {
-//            String detailMsg = "profiler duration is too short. duration: " + duration / 1000 +
-//                    "s. min duration must " + ProfilerConstants.MIN_DURATION_MILLIS / 1000 + "s";
-//            throw new IllegalStateException(detailMsg);
-//        }
     }
 
     private static void stopTask(Task task) {
