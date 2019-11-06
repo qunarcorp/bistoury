@@ -48,7 +48,7 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
             .expireAfterWrite(30, TimeUnit.MINUTES)
             .build();
 
-    private static final int delay = 3;
+    private static final int delay = 5;
 
     @Resource
     private ProfilerService profilerService;
@@ -92,7 +92,8 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
     @Override
     public String register(String agentId, String command) {
         int profilerDuration = getDuration(command);
-        String profilerId = profilerService.prepareProfiler(agentId, profilerDuration);
+        int profilerFrequency = getFrequency(command);
+        String profilerId = profilerService.prepareProfiler(agentId, profilerDuration, profilerFrequency);
         Optional<AgentConnection> agentConnRef = agentConnectionStore.getConnection(agentId);
         if (!agentConnRef.isPresent()) {
             throw new RuntimeException("no connection for profiler id. profilerId: " + profilerId);
@@ -174,14 +175,26 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
     }
 
     private int getDuration(String command) {
+        Optional<String> durationRef = getValue("-d", command);
+        return durationRef.map(Integer::parseInt)
+                .orElse(30);
+    }
+
+    private int getFrequency(String command) {
+        Optional<String> durationRef = getValue("-f", command);
+        return durationRef.map(Integer::parseInt)
+                .orElse(20);
+    }
+
+    private Optional<String> getValue(String keyForParam, String command) {
         Iterable<String> segments = SPACE_SPLITTER.split(command);
         for (Iterator<String> iter = segments.iterator(); iter.hasNext(); ) {
             String segment = iter.next();
-            if (segment.equals("-d")) {
-                return Integer.parseInt(iter.next());
+            if (segment.equals(keyForParam) && iter.hasNext()) {
+                return Optional.of(iter.next());
             }
         }
-        return 30;
+        return Optional.empty();
     }
 }
 

@@ -1,10 +1,12 @@
 package qunar.tc.bistoury.proxy.util;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.io.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.common.ProfilerUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,10 +47,6 @@ public class ProfilerAnalyzer {
         createTempPath(rootName);
     }
 
-    public boolean isDone(final String profilerId) {
-        return new File(analyzePath, profilerId).isDirectory();
-    }
-
     public void analyze(final String profilerId) {
         String commands = COMMANDS_JOINER.join(getAllPreAnalyzeCommand(profilerId));
         try {
@@ -64,17 +63,17 @@ public class ProfilerAnalyzer {
         renameProfilerDir(profilerId);
     }
 
-    private boolean renameProfilerDir(String profilerId) {
-        String svgParentPath = Paths.get(preAnalyzePath, profilerId).toString();
-        File parent = new File(svgParentPath);
-        File analysisDir = new File(analyzePath, profilerId);
-        return parent.renameTo(analysisDir);
+    private void renameProfilerDir(String profilerId) {
+        File svgParent = ProfilerUtil.getProfilerDir(preAnalyzePath, profilerId).orNull();
+        File analysisDir = new File(analyzePath, svgParent.getName());
+        Objects.requireNonNull(svgParent).renameTo(analysisDir);
     }
 
     private List<String> getAllPreAnalyzeCommand(String profilerId) {
         Stream<Path> allChild;
         try {
-            allChild = Files.list(Paths.get(preAnalyzePath, profilerId));
+            File profilerDir = ProfilerUtil.getProfilerDir(preAnalyzePath, profilerId).orNull();
+            allChild = Files.list(Objects.requireNonNull(profilerDir).toPath());
         } catch (IOException e) {
             LOGGER.error("list pre analyze file error.");
             throw new RuntimeException("list pre analyze file error", e);

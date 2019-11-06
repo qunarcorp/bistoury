@@ -30,6 +30,8 @@ public class Profiler {
 
     private int duration;
 
+    private int frequency;
+
     public State getState() {
         return state;
     }
@@ -110,6 +112,14 @@ public class Profiler {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public int getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(int frequency) {
+        this.frequency = frequency;
     }
 
     public enum State {

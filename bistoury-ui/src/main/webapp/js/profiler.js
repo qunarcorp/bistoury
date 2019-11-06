@@ -22,6 +22,11 @@ function startProfiler() {
         bistoury.warning("性能分析时长不能低于30秒");
         return;
     }
+
+    if (frequency < 10) {
+        bistoury.warning("抽样间隔应该大于10ms.");
+        return;
+    }
     initStartState();
     sendStartCommand(duration, frequency);
     $(".model-profiler-setting").modal("hide");
@@ -68,7 +73,7 @@ function analyze(profilerId) {
                     var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
                     var history_result_btn = $("#btn-history-result");
                     history_result_btn.attr("disabled", false);
-                    $("#btn_result").prop("href", reportUrl);
+                    $("#btn-history-analysis").attr("disabled", true);
                     history_result_btn.prop("href", reportUrl);
                     initEndState();
                 } else {
@@ -106,7 +111,7 @@ function searchProfilerState() {
 }
 
 function searchAnalysisState(profilerId) {
-    var proxy;
+    var profilerFileVo;
     $.ajax({
         "url": "profiler/analysis/state.do",
         "type": "get",
@@ -117,21 +122,23 @@ function searchAnalysisState(profilerId) {
         },
         success: function (ret) {
             if (ret.status === 0) {
-                proxy = ret.data;
+
                 var history_result_btn = $("#btn-history-result");
+                profilerFileVo = ret.data;
                 if (ret.data == null) {
                     history_result_btn.attr("disabled", true);
                     return;
                 }
+                proxy = ret.data.proxyInfo;
 
                 history_result_btn.attr("disabled", false);
-                proxyUrl = ret.data.ip + ":" + ret.data.tomcatPort;
+                proxyUrl = proxy.ip + ":" + proxy.tomcatPort;
                 var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
                 history_result_btn.prop("href", reportUrl);
             }
         }
     })
-    return proxy;
+    return profilerFileVo;
 }
 
 function searchLastProfiler(agentId) {
@@ -170,20 +177,35 @@ function searchProfilerHistory(agentId) {
     });
 }
 
-function showHistory(profilerId, startTime) {
+function showHistory(profilerId, startTime, duration, frequency) {
     historyProfilerId = profilerId;
-    var proxy = searchAnalysisState(profilerId);
-    $("#model-profiler-title").text("开始时间: " + startTime);
+    var profilerFileVo = searchAnalysisState(profilerId);
     var history_analysis_btn = $("#btn-history-analysis");
-    if (proxy != null) {
+    if (profilerFileVo != null) {
         history_analysis_btn.attr("disabled", true);
+        $("#model-profiler-title").html(getHistoryMessage(startTime, profilerFileVo.duration, profilerFileVo.frequency));
     } else {
+        $("#model-profiler-title").html(getDefaultHistoryMessage(startTime, duration, frequency));
         history_analysis_btn.attr("disabled", false);
     }
     $(".model-profiler").modal("show");
     history_analysis_btn.attr("onclick", "analyze('" + profilerId + "')");
     var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
     $("#btn-history-result").prop("href", reportUrl);
+}
+
+function getHistoryMessage(startTime, duration, frequency) {
+    var msg = "<span>开始时间: " + startTime + "</br>";
+    msg += "实际持续时长: " + duration + " (s)</br>";
+    msg += "实际间隔时长: " + frequency + " (ms)</br>";
+    return msg;
+}
+
+function getDefaultHistoryMessage(startTime, duration, frequency) {
+    var msg = "<span>开始时间: &nbsp;&nbsp;" + startTime + "</br>";
+    msg += "预设持续时长: " + frequency + " (s)</br>";
+    msg += "预设间隔时长: " + frequency + " (ms)</br>";
+    return msg;
 }
 
 function initHistoryTable(data) {
@@ -193,7 +215,8 @@ function initHistoryTable(data) {
         var trElement = document.createElement('tr')
         var tdElement = document.createElement("td");
         aElement.text = profiler.startTime;
-        aElement.setAttribute("onclick", "showHistory('" + profiler.profilerId + "','" + profiler.startTime + "')")
+        aElement.setAttribute("onclick", "showHistory('" + profiler.profilerId + "','" + profiler.startTime +
+            "','" + profiler.duration + "','" + profiler.frequency + "')")
         trElement.appendChild(tdElement);
         tdElement.appendChild(aElement);
         $("#history-body").append(trElement);
@@ -256,7 +279,7 @@ function stopInterval() {
 
 function startInterval() {
     stopInterval();
-    intervalId = setInterval(searchProfilerState, 10000);
+    intervalId = setInterval(searchProfilerState, 5000);
 }
 
 function handleResult(content) {

@@ -1,6 +1,8 @@
 package qunar.tc.bistoury.proxy.web.controller;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -11,16 +13,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import qunar.tc.bistoury.common.BistouryConstants;
-import qunar.tc.bistoury.proxy.util.ProfilerAnalyzer;
+import qunar.tc.bistoury.common.ProfilerUtil;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerDataManager;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerStateManager;
+import qunar.tc.bistoury.proxy.util.ProfilerAnalyzer;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
+import java.util.Objects;
+
+import static qunar.tc.bistoury.common.BistouryConstants.PROFILER_ROOT_PATH;
 
 /**
  * @author cai.wen created on 2019/10/25 16:52
@@ -68,7 +76,12 @@ public class AgentProfilerForUiController {
     @RequestMapping("/analysis/state")
     @ResponseBody
     public Object getAnalysisState(String profilerId) {
-        return ResultHelper.success(ProfilerAnalyzer.getInstance().isDone(profilerId));
+        Optional<File> fileRef = ProfilerUtil.getProfilerDir(BistouryConstants.PROFILER_ROOT_PATH, profilerId);
+        Map<String, Object> result = ImmutableMap.of();
+        if (fileRef.isPresent()) {
+            result = ImmutableMap.of("name", fileRef.get().getName());
+        }
+        return ResultHelper.success(result);
     }
 
     @RequestMapping("/searchStopState")
@@ -95,8 +108,8 @@ public class AgentProfilerForUiController {
         return ResultHelper.success();
     }
 
-
     private Path getSvgFile(String profilerId, String svgName) {
-        return Paths.get(BistouryConstants.PROFILER_ROOT_PATH, profilerId, svgName);
+        File profilerFile = ProfilerUtil.getProfilerDir(PROFILER_ROOT_PATH, profilerId).orNull();
+        return Paths.get(Objects.requireNonNull(profilerFile).getAbsolutePath(), svgName);
     }
 }

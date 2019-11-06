@@ -18,7 +18,7 @@ public class Manager {
 
     private static final Logger logger = BistouryLoggger.getLogger();
 
-    private static final boolean isDebugMode = true;
+    private static final boolean isDebugMode = false;
 
     public static final String profilerThreadPoolName = "bistoury-profile";
 
@@ -54,6 +54,8 @@ public class Manager {
         compactPrefixPackage.insert("ch.qos.");
         compactPrefixPackage.insert("org.slf4j.");
         compactPrefixPackage.insert("io.termd.core.");
+        compactPrefixPackage.insert("com.taobao.arthas.");
+        compactPrefixPackage.insert("com.taobao.middleware.");
     }
 
     public static boolean isCompactClass(String className) {
@@ -63,6 +65,8 @@ public class Manager {
     private static Task profilerTask;
 
     private static Task dumpTask;
+
+    private static volatile long startTime;
 
     private static void createDumpPath(String tempDir) {
         ProfilerConstants.PROFILER_ROOT_PATH = tempDir + File.separator + "bistoury-profiler";
@@ -85,6 +89,7 @@ public class Manager {
 
         profilerTask.init();
         dumpTask.init();
+        startTime = System.currentTimeMillis();
         AgentProfilerContext.startProfiling();
     }
 
@@ -95,9 +100,10 @@ public class Manager {
         AgentProfilerContext.stopProfiling();
     }
 
-    public static void renameResult() {
+    public static void renameResult(long dumpTime) {
+        long durationSeconds = (dumpTime - startTime) / 1000;
         File preDumpPath = new File(ProfilerConstants.PROFILER_TEMP_PATH + File.separator + profilerId);
-        File realDumpPath = new File(ProfilerConstants.PROFILER_ROOT_PATH + File.separator + profilerId);
+        File realDumpPath = new File(ProfilerConstants.PROFILER_ROOT_PATH + File.separator + profilerId + "-" + durationSeconds);
         preDumpPath.renameTo(realDumpPath);
     }
 

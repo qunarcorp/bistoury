@@ -687,7 +687,7 @@ unless ($time) {
 	my $imageheight = $fontsize * 5;
 	$im->header($imagewidth, $imageheight);
 	$im->stringTTF(undef, int($imagewidth / 2), $fontsize * 2,
-	    "ERROR: No valid input provided to flamegraph.pl.");
+	    "ERROR: No data.");
 	print $im->svg;
 	exit 2;
 }

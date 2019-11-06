@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AtomicLongMap;
 import com.taobao.middleware.logger.Logger;
+import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.Manager;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.runtime.cpu.DumpData;
@@ -35,6 +36,7 @@ public class ProfilerDataDumper {
     public void dump() {
         logger.info("start dump");
         DumpData dumpData = profilerData.getDumpData();
+        long dumpTime = System.currentTimeMillis();
         if (Manager.isDebugMode()) {
             logger.info("dumpData: {}", dumpData);
         }
@@ -49,7 +51,7 @@ public class ProfilerDataDumper {
         doDump(dumpData.getWaitingCpuTime(), Manager.getFilterWaitingDataPath(), true);
 
         dumpAllState(dumpData);
-        Manager.renameResult();
+        Manager.renameResult(dumpTime);
     }
 
     private void dumpAllState(DumpData dumpData) {
@@ -71,7 +73,7 @@ public class ProfilerDataDumper {
         try {
             realPath.createNewFile();
         } catch (IOException e) {
-            logger.error("create dump file error. path: {}", dumpFile, e);
+            BistouryLoggerHelper.error(e, "create dump file error. path: {}", e);
         }
 
         List<Map.Entry<Integer, Long>> timeList;
@@ -100,7 +102,7 @@ public class ProfilerDataDumper {
             }
             dumpStream.flush();
         } catch (Exception e) {
-            logger.error("dump cputime map error. dump file: {}", dumpFile);
+            BistouryLoggerHelper.error(e, "dump cputime map error. dump file: {}. path: {}", dumpFile);
         }
     }
 

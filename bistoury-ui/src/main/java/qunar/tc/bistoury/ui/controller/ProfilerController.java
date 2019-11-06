@@ -65,7 +65,7 @@ public class ProfilerController {
     @GetMapping("/analysis/state")
     @ResponseBody
     public Object analyzeProfilerState(String profilerId) {
-        Optional<ProxyInfo> proxyRef = getAnalyzedProxyForProfiler(profilerId);
+        Optional<ProfilerFileVo> proxyRef = getAnalyzedProxyForProfiler(profilerId);
         return proxyRef.map(ResultHelper::success)
                 .orElseGet(ResultHelper::success);
     }
@@ -87,32 +87,39 @@ public class ProfilerController {
         if (profiler == null || profiler.getState() != Profiler.State.start) {
             return ResultHelper.success();
         }
-        Optional<ProxyInfo> proxyRef = getAnalyzedProxyForProfiler(profiler.getProfilerId());
-        if (proxyRef.isPresent()) {
+        Optional<ProfilerFileVo> profilerFileVoRef = getAnalyzedProxyForProfiler(profiler.getProfilerId());
+        if (profilerFileVoRef.isPresent()) {
             profiler.setState(Profiler.State.analyzed);
+            profiler.setDuration(profilerFileVoRef.get().getDuration());
         }
         return ResultHelper.success(profiler);
     }
 
-    private final TypeReference analyzerResponse = new TypeReference<ApiResult<Boolean>>() {
+    private final TypeReference analyzerResponse = new TypeReference<ApiResult<Map<String, Object>>>() {
     };
 
-    private Optional<ProxyInfo> getAnalyzedProxyForProfiler(String profilerId) {
+    private Optional<ProfilerFileVo> getAnalyzedProxyForProfiler(String profilerId) {
         List<String> proxyWebSocketUrls = proxyService.getAllProxyUrls();
         for (String proxyWebSocketUrl : proxyWebSocketUrls) {
             Optional<ProxyInfo> proxyRef = ProxyInfoParse.parseProxyInfo(proxyWebSocketUrl);
             if (!proxyRef.isPresent()) {
                 continue;
             }
-            ProxyInfo proxyInfo = proxyRef.get();
-            String url = String.format(profilerIsAnalyzedUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId);
-            byte[] content = getBytesFromUrl(url);
-            ApiResult<Boolean> response = JacksonSerializer.deSerialize(content, analyzerResponse);
-            if (response.getData()) {
-                return proxyRef;
+            String name = doGetName(proxyRef.get(), profilerId);
+            if (name != null) {
+                int duration = Integer.parseInt(name.split("-")[1]);
+                int frequency = profilerService.getProfilerRecord(profilerId).getFrequency();
+                return Optional.of(new ProfilerFileVo(proxyRef.get(), duration, frequency));
             }
         }
         return Optional.empty();
+    }
+
+    private String doGetName(ProxyInfo proxyInfo, String profilerId) {
+        String url = String.format(profilerIsAnalyzedUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId);
+        byte[] content = getBytesFromUrl(url);
+        ApiResult<Map<String, Object>> response = JacksonSerializer.deSerialize(content, analyzerResponse);
+        return (String) response.getData().get("name");
     }
 
     private static final Splitter COLON_SPLITTER = Splitter.on(":");
@@ -193,6 +200,35 @@ public class ProfilerController {
         } catch (Exception e) {
             LOGGER.error("get byte from proxy error.", e);
             throw new RuntimeException("get content error. " + e.getMessage());
+        }
+    }
+
+    private static class ProfilerFileVo {
+
+        private ProxyInfo proxyInfo;
+        private int duration;
+        private int frequency;
+
+        public ProfilerFileVo() {
+
+        }
+
+        public ProfilerFileVo(ProxyInfo proxyInfo, int duration, int frequency) {
+            this.proxyInfo = proxyInfo;
+            this.duration = duration;
+            this.frequency = frequency;
+        }
+
+        public ProxyInfo getProxyInfo() {
+            return proxyInfo;
+        }
+
+        public int getDuration() {
+            return duration;
+        }
+
+        public int getFrequency() {
+            return frequency;
         }
     }
 }

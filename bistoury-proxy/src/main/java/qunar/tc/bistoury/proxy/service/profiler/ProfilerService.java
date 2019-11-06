@@ -14,7 +14,7 @@ public interface ProfilerService {
 
     void deleteProfiler(String profilerId);
 
-    String prepareProfiler(String agentId, int duration);
+    String prepareProfiler(String agentId, int duration, int frequency);
 
     boolean isPrepareProfilerId(String profilerId);
 

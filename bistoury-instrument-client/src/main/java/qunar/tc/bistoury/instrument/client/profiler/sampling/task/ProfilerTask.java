@@ -2,6 +2,7 @@ package qunar.tc.bistoury.instrument.client.profiler.sampling.task;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.taobao.middleware.logger.Logger;
+import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.Manager;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.runtime.ProfilerDataRecorder;
@@ -19,8 +20,6 @@ public class ProfilerTask implements Task {
     private static final Logger logger = BistouryLoggger.getLogger();
 
     private final int frequency;
-
-    private volatile boolean isStop = false;
 
     public ProfilerTask(int frequency) {
         this.frequency = frequency;
@@ -43,8 +42,7 @@ public class ProfilerTask implements Task {
                 try {
                     dataRecorder.record();
                 } catch (Exception e) {
-                    logger.error("dump error. frequency: {}", String.valueOf(frequency), e);
-                    e.printStackTrace();
+                    BistouryLoggerHelper.error(e, "dump error. frequency: {}", frequency);
                 }
             }
         }, 0, frequency, TimeUnit.MILLISECONDS);
@@ -52,7 +50,6 @@ public class ProfilerTask implements Task {
 
     @Override
     public void stop() {
-        isStop = true;
         profilerExecutor.shutdown();
     }
 }
