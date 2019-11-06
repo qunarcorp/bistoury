@@ -8,14 +8,12 @@ package qunar.tc.bistoury.commands.download;
 public class DownloadFileBean {
     private String name;
     private String path;
-    private String code;
     private long size;
     private long modifiedTime;
 
-    public DownloadFileBean(String name, String path, String code, long size, long modifiedTime) {
+    public DownloadFileBean(String name, String path, long size, long modifiedTime) {
         this.name = name;
         this.path = path;
-        this.code = code;
         this.size = size;
         this.modifiedTime = modifiedTime;
     }
@@ -34,14 +32,6 @@ public class DownloadFileBean {
 
     public void setPath(String path) {
         this.path = path;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public long getSize() {

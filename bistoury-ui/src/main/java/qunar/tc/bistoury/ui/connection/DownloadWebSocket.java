@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.remoting.protocol.ResponseCode;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
@@ -23,19 +24,23 @@ public class DownloadWebSocket extends WebSocketClient {
     private static final Logger logger = LoggerFactory.getLogger(DownloadWebSocket.class);
 
     private CountDownLatch latch;
+    private HttpServletResponse response;
     private OutputStream outputStream;
     private String command;
+    private String filename;
+    private boolean downloadResponse = false;
 
-    public DownloadWebSocket(URI serverUri, CountDownLatch latch, OutputStream outputStream, final String command) {
+    public DownloadWebSocket(URI serverUri, CountDownLatch latch, OutputStream outputStream, HttpServletResponse response, final String filename, final String command) {
         super(serverUri);
         this.latch = latch;
-        this.outputStream = outputStream;
+        this.response = response;
         this.command = command;
+        this.filename = filename;
+        this.outputStream = outputStream;
     }
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
-        logger.info("command: {}", command);
         this.send(command);
     }
 
@@ -51,30 +56,50 @@ public class DownloadWebSocket extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        logger.info("close reason: {}", reason);
         latch.countDown();
     }
 
     @Override
     public void onError(Exception ex) {
-        ex.printStackTrace();
+        logger.error("web socket error", ex);
         latch.countDown();
     }
 
-    private final void handleResult(ByteBuffer buffer) {
+    private void handleResult(ByteBuffer buffer) {
         try {
             long id = buffer.getLong();
             int type = buffer.getInt();
             int ip = buffer.getInt();
             int length = buffer.getInt();
-            if (type != ResponseCode.RESP_TYPE_ALL_END.getOldCode() && type != ResponseCode.RESP_TYPE_SINGLE_END.getOldCode()) {
-                outputStream.write(buffer.array(), 20, 20 + length);
+
+            if (type == ResponseCode.RESP_TYPE_EXCEPTION.getOldCode()) {
+                outputStream.write(buffer.array(), 20, length);
+                outputStream.flush();
+                latch.countDown();
+            } else if (type != ResponseCode.RESP_TYPE_ALL_END.getOldCode() && type != ResponseCode.RESP_TYPE_SINGLE_END.getOldCode()) {
+                handleDownloadResponse();
+                outputStream.write(buffer.array(), 20, length);
             } else {
+                //如果是空文件，会直接走这个逻辑，如果对response进行设置，下载不到文件
+                handleDownloadResponse();
                 outputStream.flush();
                 latch.countDown();
             }
         } catch (IOException e) {
+            latch.countDown();
             logger.error("download fail", e);
         }
     }
+
+    //将返回数据设置为文件
+    private void handleDownloadResponse() throws IOException {
+        if (!downloadResponse) {
+            downloadResponse = true;
+            outputStream = response.getOutputStream();
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("multipart/form-data");
+            response.setHeader("Content-Disposition", "attachment;fileName=" + filename);
+        }
+    }
+
 }

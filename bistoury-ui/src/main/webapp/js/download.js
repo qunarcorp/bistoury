@@ -121,6 +121,7 @@ $(document).ready(function () {
                 currentHost = data.value;
                 removeListFileActiveClass();
                 $("#list-log-file").addClass("active");
+                $("#download-file-panel").show();
                 getDownloadFileList("log");
             }
         });
@@ -208,7 +209,7 @@ $(document).ready(function () {
                 }),
                 token: bistouryWS.getToken()
             }
-            let encrypt = bistouryWS.encrypt(JSON.stringify(content))
+            var encrypt = bistouryWS.encrypt(JSON.stringify(content))
             console.log(encrypt);
             window.open("/file/download.do?agentIp=" + currentHost.ip
                 + "&command=" + base64.encode(encrypt)

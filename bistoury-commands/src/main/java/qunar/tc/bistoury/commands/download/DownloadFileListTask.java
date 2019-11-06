@@ -1,6 +1,9 @@
 package qunar.tc.bistoury.commands.download;
 
-import com.google.common.base.*;
+import com.google.common.base.Function;
+import com.google.common.base.Predicates;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -10,7 +13,10 @@ import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.agent.common.job.BytesJob;
 import qunar.tc.bistoury.agent.common.job.ContinueResponseJob;
-import qunar.tc.bistoury.common.*;
+import qunar.tc.bistoury.common.CodeProcessResponse;
+import qunar.tc.bistoury.common.FileUtil;
+import qunar.tc.bistoury.common.JacksonSerializer;
+import qunar.tc.bistoury.common.TypeResponse;
 import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 import qunar.tc.bistoury.remoting.netty.Task;
 
@@ -95,15 +101,7 @@ public class DownloadFileListTask implements Task {
                 List<DownloadFileBean> fileBeans = Lists.transform(files, new Function<File, DownloadFileBean>() {
                     @Override
                     public DownloadFileBean apply(File file) {
-                        String absolutePath = file.getAbsolutePath();
-                        byte[] bytes = new byte[0];
-                        try {
-                            bytes = AESCryptUtils.encrypt(Strings.nullToEmpty(absolutePath).getBytes(Charsets.UTF_8));
-                        } catch (Exception e) {
-                            logger.error("encrypt file path fail", e);
-                        }
-
-                        return new DownloadFileBean(file.getName(), absolutePath, new String(Base64.getEncoder().encode(bytes), Charsets.UTF_8), file.length(), file.lastModified());
+                        return new DownloadFileBean(file.getName(), file.getAbsolutePath(), file.length(), file.lastModified());
                     }
                 });
                 result.addAll(fileBeans);
