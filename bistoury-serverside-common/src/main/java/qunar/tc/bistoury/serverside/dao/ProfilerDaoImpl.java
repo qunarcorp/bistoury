@@ -23,7 +23,7 @@ public class ProfilerDaoImpl implements ProfilerDao {
 
     private static final String UPDATE_PROFILER_STATE_SQL = "update bistoury_profiler set state=? where profiler_id=?";
 
-    private static final String SELECT_PROFILER_BY_STATE_SQL = "select * from bistoury_profiler where state=? and start_time>DATE_SUB(CURDATE(), INTERVAL 2 hour ) ";
+    private static final String SELECT_PROFILER_BY_STATE_SQL = "select * from bistoury_profiler where state=? and start_time>DATE_SUB(CURDATE(), INTERVAL ? hour ) ";
 
     private static final String SELECT_PROFILER_BY_PROFILER_ID_SQL = "select * from bistoury_profiler where profiler_id=?";
 
@@ -61,7 +61,7 @@ public class ProfilerDaoImpl implements ProfilerDao {
 
     @Override
     public List<Profiler> getRecordsByState(Profiler.State state, int hours) {
-        return jdbcTemplate.query(SELECT_PROFILER_BY_STATE_SQL, PROFILER_ROW_MAPPER, state.code);
+        return jdbcTemplate.query(SELECT_PROFILER_BY_STATE_SQL, PROFILER_ROW_MAPPER, state.code, hours);
     }
 
     private final ResultSetExtractor<Profiler> PROFILER_RESULT_SET_EXTRACTOR = resultSet -> {

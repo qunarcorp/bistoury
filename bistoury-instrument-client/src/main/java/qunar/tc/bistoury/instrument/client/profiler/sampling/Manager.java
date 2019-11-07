@@ -1,6 +1,7 @@
 package qunar.tc.bistoury.instrument.client.profiler.sampling;
 
 import com.taobao.middleware.logger.Logger;
+import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
 import qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants;
@@ -113,6 +114,7 @@ public class Manager {
                 task.stop();
             }
         } catch (Exception e) {
+            BistouryLoggerHelper.error(e, "destroy task error. task: {}", task);
             logger.error("", "destroy task error.", e);
         }
     }

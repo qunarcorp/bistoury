@@ -69,5 +69,6 @@ public class DumpTask implements Task {
     public void stop() {
         doDump();
         ProfilerData.reset();
+        scheduledExecutorService.shutdownNow();
     }
 }
