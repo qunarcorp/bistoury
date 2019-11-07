@@ -84,8 +84,11 @@ public class ProfilerController {
     @ResponseBody
     public Object lastProfiler(String agentId) {
         Profiler profiler = profilerService.getLastProfilerRecord("", agentId);
-        if (profiler == null || profiler.getState() != Profiler.State.start) {
+        if (profiler == null || profiler.getState() == Profiler.State.stop) {
             return ResultHelper.success();
+        }
+        if (profiler.getState() == Profiler.State.ready || profiler.getState() == Profiler.State.start) {
+            return ResultHelper.success(profiler);
         }
         Optional<ProfilerFileVo> profilerFileVoRef = getAnalyzedProxyForProfiler(profiler.getProfilerId());
         if (profilerFileVoRef.isPresent()) {

@@ -63,21 +63,21 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
     }
 
     private void waitStopState() {
-        changeState(Profiler.State.start, readyDatagrams);
+        changeState(readyDatagrams);
     }
 
     private void waitStartState() {
-        changeState(Profiler.State.stop, profilingDatagrams);
+        changeState(profilingDatagrams);
     }
 
-    private void changeState(Profiler.State normalState, Map<String, ProfilerDatagramHolder> datagramHolderMap) {
+    private void changeState(Map<String, ProfilerDatagramHolder> datagramHolderMap) {
         List<String> needRemoveIds = new ArrayList<>();
         for (Map.Entry<String, ProfilerDatagramHolder> datagramEntry : datagramHolderMap.entrySet()) {
             String profilerId = datagramEntry.getKey();
             ProfilerDatagramHolder datagramHolder = datagramEntry.getValue();
             if (datagramHolder.isExpired()) {
                 needRemoveIds.add(profilerId);
-                profilerService.changeState(profilerId, normalState);
+                forceStop(datagramEntry.getValue().getAgentId(), profilerId);
                 continue;
             }
             datagramHolder.decreaseTime(delay);
@@ -100,9 +100,11 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
         }
 
         profilerIdCache.put(profilerId, obj);
-        int readyDuration = 60;
+        int readyDuration = 15;
         ProfilerDatagramHolder readyHolder = createStartStateSearchHolder(agentId, profilerId, readyDuration);
         readyDatagrams.put(profilerId, readyHolder);
+        agentConnectionStore.getConnection(readyHolder.getAgentId())
+                .ifPresent(agentConn -> agentConn.write(readyHolder.getDatagram()));
         return profilerId;
     }
 

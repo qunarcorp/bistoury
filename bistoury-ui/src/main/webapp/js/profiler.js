@@ -6,6 +6,7 @@ var historyProfilerId;
 var intervalId;
 
 var START_STATE = "start";
+var READY_STATE = "ready";
 var STOP_STATE = "stop";
 var ANALYZED_STATE = "analyzed";
 
@@ -34,12 +35,20 @@ function startProfiler() {
 }
 
 function openStartSettingModel() {
+    var agentId = getAgentId();
+    var lastProfiler = searchLastProfiler(agentId);
+    if (lastProfiler != null && (lastProfiler.state === READY_STATE || lastProfiler.state === START_STATE)) {
+        bistoury.warning("正在等待数据库更新.请稍后");
+        return;
+    }
+    searchProfilerHistory(getAgentId());
     $(".model-profiler-setting").modal("show");
 }
 
 function analyzeCurrentProfiler() {
     console.log("analyze profiler");
     analyze(globalProfilerId);
+    searchProfilerHistory(getAgentId());
 }
 
 function initCurrentProfilerTable(profilerId) {
@@ -72,10 +81,11 @@ function analyze(profilerId) {
                 bistoury.success("分析结果成功");
                 if (globalProfilerId === profilerId) {
                     var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
-                    var history_result_btn = $("#btn-history-result");
-                    history_result_btn.attr("disabled", false);
-                    $("#btn-history-analysis").attr("disabled", true);
-                    history_result_btn.prop("href", reportUrl);
+                    var result_btn = $("#btn_result");
+                    result_btn.attr("disabled", false);
+                    result_btn.prop("href", reportUrl);
+                    var agentId = getAgentId();
+                    searchProfilerHistory(agentId);
                     initEndState();
                 } else {
                     initHistoryEndState(profilerId);
@@ -133,7 +143,6 @@ function searchLastProfiler(agentId) {
         success: function (ret) {
             console.log(ret.data);
             lastProfiler = ret.data;
-
         }
     })
     return lastProfiler;
@@ -214,10 +223,14 @@ function initNoStartState() {
     }
 
     globalProfilerId = lastProfiler.profilerId;
-    if (lastProfiler.state === START_STATE) {
+    if (lastProfiler.state === START_STATE || lastProfiler.state === READY_STATE) {
         initStartState();
         initCurrentProfilerTable(globalProfilerId);
     } else if (lastProfiler.state === ANALYZED_STATE) {
+        var reportUrl = "html/report.html?profilerId=" + globalProfilerId + "&proxyUrl=" + proxyUrl;
+        var result_btn = $("#btn_result");
+        result_btn.attr("disabled", false);
+        result_btn.prop("href", reportUrl);
         initEndState();
     }
 }
