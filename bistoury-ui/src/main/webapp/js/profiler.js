@@ -1,5 +1,6 @@
 var REQ_TYPE_PROFILER = 51;
 var REQ_TYPE_PROFILER_STOP = 52;
+var REQ_TYPE_PROFILER_STATE_SEARCH = 53;
 var globalProfilerId;
 var historyProfilerId;
 var intervalId;
@@ -87,28 +88,6 @@ function analyze(profilerId) {
     })
 }
 
-
-function searchProfilerState() {
-    $.ajax({
-        "url": "profiler/get.do",
-        "type": "get",
-        "dataType": 'JSON',
-        "data": {
-            profilerId: globalProfilerId
-        },
-        success: function (res) {
-            if (res.status === 0) {
-                if (res.data.state === STOP_STATE) {
-                    bistoury.success("性能监控正常停止");
-                    initAnalysisState();
-                    stopInterval();
-                    var agentId = getAgentId();
-                    searchProfilerHistory(agentId);
-                }
-            }
-        }
-    })
-}
 
 function searchAnalysisState(profilerId) {
     var profilerFileVo;
@@ -312,6 +291,15 @@ function buildProfiler(result) {
         } else {
             bistoury.error("手动停止性能分析失败: " + data.message)
         }
+    } else if (resType === "profilerstatesearch") {
+        var data = result.data;
+        if (data.code === 0 && data.data.state) {
+            bistoury.success("性能监控正常停止");
+            initAnalysisState();
+            stopInterval();
+            var agentId = getAgentId();
+            searchProfilerHistory(agentId);
+        }
     }
 }
 
@@ -322,6 +310,16 @@ function getCurrentHost() {
 function getAgentId() {
     var currentHost = $('#menu').treeview('getSelected')[0].value;
     return currentHost.ip;
+}
+
+function searchProfilerState() {
+    sendFinishStateCommand();
+}
+
+function sendFinishStateCommand() {
+    var currentHost = getCurrentHost();
+    var command = "profilerstatesearch " + globalProfilerId + " profilerfinishsearch";
+    bistouryWS.sendCommand(currentHost, REQ_TYPE_PROFILER_STATE_SEARCH, command, stop, handleResult);
 }
 
 function sendStopCommand() {

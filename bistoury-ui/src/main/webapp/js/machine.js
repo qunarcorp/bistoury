@@ -435,7 +435,7 @@ $(document).ready(function () {
                 $("#file-content-modal").modal('hide');
                 bistoury.error(res.message);
             }
-        } else if (resType === "profilerstart" || resType === "profilerstop" || resType === "profilersearch") {
+        } else if (resType === "profilerstart" || resType === "profilerstop" || resType === "profilerstatesearch") {
             buildProfiler(result);
         }
     }

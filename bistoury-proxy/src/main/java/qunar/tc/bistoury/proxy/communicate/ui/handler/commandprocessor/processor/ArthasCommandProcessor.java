@@ -92,7 +92,9 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
                 CommandCode.REQ_TYPE_CONFIG.getCode(),
                 CommandCode.REQ_TYPE_JAR_DEBUG.getCode(),
                 CommandCode.REQ_TYPE_PROFILER_START.getCode(),
-                CommandCode.REQ_TYPE_PROFILER_STOP.getCode());
+                CommandCode.REQ_TYPE_PROFILER_STOP.getCode(),
+                CommandCode.REQ_TYPE_PROFILER_STATE_SEARCH.getCode()
+        );
     }
 
     @Override
