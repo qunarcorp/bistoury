@@ -49,7 +49,7 @@ public class DownloadFileTask implements Task {
         this.maxRunningMs = maxRunningMs;
         this.command = command;
         this.handler = handler;
-        rateLimiter = RateLimiter.create(META_STORE.getIntProperty("download.kb.per.second", 10000 / BYTE_KB));
+        rateLimiter = RateLimiter.create(META_STORE.getIntProperty("download.kb.per.second", 10000) / BYTE_KB);
     }
 
     @Override
