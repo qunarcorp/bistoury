@@ -23,55 +23,29 @@ public class ProfilerDaoImpl implements ProfilerDao {
 
     private static final String UPDATE_PROFILER_STATE_SQL = "update bistoury_profiler set state=? where profiler_id=?";
 
-    private static final String DELETE_PROFILER_STATE_SQL = "delete from bistoury_profiler  where profiler_id=?";
-
     private static final String SELECT_PROFILER_BY_STATE_SQL = "select * from bistoury_profiler where state=? and start_time>DATE_SUB(CURDATE(), INTERVAL 2 hour ) ";
 
     private static final String SELECT_PROFILER_BY_PROFILER_ID_SQL = "select * from bistoury_profiler where profiler_id=?";
 
     private static final String SELECT_LAST_THREE_DAY_RECORD = "SELECT * FROM bistoury_profiler " +
-            "where  app_code=? and agent_id=? and start_time>DATE_SUB(CURDATE(), INTERVAL 3 day ) " +
+            "where  app_code=? and agent_id=? and start_time>DATE_SUB(CURDATE(), INTERVAL ? hour ) " +
             "order by start_time desc";
 
     private JdbcTemplate jdbcTemplate = JdbcTemplateHolder.getOrCreateJdbcTemplate();
 
     @Override
-    public List<Profiler> getProfilerRecords(String app, String agentId) {
-        return jdbcTemplate.query(SELECT_LAST_THREE_DAY_RECORD, PROFILER_ROW_MAPPER, app, agentId);
+    public List<Profiler> getRecords(String app, String agentId, int hours) {
+        return jdbcTemplate.query(SELECT_LAST_THREE_DAY_RECORD, PROFILER_ROW_MAPPER, app, agentId, hours);
     }
 
     @Override
-    public Profiler getLastProfilerRecord(String app, String agentId) {
-        List<Profiler> records = getProfilerRecords(app, agentId);
-        if (records.isEmpty()) {
-            return null;
-        }
-        return records.get(0);
-    }
-
-    @Override
-    public Profiler getProfilerRecord(String profilerId) {
+    public Profiler getRecordById(String profilerId) {
         return jdbcTemplate.query(SELECT_PROFILER_BY_PROFILER_ID_SQL, PROFILER_RESULT_SET_EXTRACTOR, profilerId);
-    }
-
-    @Override
-    public void stopProfiler(String profilerId) {
-        jdbcTemplate.update(UPDATE_PROFILER_STATE_SQL, Profiler.State.stop.code, profilerId);
     }
 
     @Override
     public void changeState(Profiler.State state, String profilerId) {
         jdbcTemplate.update(UPDATE_PROFILER_STATE_SQL, state.code, profilerId);
-    }
-
-    @Override
-    public void deleteProfiler(String profilerId) {
-        jdbcTemplate.update(DELETE_PROFILER_STATE_SQL, profilerId);
-    }
-
-    @Override
-    public void startProfiler(String profilerId) {
-        jdbcTemplate.update(UPDATE_PROFILER_STATE_SQL, Profiler.State.start.code, profilerId);
     }
 
     @Override
@@ -86,8 +60,8 @@ public class ProfilerDaoImpl implements ProfilerDao {
     }
 
     @Override
-    public List<Profiler> getProfilersByState(int state) {
-        return jdbcTemplate.query(SELECT_PROFILER_BY_STATE_SQL, PROFILER_ROW_MAPPER, state);
+    public List<Profiler> getRecordsByState(Profiler.State state, int hours) {
+        return jdbcTemplate.query(SELECT_PROFILER_BY_STATE_SQL, PROFILER_ROW_MAPPER, state.code);
     }
 
     private final ResultSetExtractor<Profiler> PROFILER_RESULT_SET_EXTRACTOR = resultSet -> {

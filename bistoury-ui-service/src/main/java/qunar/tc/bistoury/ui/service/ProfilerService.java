@@ -9,11 +9,11 @@ import java.util.List;
  */
 public interface ProfilerService {
 
-    Profiler getProfilerRecord(String profilerId);
+    Profiler getRecord(String profilerId);
 
-    List<Profiler> getProfilerRecords(String app, String agentId);
+    List<Profiler> getLastRecords(String app, String agentId, int hours);
 
     Profiler getLastProfilerRecord(String app, String agentId);
 
-    List<Profiler> getProfilersByState(int state);
+    List<Profiler> getRecordsByState(Profiler.State state, int hours);
 }

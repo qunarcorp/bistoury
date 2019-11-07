@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
  * @author cai.wen created on 2019/11/4 13:17
  */
 @Service
-public class ProfilerStateManager {
+public class UiProfilerStateManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProfilerStateManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UiProfilerStateManager.class);
 
     private static final AsyncHttpClient httpClient = new AsyncHttpClient(
             new AsyncHttpClientConfig.Builder()
@@ -58,9 +58,9 @@ public class ProfilerStateManager {
         executor.scheduleAtFixedRate(() -> {
             proxyInfos = getAllProxyInfo();
             currentTimeMillis = System.currentTimeMillis();
-            profilerService.getProfilersByState(Profiler.State.ready.code)
+            profilerService.getRecordsByState(Profiler.State.ready, 1)
                     .forEach(profiler -> stop(profiler.getProfilerId(), profiler.getStartTime(), 60));
-            profilerService.getProfilersByState(Profiler.State.start.code)
+            profilerService.getRecordsByState(Profiler.State.start, 1)
                     .forEach(profiler -> searchStopState(profiler.getProfilerId(), profiler.getStartTime(), profiler.getDuration() + 60));
         }, random.nextInt(61), 60, TimeUnit.SECONDS);
 
@@ -97,7 +97,7 @@ public class ProfilerStateManager {
     }
 
     private void sendForceStopRequests(ProxyInfo proxyInfo, String profilerId) {
-        String agentId = profilerService.getProfilerRecord(profilerId).getAgentId();
+        String agentId = profilerService.getRecord(profilerId).getAgentId();
         String url = String.format(profilerForceStopUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId, agentId);
         Request request = httpClient.preparePost(url).build();
         httpClient.executeRequest(request);

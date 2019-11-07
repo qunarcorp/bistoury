@@ -191,7 +191,7 @@ function getHistoryMessage(startTime, duration, frequency) {
 
 function getDefaultHistoryMessage(startTime, duration, frequency) {
     var msg = "<span>开始时间: &nbsp;&nbsp;" + startTime + "</br>";
-    msg += "预设持续时长: " + frequency + " (s)</br>";
+    msg += "预设持续时长: " + duration + " (s)</br>";
     msg += "预设间隔时长: " + frequency + " (ms)</br>";
     return msg;
 }

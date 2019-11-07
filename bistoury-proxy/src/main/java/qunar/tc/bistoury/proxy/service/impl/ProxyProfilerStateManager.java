@@ -30,7 +30,7 @@ import static qunar.tc.bistoury.proxy.util.ProfilerDatagramHelper.*;
  * @author cai.wen created on 2019/10/30 16:54
  */
 @Service
-public class DefaultProfilerStateManager implements ProfilerStateManager {
+public class ProxyProfilerStateManager implements ProfilerStateManager {
 
     private static final ScheduledExecutorService SCHEDULED_EXECUTOR = Executors.newScheduledThreadPool(5);
 
@@ -122,14 +122,12 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
         if (BistouryConstants.REQ_PROFILER_STATE_SEARCH.equals(type)) {
             Map<String, Object> data = response.getData().getData();
             String stateSearchType = (String) data.get("type");
-            Boolean state = (Boolean) data.get("state");
-            if (!state) {
+            if (getResultState(response)) {
                 return;
             }
             if (REQ_PROFILER_START_STATE_SEARCH.equals(stateSearchType)) {
                 readyDatagrams.remove(profilesId);
                 profilerService.startProfiler(profilesId);
-
                 Profiler profiler = profilerService.getProfilerRecord(profilesId);
                 int profilingDuration = profiler.getDuration() + defaultAdditionalSeconds;
                 ProfilerDatagramHolder profilingHolder = createFinishStateSearchHolder(profiler.getAgentId(), profilesId, profilingDuration);
@@ -139,13 +137,17 @@ public class DefaultProfilerStateManager implements ProfilerStateManager {
                 profilerService.stopProfiler(profilesId);
             }
         } else if (REQ_PROFILER_STOP.equals(type)) {
-            Map<String, Object> data = response.getData().getData();
-            Boolean state = (Boolean) data.get("state");
-            if (!state) {
+            if (getResultState(response)) {
                 return;
             }
             profilerService.stopProfiler(profilesId);
         }
+    }
+
+    private boolean getResultState(TypeResponse<Map<String, Object>> response) {
+        Map<String, Object> data = response.getData().getData();
+        Boolean state = (Boolean) data.get("state");
+        return state == null || !state;
     }
 
     @Override

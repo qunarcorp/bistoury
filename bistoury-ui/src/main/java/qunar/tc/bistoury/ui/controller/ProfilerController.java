@@ -59,7 +59,7 @@ public class ProfilerController {
     @GetMapping("/get")
     @ResponseBody
     public Object requestProfiler(String profilerId) {
-        return ResultHelper.success(profilerService.getProfilerRecord(profilerId));
+        return ResultHelper.success(profilerService.getRecord(profilerId));
     }
 
     @GetMapping("/analysis/state")
@@ -73,7 +73,7 @@ public class ProfilerController {
     @GetMapping("/records")
     @ResponseBody
     public Object lastThreeDaysProfiler(String agentId) {
-        List<Profiler> profilers = profilerService.getProfilerRecords("", agentId);
+        List<Profiler> profilers = profilerService.getLastRecords("", agentId, 3 * 24);
         profilers = profilers.stream()
                 .filter(profiler -> profiler.getState() == Profiler.State.stop)
                 .collect(Collectors.toList());
@@ -111,7 +111,7 @@ public class ProfilerController {
             String name = doGetName(proxyRef.get(), profilerId);
             if (name != null) {
                 int duration = Integer.parseInt(name.split("-")[1]);
-                int frequency = profilerService.getProfilerRecord(profilerId).getFrequency();
+                int frequency = profilerService.getRecord(profilerId).getFrequency();
                 return Optional.of(new ProfilerFileVo(proxyRef.get(), duration, frequency));
             }
         }

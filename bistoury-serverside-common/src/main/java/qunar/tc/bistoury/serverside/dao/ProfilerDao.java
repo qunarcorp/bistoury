@@ -9,21 +9,13 @@ import java.util.List;
  */
 public interface ProfilerDao {
 
-    List<Profiler> getProfilerRecords(String app, String agentId);
-
-    Profiler getLastProfilerRecord(String app, String agentId);
-
-    Profiler getProfilerRecord(String profilerId);
-
-    void stopProfiler(String profilerId);
+    List<Profiler> getRecords(String app, String agentId, int hours);
 
     void changeState(Profiler.State state, String profilerId);
 
-    void deleteProfiler(String profilerId);
-
-    void startProfiler(String profilerId);
-
     void prepareProfiler(Profiler profiler);
 
-    List<Profiler> getProfilersByState(int state);
+    List<Profiler> getRecordsByState(Profiler.State state, int hours);
+
+    Profiler getRecordById(String profilerId);
 }

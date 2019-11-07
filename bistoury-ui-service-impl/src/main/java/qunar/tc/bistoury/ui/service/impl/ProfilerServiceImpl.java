@@ -17,22 +17,26 @@ public class ProfilerServiceImpl implements ProfilerService {
     private final ProfilerDao profilerDao = new ProfilerDaoImpl();
 
     @Override
-    public Profiler getProfilerRecord(String profilerId) {
-        return profilerDao.getProfilerRecord(profilerId);
+    public Profiler getRecord(String profilerId) {
+        return profilerDao.getRecordById(profilerId);
     }
 
     @Override
-    public List<Profiler> getProfilerRecords(String app, String agentId) {
-        return profilerDao.getProfilerRecords(app, agentId);
+    public List<Profiler> getLastRecords(String app, String agentId, int hours) {
+        return profilerDao.getRecords(app, agentId, hours);
     }
 
     @Override
     public Profiler getLastProfilerRecord(String app, String agentId) {
-        return profilerDao.getLastProfilerRecord(app, agentId);
+        List<Profiler> records = profilerDao.getRecords(app, agentId, 1);
+        if (records.isEmpty()) {
+            return null;
+        }
+        return records.get(0);
     }
 
     @Override
-    public List<Profiler> getProfilersByState(int state) {
-        return profilerDao.getProfilersByState(state);
+    public List<Profiler> getRecordsByState(Profiler.State state, int hours) {
+        return profilerDao.getRecordsByState(state, hours);
     }
 }
