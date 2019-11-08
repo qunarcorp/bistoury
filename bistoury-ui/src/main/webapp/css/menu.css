@@ -38,12 +38,12 @@ html, body {
 }
 
 .content .panel-profiler-left {
-    width: 40%;
+    width: 30%;
     float: left;
 }
 
 .content .panel-profiler-right {
-    width: 55%;
+    width: 65%;
     float: right;
 }
 
@@ -296,3 +296,4 @@ code {
     margin-left: 10px;
     margin-right: 10px;
 }
+

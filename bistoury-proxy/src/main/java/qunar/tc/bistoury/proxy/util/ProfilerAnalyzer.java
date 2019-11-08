@@ -47,7 +47,7 @@ public class ProfilerAnalyzer {
         createTempPath(rootName);
     }
 
-    public void analyze(final String profilerId) {
+    public String analyze(final String profilerId) {
         String commands = COMMANDS_JOINER.join(getAllPreAnalyzeCommand(profilerId));
         try {
             if (isLinux()) {
@@ -60,13 +60,14 @@ public class ProfilerAnalyzer {
             throw new RuntimeException("analyze profiler id error, id: " + profilerId, e);
         }
 
-        renameProfilerDir(profilerId);
+        return renameProfilerDir(profilerId);
     }
 
-    private void renameProfilerDir(String profilerId) {
+    private String renameProfilerDir(String profilerId) {
         File svgParent = ProfilerUtil.getProfilerDir(preAnalyzePath, profilerId).orNull();
         File analysisDir = new File(analyzePath, svgParent.getName());
         Objects.requireNonNull(svgParent).renameTo(analysisDir);
+        return analysisDir.getName();
     }
 
     private List<String> getAllPreAnalyzeCommand(String profilerId) {

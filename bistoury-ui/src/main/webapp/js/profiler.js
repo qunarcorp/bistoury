@@ -2,22 +2,23 @@ var REQ_TYPE_PROFILER = 51;
 var REQ_TYPE_PROFILER_STOP = 52;
 var REQ_TYPE_PROFILER_STATE_SEARCH = 53;
 var globalProfilerId;
-var historyProfilerId;
-var intervalId;
+var searchStateIntervalId;
+
+var curDuration;
+var keepedTime = 0;
+var startTime = null;
+var processIntervalId;
+var currentUiTime = null;
 
 var START_STATE = "start";
 var READY_STATE = "ready";
-var STOP_STATE = "stop";
-var ANALYZED_STATE = "analyzed";
-
-var proxyUrl;
 
 function startProfiler() {
     var duration = $("#profiler-duration").val();
     var frequency = $("#profiler-frequency").val();
     console.log("start profiler.");
     if (duration > 3600) {
-        bistoury.warning("性能分析时长不能超过30分钟");
+        bistoury.warning("性能分析时长不能超过一小时");
         return;
     }
     if (duration < 30) {
@@ -30,6 +31,7 @@ function startProfiler() {
         return;
     }
     initStartState();
+    curDuration = duration;
     sendStartCommand(duration, frequency);
     $(".model-profiler-setting").modal("hide");
 }
@@ -41,93 +43,14 @@ function openStartSettingModel() {
         bistoury.warning("正在等待数据库更新.请稍后");
         return;
     }
-    searchProfilerHistory(getAgentId());
     $(".model-profiler-setting").modal("show");
-}
-
-function analyzeCurrentProfiler() {
-    console.log("analyze profiler");
-    analyze(globalProfilerId);
-    searchProfilerHistory(getAgentId());
 }
 
 function initCurrentProfilerTable(profilerId) {
     globalProfilerId = profilerId;
-    var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
+    var reportUrl = "html/report.html?profilerId=" + profilerId;
     $("#btn_result").prop("href", reportUrl);
-    startInterval();
-}
-
-
-function initHistoryEndState(profilerId) {
-    $("#btn-history-analysis").attr("disabled", true);
-    var history_result_btn = $("#btn-history-result");
-    history_result_btn.attr("disabled", false);
-    var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
-    history_result_btn.prop("href", reportUrl);
-}
-
-function analyze(profilerId) {
-    $.ajax({
-        "url": "profiler/analyze.do",
-        "type": "post",
-        "dataType": 'JSON',
-        "data": {
-            profilerId: profilerId
-        },
-        success: function (ret) {
-            if (ret.status === 0) {
-                proxyUrl = ret.data.proxyUrl;
-                bistoury.success("分析结果成功");
-                if (globalProfilerId === profilerId) {
-                    var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
-                    var result_btn = $("#btn_result");
-                    result_btn.attr("disabled", false);
-                    result_btn.prop("href", reportUrl);
-                    var agentId = getAgentId();
-                    searchProfilerHistory(agentId);
-                    initEndState();
-                } else {
-                    initHistoryEndState(profilerId);
-                }
-            } else {
-                console.log(ret.message);
-                bistoury.error(ret.message);
-            }
-        }
-    })
-}
-
-
-function searchAnalysisState(profilerId) {
-    var profilerFileVo;
-    $.ajax({
-        "url": "profiler/analysis/state.do",
-        "type": "get",
-        "dataType": 'JSON',
-        async: false,
-        "data": {
-            profilerId: profilerId
-        },
-        success: function (ret) {
-            if (ret.status === 0) {
-
-                var history_result_btn = $("#btn-history-result");
-                profilerFileVo = ret.data;
-                if (ret.data == null) {
-                    history_result_btn.attr("disabled", true);
-                    return;
-                }
-                proxy = ret.data.proxyInfo;
-
-                history_result_btn.attr("disabled", false);
-                proxyUrl = proxy.ip + ":" + proxy.tomcatPort;
-                var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
-                history_result_btn.prop("href", reportUrl);
-            }
-        }
-    })
-    return profilerFileVo;
+    startSearchStateInterval();
 }
 
 function searchLastProfiler(agentId) {
@@ -142,9 +65,13 @@ function searchLastProfiler(agentId) {
         async: false,
         success: function (ret) {
             console.log(ret.data);
-            lastProfiler = ret.data;
+            if (ret.data != null) {
+                lastProfiler = ret.data.info;
+                startTime = lastProfiler.startTime;
+                currentUiTime = ret.data.curTime;
+            }
         }
-    })
+    });
     return lastProfiler;
 }
 
@@ -165,48 +92,29 @@ function searchProfilerHistory(agentId) {
     });
 }
 
-function showHistory(profilerId, startTime, duration, frequency) {
-    historyProfilerId = profilerId;
-    var profilerFileVo = searchAnalysisState(profilerId);
-    var history_analysis_btn = $("#btn-history-analysis");
-    if (profilerFileVo != null) {
-        history_analysis_btn.attr("disabled", true);
-        $("#model-profiler-title").html(getHistoryMessage(startTime, profilerFileVo.duration, profilerFileVo.frequency));
-    } else {
-        $("#model-profiler-title").html(getDefaultHistoryMessage(startTime, duration, frequency));
-        history_analysis_btn.attr("disabled", false);
-    }
-    $(".model-profiler").modal("show");
-    history_analysis_btn.attr("onclick", "analyze('" + profilerId + "')");
-    var reportUrl = "html/report.html?profilerId=" + profilerId + "&proxyUrl=" + proxyUrl;
-    $("#btn-history-result").prop("href", reportUrl);
-}
-
-function getHistoryMessage(startTime, duration, frequency) {
-    var msg = "<span>开始时间: " + startTime + "</br>";
-    msg += "实际持续时长: " + duration + " (s)</br>";
-    msg += "实际间隔时长: " + frequency + " (ms)</br>";
-    return msg;
-}
-
-function getDefaultHistoryMessage(startTime, duration, frequency) {
-    var msg = "<span>开始时间: &nbsp;&nbsp;" + startTime + "</br>";
-    msg += "预设持续时长: " + duration + " (s)</br>";
-    msg += "预设间隔时长: " + frequency + " (ms)</br>";
-    return msg;
-}
-
 function initHistoryTable(data) {
     $("#history-body").empty();
     data.forEach(function (profiler) {
         var aElement = document.createElement("a");
-        var trElement = document.createElement('tr')
+        var trElement = document.createElement('tr');
         var tdElement = document.createElement("td");
         aElement.text = profiler.startTime;
-        aElement.setAttribute("onclick", "showHistory('" + profiler.profilerId + "','" + profiler.startTime +
-            "','" + profiler.duration + "','" + profiler.frequency + "')")
+        var reportUrl = "html/report.html?profilerId=" + profiler.profilerId;
+        aElement.setAttribute("href", reportUrl);
+        aElement.setAttribute("target", "_blank");
         trElement.appendChild(tdElement);
         tdElement.appendChild(aElement);
+
+        var durationText = document.createTextNode(profiler.duration);
+        var frequencyText = document.createTextNode(profiler.frequency);
+        var durationElement = document.createElement("td");
+        var frequencyElement = document.createElement("td");
+        durationElement.appendChild(durationText);
+        frequencyElement.appendChild(frequencyText);
+
+        trElement.appendChild(durationElement);
+        trElement.appendChild(frequencyElement);
+
         $("#history-body").append(trElement);
     });
 }
@@ -224,13 +132,11 @@ function initNoStartState() {
 
     globalProfilerId = lastProfiler.profilerId;
     if (lastProfiler.state === START_STATE || lastProfiler.state === READY_STATE) {
+        curDuration = lastProfiler.duration;
+        startProcessStateInterval();
         initStartState();
         initCurrentProfilerTable(globalProfilerId);
-    } else if (lastProfiler.state === ANALYZED_STATE) {
-        var reportUrl = "html/report.html?profilerId=" + globalProfilerId + "&proxyUrl=" + proxyUrl;
-        var result_btn = $("#btn_result");
-        result_btn.attr("disabled", false);
-        result_btn.prop("href", reportUrl);
+    } else {
         initEndState();
     }
 }
@@ -238,40 +144,19 @@ function initNoStartState() {
 function initState() {
     $('#btn_start_profiler').prop('disabled', false);
     $('#btn_stop_profiler').prop('disabled', true);
-    $('#btn_analyze_profiler').prop('disabled', true);
     $('#btn_result').addClass("disabled");
 }
 
 function initStartState() {
     $('#btn_start_profiler').prop('disabled', true);
     $('#btn_stop_profiler').prop('disabled', false);
-    $('#btn_analyze_profiler').prop('disabled', true);
-    $('#btn_result').addClass("disabled");
-}
-
-function initAnalysisState() {
-    $('#btn_start_profiler').prop('disabled', false);
-    $('#btn_stop_profiler').prop('disabled', true);
-    $('#btn_analyze_profiler').prop('disabled', false);
     $('#btn_result').addClass("disabled");
 }
 
 function initEndState() {
     $('#btn_start_profiler').prop('disabled', false);
     $('#btn_stop_profiler').prop('disabled', true);
-    $('#btn_analyze_profiler').prop('disabled', true);
     $('#btn_result').removeClass("disabled");
-}
-
-function stopInterval() {
-    if (intervalId) {
-        clearInterval(intervalId);
-    }
-}
-
-function startInterval() {
-    stopInterval();
-    intervalId = setInterval(searchProfilerState, 5000);
 }
 
 function handleResult(content) {
@@ -287,31 +172,34 @@ function handleResult(content) {
 
 function buildProfiler(result) {
     var resType = result.type;
+    var data = result.data;
     console.log("result: " + result);
     if (resType === "profilerstart") {
-        var data = result.data;
         if (data.code === 0) {
             initCurrentProfilerTable(data.data.profilerId);
-            bistoury.success("开始性能分析")
+            bistoury.success("开始性能分析");
+            currentUiTime = null;
+            startProcessStateInterval();
         } else {
             initState();
             bistoury.error("添加性能分析失败, " + data.message)
         }
     } else if (resType === "profilerstop") {
-        var data = result.data;
         if (data.code === 0) {
 
         } else {
             bistoury.error("手动停止性能分析失败: " + data.message)
         }
     } else if (resType === "profilerstatesearch") {
-        var data = result.data;
         if (data.code === 0 && data.data.state) {
             bistoury.success("性能监控正常停止");
-            initAnalysisState();
-            stopInterval();
+            stopSearchStateInterval();
             var agentId = getAgentId();
-            searchProfilerHistory(agentId);
+            setTimeout(function () {
+                initEndState();
+                stopProcessStateInterval();
+                searchProfilerHistory(agentId);
+            }, 3000);
         }
     }
 }
@@ -352,4 +240,48 @@ function sendStartCommand(duration, frequency) {
     command += " -d " + duration;
     command += " -f " + frequency;
     bistouryWS.sendCommand(currentHost, REQ_TYPE_PROFILER, command, stop, handleResult);
+}
+
+
+function changeProcessState() {
+    var profiler_process = document.getElementById("cpu-profiler-process");
+    keepedTime += 1;
+    var percent = Math.ceil(keepedTime / curDuration * 100);
+    percent = percent > 99 ? 99 : percent;
+    profiler_process.style.width = percent + "%";
+    profiler_process.innerHTML = profiler_process.style.width;
+}
+
+function stopSearchStateInterval() {
+    if (searchStateIntervalId) {
+        clearInterval(searchStateIntervalId);
+    }
+}
+
+function startSearchStateInterval() {
+    stopSearchStateInterval();
+    searchStateIntervalId = setInterval(searchProfilerState, 5000);
+}
+
+function startProcessStateInterval() {
+    stopProcessStateInterval();
+    $("#profiler-process-div").css('display', 'block');
+    if (currentUiTime === null) {
+        keepedTime = 0;
+    } else {
+        var startMoment = moment(startTime, "yyyy-MM-dd HH:mm:ss");
+        var curMoment = moment(currentUiTime, "yyyy-MM-dd HH:mm:ss");
+        keepedTime = moment.duration(curMoment - startMoment).asSeconds();
+    }
+    processIntervalId = setInterval(changeProcessState, 1000);
+}
+
+function stopProcessStateInterval() {
+    var profiler_process = document.getElementById("cpu-profiler-process");
+    profiler_process.style.width = 0 + "%";
+    profiler_process.innerHTML = profiler_process.style.width;
+    $("#profiler-process-div").css('display', 'none');
+    if (processIntervalId) {
+        clearInterval(processIntervalId);
+    }
 }

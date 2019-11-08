@@ -65,12 +65,11 @@ public class AgentProfilerForUiController {
         }
         profilerDataManager.requestData(profilerId);
         try {
-            ProfilerAnalyzer.getInstance().analyze(profilerId);
+            return ProfilerAnalyzer.getInstance().analyze(profilerId);
         } catch (Exception e) {
             LOGGER.error("analyze result error. profiler id: {}", profilerId);
             throw e;
         }
-        return ResultHelper.success();
     }
 
     @RequestMapping("/analysis/state")

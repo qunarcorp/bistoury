@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css?version=2.0.2">
     <link rel="stylesheet" href="css/main.css?version=2.0.2"/>
     <link rel="stylesheet" href="css/menu.css?version=2.0.2"/>
+    <link rel="stylesheet" href="css/cpu-profiler.css"/>
     <link rel="stylesheet" href="highlight/styles/github-gist.css?version=2.0.2">
     <link rel="stylesheet" href="css/spop.min.css?version=2.0.2">
     <script type="text/javascript" src="js/jquery-3.3.1.min.js?version=2.0.2"></script>
@@ -26,6 +27,7 @@
     <script type="text/javascript" src="js/tripledes.js?version=2.0.2"></script>
     <script type="text/javascript" src="js/mode-ecb.js?version=2.0.2"></script>
     <script type="text/javascript" src="js/machine.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/moment.min.js?version=2.0.2"></script>
     <script type="text/javascript" src="js/profiler.js?version=2.0.2"></script>
     <script type="text/javascript" src="js/header.js?version=2.0.2"></script>
     <script type="text/javascript" src="js/spop.min.js?version=2.0.2"></script>
@@ -511,7 +513,6 @@
                                             <col name="" width="23%">
                                             <col name="" width="23%">
                                             <col name="" width="23%">
-                                            <col name="" width="23%">
                                         </colgroup>
                                         <tbody>
                                         <tr>
@@ -529,12 +530,6 @@
                                                 </button>
                                             </td>
                                             <td>
-                                                <button id="btn_analyze_profiler" type="button"
-                                                        class="btn btn-primary btn-block"
-                                                        onclick="analyzeCurrentProfiler()">分析
-                                                </button>
-                                            </td>
-                                            <td>
                                                 <a id="btn_result" class="btn btn-primary btn-block"
                                                    href="html/report.html?profilerId=111"
                                                    target="_blank">查看结果</a>
@@ -542,6 +537,13 @@
                                         </tr>
                                         </tbody>
                                     </table>
+                                    <div id="profiler-process-div" style="display: none">
+                                        <h5 style="font-size: 20px">分析进度</h5>
+                                        <div class="cpu-profiler-container" id="cpu-profiler-container">
+                                            <div class="cpu-profiler-process" id="cpu-profiler-process"
+                                                 style="width:0%;"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="panel-default panel-profiler-right">
@@ -550,9 +552,13 @@
                                 </div>
                                 <div class="panel-body">
                                     <table class="table table-hover" id="profiler-history">
-                                        <colgroup>
-                                            <col name="" width="10%">
-                                        </colgroup>
+                                        <thead>
+                                        <tr>
+                                            <th class="col-md-4">开始时间</th>
+                                            <th class="col-md-2">预设持续时间(s)</th>
+                                            <th class="col-md-2">预设抽样间隔(ms)</th>
+                                        </tr>
+                                        </thead>
                                         <tbody id="history-body">
                                         </tbody>
                                     </table>
@@ -621,32 +627,6 @@
                 </div>
                 <div class="modal-body">
                     <div class="col-md-12" id="file-content-panel">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal model-profiler" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <span class="modal-title" id="model-profiler-title"></span>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-1"></div>
-                    <div class="col-md-4">
-                        <button type="button" id="btn-history-analysis" class="btn btn-primary btn-block">分析</button>
-                    </div>
-                    <div class="col-md-1"></div>
-                    <div class="col-md-4">
-                        <a id="btn-history-result" type="button" target="_blank"
-                           class="btn btn-primary btn-block">查看结果</a>
                     </div>
                 </div>
             </div>

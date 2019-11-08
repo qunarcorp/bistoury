@@ -11,7 +11,10 @@ import com.ning.http.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
 import qunar.tc.bistoury.serverside.bean.Profiler;
@@ -24,9 +27,9 @@ import qunar.tc.bistoury.ui.util.ProxyInfoParse;
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -42,7 +45,7 @@ public class ProfilerController {
     private static final AsyncHttpClient httpClient = new AsyncHttpClient(
             new AsyncHttpClientConfig.Builder()
                     .setConnectTimeout(3000)
-                    .setReadTimeout(30000).build());
+                    .setReadTimeout(1000 * 60 * 3).build());
 
     private static final String profilerSvgUrl = "http://%s:%d/proxy/profiler/svg?profilerId=%s&svgName=%s";
 
@@ -62,12 +65,11 @@ public class ProfilerController {
         return ResultHelper.success(profilerService.getRecord(profilerId));
     }
 
-    @GetMapping("/analysis/state")
+    @GetMapping("/analysis/info")
     @ResponseBody
     public Object analyzeProfilerState(String profilerId) {
-        Optional<ProfilerFileVo> proxyRef = getAnalyzedProxyForProfiler(profilerId);
-        return proxyRef.map(ResultHelper::success)
-                .orElseGet(ResultHelper::success);
+        Optional<ProfilerInfoVo> proxyRef = analyze(profilerId);
+        return ResultHelper.success(proxyRef.orElse(null));
     }
 
     @GetMapping("/records")
@@ -80,28 +82,47 @@ public class ProfilerController {
         return ResultHelper.success(profilers);
     }
 
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     @GetMapping("/last")
     @ResponseBody
     public Object lastProfiler(String agentId) {
         Profiler profiler = profilerService.getLastProfilerRecord("", agentId);
-        if (profiler == null || profiler.getState() == Profiler.State.stop) {
+        if (profiler == null) {
             return ResultHelper.success();
         }
         if (profiler.getState() == Profiler.State.ready || profiler.getState() == Profiler.State.start) {
-            return ResultHelper.success(profiler);
+            return ResultHelper.success(
+                    ImmutableMap.of("info", profiler, "curTime", LocalDateTime.now().format(DATE_TIME_FORMATTER)));
         }
-        Optional<ProfilerFileVo> profilerFileVoRef = getAnalyzedProxyForProfiler(profiler.getProfilerId());
-        if (profilerFileVoRef.isPresent()) {
-            profiler.setState(Profiler.State.analyzed);
-            profiler.setDuration(profilerFileVoRef.get().getDuration());
-        }
-        return ResultHelper.success(profiler);
+        return ResultHelper.success();
     }
 
     private final TypeReference analyzerResponse = new TypeReference<ApiResult<Map<String, Object>>>() {
     };
 
-    private Optional<ProfilerFileVo> getAnalyzedProxyForProfiler(String profilerId) {
+    private Optional<ProfilerInfoVo> analyze(String profilerId) {
+        Optional<ProfilerInfoVo> profilerFileVoRef = getAnalyzedProxyForProfiler(profilerId);
+        if (!profilerFileVoRef.isPresent()) {
+            return doAnalyze(profilerId);
+        }
+        return profilerFileVoRef;
+    }
+
+    private Optional<ProfilerInfoVo> doAnalyze(String profilerId) {
+        ProxyInfo proxyInfo = getProxyForAgent();
+        try {
+            String url = String.format(profilerResultUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId);
+            String profilerFileName = getAnalyzerResult(url);
+            Objects.requireNonNull(profilerFileName);
+            return Optional.of(new ProfilerInfoVo(proxyInfo, profilerFileName, profilerService.getRecord(profilerId)));
+        } catch (Exception e) {
+            LOGGER.error("analyze profiler result error. profiler id: {}", profilerId, e);
+            return Optional.empty();
+        }
+    }
+
+    private Optional<ProfilerInfoVo> getAnalyzedProxyForProfiler(String profilerId) {
         List<String> proxyWebSocketUrls = proxyService.getAllProxyUrls();
         for (String proxyWebSocketUrl : proxyWebSocketUrls) {
             Optional<ProxyInfo> proxyRef = ProxyInfoParse.parseProxyInfo(proxyWebSocketUrl);
@@ -110,9 +131,8 @@ public class ProfilerController {
             }
             String name = doGetName(proxyRef.get(), profilerId);
             if (name != null) {
-                int duration = Integer.parseInt(name.split("-")[1]);
-                int frequency = profilerService.getRecord(profilerId).getFrequency();
-                return Optional.of(new ProfilerFileVo(proxyRef.get(), duration, frequency));
+                Profiler profiler = profilerService.getRecord(profilerId);
+                return Optional.of(new ProfilerInfoVo(proxyRef.get(), name, profiler));
             }
         }
         return Optional.empty();
@@ -147,28 +167,15 @@ public class ProfilerController {
         responseOutputStream.close();
     }
 
-    @PostMapping("analyze")
-    @ResponseBody
-    public Object analyzeProfiler(@RequestParam("profilerId") String profilerId) {
-        ProxyInfo proxyInfo = getProxyForAgent();
-        try {
-            String url = String.format(profilerResultUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId);
-            getAnalyzerResult(url);
-        } catch (Exception e) {
-            return ResultHelper.fail("分析失败");
-        }
-        String proxyUrl = proxyInfo.getIp() + ":" + proxyInfo.getTomcatPort();
-        Map<String, String> result = ImmutableMap.of("profilerId", profilerId, "proxyUrl", proxyUrl);
-        return ResultHelper.success(result);
-    }
-
-    private void getAnalyzerResult(String url) {
+    private String getAnalyzerResult(String url) {
         Request request = httpClient.preparePost(url).build();
         try {
             Response response = httpClient.executeRequest(request).get();
             if (response.getStatusCode() != 200) {
                 LOGGER.warn("analyze profiler result code is {}", response.getStatusCode());
+                return null;
             }
+            return response.getResponseBody();
         } catch (Exception e) {
             LOGGER.error("get analyzer result.", e);
             throw new RuntimeException("get analyzer result error. " + e.getMessage());
@@ -206,20 +213,20 @@ public class ProfilerController {
         }
     }
 
-    private static class ProfilerFileVo {
+    private static class ProfilerInfoVo {
 
         private ProxyInfo proxyInfo;
         private int duration;
-        private int frequency;
+        private Profiler profiler;
 
-        public ProfilerFileVo() {
+        public ProfilerInfoVo() {
 
         }
 
-        public ProfilerFileVo(ProxyInfo proxyInfo, int duration, int frequency) {
+        public ProfilerInfoVo(ProxyInfo proxyInfo, String name, Profiler profiler) {
             this.proxyInfo = proxyInfo;
-            this.duration = duration;
-            this.frequency = frequency;
+            this.duration = Integer.parseInt(name.split("-")[1]);
+            this.profiler = profiler;
         }
 
         public ProxyInfo getProxyInfo() {
@@ -230,8 +237,8 @@ public class ProfilerController {
             return duration;
         }
 
-        public int getFrequency() {
-            return frequency;
+        public Profiler getProfiler() {
+            return profiler;
         }
     }
 }
