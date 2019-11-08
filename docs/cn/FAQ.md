@@ -1,4 +1,5 @@
 * [日志目录](#日志目录)
+* [not find proxy for agent](#not-find-proxy-for-agent)
 * [获取ip错误](#获取ip错误)
 * [agent attach时加载初始化类失败](#agent-attach时加载初始化类失败)
 * [windows 环境暂时不支持](#windows-环境)
@@ -26,6 +27,17 @@
 | 3. ui             | 解压缩目录/bistoury-ui-bin/logs    |
 | 4. attach到应用中的部分 | 应用进程所属用户的主目录/logs/   |
 
+### not find proxy for agent
+
+---
+
+问题原因：出现这个错误的根本原因就是ui根据应用中心的ip从所有proxy上都没有查询到agent的注册信息
+
+问题排查：
+   - 检查proxy的日志，看下proxy是否启动成功
+   - 访问proxyip:proxyPory/proxy.html（可能需要到每台proxy都去看一下） 到版本信息里面使用agent的ip去查询一下
+      - 如果不存在，则说明agent没有连接到proxy，检查下agent的日志
+      - 如果存在，则说明应用中心的ip和agent上报的ip不一样，可以修改应用中心的ip，也可以在agent启动的时候通过-i参数指定你需要的ip      
 ### 获取ip错误
 
 ---
