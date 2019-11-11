@@ -26,7 +26,7 @@ public class DownloadFileProcessor extends AbstractCommand<DownloadCommand> {
     @Override
     protected Optional<RequestData<DownloadCommand>> doPreprocessor(RequestData<DownloadCommand> requestData, ChannelHandlerContext ctx) {
         DownloadCommand command = requestData.getCommand();
-        command.setDir(DownloadDirUtils.composeDownloadDir(requestData.getAgentServerInfos(), "all"));
+        command.setDir(DownloadDirUtils.composeDownloadDir(requestData.getApp(), requestData.getAgentServerInfos(), "all"));
         logger.info("{} download file [{}]", requestData.getUser(), command.getPath());
         return super.doPreprocessor(requestData, ctx);
     }

@@ -35,7 +35,7 @@ public class DownloadFileListProcessor extends AbstractCommand<String> {
     @Override
     protected Optional<RequestData<String>> doPreprocessor(RequestData<String> requestData, ChannelHandlerContext ctx) {
         String command = Strings.nullToEmpty(requestData.getCommand()).trim();
-        String newCommand = DownloadDirUtils.composeDownloadDir(requestData.getAgentServerInfos(), command);
+        String newCommand = DownloadDirUtils.composeDownloadDir(requestData.getApp(), requestData.getAgentServerInfos(), command);
         requestData.setCommand(newCommand);
         return Optional.of(requestData);
     }

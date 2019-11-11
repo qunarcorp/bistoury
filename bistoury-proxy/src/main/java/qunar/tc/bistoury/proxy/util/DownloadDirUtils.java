@@ -12,32 +12,43 @@ import java.util.List;
  * @describe
  */
 public class DownloadDirUtils {
-    private static String downloadOtherStr;
-    private static String downloadDumpStr;
+    private static String defaultDownloadOtherStr;
+    private static String defaultDownloadDumpStr;
+    private static DynamicConfig dynamicConfig;
+
+    private static final String DEFAULT_KEY_PREFIX = "default";
+    private static final String DOWNLOAD_OTHER_KEY = ".download.dump.dir";
+    private static final String DOWNLOAD_DUMP_KEY = ".download.dump.dir";
+
     private static final String ALL_DIR = "all";
     private static final String LOG_DIR = "log";
     private static final String DUMP_DIR = "dump";
 
     static {
-        DynamicConfigLoader.<DynamicConfig>load("global.properties", false).addListener(config -> {
-            downloadDumpStr = config.getString("download.dump.dir", "/tmp/bistoury/qjtools/qjdump");
-            downloadOtherStr = config.getString("download.other.dir", "");
+        DynamicConfigLoader.<DynamicConfig>load("download_dir_limit.properties", false).addListener(config -> {
+            dynamicConfig = config;
+            defaultDownloadDumpStr = dynamicConfig.getString(DEFAULT_KEY_PREFIX + DOWNLOAD_DUMP_KEY, "");
+            defaultDownloadOtherStr = dynamicConfig.getString(DEFAULT_KEY_PREFIX + DOWNLOAD_OTHER_KEY, "");
         });
     }
 
-    public static String composeDownloadDir(final List<AgentServerInfo> serverInfos, final String type) {
+    public static String composeDownloadDir(final String appCode, final List<AgentServerInfo> serverInfos, final String type) {
         if (serverInfos == null || serverInfos.isEmpty()) {
             return "";
         }
         String logdir = serverInfos.iterator().next().getLogdir();
+
+        final String appDownloadDump = dynamicConfig.getString(appCode + DOWNLOAD_DUMP_KEY, defaultDownloadDumpStr);
+        final String appDonnloadOther = dynamicConfig.getString(appCode + DOWNLOAD_OTHER_KEY, defaultDownloadOtherStr);
+
         if (ALL_DIR.equalsIgnoreCase(type)) {
-            return logdir + "," + downloadDumpStr + "," + downloadOtherStr;
+            return logdir + "," + appDownloadDump + "," + appDonnloadOther;
         } else if (LOG_DIR.equalsIgnoreCase(type)) {
             return logdir;
         } else if (DUMP_DIR.equalsIgnoreCase(type)) {
-            return downloadDumpStr;
+            return appDownloadDump;
         } else {
-            return downloadOtherStr;
+            return appDonnloadOther;
         }
     }
 }
