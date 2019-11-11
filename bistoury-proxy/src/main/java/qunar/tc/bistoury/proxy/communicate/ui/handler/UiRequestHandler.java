@@ -234,7 +234,7 @@ public class UiRequestHandler extends ChannelDuplexHandler {
         Set<Session> sessions = sessionManager.getSessionByUiConnection(uiConnection);
         for (Session session : sessions) {
             String id = session.getId();
-            Datagram datagram = RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_CANCEL.getCode(), idGenerator.generateId(), new RequestPayloadHolder(id));
+            Datagram datagram = RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_CANCEL.getCode(), id, new RequestPayloadHolder(id));
             session.writeToAgent(datagram);
             session.finish();
         }

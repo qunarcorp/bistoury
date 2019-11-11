@@ -17,41 +17,29 @@
 
 package qunar.tc.bistoury.clientside.common.meta;
 
-import java.util.Collections;
+import com.google.common.collect.ImmutableMap;
+
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author zhenyu.nie created on 2019 2019/1/10 16:18
  */
 public class DefaultMetaStore implements MetaStore {
 
-    private volatile Map<String, String> attrs = new HashMap<>();
-
-    private final CopyOnWriteArrayList<Listener> listeners;
+    private volatile Map<String, String> attrs = ImmutableMap.of();
 
     DefaultMetaStore() {
-        listeners = new CopyOnWriteArrayList<>();
     }
 
     @Override
     public void update(Map<String, String> attrs) {
-        this.attrs = attrs;
-        for (Listener listener : listeners) {
-            listener.onChange(this);
-        }
-    }
-
-    @Override
-    public void addListener(Listener listener) {
-        listeners.add(listener);
+        this.attrs = ImmutableMap.copyOf(attrs);
     }
 
     @Override
     public Map<String, String> getAgentInfo() {
-        return Collections.unmodifiableMap(this.attrs);
+        return this.attrs;
     }
 
     @Override

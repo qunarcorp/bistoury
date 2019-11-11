@@ -37,6 +37,8 @@ public class DownloadFileTask implements Task {
 
     private static final int BYTE_KB = 4;
 
+    private static final int DEFAULT_DOWNLOAD_LIMIT_KB = 10 * 1024;
+
     private final String id;
     private final long maxRunningMs;
     private final DownloadCommand command;
@@ -49,7 +51,7 @@ public class DownloadFileTask implements Task {
         this.maxRunningMs = maxRunningMs;
         this.command = command;
         this.handler = handler;
-        rateLimiter = RateLimiter.create(META_STORE.getIntProperty("download.kb.per.second", 10000) / BYTE_KB);
+        rateLimiter = RateLimiter.create(META_STORE.getIntProperty("download.kb.per.second", DEFAULT_DOWNLOAD_LIMIT_KB) * 1024);
     }
 
     @Override
@@ -98,12 +100,13 @@ public class DownloadFileTask implements Task {
 
         @Override
         public boolean doResponse() throws Exception {
-            rateLimiter.acquire();
             int read = inputStream.read(bytes);
             if (read == -1) {
                 return true;
             }
+
             if (read > 0) {
+                rateLimiter.acquire(read);
                 handler.handle(Arrays.copyOfRange(bytes, 0, read));
             }
             return false;
