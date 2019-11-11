@@ -80,14 +80,14 @@ public class DownloadWebSocket extends WebSocketClient {
                 handleDownloadResponse();
                 outputStream.write(buffer.array(), 20, length);
             } else {
-                //如果是空文件，会直接走这个逻辑，如果对response进行设置，下载不到文件
+                //如果是空文件，会直接走这个逻辑，如果不对response进行设置，下载不到文件
                 handleDownloadResponse();
                 outputStream.flush();
                 latch.countDown();
             }
-        } catch (IOException e) {
+        } catch (Throwable t) {
             latch.countDown();
-            logger.error("download fail", e);
+            logger.error("download fail", t);
         }
     }
 
