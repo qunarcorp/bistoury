@@ -22,7 +22,7 @@ import com.google.common.base.Splitter;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import qunar.tc.bistoury.common.JacksonSerializer;
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.UiResponses;
 import qunar.tc.bistoury.proxy.communicate.ui.linuxcommand.CommandSplitter;
 import qunar.tc.bistoury.proxy.communicate.ui.linuxcommand.LinuxCommandParser;

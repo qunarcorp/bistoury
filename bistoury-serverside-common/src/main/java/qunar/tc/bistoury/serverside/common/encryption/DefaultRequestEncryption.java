@@ -15,15 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.proxy.communicate.ui.handler.encryption;
+package qunar.tc.bistoury.serverside.common.encryption;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import qunar.tc.bistoury.common.JacksonSerializer;
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
-import qunar.tc.bistoury.serverside.common.encryption.EncryptionUtils;
-import qunar.tc.bistoury.serverside.common.encryption.RSAEncryption;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -56,4 +55,17 @@ public class DefaultRequestEncryption implements RequestEncryption {
         String requestStr = EncryptionUtils.decryptDes(data, desKey);
         return JacksonSerializer.deSerialize(requestStr, inputType);
     }
+
+    @Override
+    public String encrypt(RequestData<String> requestData, final String key) throws IOException {
+        Map<String, String> map = new HashMap<>();
+        String encrypt = rsa.encrypt(key);
+        map.put(KEY_INDEX, encrypt);
+
+        String encryptDes = EncryptionUtils.encryptDes(JacksonSerializer.serialize(requestData), key);
+        map.put(DATA_INDEX, encryptDes);
+        return JacksonSerializer.serialize(map);
+    }
+
+
 }

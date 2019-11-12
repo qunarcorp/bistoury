@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.UiConnection;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommand;
 import qunar.tc.bistoury.proxy.generator.IdGenerator;

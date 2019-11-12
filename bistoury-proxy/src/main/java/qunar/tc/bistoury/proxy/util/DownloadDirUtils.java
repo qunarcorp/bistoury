@@ -1,6 +1,6 @@
 package qunar.tc.bistoury.proxy.util;
 
-import qunar.tc.bistoury.proxy.communicate.ui.AgentServerInfo;
+import qunar.tc.bistoury.remoting.protocol.AgentServerInfo;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfig;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 

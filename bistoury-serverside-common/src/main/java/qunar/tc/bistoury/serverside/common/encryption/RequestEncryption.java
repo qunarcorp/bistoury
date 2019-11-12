@@ -15,9 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.proxy.communicate.ui.handler.encryption;
+package qunar.tc.bistoury.serverside.common.encryption;
 
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 
 import java.io.IOException;
 
@@ -26,4 +26,6 @@ import java.io.IOException;
  */
 public interface RequestEncryption {
     RequestData<String> decrypt(String in) throws IOException;
+
+    String encrypt(RequestData<String> requestData, final String key) throws IOException;
 }

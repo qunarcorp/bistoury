@@ -38,10 +38,10 @@ import qunar.tc.bistoury.proxy.communicate.SessionManager;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommandStore;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.*;
-import qunar.tc.bistoury.proxy.communicate.ui.handler.encryption.DefaultRequestEncryption;
 import qunar.tc.bistoury.proxy.generator.IdGenerator;
 import qunar.tc.bistoury.proxy.util.AppCenterServerFinder;
 import qunar.tc.bistoury.serverside.agile.Conf;
+import qunar.tc.bistoury.serverside.common.encryption.DefaultRequestEncryption;
 import qunar.tc.bistoury.serverside.common.encryption.RSAEncryption;
 
 /**
@@ -51,9 +51,6 @@ public class NettyServerForUi implements NettyServer {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServerForUi.class);
 
-    private static final String RSA_PUBLIC_KEY = "/rsa-public-key.pem";
-
-    private static final String RSA_PRIVATE_KEY = "/rsa-private-key.pem";
 
     private static final int DEFAULT_WRITE_LOW_WATER_MARK = 64 * 1024;
 
@@ -114,7 +111,7 @@ public class NettyServerForUi implements NettyServer {
                                 .addLast(new HttpObjectAggregator(1024 * 1024))
                                 .addLast(new WebSocketServerProtocolHandler("/ws"))
                                 .addLast(new WebSocketFrameAggregator(1024 * 1024 * 1024))
-                                .addLast(new RequestDecoder(new DefaultRequestEncryption(new RSAEncryption(RSA_PUBLIC_KEY, RSA_PRIVATE_KEY))))
+                                .addLast(new RequestDecoder(new DefaultRequestEncryption(new RSAEncryption())))
                                 .addLast(new WebSocketEncoder())
                                 .addLast(new TabHandler())
                                 .addLast(new HostsValidatorHandler(new AppCenterServerFinder(appServerService)))

@@ -199,22 +199,44 @@ $(document).ready(function () {
         "click .download-file": function (e, value, row, index) {
             console.log(row);
             var file = row;
-            var content = {
-                user: bistouryWS.getUserName(),
-                type: 702,
-                app: currentHost.appCode,
-                hosts: ['' + currentHost.host + ''],
-                command: JSON.stringify({
-                    path: file.path
-                }),
-                token: bistouryWS.getToken()
-            }
-            var encrypt = bistouryWS.encrypt(JSON.stringify(content))
-            console.log(encrypt);
-            window.open("/file/download.do?agentIp=" + currentHost.ip
-                + "&command=" + base64.encode(encrypt)
-                + "&name=" + file.name, "_blank");
+            download(file);
         }
+    }
+
+    function download(file) {
+        fetch("/file/download.do", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: "appcode=" + currentHost.appCode
+                + "&host=" + currentHost.host
+                + "&agentIp=" + currentHost.ip
+                + "&path=" + file.path
+                + "&filename=" + file.name
+        }).then(function (res) {
+            if (res.ok) {
+                var filename = res.headers.get('Content-Disposition').split("=")[1];
+                res.blob().then(function (data) {
+                    var blobUrl = window.URL.createObjectURL(data);
+                    var a = document.createElement('a');
+                    a.setAttribute('href', blobUrl);
+                    a.setAttribute('download', filename);
+                    a.click();
+                }).catch(function (reason) {
+                    console.log(reason);
+                    bistoury.error(reason)
+                })
+            } else {
+                res.text().then(function (value) {
+                    bistoury.error(value);
+                })
+            }
+
+        }).catch(function (reason) {
+            console.log(reason)
+            bistoury.error(reason)
+        })
     }
 
     function dateFormat(dateStr) {

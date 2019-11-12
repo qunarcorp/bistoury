@@ -99,4 +99,17 @@ public class EncryptionUtils {
             throw new Encryption.DecryptException(e);
         }
     }
+
+    public static String encryptDes(String data, String keyString) throws Encryption.EncryptException {
+        try {
+            Cipher cipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
+            DESKeySpec keySpec = new DESKeySpec(keyString.getBytes(Charsets.UTF_8));
+            SecretKey key = SecretKeyFactory.getInstance("DES").generateSecret(keySpec);
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            return Base64.encode(cipher.doFinal(data.getBytes(Charsets.UTF_8)));
+        } catch (Exception e) {
+            throw new Encryption.EncryptException(e);
+        }
+
+    }
 }

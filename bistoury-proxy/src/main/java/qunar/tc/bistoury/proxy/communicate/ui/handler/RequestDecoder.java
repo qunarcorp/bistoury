@@ -26,9 +26,9 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.UiResponses;
-import qunar.tc.bistoury.proxy.communicate.ui.handler.encryption.RequestEncryption;
+import qunar.tc.bistoury.serverside.common.encryption.RequestEncryption;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
 
 import java.io.IOException;

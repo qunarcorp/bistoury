@@ -20,7 +20,7 @@ package qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor;
 import com.google.common.base.Preconditions;
 import io.netty.channel.ChannelHandlerContext;
 import qunar.tc.bistoury.common.JacksonSerializer;
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.command.UiRequestCommand;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
