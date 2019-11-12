@@ -30,7 +30,9 @@ import qunar.tc.bistoury.proxy.communicate.SessionManager;
 import qunar.tc.bistoury.proxy.communicate.WrittableListener;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
-import qunar.tc.bistoury.proxy.communicate.ui.*;
+import qunar.tc.bistoury.proxy.communicate.ui.UiConnection;
+import qunar.tc.bistoury.proxy.communicate.ui.UiConnectionStore;
+import qunar.tc.bistoury.proxy.communicate.ui.UiResponses;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommand;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommandStore;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.CommunicateCommandProcessor;
@@ -130,15 +132,8 @@ public class UiRequestHandler extends ChannelDuplexHandler {
         }
 
         CommunicateCommandProcessor<?> processor = communicateCommand.getProcessor();
-        Optional<? extends RequestData<?>> requestDataOptional;
-        try {
-            requestDataOptional = processor.preprocessor(inputData, ctx);
-            if (!requestDataOptional.isPresent()) {
-                ctx.channel().writeAndFlush(UiResponses.createProcessRequestErrorResponse(inputData));
-                return;
-            }
-        } catch (Exception e) {
-            ctx.channel().writeAndFlush(UiResponses.createProcessRequestErrorResponse(inputData, e.getMessage()));
+        Optional<? extends RequestData<?>> requestDataOptional = preProcessor(processor, inputData, ctx);
+        if (!requestDataOptional.isPresent()) {
             return;
         }
 
@@ -177,6 +172,19 @@ public class UiRequestHandler extends ChannelDuplexHandler {
 
         ListenableFuture<List<Session.State>> sessionsFuture = Futures.successfulAsList(sessions.stream().map(Session::getEndState).collect(Collectors.toList()));
         sessionsFuture.addListener(() -> uiConnection.write(UiResponses.createFinishResponse(requestData)), MoreExecutors.directExecutor());
+    }
+
+    private Optional<? extends RequestData<?>> preProcessor(CommunicateCommandProcessor<?> processor, RequestData<String> inputData, ChannelHandlerContext ctx) {
+        try {
+            Optional<? extends RequestData<?>> requestData = processor.preprocessor(inputData, ctx);
+            if (!requestData.isPresent()) {
+                ctx.channel().writeAndFlush(UiResponses.createProcessRequestErrorResponse(inputData));
+            }
+            return requestData;
+        } catch (Exception e) {
+            ctx.channel().writeAndFlush(UiResponses.createProcessRequestErrorResponse(inputData, e.getMessage()));
+            return Optional.empty();
+        }
     }
 
     @Override
