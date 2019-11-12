@@ -121,7 +121,7 @@ public class DownloadFileController {
         requestData.setType(CommandCode.REQ_TYPE_DOWNLOAD_FILE.getOldCode());
         requestData.setHosts(ImmutableList.of(host));
         requestData.setCommand(command);
-        requestData.setToken("");
+        requestData.setToken(LoginContext.getLoginContext().getToken());
         requestData.setUser(LoginContext.getLoginContext().getLoginUser());
         return requestData;
 

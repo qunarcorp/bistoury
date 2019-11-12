@@ -1,15 +1,16 @@
 package qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.processor;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.AbstractCommand;
 import qunar.tc.bistoury.proxy.util.DownloadDirUtils;
 import qunar.tc.bistoury.remoting.command.DownloadCommand;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 
 import java.util.Optional;
 import java.util.Set;
@@ -26,7 +27,16 @@ public class DownloadFileProcessor extends AbstractCommand<DownloadCommand> {
     @Override
     protected Optional<RequestData<DownloadCommand>> doPreprocessor(RequestData<DownloadCommand> requestData, ChannelHandlerContext ctx) {
         DownloadCommand command = requestData.getCommand();
-        command.setDir(DownloadDirUtils.composeDownloadDir(requestData.getApp(), requestData.getAgentServerInfos(), "all"));
+        String allDir = DownloadDirUtils.composeDownloadDir(requestData.getApp(), requestData.getAgentServerInfos(), "all");
+        if (Strings.isNullOrEmpty(allDir)) {
+            throw new RuntimeException("No folders to download");
+        }
+
+        if (Strings.isNullOrEmpty(command.getPath())) {
+            throw new RuntimeException("Down file path cannot be null or empty");
+        }
+
+        command.setDir(allDir);
         logger.info("{} download file [{}]", requestData.getUser(), command.getPath());
         return super.doPreprocessor(requestData, ctx);
     }

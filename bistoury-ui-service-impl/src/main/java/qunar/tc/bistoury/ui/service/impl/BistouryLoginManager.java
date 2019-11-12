@@ -100,6 +100,20 @@ public class BistouryLoginManager implements LoginManager {
         return token.equals(token(id, time));
     }
 
+    public String token(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
+        for (Cookie cookie : cookies) {
+            if (cookieToken.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+
+    }
+
     private String token(String id, String time) {
         return Hashing.md5().hashString(id + "_" + time, Charsets.UTF_8).toString();
     }
