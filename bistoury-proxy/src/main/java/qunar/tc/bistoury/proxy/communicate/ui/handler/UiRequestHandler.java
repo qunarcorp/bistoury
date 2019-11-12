@@ -130,9 +130,15 @@ public class UiRequestHandler extends ChannelDuplexHandler {
         }
 
         CommunicateCommandProcessor<?> processor = communicateCommand.getProcessor();
-        Optional<? extends RequestData<?>> requestDataOptional = processor.preprocessor(inputData, ctx);
-        if (!requestDataOptional.isPresent()) {
-            ctx.channel().writeAndFlush(UiResponses.createProcessRequestErrorResponse(inputData));
+        Optional<? extends RequestData<?>> requestDataOptional;
+        try {
+            requestDataOptional = processor.preprocessor(inputData, ctx);
+            if (!requestDataOptional.isPresent()) {
+                ctx.channel().writeAndFlush(UiResponses.createProcessRequestErrorResponse(inputData));
+                return;
+            }
+        } catch (Exception e) {
+            ctx.channel().writeAndFlush(UiResponses.createProcessRequestErrorResponse(inputData, e.getMessage()));
             return;
         }
 
