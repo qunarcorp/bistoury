@@ -38,7 +38,7 @@ public class DownloadFileProcessor extends AbstractCommand<DownloadCommand> {
 
         command.setDir(allDir);
         logger.info("{} download file [{}]", requestData.getUser(), command.getPath());
-        return super.doPreprocessor(requestData, ctx);
+        return Optional.of(requestData);
     }
 
     @Override

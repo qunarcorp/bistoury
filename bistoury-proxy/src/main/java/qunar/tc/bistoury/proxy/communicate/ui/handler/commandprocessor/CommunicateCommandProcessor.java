@@ -33,7 +33,7 @@ public interface CommunicateCommandProcessor<T> {
      * @param ctx
      * @return
      */
-    Optional<RequestData<T>> preprocessor(RequestData<String> requestData, ChannelHandlerContext ctx);
+    Optional<RequestData<T>> preprocessor(RequestData<String> requestData, ChannelHandlerContext ctx) throws Exception;
 
     /**
      * 对请求进行提前处理，将其处理为agent能够识别的协议格式

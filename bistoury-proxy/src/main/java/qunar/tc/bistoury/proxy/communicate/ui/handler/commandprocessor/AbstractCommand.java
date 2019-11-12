@@ -49,7 +49,7 @@ public abstract class AbstractCommand<T> implements CommunicateCommandProcessor<
 
     @Override
     @SuppressWarnings("unchecked")
-    public final Optional<RequestData<T>> preprocessor(RequestData<String> requestData, ChannelHandlerContext ctx) {
+    public final Optional<RequestData<T>> preprocessor(RequestData<String> requestData, ChannelHandlerContext ctx) throws Exception {
         if (type.equals(String.class)) {
             return doPreprocessor((RequestData<T>) requestData, ctx);
         } else {
@@ -59,7 +59,7 @@ public abstract class AbstractCommand<T> implements CommunicateCommandProcessor<
         }
     }
 
-    protected Optional<RequestData<T>> doPreprocessor(RequestData<T> requestData, ChannelHandlerContext ctx) {
+    protected Optional<RequestData<T>> doPreprocessor(RequestData<T> requestData, ChannelHandlerContext ctx) throws Exception {
         return Optional.of(requestData);
     }
 
