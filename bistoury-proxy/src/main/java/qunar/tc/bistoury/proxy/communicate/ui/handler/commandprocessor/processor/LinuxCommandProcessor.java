@@ -50,7 +50,7 @@ public class LinuxCommandProcessor extends AbstractCommand<MachineCommand> {
     private static final Logger logger = LoggerFactory.getLogger(LinuxCommandProcessor.class);
 
     private static final Set<StandardCommand> singleMachineCommands = Sets.newHashSet(StandardCommand.cat, StandardCommand.tail);
-    private static final String UNBUFFERED = "stdbuf -o0 ";
+    //private static final String UNBUFFERED = "stdbuf -o0 ";
 
     @Autowired
     private AppService appService;
@@ -105,7 +105,8 @@ public class LinuxCommandProcessor extends AbstractCommand<MachineCommand> {
                 formattedCommand += " " + part.getContent();
                 needUnbuffered = true;
             } else if (needUnbuffered) {
-                formattedCommand += " " + UNBUFFERED + part.getContent();
+                //formattedCommand += " " + UNBUFFERED + part.getContent();
+                throw new RuntimeException("The command [tail -f filename] does not support pipes");
             } else {
                 formattedCommand += " " + part.getContent();
             }
@@ -120,7 +121,7 @@ public class LinuxCommandProcessor extends AbstractCommand<MachineCommand> {
 
     private String isSingleMachineCommand(RequestData requestData, LinuxCommand linuxCommand) {
         if ((singleMachineCommands.contains(linuxCommand.getStandardCommand())) && (requestData.getHosts() == null || requestData.getHosts().size() != 1)) {
-            return linuxCommand.getStandardCommand().name() + " 必须选择一台机器执行";
+            return linuxCommand.getStandardCommand().name() + " must select a machine to execution";
         }
         return null;
     }

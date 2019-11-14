@@ -182,7 +182,7 @@ public class UiRequestHandler extends ChannelDuplexHandler {
             }
             return requestData;
         } catch (Exception e) {
-            ctx.channel().writeAndFlush(UiResponses.createProcessRequestErrorResponse(inputData, "Command preprocess failed: " + e.getMessage()));
+            ctx.channel().writeAndFlush(UiResponses.createProcessRequestErrorResponse(inputData, "\033[31m[ERROR]:\033[0m Command preprocess failed: " + e.getMessage()));
             logger.error("pre processor command fail", e);
             return Optional.empty();
         }

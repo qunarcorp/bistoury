@@ -647,10 +647,13 @@ $(document).ready(function () {
             }
 
             var send = function (type, input) {
+                if (input.indexOf('｜') >= 0) {
+                    outputln("\033[31m[WARING]:\033[0m Chinese character [｜] in command");
+                }
                 proxy = {};
                 lastHost = "";
                 if (hosts == null || hosts.length <= 0) {
-                    output("应用中心未查询到属于该应用的机器")
+                    output("The application center didn't find the machine belonging to the application")
                     startPrompt();
                     return;
                 }
@@ -666,7 +669,7 @@ $(document).ready(function () {
                     return;
                 }
                 if (checkedHost === '') {
-                    output("必须选择一台机器");
+                    output("A machine must be selected");
                     startPrompt();
                     return;
                 }
@@ -679,7 +682,7 @@ $(document).ready(function () {
             };
             var sends = function (type, input, checkHosts) {
                 if (!commandCheck(input)) {
-                    output("该命令不支持多机执行");
+                    output("The command does not support multi machine execution");
                     startPrompt();
                     return;
                 }
@@ -719,7 +722,7 @@ $(document).ready(function () {
             var getWs = function (agentIp) {
                 var deferred = $.Deferred();
                 if (!agentIp) {
-                    output("必须选择一台机器");
+                    output("A machine must be selected");
                     deferred.reject();
                     return deferred.promise();
                 }
@@ -788,7 +791,7 @@ $(document).ready(function () {
 
                         ws.onclose = function (event) {
                             if (context.wsOpen.indexOf(host) >= 0) {
-                                outputln(host + "\\> 已经与proxy断开连接");
+                                outputln(host + "\\> disconnected from proxy");
                             }
                             var open = context.wsOpen.indexOf(host) >= 0;
                             context.wsOpen.remove(host)
@@ -808,11 +811,11 @@ $(document).ready(function () {
                         };
                     } catch (ex) {
                         if (context.wsOpen.indexOf(host) >= 0) {
-                            outputln(host + "\\>连接proxy失败！");
+                            outputln(host + "\\> failed to connect to proxy!");
                         }
                         context.wsOpen.remove(host)
                         context.tabHostLength--;
-                        console.log("连接失败: " + ex.message);
+                        console.log("connection failed: " + ex.message);
                         deferred.reject();
                     }
                 } else {
