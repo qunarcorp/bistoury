@@ -1,4 +1,4 @@
-/*
+package qunar.tc.bistoury.serverside.exception;/*
  * Copyright (C) 2019 Qunar, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.exception;
 
 /**
  * @author leix.xie

@@ -22,7 +22,9 @@ import com.google.common.collect.Sets;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import qunar.tc.bistoury.application.api.AppService;
 import qunar.tc.bistoury.proxy.communicate.ui.UiResponses;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.AbstractCommand;
 import qunar.tc.bistoury.proxy.communicate.ui.linuxcommand.CommandSplitter;
@@ -33,6 +35,7 @@ import qunar.tc.bistoury.proxy.util.ChannelUtils;
 import qunar.tc.bistoury.remoting.command.MachineCommand;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
 import qunar.tc.bistoury.remoting.protocol.RequestData;
+import qunar.tc.bistoury.serverside.exception.PermissionDenyException;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +51,9 @@ public class LinuxCommandProcessor extends AbstractCommand<MachineCommand> {
 
     private static final Set<StandardCommand> singleMachineCommands = Sets.newHashSet(StandardCommand.cat, StandardCommand.tail);
     private static final String UNBUFFERED = "stdbuf -o0 ";
+
+    @Autowired
+    private AppService appService;
 
     @Override
     public Set<Integer> getCodes() {
@@ -66,8 +72,16 @@ public class LinuxCommandProcessor extends AbstractCommand<MachineCommand> {
 
     @Override
     protected Optional<RequestData<MachineCommand>> doPreprocessor(RequestData<MachineCommand> requestData, ChannelHandlerContext ctx) throws Exception {
+        String ip = ChannelUtils.getIp(ctx.channel());
+        String appCode = requestData.getApp();
+        String userCode = requestData.getUser();
+
+        logger.info("receive from {}[{}] command: {}", ip, userCode, requestData);
         // 验证用户权限
-        logger.info("receive from {} command {}", ChannelUtils.getIp(ctx.channel()), requestData);
+        if (!this.appService.checkUserPermission(appCode, userCode)) {
+            logger.warn("{}[{}] want to visit {}[{}] with no permission", ip, userCode, appCode, requestData.getHosts());
+            throw new PermissionDenyException("Permission Deny, you're not in owner of app " + appCode);
+        }
 
         // 验证命令合法性
         String line = requestData.getCommand().getCommand();
