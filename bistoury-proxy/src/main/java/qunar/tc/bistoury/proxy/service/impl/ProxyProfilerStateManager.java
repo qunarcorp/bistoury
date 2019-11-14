@@ -93,7 +93,8 @@ public class ProxyProfilerStateManager implements ProfilerStateManager {
     public String register(String agentId, String command) {
         int profilerDuration = getDuration(command);
         int profilerFrequency = getFrequency(command);
-        String profilerId = profilerService.prepareProfiler(agentId, profilerDuration, profilerFrequency);
+        Profiler.Mode profilerMode = getMode(command);
+        String profilerId = profilerService.prepareProfiler(agentId, profilerDuration, profilerFrequency, profilerMode);
         Optional<AgentConnection> agentConnRef = agentConnectionStore.getConnection(agentId);
         if (!agentConnRef.isPresent()) {
             throw new RuntimeException("no connection for profiler id. profilerId: " + profilerId);
@@ -188,6 +189,12 @@ public class ProxyProfilerStateManager implements ProfilerStateManager {
         Optional<String> durationRef = getValue("-f", command);
         return durationRef.map(Integer::parseInt)
                 .orElse(20);
+    }
+
+    private Profiler.Mode getMode(String command) {
+        Optional<String> modeRef = getValue("-m", command);
+        return modeRef.map(value -> Profiler.Mode.fromCode(Integer.parseInt(value)))
+                .orElse(Profiler.Mode.async_sampler);
     }
 
     private Optional<String> getValue(String keyForParam, String command) {

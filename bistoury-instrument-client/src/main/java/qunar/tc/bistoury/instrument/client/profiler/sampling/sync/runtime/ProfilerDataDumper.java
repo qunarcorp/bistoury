@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.instrument.client.profiler.sampling.runtime;
+package qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -7,10 +7,10 @@ import com.google.common.util.concurrent.AtomicLongMap;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.Manager;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.runtime.cpu.DumpData;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.runtime.method.MethodCache;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.runtime.method.MethodInfo;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.Manager;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.cpu.DumpData;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.method.MethodCache;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.method.MethodInfo;
 
 import java.io.BufferedWriter;
 import java.io.File;

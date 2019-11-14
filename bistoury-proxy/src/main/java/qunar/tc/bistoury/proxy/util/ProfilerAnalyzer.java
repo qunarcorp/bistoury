@@ -1,7 +1,6 @@
 package qunar.tc.bistoury.proxy.util;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.io.Resources;
 import org.slf4j.Logger;
@@ -12,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -47,7 +45,7 @@ public class ProfilerAnalyzer {
         createTempPath(rootName);
     }
 
-    public String analyze(final String profilerId) {
+    public void analyze(final String profilerId) {
         String commands = COMMANDS_JOINER.join(getAllPreAnalyzeCommand(profilerId));
         try {
             if (isLinux()) {
@@ -59,11 +57,9 @@ public class ProfilerAnalyzer {
             LOGGER.error("profiler analyze error. id: {}", profilerId, e);
             throw new RuntimeException("analyze profiler id error, id: " + profilerId, e);
         }
-
-        return renameProfilerDir(profilerId);
     }
 
-    private String renameProfilerDir(String profilerId) {
+    public String renameProfilerDir(String profilerId) {
         File svgParent = ProfilerUtil.getProfilerDir(preAnalyzePath, profilerId).orNull();
         File analysisDir = new File(analyzePath, svgParent.getName());
         Objects.requireNonNull(svgParent).renameTo(analysisDir);

@@ -13,6 +13,9 @@ var currentUiTime = null;
 var START_STATE = "start";
 var READY_STATE = "ready";
 
+var async_sampler_code = "0";
+var sampler_code = "1";
+
 function startProfiler() {
     var duration = $("#profiler-duration").val();
     var frequency = $("#profiler-frequency").val();
@@ -32,7 +35,8 @@ function startProfiler() {
     }
     initStartState();
     curDuration = duration;
-    sendStartCommand(duration, frequency);
+    var mode = $("#profiler-mode").val();
+    sendStartCommand(mode, duration, frequency);
     $(".model-profiler-setting").modal("hide");
 }
 
@@ -234,9 +238,12 @@ function stopProfiler() {
     sendStopCommand(globalProfilerId);
 }
 
-function sendStartCommand(duration, frequency) {
+function sendStartCommand(mode, duration, frequency) {
     var currentHost = $('#menu').treeview('getSelected')[0].value;
-    var command = "profilerstart -m 0";
+    var command = "profilerstart -m " + mode;
+    if (mode === async_sampler_code && $("#profiler-threads").val() === "0") {
+        command += " -threads";
+    }
     command += " -d " + duration;
     command += " -f " + frequency;
     bistouryWS.sendCommand(currentHost, REQ_TYPE_PROFILER, command, stop, handleResult);
@@ -285,3 +292,4 @@ function stopProcessStateInterval() {
         clearInterval(processIntervalId);
     }
 }
+

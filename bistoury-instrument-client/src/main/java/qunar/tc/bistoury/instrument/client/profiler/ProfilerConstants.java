@@ -11,6 +11,10 @@ public class ProfilerConstants {
 
     public static final String DURATION = "duration";
 
+    public static final String EVENT = "event";
+
+    public static final String THREADS = "threads";
+
     public static final String TMP_DIR = "tmpDir";
 
     //30 seconds

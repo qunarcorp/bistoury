@@ -1,6 +1,7 @@
 package qunar.tc.bistoury.instrument.client.profiler;
 
-import qunar.tc.bistoury.instrument.client.profiler.sampling.SamplingProfiler;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.async.AsyncSamplingProfiler;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.SamplingProfiler;
 
 import java.util.Map;
 
@@ -18,6 +19,8 @@ public class ProfilerFactory {
         switch (mode) {
             case sampler:
                 return getSamplingProfiler(config);
+            case async_sampler:
+                return new AsyncSamplingProfiler(config);
             default:
                 throw new RuntimeException("no kind of mode: " + mode);
         }
@@ -39,8 +42,8 @@ public class ProfilerFactory {
     }
 
     private static Profiler getSamplingProfiler(Map<String, Object> config) {
-        Integer frequencyMiilis = (Integer) config.get(ProfilerConstants.FREQUENCY);
-        Integer durationSeconds = (Integer) config.get(ProfilerConstants.DURATION);
+        Long frequencyMiilis = (Long) config.get(ProfilerConstants.FREQUENCY);
+        Long durationSeconds = (Long) config.get(ProfilerConstants.DURATION);
         String tempDir = (String) config.get(ProfilerConstants.TMP_DIR);
         frequencyMiilis = frequencyMiilis == null ? DEFAULT_FREQUENCY_MIILIS : frequencyMiilis;
         durationSeconds = durationSeconds == null ? DEFAULT_DURATION_SECONDS : durationSeconds;

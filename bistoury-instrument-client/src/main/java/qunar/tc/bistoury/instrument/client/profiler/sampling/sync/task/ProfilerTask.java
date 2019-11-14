@@ -1,11 +1,11 @@
-package qunar.tc.bistoury.instrument.client.profiler.sampling.task;
+package qunar.tc.bistoury.instrument.client.profiler.sampling.sync.task;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.Manager;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.runtime.ProfilerDataRecorder;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.Manager;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.ProfilerDataRecorder;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,9 +19,9 @@ public class ProfilerTask implements Task {
 
     private static final Logger logger = BistouryLoggger.getLogger();
 
-    private final int frequency;
+    private final long frequency;
 
-    public ProfilerTask(int frequency) {
+    public ProfilerTask(long frequency) {
         this.frequency = frequency;
     }
 

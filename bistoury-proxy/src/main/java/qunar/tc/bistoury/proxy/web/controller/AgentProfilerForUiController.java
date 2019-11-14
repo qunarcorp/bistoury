@@ -10,13 +10,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.ProfilerUtil;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerDataManager;
+import qunar.tc.bistoury.proxy.service.profiler.ProfilerService;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerStateManager;
 import qunar.tc.bistoury.proxy.util.ProfilerAnalyzer;
+import qunar.tc.bistoury.serverside.bean.Profiler;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 
 import javax.annotation.Resource;
@@ -38,6 +41,11 @@ import static qunar.tc.bistoury.common.BistouryConstants.PROFILER_ROOT_PATH;
 public class AgentProfilerForUiController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgentProfilerForUiController.class);
+
+    private final ProfilerAnalyzer profilerAnalyzer = ProfilerAnalyzer.getInstance();
+
+    @Resource
+    private ProfilerService profilerService;
 
     @RequestMapping("/svg")
     public ResponseEntity<byte[]> download(String profilerId,
@@ -65,7 +73,10 @@ public class AgentProfilerForUiController {
         }
         profilerDataManager.requestData(profilerId);
         try {
-            return ProfilerAnalyzer.getInstance().analyze(profilerId);
+            if (profilerService.getProfilerRecord(profilerId).getMode() == Profiler.Mode.sampler) {
+                profilerAnalyzer.analyze(profilerId);
+            }
+            return profilerAnalyzer.renameProfilerDir(profilerId);
         } catch (Exception e) {
             LOGGER.error("analyze result error. profiler id: {}", profilerId);
             throw e;

@@ -4,7 +4,7 @@ package qunar.tc.bistoury.instrument.client.profiler;
  * @author cai.wen created on 2019/10/23 10:45
  */
 public enum Mode {
-    sampler(0);
+    sampler(1), async_sampler(0);
 
     private final int code;
 

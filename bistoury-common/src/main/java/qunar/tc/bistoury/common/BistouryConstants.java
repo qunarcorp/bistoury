@@ -73,7 +73,7 @@ public class BistouryConstants {
 
     public static final String PROFILER_ROOT_PATH = System.getProperty("java.io.tmpdir") + File.separator + "bistoury-profiler";
 
-    public static final String PROFILER_TEMP_PATH = System.getProperty("java.io.tmpdir") + File.separator + "bistoury-profiler" + File.separator + "tmp";
+    public static final String PROFILER_LIB_NAME = "profilerLib";
 
     // todo: 先这么写吧
     public static final String CURRENT_VERSION = "2.0.6";

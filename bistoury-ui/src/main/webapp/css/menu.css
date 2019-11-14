@@ -297,3 +297,21 @@ code {
     margin-right: 10px;
 }
 
+
+.profiler-option-div {
+    display: flex;
+}
+
+.profiler-option-left {
+    width: 200px;
+}
+
+.profiler-option-input {
+    margin-left: 6px;
+}
+
+.modal-profiler {
+    width: 500px;
+    margin: auto;
+}
+

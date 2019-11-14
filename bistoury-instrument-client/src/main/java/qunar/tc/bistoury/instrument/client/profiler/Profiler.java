@@ -9,5 +9,7 @@ public interface Profiler {
 
     void startup(InstrumentInfo instrumentInfo);
 
+    void stop();
+
     void destroy();
 }

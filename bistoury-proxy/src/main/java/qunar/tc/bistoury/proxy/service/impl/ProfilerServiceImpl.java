@@ -32,7 +32,7 @@ public class ProfilerServiceImpl implements ProfilerService {
     }
 
     @Override
-    public String prepareProfiler(String agentId, int duration, int frequency) {
+    public String prepareProfiler(String agentId, int duration, int frequency, Profiler.Mode mode) {
         String profilerId = UUID.randomUUID().toString().replace("-", "");
         Profiler profiler = new Profiler();
         profiler.setAgentId(agentId);
@@ -41,6 +41,7 @@ public class ProfilerServiceImpl implements ProfilerService {
         profiler.setState(Profiler.State.ready);
         profiler.setDuration(duration);
         profiler.setFrequency(frequency);
+        profiler.setMode(mode);
         profiler.setOperator("");
         profiler.setAppCode("");
         profilerDao.prepareProfiler(profiler);

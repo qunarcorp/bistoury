@@ -1,13 +1,13 @@
-package qunar.tc.bistoury.instrument.client.profiler.sampling;
+package qunar.tc.bistoury.instrument.client.profiler.sampling.sync;
 
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
 import qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.task.DumpTask;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.task.ProfilerTask;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.task.Task;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.task.DumpTask;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.task.ProfilerTask;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.task.Task;
 import qunar.tc.bistoury.instrument.client.profiler.util.trie.Trie;
 
 import java.io.File;
@@ -81,7 +81,7 @@ public class Manager {
         new File(ProfilerConstants.PROFILER_TEMP_PATH + File.separator + profilerId).mkdirs();
     }
 
-    public static synchronized void init(int durationSeconds, int frequencyMillis, String profilerId, String tempDir) {
+    public static synchronized void init(long durationSeconds, long frequencyMillis, String profilerId, String tempDir) {
         Manager.profilerId = profilerId;
         AgentProfilerContext.setProfilerId(profilerId);
         profilerTask = new ProfilerTask(frequencyMillis);

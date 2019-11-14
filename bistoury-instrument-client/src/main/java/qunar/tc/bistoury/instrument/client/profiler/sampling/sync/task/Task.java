@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.instrument.client.profiler.sampling.task;
+package qunar.tc.bistoury.instrument.client.profiler.sampling.sync.task;
 
 /**
  * @author cai.wen created on 2019/10/23 20:30

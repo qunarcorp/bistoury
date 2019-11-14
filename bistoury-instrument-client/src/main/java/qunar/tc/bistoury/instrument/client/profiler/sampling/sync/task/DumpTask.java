@@ -1,11 +1,11 @@
-package qunar.tc.bistoury.instrument.client.profiler.sampling.task;
+package qunar.tc.bistoury.instrument.client.profiler.sampling.sync.task;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.Manager;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.runtime.ProfilerData;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.runtime.ProfilerDataDumper;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.Manager;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.ProfilerData;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.ProfilerDataDumper;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -21,13 +21,13 @@ public class DumpTask implements Task {
 
     private static final Logger logger = BistouryLoggger.getLogger();
 
-    private final int duration;
+    private final long duration;
 
     private final Lock lock = new ReentrantLock();
 
     private boolean isDump = false;
 
-    public DumpTask(int duration) {
+    public DumpTask(long duration) {
         this.duration = duration;
     }
 

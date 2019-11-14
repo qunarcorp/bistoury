@@ -1,11 +1,11 @@
-package qunar.tc.bistoury.instrument.client.profiler.sampling.runtime;
+package qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import qunar.tc.bistoury.common.BistouryConstants;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.Manager;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.runtime.cpu.DumpData;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.runtime.cpu.ThreadCpuInfo;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.Manager;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.cpu.DumpData;
+import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.cpu.ThreadCpuInfo;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;

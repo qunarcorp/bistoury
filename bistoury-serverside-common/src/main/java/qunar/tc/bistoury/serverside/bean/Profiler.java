@@ -32,6 +32,8 @@ public class Profiler {
 
     private int frequency;
 
+    private Mode mode;
+
     public State getState() {
         return state;
     }
@@ -122,6 +124,14 @@ public class Profiler {
         this.frequency = frequency;
     }
 
+    public Mode getMode() {
+        return mode;
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
+    }
+
     public enum State {
 
         start(0), stop(1), ready(2), analyzed(3);
@@ -139,6 +149,26 @@ public class Profiler {
                 }
             }
             throw new IllegalArgumentException("no code found in State.");
+        }
+    }
+
+    public enum Mode {
+
+        sampler(1), async_sampler(0);
+
+        public final int code;
+
+        Mode(int code) {
+            this.code = code;
+        }
+
+        public static Mode fromCode(int code) {
+            for (Mode mode : values()) {
+                if (mode.code == code) {
+                    return mode;
+                }
+            }
+            throw new IllegalArgumentException("no code found in Mode.");
         }
     }
 }

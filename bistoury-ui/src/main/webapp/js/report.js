@@ -1,5 +1,7 @@
 var proxyUrl;
-var treeData = [
+var sampler_mode = "sampler";
+var async_sampler_mode = "async_sampler";
+var syncTreeData = [
     {
         text: "紧凑栈(压缩常见中间件)",
         state: {
@@ -54,9 +56,30 @@ var treeData = [
     }
 ];
 
-$(document).ready(function () {
+
+var asyncTreeData = [
+    {
+        text: "完整栈",
+        state: {
+            expanded: true
+        },
+        nodes:
+            [
+                {
+                    selectable: true,
+                    text: "all state",
+                    state: {
+                        selected: true
+                    }
+                }
+            ]
+    },
+
+];
+
+function initSyncTree(info) {
     var treeViewObject = $('#svg-tree');
-    treeViewObject.treeview({ data: treeData })
+    treeViewObject.treeview({data: syncTreeData})
         .on('nodeSelected', function (event, data) {
             switch (data.nodeId) {
                 case "0.0.0":
@@ -91,11 +114,26 @@ $(document).ready(function () {
                     break;
             }
         });
-    init();
+    chooseSvg("runnable", true);
+}
+
+function initAsyncTree(info) {
+    var treeViewObject = $('#svg-tree');
+    treeViewObject.treeview({data: asyncTreeData});
+    download("async.svg")
+}
+
+$(document).ready(function () {
+    var info = searchAnalysisInfo(getProfilerId());
+    init(info);
+    if (info.profiler.mode === async_sampler_mode) {
+        initAsyncTree(info);
+    } else if (info.profiler.mode === sampler_mode) {
+        initSyncTree(info);
+    }
 });
 
-function init() {
-    var info = searchAnalysisInfo(getProfilerId());
+function init(info) {
     if (info == null) {
         bistoury.error("获取性能分析的信息失败");
         return;
@@ -107,7 +145,6 @@ function init() {
     $("#default_frequency").html("预设性能分析间隔:" + profiler.frequency + "ms");
     var proxy = info.proxyInfo;
     proxyUrl = proxy.ip + ":" + proxy.tomcatPort;
-    chooseSvg("runnable", true);
 }
 
 
@@ -116,9 +153,12 @@ function chooseSvg(state, isCompact) {
     if (isCompact) {
         prefix = "filter-"
     }
-
-    var url = "/profiler/download.do";
     var fileName = prefix + chooseSvgFile(state);
+    download(fileName);
+}
+
+function download(fileName) {
+    var url = "/profiler/download.do";
     var profilerId = getProfilerId();
     url = url + "?profilerId=" + profilerId + "&svgName=" + fileName + "&proxyUrl=" + proxyUrl;
 

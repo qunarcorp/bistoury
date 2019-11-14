@@ -17,8 +17,8 @@ import java.util.List;
 public class ProfilerDaoImpl implements ProfilerDao {
 
     private static final String PREPARE_PROFILER_SQL = "insert into bistoury_profiler " +
-            "(profiler_id, operator, app_code, agent_id, pid, start_time, duration,frequency,state) " +
-            "select ?, ?, ?, ?, ?, ?, ?, ?, 2 " +
+            "(profiler_id, operator, app_code, agent_id, pid, start_time, duration,frequency,mode,state) " +
+            "select ?, ?, ?, ?, ?, ?, ?, ?,?, 2 " +
             "where not exists(select NULL from bistoury_profiler where agent_id = ? and pid = ? and (state = 0 or state = 2))";
 
     private static final String UPDATE_PROFILER_STATE_SQL = "update bistoury_profiler set state=? where profiler_id=?";
@@ -51,7 +51,7 @@ public class ProfilerDaoImpl implements ProfilerDao {
     @Override
     public void prepareProfiler(Profiler profiler) {
         int insertState = jdbcTemplate.update(PREPARE_PROFILER_SQL,
-                profiler.getProfilerId(), profiler.getOperator(), profiler.getAppCode(), profiler.getAgentId(), profiler.getPid(), new Date(), profiler.getDuration(), profiler.getFrequency(),
+                profiler.getProfilerId(), profiler.getOperator(), profiler.getAppCode(), profiler.getAgentId(), profiler.getPid(), new Date(), profiler.getDuration(), profiler.getFrequency(), profiler.getMode().code,
                 profiler.getAgentId(), profiler.getPid()
         );
         if (insertState == 0) {
@@ -83,6 +83,7 @@ public class ProfilerDaoImpl implements ProfilerDao {
         profiler.setId(rs.getInt("id"));
         profiler.setDuration(rs.getInt("duration"));
         profiler.setFrequency(rs.getInt("frequency"));
+        profiler.setMode(Profiler.Mode.fromCode(rs.getInt("mode")));
         profiler.setStartTime(rs.getTimestamp("start_time"));
         profiler.setUpdateTime(rs.getTimestamp("update_time"));
         profiler.setState(Profiler.State.fromCode(rs.getInt("state")));

@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.instrument.client.profiler.sampling.runtime.cpu;
+package qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.cpu;
 
 import java.lang.management.ThreadInfo;
 

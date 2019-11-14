@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="css/bootstrap.min.css?version=2.0.2">
     <link rel="stylesheet" href="css/bootstrap-treeview.css?version=2.0.2">
     <link rel="stylesheet" href="css/bootstrap-table.css?version=2.0.2">
-    <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css?version=2.0.2">
     <link rel="stylesheet" href="css/main.css?version=2.0.2"/>
     <link rel="stylesheet" href="css/menu.css?version=2.0.2"/>
     <link rel="stylesheet" href="css/cpu-profiler.css"/>
@@ -636,7 +635,7 @@
 
 
 <div class="modal model-profiler-setting" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-dialog modal-profiler" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">配置</h5>
@@ -645,19 +644,27 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="list-group">
-                    模式:
-                    <select id="profiler-mode" style="margin-left:40px">
-                        <option value="0">抽样</option>
+                <div class="list-group profiler-option-div ">
+                    <div class="profiler-option-left">模式:</div>
+                    <select id="profiler-mode">
+                        <option value="0">异步抽样</option>
+                        <option value="1">抽样</option>
                     </select>
                 </div>
-                <div class="list-group">
-                    时长:
-                    <input type="number" id="profiler-duration" min="0" value="120" max="1800" style="margin-left:40px">&nbsp;(s)
+                <div class="list-group profiler-option-div ">
+                    <div class="profiler-option-left">时长:</div>
+                    <input class="profiler-option-input" type="number" id="profiler-duration" min="0" value="120" max="1800">&nbsp;(s)
                 </div>
-                <div class="list-group">
-                    频率:
-                    <input type="number" id="profiler-frequency" min="5" value="20" max="1800" style="margin-left:40px">&nbsp;(ms)
+                <div class="list-group profiler-option-div ">
+                    <div class="profiler-option-left">频率:</div>
+                    <input class="profiler-option-input" type="number" id="profiler-frequency" min="5" value="20" max="1800">&nbsp;(ms)
+                </div>
+                <div class="list-group profiler-option-div " id="profiler-threads-div">
+                    <div class="profiler-option-left">是否区分线程:</div>
+                    <select id="profiler-threads">
+                        <option value="1">不区分</option>
+                        <option value="0">区分</option>
+                    </select>
                 </div>
             </div>
             <div class="modal-footer">

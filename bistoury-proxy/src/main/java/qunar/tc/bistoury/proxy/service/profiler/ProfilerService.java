@@ -10,7 +10,7 @@ public interface ProfilerService {
 
     void startProfiler(String profilerId);
 
-    String prepareProfiler(String agentId, int duration, int frequency);
+    String prepareProfiler(String agentId, int duration, int frequency, Profiler.Mode mode);
 
     Profiler getProfilerRecord(String profilerId);
 

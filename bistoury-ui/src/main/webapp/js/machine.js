@@ -1111,6 +1111,15 @@ $(document).ready(function () {
         }
     });
 
+    $("#profiler-mode").change(function () {
+        var option = $(this).children('option:selected').val();
+        if (option === sampler_code) {
+            $("#profiler-threads-div").css('display', 'none');
+        } else if (option === async_sampler_code) {
+            $("#profiler-threads-div").css('display', 'block');
+        }
+    })
+
     function initHeapHistoTable() {
         $('#jvm-heap-histo-table').bootstrapTable({
             data: [{}],

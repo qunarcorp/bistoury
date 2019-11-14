@@ -9,7 +9,6 @@ import qunar.tc.bistoury.attach.arthas.util.TypeResponseResult;
 import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
 import qunar.tc.bistoury.common.*;
 import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.Manager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +49,7 @@ public class ProfilerStopCommand extends AnnotatedCommand {
                 return;
             }
 
-            Manager.stop();
+            ProfilerClients.getInstance().stopProfiler();
             result.put("profilerId", id);
             result.put("state", true);
             response.setCode(0);

@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.instrument.client.profiler.sampling;
+package qunar.tc.bistoury.instrument.client.profiler.sampling.sync;
 
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
@@ -14,17 +14,17 @@ public class SamplingProfiler implements Profiler {
 
     private static final Logger logger = BistouryLoggger.getLogger();
 
-    private final int durationSeconds;
+    private final long durationSeconds;
 
-    private final int frequencyMillis;
+    private final long frequencyMillis;
 
     private final String profilerId;
 
     private final String tempDir;
 
-    private volatile InstrumentInfo instrumentInfo;
+    private volatile Lock lock;
 
-    public SamplingProfiler(int durationSeconds, int frequencyMillis, String profilerId, String tempDir) {
+    public SamplingProfiler(long durationSeconds, long frequencyMillis, String profilerId, String tempDir) {
         this.durationSeconds = durationSeconds;
         this.frequencyMillis = frequencyMillis;
         this.profilerId = profilerId;
@@ -33,10 +33,10 @@ public class SamplingProfiler implements Profiler {
 
     @Override
     public void startup(InstrumentInfo instrumentInfo) {
-        Lock lock = instrumentInfo.getLock();
         logger.info("start add sampling profiler.");
+        lock = instrumentInfo.getLock();
+        lock.lock();
         try {
-            lock.lock();
             Manager.init(durationSeconds, frequencyMillis, profilerId, tempDir);
         } finally {
             lock.unlock();
@@ -44,11 +44,20 @@ public class SamplingProfiler implements Profiler {
     }
 
     @Override
-    public void destroy() {
-        Lock lock = instrumentInfo.getLock();
-        logger.info("destroy sampling profiler.");
+    public void stop() {
+        lock.lock();
         try {
-            lock.lock();
+            Manager.stop();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void destroy() {
+        logger.info("destroy sampling profiler.");
+        lock.lock();
+        try {
             Manager.stop();
         } finally {
             lock.unlock();
