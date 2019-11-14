@@ -101,27 +101,26 @@ public class ThreadInfoTask implements Task {
 
         @Override
         protected byte[] getBytes() throws Exception {
-            try (VirtualMachineUtil.VMConnector connect = VirtualMachineUtil.connect(pid)) {
-                Map<String, Object> result = new HashMap<>();
-                if (ALL_THREADS_INFO == commandType) {
-                    result.put(TYPE, "allThreadInfo");
-                    List<ThreadBrief> threads = getAllThreadsInfo(connect, result);
-                    result.put(THREADS, threads);
-                } else if (THREAD_DETAIL == commandType) {
-                    result.put(TYPE, "threadDetail");
-                    ThreadInfo threadInfo = getThreadInfo(connect, result);
-                    result.put(THREAD, threadInfo);
-                } else if (DUMP_THREADS == commandType) {
-                    result.put(TYPE, "threadDump");
-                    ThreadInfo[] threads = dump(connect, maxDepth, false);
-                    result.put(THREADS, threads);
-                } else if (DEADLOCK_THREAD == commandType) {
-                    result.put(TYPE, "threadDeadLock");
-                    ThreadInfo[] threads = dump(connect, maxDepth, true);
-                    result.put(THREADS, threads);
-                }
-                return JacksonSerializer.serializeToBytes(result);
+            VirtualMachineUtil.VMConnector connect = VirtualMachineUtil.connect(pid);
+            Map<String, Object> result = new HashMap<>();
+            if (ALL_THREADS_INFO == commandType) {
+                result.put(TYPE, "allThreadInfo");
+                List<ThreadBrief> threads = getAllThreadsInfo(connect, result);
+                result.put(THREADS, threads);
+            } else if (THREAD_DETAIL == commandType) {
+                result.put(TYPE, "threadDetail");
+                ThreadInfo threadInfo = getThreadInfo(connect, result);
+                result.put(THREAD, threadInfo);
+            } else if (DUMP_THREADS == commandType) {
+                result.put(TYPE, "threadDump");
+                ThreadInfo[] threads = dump(connect, maxDepth, false);
+                result.put(THREADS, threads);
+            } else if (DEADLOCK_THREAD == commandType) {
+                result.put(TYPE, "threadDeadLock");
+                ThreadInfo[] threads = dump(connect, maxDepth, true);
+                result.put(THREADS, threads);
             }
+            return JacksonSerializer.serializeToBytes(result);
         }
 
         @Override

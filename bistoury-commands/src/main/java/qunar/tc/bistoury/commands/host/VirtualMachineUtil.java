@@ -25,6 +25,7 @@ import com.sun.tools.attach.VirtualMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.JavaVersionUtils;
+import qunar.tc.bistoury.common.NamedThreadFactory;
 
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
@@ -41,6 +42,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author: leix.xie
@@ -53,7 +58,61 @@ public class VirtualMachineUtil {
 
     private static final String LOCAL_CONNECTOR_ADDRESS_PROP = "com.sun.management.jmxremote.localConnectorAddress";
 
-    public static VMConnector connect(int pid) {
+    private static final ReentrantLock LOCK = new ReentrantLock();
+
+    private static volatile VMConnector vmConnector = null;
+
+    private static int pid = -1;
+
+    private static volatile long expireTime = 0L;
+
+    static {
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("vm-connect-close"));
+        executorService.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                LOCK.lock();
+                try {
+                    if (System.currentTimeMillis() > expireTime && vmConnector != null) {
+                        try {
+                            vmConnector.close();
+                        } catch (IOException e) {
+                            //ignore, the application corresponding to this PID may have been closed
+                        }
+                        vmConnector = null;
+                    }
+                } finally {
+                    LOCK.unlock();
+                }
+            }
+        }, 5, 5, TimeUnit.MINUTES);
+    }
+
+
+    public static VMConnector connect(final int newPid) {
+        LOCK.lock();
+        try {
+            expireTime = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(15);
+            if (pid != newPid && vmConnector != null) {
+                try {
+                    vmConnector.close();
+                } catch (IOException e) {
+                    //ignore, the application corresponding to this PID may have been closed
+                }
+                vmConnector = null;
+            }
+            if (vmConnector == null) {
+                pid = newPid;
+                vmConnector = doConnect(pid);
+            }
+            return vmConnector;
+        } finally {
+            LOCK.unlock();
+        }
+    }
+
+
+    private static VMConnector doConnect(int pid) {
         VirtualMachine vm = null;
         try {
             vm = VirtualMachine.attach(String.valueOf(pid));

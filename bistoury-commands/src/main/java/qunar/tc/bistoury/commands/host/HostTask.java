@@ -95,7 +95,7 @@ public class HostTask implements Task {
     public ListenableFuture<Integer> getResultFuture() {
         return future;
     }
-    
+
     private class Job extends BytesJob {
 
         private Job() {
@@ -104,24 +104,23 @@ public class HostTask implements Task {
 
         @Override
         protected byte[] getBytes() throws Exception {
-            try (VirtualMachineUtil.VMConnector connect = VirtualMachineUtil.connect(pid)) {
-                MxBean mxBean = new MxBean(getCounters(pid),
-                        connect.getRuntimeMXBean(),
-                        connect.getOperatingSystemMXBean(),
-                        connect.getMemoryMXBean(),
-                        connect.getThreadMXBean(),
-                        connect.getClassLoadingMXBean(),
-                        connect.getGarbageCollectorMXBeans(),
-                        connect.getMemoryPoolMXBeans());
+            VirtualMachineUtil.VMConnector connect = VirtualMachineUtil.connect(pid);
+            MxBean mxBean = new MxBean(getCounters(pid),
+                    connect.getRuntimeMXBean(),
+                    connect.getOperatingSystemMXBean(),
+                    connect.getMemoryMXBean(),
+                    connect.getThreadMXBean(),
+                    connect.getClassLoadingMXBean(),
+                    connect.getGarbageCollectorMXBeans(),
+                    connect.getMemoryPoolMXBeans());
 
-                Map<String, Object> result = new HashMap<>();
-                result.put("type", "hostInfo");
-                result.put("jvm", getJvmInfo(mxBean));
-                result.put("host", getHostInfo(mxBean));
-                result.put("memPool", getMemoryPoolMXBeansInfo(mxBean.getMemoryPoolMXBeans()));
-                result.put("visuaGC", getVisuaGCInfo(mxBean.getCounters()));
-                return JacksonSerializer.serializeToBytes(result);
-            }
+            Map<String, Object> result = new HashMap<>();
+            result.put("type", "hostInfo");
+            result.put("jvm", getJvmInfo(mxBean));
+            result.put("host", getHostInfo(mxBean));
+            result.put("memPool", getMemoryPoolMXBeansInfo(mxBean.getMemoryPoolMXBeans()));
+            result.put("visuaGC", getVisuaGCInfo(mxBean.getCounters()));
+            return JacksonSerializer.serializeToBytes(result);
         }
 
         @Override
