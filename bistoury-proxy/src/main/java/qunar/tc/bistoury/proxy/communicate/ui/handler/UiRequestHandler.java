@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.proxy.communicate.Session;
 import qunar.tc.bistoury.proxy.communicate.SessionManager;
-import qunar.tc.bistoury.proxy.communicate.WrittableListener;
+import qunar.tc.bistoury.proxy.communicate.WritableListener;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
 import qunar.tc.bistoury.proxy.communicate.ui.*;
@@ -206,7 +206,7 @@ public class UiRequestHandler extends ChannelDuplexHandler {
         return session;
     }
 
-    private static class UiWritableListener implements WrittableListener {
+    private static class UiWritableListener implements WritableListener {
 
         private final Session session;
 
