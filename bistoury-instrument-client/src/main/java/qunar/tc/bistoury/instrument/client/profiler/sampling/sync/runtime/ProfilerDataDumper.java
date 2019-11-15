@@ -41,14 +41,14 @@ public class ProfilerDataDumper {
             logger.info("dumpData: {}", dumpData);
         }
 
-        doDump(dumpData.getBlockedCpuTime(), Manager.getBlockedDataPath(), false);
-        doDump(dumpData.getBlockedCpuTime(), Manager.getFilterBlockedDataPath(), true);
-        doDump(dumpData.getRunnableCpuTime(), Manager.getRunnableDataPath(), false);
-        doDump(dumpData.getRunnableCpuTime(), Manager.getFilterRunnableDataPath(), true);
-        doDump(dumpData.getTimedWaitingCpuTime(), Manager.getTimedWaitingDataPath(), false);
-        doDump(dumpData.getTimedWaitingCpuTime(), Manager.getFilterTimedWaitingDataPath(), true);
-        doDump(dumpData.getWaitingCpuTime(), Manager.getWaitingDataPath(), false);
-        doDump(dumpData.getWaitingCpuTime(), Manager.getFilterWaitingDataPath(), true);
+        doDump(dumpData.getBlockedTimes(), Manager.getBlockedDataPath(), false);
+        doDump(dumpData.getBlockedTimes(), Manager.getFilterBlockedDataPath(), true);
+        doDump(dumpData.getRunnableCpuTimes(), Manager.getRunnableDataPath(), false);
+        doDump(dumpData.getRunnableCpuTimes(), Manager.getFilterRunnableDataPath(), true);
+        doDump(dumpData.getTimedWaitingTimes(), Manager.getTimedWaitingDataPath(), false);
+        doDump(dumpData.getTimedWaitingTimes(), Manager.getFilterTimedWaitingDataPath(), true);
+        doDump(dumpData.getWaitingTimes(), Manager.getWaitingDataPath(), false);
+        doDump(dumpData.getWaitingTimes(), Manager.getFilterWaitingDataPath(), true);
 
         dumpAllState(dumpData);
         Manager.renameResult(dumpTime);
@@ -56,8 +56,8 @@ public class ProfilerDataDumper {
 
     private void dumpAllState(DumpData dumpData) {
         AtomicLongMap<Integer> allStateMap = AtomicLongMap.create();
-        List<Map<Integer, Long>> allRecord = ImmutableList.of(dumpData.getBlockedCpuTime(), dumpData.getRunnableCpuTime(),
-                dumpData.getTimedWaitingCpuTime(), dumpData.getWaitingCpuTime());
+        List<Map<Integer, Long>> allRecord = ImmutableList.of(dumpData.getBlockedTimes(), dumpData.getRunnableCpuTimes(),
+                dumpData.getTimedWaitingTimes(), dumpData.getWaitingTimes());
         for (Map<Integer, Long> cpuTime : allRecord) {
             for (Map.Entry<Integer, Long> entry : cpuTime.entrySet()) {
                 allStateMap.addAndGet(entry.getKey(), entry.getValue());

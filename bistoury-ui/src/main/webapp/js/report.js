@@ -11,7 +11,7 @@ var syncTreeData = [
             [
                 {
                     selectable: true,
-                    text: "runnable state",
+                    text: "runnable state(CPU Time)",
                     state: {
                         selected: true
                     }
@@ -38,7 +38,7 @@ var syncTreeData = [
         nodes:
             [
                 {
-                    text: "runnable state"
+                    text: "runnable state(CPU Time)"
                 },
                 {
                     text: "waiting state"
@@ -139,6 +139,7 @@ function init(info) {
         return;
     }
     var profiler = info.profiler;
+    $("#profiler_mode_info").html("分析模式: " + getMode(info.profiler.mode))
     $("#start_time").html("开始时间: " + profiler.startTime)
     $("#duration").html("实际性能分析时长:" + info.duration + "s")
     $("#default_duration").html("预设性能分析时长:" + profiler.duration + "s");

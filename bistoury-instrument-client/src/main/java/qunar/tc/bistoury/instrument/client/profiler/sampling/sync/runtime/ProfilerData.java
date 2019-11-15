@@ -2,6 +2,7 @@ package qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.cpu.DumpData;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.cpu.ThreadCpuInfo;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.method.MethodCache;
@@ -52,11 +53,17 @@ public class ProfilerData {
     }
 
     private void doAddStackTraceData(long threadId, int callStackId, long cpuTime, Thread.State state, DumpData dumpData) {
-        Map<Integer, Long> cpuTimes = getCpuTimeForState(state, dumpData);
-        if (cpuTimes == null) {
+        Map<Integer, Long> times = getTimeMappingForState(state, dumpData);
+        if (times == null) {
             return;
         }
+        times.put(callStackId, getTime(state, threadId, cpuTime, callStackId, times));
+    }
 
+    private long getTime(Thread.State state, long threadId, long cpuTime, int callStackId, Map<Integer, Long> times) {
+        if (state != Thread.State.RUNNABLE) {
+            return AgentProfilerContext.getIntervalNs();
+        }
         //获取上一次采样时,线程对应的cpu time
         Long preCpuTime = preDumpData.getThreadCpuTimes().get(threadId);
         preCpuTime = preCpuTime == null ? 0 : preCpuTime;
@@ -65,21 +72,21 @@ public class ProfilerData {
         long realCpuTime = cpuTime - preCpuTime;
 
         //把两次采样间,线程消耗的时间,增加到对应的map中去
-        Long preCallStackTime = cpuTimes.get(callStackId);
+        Long preCallStackTime = times.get(callStackId);
         preCallStackTime = preCallStackTime == null ? 0 : preCallStackTime;
-        cpuTimes.put(callStackId, realCpuTime + preCallStackTime);
+        return realCpuTime + preCallStackTime;
     }
 
-    private Map<Integer, Long> getCpuTimeForState(Thread.State state, DumpData dumpData) {
+    private Map<Integer, Long> getTimeMappingForState(Thread.State state, DumpData dumpData) {
         switch (state) {
             case RUNNABLE:
-                return dumpData.getRunnableCpuTime();
+                return dumpData.getRunnableCpuTimes();
             case WAITING:
-                return dumpData.getWaitingCpuTime();
+                return dumpData.getWaitingTimes();
             case BLOCKED:
-                return dumpData.getBlockedCpuTime();
+                return dumpData.getBlockedTimes();
             case TIMED_WAITING:
-                return dumpData.getTimedWaitingCpuTime();
+                return dumpData.getTimedWaitingTimes();
             default:
                 return null;
         }

@@ -1,12 +1,10 @@
 package qunar.tc.bistoury.instrument.client.profiler.sampling.async;
 
 import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
-import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.NamedThreadFactory;
 import qunar.tc.bistoury.instrument.client.common.InstrumentInfo;
 import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
 import qunar.tc.bistoury.instrument.client.profiler.Profiler;
-import qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants;
 
 import java.io.File;
 import java.util.Map;
@@ -28,7 +26,7 @@ public class AsyncSamplingProfiler implements Profiler {
 
     private volatile Lock lock;
 
-    private Long intervalMillis;
+    private Long frequencyMillis;
 
     private Long durationSeconds;
 
@@ -43,7 +41,7 @@ public class AsyncSamplingProfiler implements Profiler {
     private boolean threads;
 
     public AsyncSamplingProfiler(Map<String, Object> params) {
-        intervalMillis = (Long) params.get(FREQUENCY);
+        frequencyMillis = (Long) params.get(FREQUENCY);
         durationSeconds = (Long) params.get(DURATION);
         event = (String) params.get(EVENT);
         event = event == null ? "cpu" : event;
@@ -59,7 +57,7 @@ public class AsyncSamplingProfiler implements Profiler {
         try {
             String command = createProfilerCommand(ProfilerCommand.ProfilerAction.start);
             doRunCommand(command);
-            AgentProfilerContext.startProfiling();
+            AgentProfilerContext.startProfiling(frequencyMillis);
             AgentProfilerContext.setProfilerId(profilerId);
             startTime = System.currentTimeMillis();
             scheduleClose(durationSeconds);
@@ -111,7 +109,7 @@ public class AsyncSamplingProfiler implements Profiler {
         command.setAction(action);
         if (action == ProfilerCommand.ProfilerAction.start) {
             command.setEvent(event);
-            command.setInterval(intervalMillis * 1000000);
+            command.setInterval(frequencyMillis * 1000000);
         }
         if (action == ProfilerCommand.ProfilerAction.stop) {
             String profilerPath = rootPath + File.separator + profilerId + "-" + (System.currentTimeMillis() - startTime) / 1000;

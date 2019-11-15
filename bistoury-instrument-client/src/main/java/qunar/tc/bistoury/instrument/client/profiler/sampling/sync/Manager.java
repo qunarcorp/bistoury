@@ -91,7 +91,7 @@ public class Manager {
         profilerTask.init();
         dumpTask.init();
         startTime = System.currentTimeMillis();
-        AgentProfilerContext.startProfiling();
+        AgentProfilerContext.startProfiling(frequencyMillis);
     }
 
 

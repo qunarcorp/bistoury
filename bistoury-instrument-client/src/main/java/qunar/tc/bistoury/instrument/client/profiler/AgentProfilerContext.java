@@ -9,15 +9,21 @@ public class AgentProfilerContext {
 
     private static long startTime = -1;
 
-    private static String profilerId ;
+    private static String profilerId;
+
+    private static long intervalMillis;
+
+    private static long intervalNs;
 
     public synchronized static void stopProfiling() {
         startTime = -1;
         isProfiling = false;
     }
 
-    public synchronized static void startProfiling() {
+    public synchronized static void startProfiling(long intervalMillis) {
         startTime = System.currentTimeMillis();
+        AgentProfilerContext.intervalMillis = intervalMillis;
+        intervalNs = intervalMillis * 1000000;
         isProfiling = true;
     }
 
@@ -37,4 +43,11 @@ public class AgentProfilerContext {
         AgentProfilerContext.profilerId = profilerId;
     }
 
+    public static long getIntervalMillis() {
+        return intervalMillis;
+    }
+
+    public static long getIntervalNs() {
+        return intervalNs;
+    }
 }

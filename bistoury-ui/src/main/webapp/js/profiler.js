@@ -13,12 +13,16 @@ var currentUiTime = null;
 var START_STATE = "start";
 var READY_STATE = "ready";
 
+var async_sampler = "async_sampler";
+var sampler = "sampler";
+
 var async_sampler_code = "0";
 var sampler_code = "1";
 
 function startProfiler() {
     var duration = $("#profiler-duration").val();
     var frequency = $("#profiler-frequency").val();
+    var mode = $("#profiler-mode").val();
     console.log("start profiler.");
     if (duration > 3600) {
         bistoury.warning("性能分析时长不能超过一小时");
@@ -29,13 +33,12 @@ function startProfiler() {
         return;
     }
 
-    if (frequency < 10) {
-        bistoury.warning("抽样间隔应该大于10ms.");
+    if (mode === sampler_code && frequency < 10) {
+        bistoury.warning("同步抽样间隔应该大于10ms.");
         return;
     }
     initStartState();
     curDuration = duration;
-    var mode = $("#profiler-mode").val();
     sendStartCommand(mode, duration, frequency);
     $(".model-profiler-setting").modal("hide");
 }
@@ -96,6 +99,14 @@ function searchProfilerHistory(agentId) {
     });
 }
 
+function getMode(mode) {
+    if (mode === async_sampler) {
+        return "异步抽样";
+    } else if (mode === sampler) {
+        return "抽样";
+    }
+}
+
 function initHistoryTable(data) {
     $("#history-body").empty();
     data.forEach(function (profiler) {
@@ -111,11 +122,15 @@ function initHistoryTable(data) {
 
         var durationText = document.createTextNode(profiler.duration);
         var frequencyText = document.createTextNode(profiler.frequency);
+        var modeText = document.createTextNode(getMode(profiler.mode));
         var durationElement = document.createElement("td");
+        var modeElement = document.createElement("td");
         var frequencyElement = document.createElement("td");
+        modeElement.appendChild(modeText)
         durationElement.appendChild(durationText);
         frequencyElement.appendChild(frequencyText);
 
+        trElement.appendChild(modeElement);
         trElement.appendChild(durationElement);
         trElement.appendChild(frequencyElement);
 

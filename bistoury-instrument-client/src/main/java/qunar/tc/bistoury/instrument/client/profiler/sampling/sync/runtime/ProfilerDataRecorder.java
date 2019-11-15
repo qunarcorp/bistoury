@@ -84,7 +84,7 @@ public class ProfilerDataRecorder {
             threadCpuTimes.put(threadId, threadCpuTime);
         }
         DumpData preDumpData = profilerData.getDumpData();
-        return new DumpData(preDumpData.getRunnableCpuTime(), preDumpData.getBlockedCpuTime(), preDumpData.getWaitingCpuTime(),
-                preDumpData.getTimedWaitingCpuTime(), threadCpuTimes);
+        return new DumpData(preDumpData.getRunnableCpuTimes(), preDumpData.getBlockedTimes(), preDumpData.getWaitingTimes(),
+                preDumpData.getTimedWaitingTimes(), threadCpuTimes);
     }
 }

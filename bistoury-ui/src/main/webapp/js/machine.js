@@ -1116,7 +1116,7 @@ $(document).ready(function () {
         if (option === sampler_code) {
             $("#profiler-threads-div").css('display', 'none');
         } else if (option === async_sampler_code) {
-            $("#profiler-threads-div").css('display', 'block');
+            $("#profiler-threads-div").css('display', 'flex');
         }
     })
 

@@ -553,7 +553,8 @@
                                     <table class="table table-hover" id="profiler-history">
                                         <thead>
                                         <tr>
-                                            <th class="col-md-4">开始时间</th>
+                                            <th class="col-md-2">开始时间</th>
+                                            <th class="col-md-2">分析模式</th>
                                             <th class="col-md-2">预设持续时间(s)</th>
                                             <th class="col-md-2">预设抽样间隔(ms)</th>
                                         </tr>
@@ -653,11 +654,13 @@
                 </div>
                 <div class="list-group profiler-option-div ">
                     <div class="profiler-option-left">时长:</div>
-                    <input class="profiler-option-input" type="number" id="profiler-duration" min="0" value="120" max="1800">&nbsp;(s)
+                    <input class="profiler-option-input" type="number" id="profiler-duration" min="0" value="120"
+                           max="1800">&nbsp;(s)
                 </div>
                 <div class="list-group profiler-option-div ">
                     <div class="profiler-option-left">频率:</div>
-                    <input class="profiler-option-input" type="number" id="profiler-frequency" min="5" value="20" max="1800">&nbsp;(ms)
+                    <input class="profiler-option-input" type="number" id="profiler-frequency" min="5" value="20"
+                           max="1800">&nbsp;(ms)
                 </div>
                 <div class="list-group profiler-option-div " id="profiler-threads-div">
                     <div class="profiler-option-left">是否区分线程:</div>
