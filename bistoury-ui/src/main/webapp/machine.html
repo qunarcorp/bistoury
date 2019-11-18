@@ -639,7 +639,7 @@
     <div class="modal-dialog modal-profiler" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">配置</h5>
+                <span class="modal-title" style="font-size: 20px">相关配置</span>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -659,7 +659,7 @@
                 </div>
                 <div class="list-group profiler-option-div ">
                     <div class="profiler-option-left">频率:</div>
-                    <input class="profiler-option-input" type="number" id="profiler-frequency" min="5" value="20"
+                    <input class="profiler-option-input" type="number" id="profiler-frequency" min="5" value="5"
                            max="1800">&nbsp;(ms)
                 </div>
                 <div class="list-group profiler-option-div " id="profiler-threads-div">
@@ -668,6 +668,21 @@
                         <option value="1">不区分</option>
                         <option value="0">区分</option>
                     </select>
+                </div>
+
+                <div class="list-group profiler-option-div " id="profiler-event-div">
+                    <div class="profiler-option-left">事件类型:</div>
+                    <select id="profiler-event">
+                        <option value="itimer">itimer</option>
+                        <option value="cpu">cpu</option>
+                        <option value="alloc">alloc</option>
+                        <option value="lock">lock</option>
+                        <option value="wall">wall</option>
+                    </select>
+                </div>
+                <div class="list-group" id="async-profiler-href-div">
+                    <a target="_blank" href="https://github.com/jvm-profiling-tools/async-profiler">
+                        相关参数详细介绍（async-profiler项目）</a>
                 </div>
             </div>
             <div class="modal-footer">

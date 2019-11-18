@@ -40,6 +40,8 @@ public class AsyncSamplingProfiler implements Profiler {
 
     private boolean threads;
 
+    private boolean stopped;
+
     public AsyncSamplingProfiler(Map<String, Object> params) {
         frequencyMillis = (Long) params.get(FREQUENCY);
         durationSeconds = (Long) params.get(DURATION);
@@ -70,6 +72,10 @@ public class AsyncSamplingProfiler implements Profiler {
     public void stop() {
         lock.lock();
         try {
+            if (stopped) {
+                BistouryLoggerHelper.warn("profiler is already stopped. profilerId: {}", profilerId);
+                return;
+            }
             if (!AgentProfilerContext.isProfiling()) {
                 BistouryLoggerHelper.info("async profiler is already stop.");
                 return;
@@ -77,6 +83,7 @@ public class AsyncSamplingProfiler implements Profiler {
             String command = createProfilerCommand(ProfilerCommand.ProfilerAction.stop);
             doRunCommand(command);
             AgentProfilerContext.stopProfiling();
+            stopped = true;
         } finally {
             lock.unlock();
         }
@@ -112,7 +119,9 @@ public class AsyncSamplingProfiler implements Profiler {
             command.setInterval(frequencyMillis * 1000000);
         }
         if (action == ProfilerCommand.ProfilerAction.stop) {
-            String profilerPath = rootPath + File.separator + profilerId + "-" + (System.currentTimeMillis() - startTime) / 1000;
+            String profilerPath = rootPath + File.separator + profilerId
+                    + "-" + (System.currentTimeMillis() - startTime) / 1000
+                    + "-" + event;
             new File(profilerPath).mkdirs();
             String fileName = "async" + ".svg";
             BistouryLoggerHelper.info("async file. path: {} file: {}", profilerPath, fileName);

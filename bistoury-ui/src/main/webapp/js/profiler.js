@@ -39,7 +39,7 @@ function startProfiler() {
     }
     initStartState();
     curDuration = duration;
-    sendStartCommand(mode, duration, frequency);
+    sendStartCommand(mode, duration, frequency, $("#profiler-event").val());
     $(".model-profiler-setting").modal("hide");
 }
 
@@ -214,11 +214,14 @@ function buildProfiler(result) {
             bistoury.success("性能监控正常停止");
             stopSearchStateInterval();
             var agentId = getAgentId();
+            initEndState();
+            stopProcessStateInterval();
             setTimeout(function () {
-                initEndState();
-                stopProcessStateInterval();
                 searchProfilerHistory(agentId);
             }, 3000);
+            setTimeout(function () {
+                searchProfilerHistory(agentId);
+            }, 6000);
         }
     }
 }
@@ -253,11 +256,14 @@ function stopProfiler() {
     sendStopCommand(globalProfilerId);
 }
 
-function sendStartCommand(mode, duration, frequency) {
+function sendStartCommand(mode, duration, frequency, event) {
     var currentHost = $('#menu').treeview('getSelected')[0].value;
     var command = "profilerstart -m " + mode;
-    if (mode === async_sampler_code && $("#profiler-threads").val() === "0") {
-        command += " -threads";
+    if (mode === async_sampler_code) {
+        if ($("#profiler-threads").val() === "0") {
+            command += " -threads";
+        }
+        command += " -e " + event;
     }
     command += " -d " + duration;
     command += " -f " + frequency;

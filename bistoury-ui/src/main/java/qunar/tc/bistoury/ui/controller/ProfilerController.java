@@ -29,7 +29,10 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -216,8 +219,9 @@ public class ProfilerController {
     private static class ProfilerInfoVo {
 
         private ProxyInfo proxyInfo;
-        private int duration;
+        private int realDuration;
         private Profiler profiler;
+        private String eventType;
 
         public ProfilerInfoVo() {
 
@@ -225,16 +229,23 @@ public class ProfilerController {
 
         public ProfilerInfoVo(ProxyInfo proxyInfo, String name, Profiler profiler) {
             this.proxyInfo = proxyInfo;
-            this.duration = Integer.parseInt(name.split("-")[1]);
+            this.realDuration = Integer.parseInt(name.split("-")[1]);
+            if (profiler.getMode() == Profiler.Mode.async_sampler) {
+                eventType = name.split("-")[2];
+            }
             this.profiler = profiler;
+        }
+
+        public String getEventType() {
+            return eventType;
         }
 
         public ProxyInfo getProxyInfo() {
             return proxyInfo;
         }
 
-        public int getDuration() {
-            return duration;
+        public int getRealDuration() {
+            return realDuration;
         }
 
         public Profiler getProfiler() {

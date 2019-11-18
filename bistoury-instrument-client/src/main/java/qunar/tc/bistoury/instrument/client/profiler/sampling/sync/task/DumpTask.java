@@ -58,8 +58,8 @@ public class DumpTask implements Task {
                 logger.warn("profiler data is already dump.");
                 return;
             }
-            isDump = true;
             dataDumper.dump();
+            isDump = true;
         } finally {
             lock.unlock();
         }

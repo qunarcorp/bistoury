@@ -60,19 +60,10 @@ var syncTreeData = [
 var asyncTreeData = [
     {
         text: "完整栈",
+        selectable: true,
         state: {
-            expanded: true
-        },
-        nodes:
-            [
-                {
-                    selectable: true,
-                    text: "all state",
-                    state: {
-                        selected: true
-                    }
-                }
-            ]
+            selected: true
+        }
     },
 
 ];
@@ -139,9 +130,13 @@ function init(info) {
         return;
     }
     var profiler = info.profiler;
-    $("#profiler_mode_info").html("分析模式: " + getMode(info.profiler.mode))
+    $("#profiler_mode_info").html("分析模式: " + getMode(profiler.mode));
+    if (profiler.mode === async_sampler) {
+        $("#event_type").html("分析模式: " + info.eventType);
+        $("#event_type").css("display", "");
+    }
     $("#start_time").html("开始时间: " + profiler.startTime)
-    $("#duration").html("实际性能分析时长:" + info.duration + "s")
+    $("#duration").html("实际性能分析时长:" + info.realDuration + "s")
     $("#default_duration").html("预设性能分析时长:" + profiler.duration + "s");
     $("#default_frequency").html("预设性能分析间隔:" + profiler.frequency + "ms");
     var proxy = info.proxyInfo;

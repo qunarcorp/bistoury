@@ -1115,8 +1115,14 @@ $(document).ready(function () {
         var option = $(this).children('option:selected').val();
         if (option === sampler_code) {
             $("#profiler-threads-div").css('display', 'none');
+            $("#profiler-event-div").css('display', 'none');
+            $("#async-profiler-href-div").css('display', 'none');
+            $("#profiler-frequency").val(20)
         } else if (option === async_sampler_code) {
             $("#profiler-threads-div").css('display', 'flex');
+            $("#profiler-event-div").css('display', 'flex');
+            $("#async-profiler-href-div").css('display', 'flex');
+            $("#profiler-frequency").val(5)
         }
     })
 
