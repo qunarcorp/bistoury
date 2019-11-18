@@ -1,6 +1,5 @@
 package qunar.tc.bistoury.instrument.client.profiler.sampling.async;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import one.profiler.AsyncProfiler;
 import qunar.tc.bistoury.common.BistouryConstants;
@@ -8,7 +7,6 @@ import qunar.tc.bistoury.common.OsUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 /**
  * @author cai.wen created on 2019/11/11 19:57
