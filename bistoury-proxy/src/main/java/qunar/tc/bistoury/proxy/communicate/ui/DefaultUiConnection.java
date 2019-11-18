@@ -22,7 +22,7 @@ import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.proxy.communicate.AbstractConnection;
-import qunar.tc.bistoury.proxy.communicate.WrittableListener;
+import qunar.tc.bistoury.proxy.communicate.WritableListener;
 
 import java.util.Objects;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class DefaultUiConnection extends AbstractConnection implements UiConnect
 
     private final Channel channel;
 
-    private final Set<WrittableListener> listeners = Sets.newHashSet();
+    private final Set<WritableListener> listeners = Sets.newHashSet();
 
     private boolean writable = true;
 
@@ -62,18 +62,18 @@ public class DefaultUiConnection extends AbstractConnection implements UiConnect
     }
 
     @Override
-    public synchronized void addWritableListener(WrittableListener listener) {
+    public synchronized void addWritableListener(WritableListener listener) {
         listeners.add(listener);
         listener.onChange(this.writable);
     }
 
     @Override
-    public synchronized void removeWritableListener(WrittableListener listener) {
+    public synchronized void removeWritableListener(WritableListener listener) {
         listeners.remove(listener);
     }
 
     private void notifyWritableChange(boolean writable) {
-        for (WrittableListener listener : listeners) {
+        for (WritableListener listener : listeners) {
             listener.onChange(writable);
         }
     }

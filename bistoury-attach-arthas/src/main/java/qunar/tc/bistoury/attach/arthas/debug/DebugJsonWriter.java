@@ -30,6 +30,7 @@ import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.clientside.common.meta.MetaStore;
 import qunar.tc.bistoury.clientside.common.meta.MetaStores;
 import qunar.tc.bistoury.magic.classes.MagicUtils;
+import java.io.ByteArrayOutputStream;
 
 /**
  * 只按照field序列化对象到JSON数据。
@@ -76,9 +77,10 @@ public class DebugJsonWriter {
         int maxSize = META_STORE.getIntProperty(DEBUG_JSON_LIMIT_KB, LENGTH_10MB_2_KB);
         try {
             MagicUtils.setMagicFlag();
-            SizeLimitedOutputStream sizeLimitedOutputStream = new SizeLimitedOutputStream(maxSize * 1024);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            SizeLimitedOutputStream sizeLimitedOutputStream = new SizeLimitedOutputStream(outputStream, maxSize * 1024);
             MAPPER.writeValue(sizeLimitedOutputStream, obj);
-            return new String(sizeLimitedOutputStream.toByteArray(), Charsets.UTF_8);
+            return new String(outputStream.toByteArray(), Charsets.UTF_8);
         } catch (SizeLimitExceededException se) {
             logger.warn("object size greater than {}kb", maxSize);
             return "object size greater than " + maxSize + "kb";
