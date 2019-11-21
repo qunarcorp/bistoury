@@ -4,8 +4,6 @@ $(document).ready(function () {
     var GB = 1024.0 * MB;
     var TB = 1024.0 * GB;
     var currentHost;
-    var base64 = new Base65();
-
 
     function getDownloadFileList(type) {
         $('#download-file-table').bootstrapTable('removeAll');
