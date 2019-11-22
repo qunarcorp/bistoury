@@ -33,10 +33,10 @@ function startProfiler() {
         return;
     }
 
-    if (mode === sampler_code && frequency < 10) {
-        bistoury.warning("同步抽样间隔应该大于10ms.");
-        return;
-    }
+    // if (mode === sampler_code && frequency < 10) {
+    //     bistoury.warning("同步抽样间隔应该大于10ms.");
+    //     return;
+    // }
     initStartState();
     curDuration = duration;
     sendStartCommand(mode, duration, frequency, $("#profiler-event").val());
@@ -230,6 +230,11 @@ function getCurrentHost() {
     return $('#menu').treeview('getSelected')[0].value;
 }
 
+function getAppCode() {
+    var currentHost = $('#menu').treeview('getSelected')[0].value;
+    return currentHost.appCode;
+}
+
 function getAgentId() {
     var currentHost = $('#menu').treeview('getSelected')[0].value;
     return currentHost.ip;
@@ -258,15 +263,16 @@ function stopProfiler() {
 
 function sendStartCommand(mode, duration, frequency, event) {
     var currentHost = $('#menu').treeview('getSelected')[0].value;
-    var command = "profilerstart -m " + mode;
-    if (mode === async_sampler_code) {
-        if ($("#profiler-threads").val() === "0") {
-            command += " -threads";
-        }
-        command += " -e " + event;
-    }
+    var command = "profilerstart " + getAppCode();
+    // command += " -m " + mode;
+    // if (mode === async_sampler_code) {
+    //     if ($("#profiler-threads").val() === "0") {
+    //         command += " -threads";
+    //     }
+    //     command += " -e " + event;
+    // }
     command += " -d " + duration;
-    command += " -f " + frequency;
+    // command += " -f " + frequency;
     bistouryWS.sendCommand(currentHost, REQ_TYPE_PROFILER, command, stop, handleResult);
 }
 

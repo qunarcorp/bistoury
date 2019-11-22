@@ -1,6 +1,7 @@
 package qunar.tc.bistoury.proxy.service.profiler;
 
 import qunar.tc.bistoury.common.TypeResponse;
+import qunar.tc.bistoury.serverside.bean.ProfilerSettings;
 
 import java.util.Map;
 
@@ -9,7 +10,7 @@ import java.util.Map;
  */
 public interface ProfilerStateManager {
 
-    String register(String agentId, String command);
+    ProfilerSettings register(String agentId, String command);
 
     boolean isProfilerRequest(String id);
 

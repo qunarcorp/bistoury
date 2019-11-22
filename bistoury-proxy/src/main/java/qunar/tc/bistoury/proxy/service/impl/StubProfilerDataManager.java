@@ -30,7 +30,7 @@ public class StubProfilerDataManager implements ProfilerDataManager {
                     .redirectErrorStream(true)
                     .redirectError(new File("/tmp/test.log"))
                     .redirectOutput(new File("/tmp/test.log"))
-                    .command("bash", "-c", command1 + "|" + command2)
+                    .command("bash", "-c", command1 + "&&" + command2)
                     .start()
                     .waitFor();
         } catch (Exception e) {

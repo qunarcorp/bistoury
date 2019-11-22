@@ -75,6 +75,8 @@ public class BistouryConstants {
 
     public static final String PROFILER_LIB_NAME = "profilerLib";
 
+    public static final String PROFILER_ID = "$$profilerId$$";
+
     // todo: 先这么写吧
     public static final String CURRENT_VERSION = "2.0.6";
 

@@ -26,8 +26,6 @@ import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.*;
 @Name(BistouryConstants.REQ_PROFILER_START)
 public class ProfilerStartCommand extends AnnotatedCommand {
 
-    private Mode mode;
-
     private String profilerId;
 
     private final Map<String, Object> config = Maps.newHashMapWithExpectedSize(2);
@@ -62,7 +60,7 @@ public class ProfilerStartCommand extends AnnotatedCommand {
 
     @Option(shortName = "m", longName = "mode")
     public void setMode(int mode) {
-        this.mode = Mode.codeOf(mode);
+        config.put(MODE, Mode.codeOf(mode));
     }
 
     @Option(longName = "threads", flag = true)
@@ -73,7 +71,7 @@ public class ProfilerStartCommand extends AnnotatedCommand {
 
     @Override
     public void process(CommandProcess process) {
-        BistouryLoggerHelper.info("receive profiler add command, mode: {}, config: {}", mode, config);
+        BistouryLoggerHelper.info("receive profiler add command, mode: {}, config: {}", config);
         Map<String, Object> result = new HashMap<>();
         TypeResponse typeResponse = TypeResponseResult.create(result, BistouryConstants.REQ_PROFILER_START);
         CodeProcessResponse response = typeResponse.getData();
@@ -85,12 +83,12 @@ public class ProfilerStartCommand extends AnnotatedCommand {
             }
 
             ProfilerClient profilerClient = ProfilerClients.getInstance();
-            profilerClient.startProfiler(mode, config);
+            profilerClient.startProfiler(config);
             response.setCode(0);
             result.put("profilerId", profilerId);
             response.setMessage("add profiler success.");
         } catch (Exception e) {
-            BistouryLoggerHelper.error(e, "profiler add error. mode: {}, config: {}", mode, config);
+            BistouryLoggerHelper.error(e, "profiler add error. config: {}", config);
             response.setMessage("add profiler error. reason:" + e.getMessage());
         } finally {
             process.write(URLCoder.encode(JacksonSerializer.serialize(typeResponse)));

@@ -1,32 +1,51 @@
 package qunar.tc.bistoury.instrument.client.profiler;
 
+import qunar.tc.bistoury.common.OsUtils;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.async.AsyncSamplingProfiler;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.SamplingProfiler;
 
 import java.util.Map;
+
+import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.EVENT;
+import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.MODE;
 
 /**
  * @author cai.wen created on 2019/10/23 11:13
  */
 public class ProfilerFactory {
 
-    public static Profiler create(Mode mode, Map<String, Object> config) {
-        mode = getMode(mode);
+    public static Profiler create(Map<String, Object> config) {
+        Mode mode = getMode(config);
         switch (mode) {
             case sampler:
                 return new SamplingProfiler(config);
-            case async_sampler:
+            case async_sampler: {
+                if (config.get(EVENT) == null) {
+                    config.put(EVENT, getPlatformEvent());
+                }
                 return new AsyncSamplingProfiler(config);
+            }
             default:
                 throw new RuntimeException("no kind of mode: " + mode);
         }
     }
 
-    private static Mode getMode(Mode mode) {
-        if (mode == null) {
-            return Mode.sampler;
-        }
-        return mode;
+    private static Mode getMode(Map<String, Object> config) {
+        Mode mode = (Mode) config.get(MODE);
+        return mode == null ? getPlatformMode() : mode;
     }
 
+    private static Mode getPlatformMode() {
+        if (OsUtils.isWindows()) {
+            return Mode.sampler;
+        }
+        return Mode.async_sampler;
+    }
+
+    private static String getPlatformEvent() {
+        if (OsUtils.isSupportPerf()) {
+            return "cpu";
+        }
+        return "itimer";
+    }
 }

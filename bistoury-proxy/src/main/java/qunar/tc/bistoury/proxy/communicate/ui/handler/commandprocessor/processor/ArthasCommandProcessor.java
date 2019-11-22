@@ -29,8 +29,8 @@ import qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.AbstractC
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerService;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerStateManager;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
-import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.serverside.agile.Conf;
+import qunar.tc.bistoury.serverside.bean.ProfilerSettings;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 
@@ -109,9 +109,8 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
     }
 
     private String prepareProfilerStart(String command, String agentId) {
-        String profilerId = profilerStateManager.register(agentId, command);
-        return BistouryConstants.REQ_PROFILER_START + " " + profilerId
-                + command.substring(BistouryConstants.REQ_PROFILER_START.length());
+        ProfilerSettings profilerSettings = profilerStateManager.register(agentId, command);
+        return profilerSettings.getCommand();
     }
 
     @Override

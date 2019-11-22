@@ -11,9 +11,11 @@ import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerDatagramHolder;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerService;
+import qunar.tc.bistoury.proxy.service.profiler.ProfilerSettingsManager;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerStateManager;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.serverside.bean.Profiler;
+import qunar.tc.bistoury.serverside.bean.ProfilerSettings;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -40,8 +42,6 @@ public class ProxyProfilerStateManager implements ProfilerStateManager {
 
     private static final int defaultAdditionalSeconds = 60;
 
-    private static final Splitter SPACE_SPLITTER = Splitter.on(" ").trimResults().omitEmptyStrings();
-
     private final Object obj = new Object();
 
     private final Cache<String, Object> profilerIdCache = CacheBuilder.newBuilder()
@@ -52,6 +52,9 @@ public class ProxyProfilerStateManager implements ProfilerStateManager {
 
     @Resource
     private ProfilerService profilerService;
+
+    @Resource
+    private ProfilerSettingsManager profilerSettingsManager;
 
     @Resource
     private AgentConnectionStore agentConnectionStore;
@@ -90,11 +93,10 @@ public class ProxyProfilerStateManager implements ProfilerStateManager {
     }
 
     @Override
-    public String register(String agentId, String command) {
-        int profilerDuration = getDuration(command);
-        int profilerFrequency = getFrequency(command);
-        Profiler.Mode profilerMode = getMode(command);
-        String profilerId = profilerService.prepareProfiler(agentId, profilerDuration, profilerFrequency, profilerMode);
+    public ProfilerSettings register(String agentId, String command) {
+        ProfilerSettings settings = profilerSettingsManager.create(command);
+        String profilerId = profilerService.prepareProfiler(agentId, settings.getDuration(), settings.getFrequency(), Profiler.Mode.fromCode(settings.getMode()));
+        settings.setCommand(settings.getCommand().replace(BistouryConstants.PROFILER_ID, profilerId));
         Optional<AgentConnection> agentConnRef = agentConnectionStore.getConnection(agentId);
         if (!agentConnRef.isPresent()) {
             throw new RuntimeException("no connection for profiler id. profilerId: " + profilerId);
@@ -106,7 +108,7 @@ public class ProxyProfilerStateManager implements ProfilerStateManager {
         readyDatagrams.put(profilerId, readyHolder);
         agentConnectionStore.getConnection(readyHolder.getAgentId())
                 .ifPresent(agentConn -> agentConn.write(readyHolder.getDatagram()));
-        return profilerId;
+        return settings;
     }
 
     @Override
@@ -177,35 +179,6 @@ public class ProxyProfilerStateManager implements ProfilerStateManager {
     private ProfilerDatagramHolder createStartStateSearchHolder(String agentId, String profilerId, int duration) {
         Datagram searchDatagram = createStartStateSearchDatagram(profilerId);
         return new ProfilerDatagramHolder(agentId, profilerId, searchDatagram, duration);
-    }
-
-    private int getDuration(String command) {
-        Optional<String> durationRef = getValue("-d", command);
-        return durationRef.map(Integer::parseInt)
-                .orElse(30);
-    }
-
-    private int getFrequency(String command) {
-        Optional<String> durationRef = getValue("-f", command);
-        return durationRef.map(Integer::parseInt)
-                .orElse(20);
-    }
-
-    private Profiler.Mode getMode(String command) {
-        Optional<String> modeRef = getValue("-m", command);
-        return modeRef.map(value -> Profiler.Mode.fromCode(Integer.parseInt(value)))
-                .orElse(Profiler.Mode.async_sampler);
-    }
-
-    private Optional<String> getValue(String keyForParam, String command) {
-        Iterable<String> segments = SPACE_SPLITTER.split(command);
-        for (Iterator<String> iter = segments.iterator(); iter.hasNext(); ) {
-            String segment = iter.next();
-            if (segment.equals(keyForParam) && iter.hasNext()) {
-                return Optional.of(iter.next());
-            }
-        }
-        return Optional.empty();
     }
 }
 

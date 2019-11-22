@@ -303,7 +303,7 @@ code {
 }
 
 .profiler-option-left {
-    width: 200px;
+    width: 150px;
 }
 
 .profiler-option-input {
@@ -311,7 +311,7 @@ code {
 }
 
 .modal-profiler {
-    width: 500px;
+    width: 300px;
     margin: auto;
 }
 

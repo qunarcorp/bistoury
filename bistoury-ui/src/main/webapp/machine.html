@@ -645,45 +645,45 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="list-group profiler-option-div ">
-                    <div class="profiler-option-left">模式:</div>
-                    <select id="profiler-mode">
-                        <option value="0">异步抽样</option>
-                        <option value="1">抽样</option>
-                    </select>
-                </div>
+<!--                <div class="list-group profiler-option-div ">-->
+<!--                    <div class="profiler-option-left">模式:</div>-->
+<!--                    <select id="profiler-mode">-->
+<!--                        <option value="0">异步抽样</option>-->
+<!--                        <option value="1">抽样</option>-->
+<!--                    </select>-->
+<!--                </div>-->
                 <div class="list-group profiler-option-div ">
                     <div class="profiler-option-left">时长:</div>
                     <input class="profiler-option-input" type="number" id="profiler-duration" min="0" value="120"
                            max="1800">&nbsp;(s)
                 </div>
-                <div class="list-group profiler-option-div ">
-                    <div class="profiler-option-left">频率:</div>
-                    <input class="profiler-option-input" type="number" id="profiler-frequency" min="5" value="5"
-                           max="1800">&nbsp;(ms)
-                </div>
-                <div class="list-group profiler-option-div " id="profiler-threads-div">
-                    <div class="profiler-option-left">是否区分线程:</div>
-                    <select id="profiler-threads">
-                        <option value="1">不区分</option>
-                        <option value="0">区分</option>
-                    </select>
-                </div>
+<!--                <div class="list-group profiler-option-div ">-->
+<!--                    <div class="profiler-option-left">频率:</div>-->
+<!--                    <input class="profiler-option-input" type="number" id="profiler-frequency" min="5" value="5"-->
+<!--                           max="1800">&nbsp;(ms)-->
+<!--                </div>-->
+<!--                <div class="list-group profiler-option-div " id="profiler-threads-div">-->
+<!--                    <div class="profiler-option-left">是否区分线程:</div>-->
+<!--                    <select id="profiler-threads">-->
+<!--                        <option value="1">不区分</option>-->
+<!--                        <option value="0">区分</option>-->
+<!--                    </select>-->
+<!--                </div>-->
 
-                <div class="list-group profiler-option-div " id="profiler-event-div">
-                    <div class="profiler-option-left">事件类型:</div>
-                    <select id="profiler-event">
-                        <option value="itimer">itimer</option>
-                        <option value="cpu">cpu</option>
-                        <option value="alloc">alloc</option>
-                        <option value="lock">lock</option>
-                        <option value="wall">wall</option>
-                    </select>
-                </div>
-                <div class="list-group" id="async-profiler-href-div">
-                    <a target="_blank" href="https://github.com/jvm-profiling-tools/async-profiler">
-                        相关参数详细介绍（async-profiler项目）</a>
-                </div>
+<!--                <div class="list-group profiler-option-div " id="profiler-event-div">-->
+<!--                    <div class="profiler-option-left">事件类型:</div>-->
+<!--                    <select id="profiler-event">-->
+<!--                        <option value="itimer">itimer</option>-->
+<!--                        <option value="cpu">cpu</option>-->
+<!--                        <option value="alloc">alloc</option>-->
+<!--                        <option value="lock">lock</option>-->
+<!--                        <option value="wall">wall</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+<!--                <div class="list-group" id="async-profiler-href-div">-->
+<!--                    <a target="_blank" href="https://github.com/jvm-profiling-tools/async-profiler">-->
+<!--                        相关参数详细介绍（async-profiler项目）</a>-->
+<!--                </div>-->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" onclick="startProfiler()">start</button>

@@ -46,7 +46,6 @@ public class AsyncSamplingProfiler implements Profiler {
         frequencyMillis = (Long) params.get(FREQUENCY);
         durationSeconds = (Long) params.get(DURATION);
         event = (String) params.get(EVENT);
-        event = event == null ? "cpu" : event;
         profilerId = (String) params.get(PROFILER_ID);
         rootPath = params.get(TMP_DIR) + File.separator + "bistoury-profiler";
         threads = (Boolean) params.get(THREADS);

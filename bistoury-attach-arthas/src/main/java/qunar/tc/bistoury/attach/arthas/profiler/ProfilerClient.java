@@ -26,16 +26,16 @@ public class ProfilerClient implements InstrumentClient {
         this.instrumentInfo = instrumentInfo;
     }
 
-    public void startProfiler(Mode mode, Map<String, Object> config) {
+    public void startProfiler(Map<String, Object> config) {
         if (AgentProfilerContext.isProfiling()) {
             throw new RuntimeException("start profiler error. target vm is profiling");
         }
         logger.info("start init profiler client");
-        profiler = ProfilerFactory.create(mode, config);
+        profiler = ProfilerFactory.create(config);
         profiler.startup(instrumentInfo);
     }
 
-    public void stopProfiler(){
+    public void stopProfiler() {
         profiler.stop();
     }
 

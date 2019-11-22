@@ -13,15 +13,11 @@ public class ProfilerConstants {
 
     public static final String EVENT = "event";
 
+    public static final String MODE = "mode";
+
     public static final String THREADS = "threads";
 
     public static final String TMP_DIR = "tmpDir";
-
-    //30 seconds
-    public static final long MIN_DURATION_MILLIS = 30000;
-
-    //30 minutes
-    public static final long MAX_DURATION_MILLIS = 1800000;
 
     public static final String PROFILER_ID = "profilerId";
 
