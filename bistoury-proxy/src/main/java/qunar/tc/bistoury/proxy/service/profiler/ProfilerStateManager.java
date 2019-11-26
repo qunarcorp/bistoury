@@ -14,7 +14,7 @@ public interface ProfilerStateManager {
 
     boolean isProfilerRequest(String id);
 
-    void dealProfiler(String profilesId, TypeResponse<Map<String, Object>> config);
+    void dealProfiler(String profilesId, TypeResponse<Map<String, String>> config);
 
     void searchStopState(String profilerId);
 

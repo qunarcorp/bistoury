@@ -6,7 +6,9 @@ import qunar.tc.bistoury.serverside.dao.ProfilerDao;
 import qunar.tc.bistoury.serverside.dao.ProfilerDaoImpl;
 import qunar.tc.bistoury.ui.service.ProfilerService;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author cai.wen created on 2019/11/4 12:54
@@ -18,25 +20,21 @@ public class ProfilerServiceImpl implements ProfilerService {
 
     @Override
     public Profiler getRecord(String profilerId) {
-        return profilerDao.getRecordById(profilerId);
+        return profilerDao.getRecordByProfilerId(profilerId);
     }
 
     @Override
-    public List<Profiler> getLastRecords(String app, String agentId, int hours) {
-        return profilerDao.getRecords(app, agentId, hours);
+    public List<Profiler> getLastRecords(String app, String agentId, LocalDateTime startTime) {
+        return profilerDao.getRecords(app, agentId, startTime);
     }
 
     @Override
-    public Profiler getLastProfilerRecord(String app, String agentId) {
-        List<Profiler> records = profilerDao.getRecords(app, agentId, 1);
-        if (records.isEmpty()) {
-            return null;
-        }
-        return records.get(0);
+    public Optional<Profiler> getLastProfilerRecord(String app, String agentId) {
+        return profilerDao.getLastRecord(app, agentId);
     }
 
     @Override
-    public List<Profiler> getRecordsByState(Profiler.State state, int hours) {
-        return profilerDao.getRecordsByState(state, hours);
+    public List<Profiler> getRecordsByState(Profiler.State state, LocalDateTime startTime) {
+        return profilerDao.getRecordsByState(state, startTime);
     }
 }

@@ -82,7 +82,7 @@ public class AgentResponseProcessor implements AgentMessageProcessor {
             ByteBuf body = datagram.getBody();
             byte[] data = new byte[body.readableBytes()];
             body.readBytes(data);
-            TypeResponse<Map<String, Object>> profilerInfoType = JacksonSerializer.deSerialize(data, new TypeReference<TypeResponse<Map<String, Object>>>() {
+            TypeResponse<Map<String, String>> profilerInfoType = JacksonSerializer.deSerialize(data, new TypeReference<TypeResponse<Map<String, String>>>() {
             });
             profilerStateManager.dealProfiler(profilerId, profilerInfoType);
         }

@@ -14,6 +14,7 @@ import qunar.tc.bistoury.ui.util.ProxyInfoParse;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -58,9 +59,9 @@ public class UiProfilerStateManager {
         executor.scheduleAtFixedRate(() -> {
             proxyInfos = getAllProxyInfo();
             currentTimeMillis = System.currentTimeMillis();
-            profilerService.getRecordsByState(Profiler.State.ready, 1)
+            profilerService.getRecordsByState(Profiler.State.ready, LocalDateTime.now().minusHours(1))
                     .forEach(profiler -> stop(profiler.getProfilerId(), profiler.getStartTime(), 60));
-            profilerService.getRecordsByState(Profiler.State.start, 1)
+            profilerService.getRecordsByState(Profiler.State.start, LocalDateTime.now().minusHours(1))
                     .forEach(profiler -> searchStopState(profiler.getProfilerId(), profiler.getStartTime(), profiler.getDuration() + 60));
         }, random.nextInt(61), 60, TimeUnit.SECONDS);
 

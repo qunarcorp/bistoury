@@ -95,7 +95,7 @@ public class ProxyProfilerStateManager implements ProfilerStateManager {
     @Override
     public ProfilerSettings register(String agentId, String command) {
         ProfilerSettings settings = profilerSettingsManager.create(command);
-        String profilerId = profilerService.prepareProfiler(agentId, settings.getDuration(), settings.getFrequency(), Profiler.Mode.fromCode(settings.getMode()));
+        String profilerId = profilerService.prepareProfiler(agentId, settings);
         settings.setCommand(settings.getCommand().replace(BistouryConstants.PROFILER_ID, profilerId));
         Optional<AgentConnection> agentConnRef = agentConnectionStore.getConnection(agentId);
         if (!agentConnRef.isPresent()) {
@@ -117,14 +117,14 @@ public class ProxyProfilerStateManager implements ProfilerStateManager {
     }
 
     @Override
-    public void dealProfiler(String profilesId, TypeResponse<Map<String, Object>> response) {
+    public void dealProfiler(String profilesId, TypeResponse<Map<String, String>> response) {
         String type = response.getType();
         if (type == null) {
             return;
         }
         if (BistouryConstants.REQ_PROFILER_STATE_SEARCH.equals(type)) {
-            Map<String, Object> data = response.getData().getData();
-            String stateSearchType = (String) data.get("type");
+            Map<String, String> data = response.getData().getData();
+            String stateSearchType = data.get("type");
             if (getResultState(response)) {
                 return;
             }
@@ -147,10 +147,10 @@ public class ProxyProfilerStateManager implements ProfilerStateManager {
         }
     }
 
-    private boolean getResultState(TypeResponse<Map<String, Object>> response) {
-        Map<String, Object> data = response.getData().getData();
-        Boolean state = (Boolean) data.get("state");
-        return state == null || !state;
+    private boolean getResultState(TypeResponse<Map<String, String>> response) {
+        Map<String, String> data = response.getData().getData();
+        String state = data.get("state");
+        return state == null || !Boolean.valueOf(state);
     }
 
     @Override

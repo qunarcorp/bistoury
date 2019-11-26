@@ -67,7 +67,8 @@ function searchLastProfiler(agentId) {
         "type": "get",
         "dataType": 'JSON',
         "data": {
-            agentId: agentId
+            agentId: agentId,
+            appCode: getAppCode()
         },
         async: false,
         success: function (ret) {
@@ -88,6 +89,7 @@ function searchProfilerHistory(agentId) {
         "type": "get",
         "dataType": 'JSON',
         "data": {
+            appCode: getAppCode(),
             agentId: agentId
         },
         async: false,
@@ -210,8 +212,8 @@ function buildProfiler(result) {
             bistoury.error("手动停止性能分析失败: " + data.message)
         }
     } else if (resType === "profilerstatesearch") {
-        if (data.code === 0 && data.data.state) {
-            bistoury.success("性能监控正常停止");
+        if (data.code === 0 && (data.data.state === 'true')) {
+            bistoury.success("性能分析正常停止");
             stopSearchStateInterval();
             var agentId = getAgentId();
             initEndState();

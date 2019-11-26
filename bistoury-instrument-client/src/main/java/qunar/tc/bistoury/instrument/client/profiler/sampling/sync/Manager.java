@@ -114,8 +114,7 @@ public class Manager {
                 task.stop();
             }
         } catch (Exception e) {
-            BistouryLoggerHelper.error(e, "destroy task error. task: {}", task);
-            logger.error("", "destroy task error.", e);
+            logger.error("", BistouryLoggerHelper.formatMessage("destroy task error. task: {}", task), e);
         }
     }
 

@@ -1,6 +1,7 @@
 package qunar.tc.bistoury.instrument.client.profiler.sampling.async;
 
-import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
+import com.taobao.middleware.logger.Logger;
+import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.common.NamedThreadFactory;
 import qunar.tc.bistoury.instrument.client.common.InstrumentInfo;
 import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
@@ -20,6 +21,8 @@ import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.*;
  * 先只支持生成火焰图
  */
 public class AsyncSamplingProfiler implements Profiler {
+
+    private static final Logger logger = BistouryLoggger.getLogger();
 
     private final ScheduledExecutorService scheduledExecutorService =
             Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("async-sampling-shutdown"));
@@ -42,13 +45,13 @@ public class AsyncSamplingProfiler implements Profiler {
 
     private boolean stopped;
 
-    public AsyncSamplingProfiler(Map<String, Object> params) {
-        frequencyMillis = (Long) params.get(FREQUENCY);
-        durationSeconds = (Long) params.get(DURATION);
-        event = (String) params.get(EVENT);
-        profilerId = (String) params.get(PROFILER_ID);
+    public AsyncSamplingProfiler(Map<String, String> params) {
+        frequencyMillis = Long.parseLong(params.get(FREQUENCY));
+        durationSeconds = Long.parseLong(params.get(DURATION));
+        event = params.get(EVENT);
+        profilerId = params.get(PROFILER_ID);
         rootPath = params.get(TMP_DIR) + File.separator + "bistoury-profiler";
-        threads = (Boolean) params.get(THREADS);
+        threads = Boolean.parseBoolean(params.get(THREADS));
     }
 
     @Override
@@ -72,11 +75,11 @@ public class AsyncSamplingProfiler implements Profiler {
         lock.lock();
         try {
             if (stopped) {
-                BistouryLoggerHelper.warn("profiler is already stopped. profilerId: {}", profilerId);
+                logger.warn("", "profiler is already stopped. profilerId: {}", profilerId);
                 return;
             }
             if (!AgentProfilerContext.isProfiling()) {
-                BistouryLoggerHelper.info("async profiler is already stop.");
+                logger.info("async profiler is already stop.");
                 return;
             }
             String command = createProfilerCommand(ProfilerCommand.ProfilerAction.stop);
@@ -123,7 +126,7 @@ public class AsyncSamplingProfiler implements Profiler {
                     + "-" + event;
             new File(profilerPath).mkdirs();
             String fileName = "async" + ".svg";
-            BistouryLoggerHelper.info("async file. path: {} file: {}", profilerPath, fileName);
+            logger.info("", "async file. path: {} file: {}", profilerPath, fileName);
             String file = new File(profilerPath, fileName).getAbsolutePath();
             command.setFile(file);
         }

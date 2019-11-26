@@ -8,38 +8,44 @@ import qunar.tc.bistoury.serverside.jdbc.JdbcTemplateHolder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author cai.wen created on 2019/10/30 14:54
  */
 public class ProfilerDaoImpl implements ProfilerDao {
 
-    private static final String PREPARE_PROFILER_SQL = "insert into bistoury_profiler " +
-            "(profiler_id, operator, app_code, agent_id, pid, start_time, duration,frequency,mode,state) " +
-            "select ?, ?, ?, ?, ?, ?, ?, ?,?, 2 " +
-            "where not exists(select NULL from bistoury_profiler where agent_id = ? and pid = ? and (state = 0 or state = 2))";
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    private static final String INSERT_PROFILER_SQL = "insert into bistoury_profiler " +
+            "(profiler_id, operator, app_code, agent_id, pid, start_time,duration,frequency,mode,state)" +
+            "select ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
 
     private static final String UPDATE_PROFILER_STATE_SQL = "update bistoury_profiler set state=? where profiler_id=?";
 
-    private static final String SELECT_PROFILER_BY_STATE_SQL = "select * from bistoury_profiler where state=? and start_time>DATE_SUB(CURDATE(), INTERVAL ? hour ) ";
+    private static final String SELECT_PROFILER_BY_STATE_SQL = "select * from bistoury_profiler where state=? and start_time>?";
 
     private static final String SELECT_PROFILER_BY_PROFILER_ID_SQL = "select * from bistoury_profiler where profiler_id=?";
 
-    private static final String SELECT_LAST_THREE_DAY_RECORD = "SELECT * FROM bistoury_profiler " +
-            "where  app_code=? and agent_id=? and start_time>DATE_SUB(CURDATE(), INTERVAL ? hour ) " +
-            "order by start_time desc";
+    private static final String SELECT_LAST_RECORDS = "SELECT * FROM bistoury_profiler " +
+            "where  app_code=? and agent_id=? and start_time>? order by start_time desc";
 
-    private JdbcTemplate jdbcTemplate = JdbcTemplateHolder.getOrCreateJdbcTemplate();
+    private static final String SELECT_LAST_RECORD = "SELECT * FROM bistoury_profiler where app_code=? and agent_id=? limit 1";
+
+    private final JdbcTemplate jdbcTemplate = JdbcTemplateHolder.getOrCreateJdbcTemplate();
 
     @Override
-    public List<Profiler> getRecords(String app, String agentId, int hours) {
-        return jdbcTemplate.query(SELECT_LAST_THREE_DAY_RECORD, PROFILER_ROW_MAPPER, app, agentId, hours);
+    public List<Profiler> getRecords(String app, String agentId, LocalDateTime localTime) {
+        return jdbcTemplate.query(SELECT_LAST_RECORDS, PROFILER_ROW_MAPPER, app, agentId, TIME_FORMATTER.format(localTime));
     }
 
     @Override
-    public Profiler getRecordById(String profilerId) {
+    public Profiler getRecordByProfilerId(String profilerId) {
         return jdbcTemplate.query(SELECT_PROFILER_BY_PROFILER_ID_SQL, PROFILER_RESULT_SET_EXTRACTOR, profilerId);
     }
 
@@ -50,18 +56,21 @@ public class ProfilerDaoImpl implements ProfilerDao {
 
     @Override
     public void prepareProfiler(Profiler profiler) {
-        int insertState = jdbcTemplate.update(PREPARE_PROFILER_SQL,
-                profiler.getProfilerId(), profiler.getOperator(), profiler.getAppCode(), profiler.getAgentId(), profiler.getPid(), new Date(), profiler.getDuration(), profiler.getFrequency(), profiler.getMode().code,
-                profiler.getAgentId(), profiler.getPid()
-        );
-        if (insertState == 0) {
-            throw new IllegalStateException("insert new profiler record error.");
-        }
+        jdbcTemplate.update(INSERT_PROFILER_SQL,
+                profiler.getProfilerId(), profiler.getOperator(), profiler.getAppCode(), profiler.getAgentId(),
+                profiler.getPid(), new Date(), profiler.getDuration(), profiler.getFrequency(),
+                profiler.getMode().code, Profiler.State.ready.code);
     }
 
     @Override
-    public List<Profiler> getRecordsByState(Profiler.State state, int hours) {
-        return jdbcTemplate.query(SELECT_PROFILER_BY_STATE_SQL, PROFILER_ROW_MAPPER, state.code, hours);
+    public List<Profiler> getRecordsByState(Profiler.State state, LocalDateTime startTime) {
+        return jdbcTemplate.query(SELECT_PROFILER_BY_STATE_SQL, PROFILER_ROW_MAPPER, state.code, TIME_FORMATTER.format(startTime));
+    }
+
+    @Override
+    public Optional<Profiler> getLastRecord(String app, String agentId) {
+        List<Profiler> profilers = jdbcTemplate.query(SELECT_LAST_RECORD, PROFILER_ROW_MAPPER, app, agentId);
+        return profilers.isEmpty() ? Optional.empty() : Optional.of(profilers.get(0));
     }
 
     private final ResultSetExtractor<Profiler> PROFILER_RESULT_SET_EXTRACTOR = resultSet -> {

@@ -77,8 +77,8 @@ public class ProfilerController {
 
     @GetMapping("/records")
     @ResponseBody
-    public Object lastThreeDaysProfiler(String agentId) {
-        List<Profiler> profilers = profilerService.getLastRecords("", agentId, 3 * 24);
+    public Object lastThreeDaysProfiler(String appCode, String agentId) {
+        List<Profiler> profilers = profilerService.getLastRecords(appCode, agentId, LocalDateTime.now().minusHours(3 * 24));
         profilers = profilers.stream()
                 .filter(profiler -> profiler.getState() == Profiler.State.stop)
                 .collect(Collectors.toList());
@@ -89,11 +89,12 @@ public class ProfilerController {
 
     @GetMapping("/last")
     @ResponseBody
-    public Object lastProfiler(String agentId) {
-        Profiler profiler = profilerService.getLastProfilerRecord("", agentId);
-        if (profiler == null) {
+    public Object lastProfiler(String appCode, String agentId) {
+        Optional<Profiler> profiler_ref = profilerService.getLastProfilerRecord(appCode, agentId);
+        if (!profiler_ref.isPresent()) {
             return ResultHelper.success();
         }
+        Profiler profiler = profiler_ref.get();
         if (profiler.getState() == Profiler.State.ready || profiler.getState() == Profiler.State.start) {
             return ResultHelper.success(
                     ImmutableMap.of("info", profiler, "curTime", LocalDateTime.now().format(DATE_TIME_FORMATTER)));

@@ -16,10 +16,6 @@ public class SamplingProfiler implements Profiler {
 
     private static final Logger logger = BistouryLoggger.getLogger();
 
-    private static final int DEFAULT_FREQUENCY_MILLIS = 10;
-
-    private static final int DEFAULT_DURATION_SECONDS = 120;
-
     private final long durationSeconds;
 
     private final long frequencyMillis;
@@ -30,14 +26,12 @@ public class SamplingProfiler implements Profiler {
 
     private volatile Lock lock;
 
-    public SamplingProfiler(Map<String, Object> config) {
-        Long frequencyMillis = (Long) config.get(ProfilerConstants.FREQUENCY);
-        Long durationSeconds = (Long) config.get(ProfilerConstants.DURATION);
-        String tempDir = (String) config.get(ProfilerConstants.TMP_DIR);
-        this.frequencyMillis = frequencyMillis == null ? DEFAULT_FREQUENCY_MILLIS : frequencyMillis;
-        this.durationSeconds = durationSeconds == null ? DEFAULT_DURATION_SECONDS : durationSeconds;
+    public SamplingProfiler(Map<String, String> config) {
+        this.frequencyMillis = Long.parseLong(config.get(ProfilerConstants.FREQUENCY));
+        this.durationSeconds = Long.parseLong(config.get(ProfilerConstants.DURATION));
+        String tempDir = config.get(ProfilerConstants.TMP_DIR);
         this.tempDir = tempDir == null ? System.getProperty("java.io.tmpdir") : tempDir;
-        this.profilerId = (String) config.get(ProfilerConstants.PROFILER_ID);
+        this.profilerId = config.get(ProfilerConstants.PROFILER_ID);
     }
 
     @Override

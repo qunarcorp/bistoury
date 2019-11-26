@@ -14,7 +14,7 @@ import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.MOD
  */
 public class ProfilerFactory {
 
-    public static Profiler create(Map<String, Object> config) {
+    public static Profiler create(Map<String, String> config) {
         Mode mode = getMode(config);
         switch (mode) {
             case sampler:
@@ -30,9 +30,9 @@ public class ProfilerFactory {
         }
     }
 
-    private static Mode getMode(Map<String, Object> config) {
-        Mode mode = (Mode) config.get(MODE);
-        return mode == null ? getPlatformMode() : mode;
+    private static Mode getMode(Map<String, String> config) {
+        String mode = config.get(MODE);
+        return mode == null ? getPlatformMode() : Mode.codeOf(Integer.parseInt(mode));
     }
 
     private static Mode getPlatformMode() {

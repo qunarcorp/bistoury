@@ -26,7 +26,7 @@ public class ProfilerClient implements InstrumentClient {
         this.instrumentInfo = instrumentInfo;
     }
 
-    public void startProfiler(Map<String, Object> config) {
+    public void startProfiler(Map<String, String> config) {
         if (AgentProfilerContext.isProfiling()) {
             throw new RuntimeException("start profiler error. target vm is profiling");
         }

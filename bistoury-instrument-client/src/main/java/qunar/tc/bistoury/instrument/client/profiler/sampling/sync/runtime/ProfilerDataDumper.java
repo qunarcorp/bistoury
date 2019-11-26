@@ -73,7 +73,7 @@ public class ProfilerDataDumper {
         try {
             realPath.createNewFile();
         } catch (IOException e) {
-            BistouryLoggerHelper.error(e, "create dump file error. path: {}", e);
+            logger.error("", BistouryLoggerHelper.formatMessage("create dump file error. path: {}", realPath), e);
         }
 
         List<Map.Entry<Integer, Long>> timeList;
@@ -102,7 +102,7 @@ public class ProfilerDataDumper {
             }
             dumpStream.flush();
         } catch (Exception e) {
-            BistouryLoggerHelper.error(e, "dump cputime map error. dump file: {}. path: {}", dumpFile);
+            logger.error("", BistouryLoggerHelper.formatMessage("dump cputime map error. dump file: {}. path: {}", dumpFile), e);
         }
     }
 

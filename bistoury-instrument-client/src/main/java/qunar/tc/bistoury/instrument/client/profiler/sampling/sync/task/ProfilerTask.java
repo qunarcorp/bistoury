@@ -42,7 +42,7 @@ public class ProfilerTask implements Task {
                 try {
                     dataRecorder.record();
                 } catch (Exception e) {
-                    BistouryLoggerHelper.error(e, "dump error. frequency: {}", frequency);
+                    logger.error("", BistouryLoggerHelper.formatMessage("dump error. frequency: {}", frequency), e);
                 }
             }
         }, 0, frequency, TimeUnit.MILLISECONDS);

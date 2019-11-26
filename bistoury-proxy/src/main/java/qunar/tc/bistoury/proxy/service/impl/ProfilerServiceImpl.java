@@ -3,10 +3,14 @@ package qunar.tc.bistoury.proxy.service.impl;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerService;
 import qunar.tc.bistoury.serverside.bean.Profiler;
+import qunar.tc.bistoury.serverside.bean.ProfilerSettings;
 import qunar.tc.bistoury.serverside.dao.ProfilerDao;
 import qunar.tc.bistoury.serverside.dao.ProfilerDaoImpl;
+import qunar.tc.bistoury.serverside.dao.ProfilerLockDao;
+import qunar.tc.bistoury.serverside.dao.ProfilerLockDaoImpl;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -26,24 +30,28 @@ public class ProfilerServiceImpl implements ProfilerService {
             .expireAfterWrite(3, TimeUnit.MINUTES)
             .build();
 
+    private final ProfilerLockDao profilerLockDao = new ProfilerLockDaoImpl();
+
     @Override
     public void startProfiler(String profilerId) {
         profilerDao.changeState(Profiler.State.start, profilerId);
     }
 
+    @Transactional
     @Override
-    public String prepareProfiler(String agentId, int duration, int frequency, Profiler.Mode mode) {
+    public String prepareProfiler(String agentId, ProfilerSettings settings) {
+        profilerLockDao.insert(settings.getAppCode(), agentId);
         String profilerId = UUID.randomUUID().toString().replace("-", "");
         Profiler profiler = new Profiler();
+        profiler.setAppCode(settings.getAppCode());
         profiler.setAgentId(agentId);
         profiler.setProfilerId(profilerId);
         profiler.setStartTime(new Timestamp(System.currentTimeMillis()));
         profiler.setState(Profiler.State.ready);
-        profiler.setDuration(duration);
-        profiler.setFrequency(frequency);
-        profiler.setMode(mode);
+        profiler.setDuration(settings.getDuration());
+        profiler.setFrequency(settings.getFrequency());
+        profiler.setMode(Profiler.Mode.fromCode(settings.getMode()));
         profiler.setOperator("");
-        profiler.setAppCode("");
         profilerDao.prepareProfiler(profiler);
         cache.put(profilerId, obj);
         return profilerId;
@@ -51,11 +59,14 @@ public class ProfilerServiceImpl implements ProfilerService {
 
     @Override
     public Profiler getProfilerRecord(String profilerId) {
-        return profilerDao.getRecordById(profilerId);
+        return profilerDao.getRecordByProfilerId(profilerId);
     }
 
     @Override
+    @Transactional
     public void stopProfiler(String profilesId) {
+        Profiler profiler = getProfilerRecord(profilesId);
+        profilerLockDao.delete(profiler.getAppCode(), profiler.getAgentId());
         profilerDao.changeState(Profiler.State.stop, profilesId);
     }
 }

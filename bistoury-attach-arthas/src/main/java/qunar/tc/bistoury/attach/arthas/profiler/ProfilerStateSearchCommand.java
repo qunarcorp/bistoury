@@ -4,8 +4,10 @@ import com.taobao.arthas.core.shell.command.AnnotatedCommand;
 import com.taobao.arthas.core.shell.command.CommandProcess;
 import com.taobao.middleware.cli.annotations.Argument;
 import com.taobao.middleware.cli.annotations.Name;
+import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.arthas.util.TypeResponseResult;
 import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
+import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.common.TypeResponse;
@@ -20,6 +22,8 @@ import java.util.Map;
  */
 @Name(BistouryConstants.REQ_PROFILER_STATE_SEARCH)
 public class ProfilerStateSearchCommand extends AnnotatedCommand {
+
+    private static final Logger logger = BistouryLoggger.getLogger();
 
     private String id;
 
@@ -37,22 +41,22 @@ public class ProfilerStateSearchCommand extends AnnotatedCommand {
 
     @Override
     public void process(CommandProcess process) {
-        BistouryLoggerHelper.info("receive profiler search command, id: {}", id);
-        Map<String, Object> result = new HashMap<>();
+        logger.info("", "receive profiler search command, id: {}", id);
+        Map<String, String> result = new HashMap<>();
         TypeResponse typeResponse = TypeResponseResult.create(result, BistouryConstants.REQ_PROFILER_STATE_SEARCH);
         try {
             if (BistouryConstants.REQ_PROFILER_START_STATE_SEARCH.equals(type)) {
-                result.put("state", AgentProfilerContext.isProfiling());
+                result.put("state", String.valueOf(AgentProfilerContext.isProfiling()));
                 result.put("type", BistouryConstants.REQ_PROFILER_START_STATE_SEARCH);
             } else if (BistouryConstants.REQ_PROFILER_FINNSH_STATE_SEARCH.equals(type)) {
                 result.put("type", BistouryConstants.REQ_PROFILER_FINNSH_STATE_SEARCH);
-                result.put("state", isFinished(id));
+                result.put("state", String.valueOf(isFinished(id)));
             }
             typeResponse.getData().setCode(0);
 
         } catch (Exception e) {
             typeResponse.getData().setCode(-1);
-            BistouryLoggerHelper.error(e, "get state for id: {} error.", id);
+            logger.error("", BistouryLoggerHelper.formatMessage("get state for id: {} error.", id), e);
         } finally {
             process.write(URLCoder.encode(JacksonSerializer.serialize(typeResponse)));
             process.end();
