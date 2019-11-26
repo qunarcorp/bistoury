@@ -67,11 +67,11 @@ DROP TABLE IF EXISTS `bistoury_profiler_lock`;
 CREATE TABLE `bistoury_profiler_lock`
 (
     `id`       INT(10) UNSIGNED       NOT NULL AUTO_INCREMENT COMMENT '主键id',
-    `app_code` VARCHAR(50) DEFAULT '' NOT null COMMENT '对应的appCode',
+    `app_code` VARCHAR(50) DEFAULT '' NOT NULL COMMENT '对应的appCode',
     `agent_id` VARCHAR(32) DEFAULT '' NOT NULL COMMENT 'agent机器对应的id',
     PRIMARY KEY (`id`),
     UNIQUE INDEX uniq_app_code_agent_id (app_code, agent_id)
-);
+) CHARSET = utf8mb4 comment '性能分析插入锁表';
 
 DROP TABLE IF EXISTS `bistoury_profiler`;
 CREATE TABLE `bistoury_profiler`
@@ -91,4 +91,4 @@ CREATE TABLE `bistoury_profiler`
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_profiler_id` (`profiler_id`),
     INDEX idx_app_code_agent_id (app_code, agent_id)
-) CHARSET = utf8mb4;
+) CHARSET = utf8mb4 comment '性能分析记录表';
