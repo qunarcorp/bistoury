@@ -10,6 +10,12 @@ import java.io.FilenameFilter;
  */
 public class ProfilerUtil {
 
+    public static final String RUNNING_STATUS = "running";
+
+    public static final String FINISH_STATUS = "finish";
+
+    public static final String ERROR_STATUS = "error";
+
     public static Optional<File> getProfilerDir(String rootDir, final String profilerId) {
         File root = new File(rootDir);
         File[] children = root.listFiles(new FilenameFilter() {
