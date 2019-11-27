@@ -18,10 +18,17 @@ public class ProfilerClient implements InstrumentClient {
 
     private static final Logger logger = BistouryLoggger.getLogger();
 
-    private Profiler profiler = Profilers.TRIVIAL_PROFILER;
+    private Profiler profiler;
+
+    private boolean init = false;
 
     public synchronized void start(Map<String, String> config) {
-        if (!isDone(profiler)) {
+        if (!init) {
+            stopAll();
+            init = true;
+        }
+
+        if (isRunning(profiler)) {
             logger.error("", "profiler is running: " + profiler.getId());
             throw new RuntimeException("profiler is running: " + profiler.getId());
         }
@@ -32,6 +39,11 @@ public class ProfilerClient implements InstrumentClient {
     }
 
     public synchronized String status(String id) {
+        if (!init) {
+            stopAll();
+            init = true;
+        }
+
         if (profiler.getId().equals(id)) {
             return profiler.getStatus();
         }
@@ -40,6 +52,11 @@ public class ProfilerClient implements InstrumentClient {
     }
 
     public synchronized void stop(String id) {
+        if (!init) {
+            stopAll();
+            init = true;
+        }
+
         if (Strings.isNullOrEmpty(profiler.getId())) {
             return;
         }
@@ -53,12 +70,19 @@ public class ProfilerClient implements InstrumentClient {
         }
     }
 
-    private boolean isDone(Profiler profiler) {
-        return !ProfilerUtil.RUNNING_STATUS.equals(profiler.getStatus());
+    // todo: 用于强制关闭profiler，适用于这里profiler没有记录，但是有profiler进程的情况，作为一种后备手段
+    public synchronized void stopAll() {
+
+    }
+
+    private boolean isRunning(Profiler profiler) {
+        return profiler != null && ProfilerUtil.RUNNING_STATUS.equals(profiler.getStatus());
     }
 
     @Override
     public synchronized void destroy() {
-        profiler.stop();
+        if (isRunning(profiler)) {
+            profiler.stop();
+        }
     }
 }
