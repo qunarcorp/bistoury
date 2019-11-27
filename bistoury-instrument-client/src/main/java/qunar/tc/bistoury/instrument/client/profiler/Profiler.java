@@ -12,8 +12,4 @@ public interface Profiler {
     void start();
 
     void stop();
-
-    boolean isFinish();
-
-    void destroy();
 }

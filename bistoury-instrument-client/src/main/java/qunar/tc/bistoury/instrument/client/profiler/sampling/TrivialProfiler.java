@@ -27,14 +27,4 @@ class TrivialProfiler implements Profiler {
     public void stop() {
 
     }
-
-    @Override
-    public boolean isFinish() {
-        return true;
-    }
-
-    @Override
-    public void destroy() {
-
-    }
 }
