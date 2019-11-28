@@ -1,18 +1,15 @@
 package qunar.tc.bistoury.instrument.client.profiler.sampling.async;
 
+import com.google.common.base.Throwables;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
-import qunar.tc.bistoury.common.NamedThreadFactory;
-import qunar.tc.bistoury.instrument.client.common.InstrumentInfo;
-import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
+import qunar.tc.bistoury.common.ProfilerUtil;
 import qunar.tc.bistoury.instrument.client.profiler.Profiler;
 
 import java.io.File;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 
 import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.*;
 
@@ -24,26 +21,23 @@ public class AsyncSamplingProfiler implements Profiler {
 
     private static final Logger logger = BistouryLoggger.getLogger();
 
-    private final ScheduledExecutorService scheduledExecutorService =
-            Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("async-sampling-shutdown"));
+    private final long frequencyMillis;
 
-    private volatile Lock lock;
+    private final long durationSeconds;
 
-    private Long frequencyMillis;
-
-    private Long durationSeconds;
-
-    private String event;
+    private final String event;
 
     private long startTime;
 
-    private String profilerId;
+    private final String profilerId;
 
     private String rootPath;
 
-    private boolean threads;
+    private final boolean threads;
 
-    private boolean stopped;
+    private final ScheduledExecutorService executor;
+
+    private volatile String status;
 
     public AsyncSamplingProfiler(Map<String, String> params) {
         frequencyMillis = Long.parseLong(params.get(FREQUENCY));
@@ -55,52 +49,115 @@ public class AsyncSamplingProfiler implements Profiler {
     }
 
     @Override
-    public void startup(InstrumentInfo instrumentInfo) {
-        lock = instrumentInfo.getLock();
-        lock.lock();
+    public String getId() {
+        return profilerId;
+    }
+
+    @Override
+    public String getStatus() {
+        if (ProfilerUtil.ERROR_STATUS.equals(status) || ProfilerUtil.FINISH_STATUS.equals(status)) {
+            return status;
+        }
+        String newStatus = findStatus();
+        if (!status.equals(newStatus)) {
+            status = newStatus;
+        }
+        return newStatus;
+    }
+
+    private String findStatus() {
+        // todo: run command
+        return null;
+    }
+
+    @Override
+    public void start() {
+        try {
+            String preProfilerStatus = findPreProfilerStatus();
+            if (ProfilerUtil.RUNNING_STATUS.equals(preProfilerStatus)) {
+                logger.warn("", "unknown profiler running before, try stop");
+                stopPreProfiler();
+            }
+        } catch (Throwable e) {
+            status = ProfilerUtil.ERROR_STATUS;
+            logger.error("", "stop unknown profiler error", e);
+            return;
+        }
+
         try {
             String command = createProfilerCommand(ProfilerCommand.ProfilerAction.start);
             doRunCommand(command);
-            AgentProfilerContext.startProfiling(frequencyMillis);
-            AgentProfilerContext.setProfilerId(profilerId);
+            status = ProfilerUtil.RUNNING_STATUS;
             startTime = System.currentTimeMillis();
-            scheduleClose(durationSeconds);
-        } finally {
-            lock.unlock();
+        } catch (Throwable e) {
+            status = ProfilerUtil.ERROR_STATUS;
+            logger.error("", "start profiler error", e);
+            Throwables.propagate(e);
+            return;
         }
+
+        try {
+            scheduleClose(durationSeconds);
+        } catch (Throwable e) {
+            status = ProfilerUtil.ERROR_STATUS;
+            logger.error("", "create schedule close error, " + profilerId, e);
+            try {
+                stop();
+            } catch (Throwable t) {
+                logger.error("", "stop error profiler error, " + profilerId, t);
+                Throwables.propagate(t);
+            }
+        }
+    }
+
+    private void stopPreProfiler() {
+        String command = createProfilerCommand(ProfilerCommand.ProfilerAction.stop);
+        doRunCommand(command);
+    }
+
+    private String findPreProfilerStatus() {
+        return findStatus();
     }
 
     @Override
     public void stop() {
-        lock.lock();
+        String command = createProfilerCommand(ProfilerCommand.ProfilerAction.stop);
+        doRunCommand(command);
+        status = ProfilerUtil.FINISH_STATUS;
+    }
+
+    private void delayStop(int count, int delay) {
         try {
-            if (stopped) {
-                logger.warn("", "profiler is already stopped. profilerId: {}", profilerId);
-                return;
-            }
-            if (!AgentProfilerContext.isProfiling()) {
-                logger.info("async profiler is already stop.");
-                return;
-            }
-            String command = createProfilerCommand(ProfilerCommand.ProfilerAction.stop);
-            doRunCommand(command);
-            AgentProfilerContext.stopProfiling();
-            stopped = true;
-        } finally {
-            lock.unlock();
+            stop();
+        } catch (Throwable e) {
+            logger.error("", "stop profiler error, " + profilerId, e);
+            stop(count - 1, delay);
         }
     }
 
-    @Override
-    public void destroy() {
-        stop();
+    private void stop(final int count, final int delay) {
+        if (count <= 0) {
+            return;
+        }
+
+        executor.schedule(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    stop();
+                } catch (Throwable e) {
+                    logger.error("", "stop profiler error, " + profilerId, e);
+                    stop(count - 1, delay);
+                }
+            }
+        }, delay, TimeUnit.SECONDS);
     }
 
     private void scheduleClose(long durationSeconds) {
-        scheduledExecutorService.schedule(new Runnable() {
+        executor.schedule(new Runnable() {
             @Override
             public void run() {
-                stop();
+                delayStop(3, 3);
             }
         }, durationSeconds, TimeUnit.SECONDS);
     }

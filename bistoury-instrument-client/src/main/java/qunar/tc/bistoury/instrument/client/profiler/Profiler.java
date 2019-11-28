@@ -1,15 +1,15 @@
 package qunar.tc.bistoury.instrument.client.profiler;
 
-import qunar.tc.bistoury.instrument.client.common.InstrumentInfo;
-
 /**
  * @author cai.wen created on 2019/10/23 10:18
  */
 public interface Profiler {
 
-    void startup(InstrumentInfo instrumentInfo);
+    String getId();
+
+    String getStatus();
+
+    void start();
 
     void stop();
-
-    void destroy();
 }

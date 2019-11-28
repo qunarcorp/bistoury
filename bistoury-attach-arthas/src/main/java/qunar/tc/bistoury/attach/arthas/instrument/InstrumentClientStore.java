@@ -111,7 +111,7 @@ public class InstrumentClientStore {
         }
 
         try {
-            builder.add(ProfilerClients.create(instrumentInfo));
+            builder.add(ProfilerClients.create());
         } catch (Exception e) {
             logger.error("", "profiler client init error", e);
         }

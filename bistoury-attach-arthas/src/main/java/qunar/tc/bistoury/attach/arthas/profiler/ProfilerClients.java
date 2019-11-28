@@ -1,7 +1,5 @@
 package qunar.tc.bistoury.attach.arthas.profiler;
 
-import qunar.tc.bistoury.instrument.client.common.InstrumentInfo;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -21,9 +19,9 @@ public class ProfilerClients {
         }
     }
 
-    public static ProfilerClient create(InstrumentInfo instrumentInfo) {
+    public static ProfilerClient create() {
         if (init.compareAndSet(false, true)) {
-            client = new ProfilerClient(instrumentInfo);
+            client = new ProfilerClient();
             return client;
         } else {
             throw new IllegalStateException("profiler client already created");
