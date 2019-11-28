@@ -32,9 +32,4 @@ public class ProfilerServiceImpl implements ProfilerService {
     public Optional<Profiler> getLastProfilerRecord(String app, String agentId) {
         return profilerDao.getLastRecord(app, agentId);
     }
-
-    @Override
-    public List<Profiler> getRecordsByState(Profiler.State state, LocalDateTime startTime) {
-        return profilerDao.getRecordsByState(state, startTime);
-    }
 }

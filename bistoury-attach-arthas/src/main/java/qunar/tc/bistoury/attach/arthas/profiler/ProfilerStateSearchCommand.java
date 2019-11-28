@@ -43,6 +43,7 @@ public class ProfilerStateSearchCommand extends AnnotatedCommand {
     public void process(CommandProcess process) {
         logger.info("", "receive profiler search command, id: {}", id);
         Map<String, String> result = new HashMap<>();
+        result.put("profilerId", id);
         TypeResponse typeResponse = TypeResponseResult.create(result, BistouryConstants.REQ_PROFILER_STATE_SEARCH);
         try {
             if (BistouryConstants.REQ_PROFILER_START_STATE_SEARCH.equals(type)) {

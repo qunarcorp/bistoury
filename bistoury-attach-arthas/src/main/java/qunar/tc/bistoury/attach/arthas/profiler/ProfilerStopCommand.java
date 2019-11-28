@@ -34,6 +34,7 @@ public class ProfilerStopCommand extends AnnotatedCommand {
     public void process(CommandProcess process) {
         LOGGER.info("", "receive profiler stop command. id: {}", id);
         Map<String, String> result = new HashMap<>();
+        result.put("profilerId", id);
         TypeResponse typeResponse = TypeResponseResult.create(result, BistouryConstants.REQ_PROFILER_STOP);
         CodeProcessResponse response = typeResponse.getData();
 
@@ -41,7 +42,7 @@ public class ProfilerStopCommand extends AnnotatedCommand {
             if (!AgentProfilerContext.isProfiling()) {
                 response.setMessage("target vm is already stop.");
                 response.setCode(-1);
-                result.put("state", String.valueOf(true));
+                result.put("state", Boolean.TRUE.toString());
                 return;
             }
 
@@ -49,13 +50,12 @@ public class ProfilerStopCommand extends AnnotatedCommand {
             if (Strings.isNullOrEmpty(id) || !id.equals(curProfilerId)) {
                 response.setMessage("error profiler id.");
                 response.setCode(-1);
-                result.put("state", String.valueOf(true));
+                result.put("state", Boolean.TRUE.toString());
                 return;
             }
 
             ProfilerClients.getInstance().stopProfiler();
-            result.put("profilerId", id);
-            result.put("state", String.valueOf(true));
+            result.put("state", Boolean.TRUE.toString());
             response.setCode(0);
             response.setMessage("stop profiler success.");
         } catch (Exception e) {

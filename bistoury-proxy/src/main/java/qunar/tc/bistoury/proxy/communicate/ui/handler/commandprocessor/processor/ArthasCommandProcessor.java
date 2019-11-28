@@ -23,19 +23,14 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.common.BistouryConstants;
-import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
 import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.AbstractCommand;
-import qunar.tc.bistoury.proxy.service.profiler.ProfilerService;
-import qunar.tc.bistoury.proxy.service.profiler.ProfilerStateManager;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
 import qunar.tc.bistoury.serverside.agile.Conf;
-import qunar.tc.bistoury.serverside.bean.ProfilerSettings;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -65,15 +60,6 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
     private String defaultCmInfoFilePath = DEFAULT_RELEASE_INFO_PATH;
     private Conf conf;
 
-    @Resource
-    private ProfilerService profilerService;
-
-    @Resource
-    private AgentConnectionStore agentConnectionStore;
-
-    @Resource
-    private ProfilerStateManager profilerStateManager;
-
     @PostConstruct
     public void init() {
         DynamicConfigLoader.<LocalDynamicConfig>load("releaseInfo_config.properties", false)
@@ -90,27 +76,14 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
                 CommandCode.REQ_TYPE_MONITOR.getCode(),
                 CommandCode.REQ_TYPE_JAR_INFO.getCode(),
                 CommandCode.REQ_TYPE_CONFIG.getCode(),
-                CommandCode.REQ_TYPE_JAR_DEBUG.getCode(),
-                CommandCode.REQ_TYPE_PROFILER_START.getCode(),
-                CommandCode.REQ_TYPE_PROFILER_STOP.getCode(),
-                CommandCode.REQ_TYPE_PROFILER_STATE_SEARCH.getCode()
+                CommandCode.REQ_TYPE_JAR_DEBUG.getCode()
         );
     }
 
     @Override
     protected String prepareCommand(RequestData<String> data, String agentId) {
-        String command;
-        if (CommandCode.REQ_TYPE_PROFILER_START.getCode() == data.getType()) {
-            command = prepareProfilerStart(data.getCommand(), agentId);
-        } else {
-            command = encodeCommand(data.getCommand(), data.getApp());
-        }
+        String command = encodeCommand(data.getCommand(), data.getApp());
         return command + BistouryConstants.PID_PARAM + BistouryConstants.FILL_PID;
-    }
-
-    private String prepareProfilerStart(String command, String agentId) {
-        ProfilerSettings profilerSettings = profilerStateManager.register(agentId, command);
-        return profilerSettings.getCommand();
     }
 
     @Override

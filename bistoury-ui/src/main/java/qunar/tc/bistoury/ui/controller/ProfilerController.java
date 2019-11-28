@@ -11,10 +11,7 @@ import com.ning.http.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
 import qunar.tc.bistoury.serverside.bean.Profiler;
@@ -56,6 +53,8 @@ public class ProfilerController {
 
     private static final String profilerIsAnalyzedUrl = "http://%s:%d/proxy/profiler/analysis/state?profilerId=%s";
 
+    private static final String profilerStartUrl = "http://%s:%d/proxy/profiler/start?appCode=%s&agentId=%s&duration=%s";
+
     @Resource
     private ProxyService proxyService;
 
@@ -91,18 +90,55 @@ public class ProfilerController {
     @ResponseBody
     public Object lastProfiler(String appCode, String agentId) {
         Optional<Profiler> profiler_ref = profilerService.getLastProfilerRecord(appCode, agentId);
-        if (!profiler_ref.isPresent()) {
-            return ResultHelper.success();
-        }
-        Profiler profiler = profiler_ref.get();
-        if (profiler.getState() == Profiler.State.ready || profiler.getState() == Profiler.State.start) {
-            return ResultHelper.success(
-                    ImmutableMap.of("info", profiler, "curTime", LocalDateTime.now().format(DATE_TIME_FORMATTER)));
-        }
-        return ResultHelper.success();
+        return profiler_ref.map(profiler ->
+                ResultHelper.success(ImmutableMap.of("info", profiler, "curTime",
+                        LocalDateTime.now().format(DATE_TIME_FORMATTER))))
+                .orElseGet(ResultHelper::success);
     }
 
-    private final TypeReference analyzerResponse = new TypeReference<ApiResult<Map<String, Object>>>() {
+    @PostMapping("/start")
+    @ResponseBody
+    public Object start(String appCode, String agentId, String lastProfilerId, long duration) {
+        try {
+            checkLastProfiler(appCode, agentId, lastProfilerId);
+            List<String> proxyWebSocketUrls = proxyService.getAllProxyUrls();
+            for (String proxyWebSocketUrl : proxyWebSocketUrls) {
+                Optional<ProxyInfo> proxyRef = ProxyInfoParse.parseProxyInfo(proxyWebSocketUrl);
+                if (!proxyRef.isPresent()) {
+                    continue;
+                }
+                Optional<String> profilerIdRef = doStartProfiler(proxyRef.get(), appCode, agentId, duration);
+                if (profilerIdRef.isPresent()) {
+                    return ResultHelper.success(profilerIdRef.get());
+                }
+            }
+        } catch (Exception e) {
+            return ResultHelper.fail(e.getMessage());
+        }
+        return ResultHelper.fail("start profiler error.");
+    }
+
+    private void checkLastProfiler(String appCode, String agentId, String lastProfilerId) {
+        Optional<Profiler> profiler_ref = profilerService.getLastProfilerRecord(appCode, agentId);
+        if (profiler_ref.isPresent()) {
+            if (lastProfilerId == null || (!lastProfilerId.equals(profiler_ref.get().getProfilerId()))) {
+                throw new RuntimeException("性能分析状态已经发生了更新,请刷新界面,查看最新的状态.");
+            }
+        }
+    }
+
+    private Optional<String> doStartProfiler(ProxyInfo proxyInfo, String appCode, String agentId, long duration) {
+        String url = String.format(profilerStartUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), appCode, agentId, String.valueOf(duration));
+        byte[] content = getBytesFromUrl(url);
+        ApiResult<String> apiResult = JacksonSerializer.deSerialize(content, new TypeReference<ApiResult<String>>() {
+        });
+        if (apiResult.getStatus() == 0) {
+            return Optional.of(apiResult.getData());
+        }
+        return Optional.empty();
+    }
+
+    private final TypeReference analyzerResponse = new TypeReference<ApiResult<Map<String, String>>>() {
     };
 
     private Optional<ProfilerInfoVo> analyze(String profilerId) {
@@ -145,8 +181,8 @@ public class ProfilerController {
     private String doGetName(ProxyInfo proxyInfo, String profilerId) {
         String url = String.format(profilerIsAnalyzedUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId);
         byte[] content = getBytesFromUrl(url);
-        ApiResult<Map<String, Object>> response = JacksonSerializer.deSerialize(content, analyzerResponse);
-        return (String) response.getData().get("name");
+        ApiResult<Map<String, String>> response = JacksonSerializer.deSerialize(content, analyzerResponse);
+        return response.getData().get("name");
     }
 
     private static final Splitter COLON_SPLITTER = Splitter.on(":");

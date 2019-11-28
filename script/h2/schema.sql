@@ -90,5 +90,6 @@ CREATE TABLE `bistoury_profiler`
     `state`       INT(3) UNSIGNED  NOT NULL COMMENT '状态,0: 开始, 1: 已结束',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_profiler_id` (`profiler_id`),
+    INDEX idx_start_time ('start_time'),
     INDEX idx_app_code_agent_id (app_code, agent_id)
 ) CHARSET = utf8mb4 comment '性能分析记录表';

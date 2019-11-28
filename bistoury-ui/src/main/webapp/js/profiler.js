@@ -10,8 +10,9 @@ var startTime = null;
 var processIntervalId;
 var currentUiTime = null;
 
-var START_STATE = "start";
 var READY_STATE = "ready";
+var START_STATE = "start";
+var STOP_STATE = "stop";
 
 var async_sampler = "async_sampler";
 var sampler = "sampler";
@@ -19,10 +20,10 @@ var sampler = "sampler";
 var async_sampler_code = "0";
 var sampler_code = "1";
 
+var globalProfilerState;
+
 function startProfiler() {
     var duration = $("#profiler-duration").val();
-    var frequency = $("#profiler-frequency").val();
-    var mode = $("#profiler-mode").val();
     console.log("start profiler.");
     if (duration > 3600) {
         bistoury.warning("性能分析时长不能超过一小时");
@@ -32,21 +33,19 @@ function startProfiler() {
         bistoury.warning("性能分析时长不能低于30秒");
         return;
     }
-
-    // if (mode === sampler_code && frequency < 10) {
-    //     bistoury.warning("同步抽样间隔应该大于10ms.");
-    //     return;
-    // }
     initStartState();
     curDuration = duration;
-    sendStartCommand(mode, duration, frequency, $("#profiler-event").val());
+    sendStartRequest(duration);
     $(".model-profiler-setting").modal("hide");
 }
 
 function openStartSettingModel() {
-    var agentId = getAgentId();
-    var lastProfiler = searchLastProfiler(agentId);
+    var lastProfiler = searchLastProfiler();
+    if (lastProfiler != null) {
+        globalProfilerId = lastProfiler.profilerId;
+    }
     if (lastProfiler != null && (lastProfiler.state === READY_STATE || lastProfiler.state === START_STATE)) {
+        globalProfilerState = lastProfiler.state;
         bistoury.warning("正在等待数据库更新.请稍后");
         return;
     }
@@ -60,14 +59,14 @@ function initCurrentProfilerTable(profilerId) {
     startSearchStateInterval();
 }
 
-function searchLastProfiler(agentId) {
+function searchLastProfiler() {
     var lastProfiler;
     $.ajax({
         "url": "profiler/last.do",
         "type": "get",
         "dataType": 'JSON',
         "data": {
-            agentId: agentId,
+            agentId: getAgentId(),
             appCode: getAppCode()
         },
         async: false,
@@ -83,14 +82,14 @@ function searchLastProfiler(agentId) {
     return lastProfiler;
 }
 
-function searchProfilerHistory(agentId) {
+function searchProfilerHistory() {
     $.ajax({
         "url": "profiler/records.do",
         "type": "get",
         "dataType": 'JSON',
         "data": {
             appCode: getAppCode(),
-            agentId: agentId
+            agentId: getAgentId()
         },
         async: false,
         success: function (ret) {
@@ -141,11 +140,9 @@ function initHistoryTable(data) {
 }
 
 function initNoStartState() {
-    var currentHost = $('#menu').treeview('getSelected')[0].value;
-    var agentId = currentHost.ip;
-    var lastProfiler = searchLastProfiler(agentId);
+    var lastProfiler = searchLastProfiler();
 
-    searchProfilerHistory(agentId);
+    searchProfilerHistory();
     if (lastProfiler == null) {
         initState();
         return;
@@ -154,12 +151,14 @@ function initNoStartState() {
     globalProfilerId = lastProfiler.profilerId;
     if (lastProfiler.state === START_STATE || lastProfiler.state === READY_STATE) {
         curDuration = lastProfiler.duration;
+        globalProfilerState = START_STATE;
         startProcessStateInterval();
         initStartState();
         initCurrentProfilerTable(globalProfilerId);
-    } else {
-        initEndState();
+        return;
     }
+    globalProfilerState = STOP_STATE;
+    initState();
 }
 
 function initState() {
@@ -197,6 +196,7 @@ function buildProfiler(result) {
     console.log("result: " + result);
     if (resType === "profilerstart") {
         if (data.code === 0) {
+            globalProfilerState = READY_STATE;
             initCurrentProfilerTable(data.data.profilerId);
             bistoury.success("开始性能分析");
             currentUiTime = null;
@@ -207,23 +207,21 @@ function buildProfiler(result) {
         }
     } else if (resType === "profilerstop") {
         if (data.code === 0) {
-
+            globalProfilerState = STOP_STATE;
         } else {
             bistoury.error("手动停止性能分析失败: " + data.message)
         }
     } else if (resType === "profilerstatesearch") {
         if (data.code === 0 && (data.data.state === 'true')) {
+            if (data.data.type === "profilerstartsearch") {
+                globalProfilerState = START_STATE;
+                return;
+            }
             bistoury.success("性能分析正常停止");
             stopSearchStateInterval();
-            var agentId = getAgentId();
-            initEndState();
             stopProcessStateInterval();
-            setTimeout(function () {
-                searchProfilerHistory(agentId);
-            }, 3000);
-            setTimeout(function () {
-                searchProfilerHistory(agentId);
-            }, 6000);
+            initEndState();
+            searchProfilerHistory();
         }
     }
 }
@@ -243,12 +241,17 @@ function getAgentId() {
 }
 
 function searchProfilerState() {
-    sendFinishStateCommand();
+    sendStateCommand();
 }
 
-function sendFinishStateCommand() {
+function sendStateCommand() {
     var currentHost = getCurrentHost();
-    var command = "profilerstatesearch " + globalProfilerId + " profilerfinishsearch";
+    var command
+    if (globalProfilerState === READY_STATE) {
+        command = "profilerstatesearch " + globalProfilerId + " profilerstartsearch";
+    } else if (globalProfilerState === START_STATE) {
+        command = "profilerstatesearch " + globalProfilerId + " profilerfinishsearch";
+    }
     bistouryWS.sendCommand(currentHost, REQ_TYPE_PROFILER_STATE_SEARCH, command, stop, handleResult);
 }
 
@@ -263,18 +266,10 @@ function stopProfiler() {
     sendStopCommand(globalProfilerId);
 }
 
-function sendStartCommand(mode, duration, frequency, event) {
+function sendStartRequest(duration) {
     var currentHost = $('#menu').treeview('getSelected')[0].value;
     var command = "profilerstart " + getAppCode();
-    // command += " -m " + mode;
-    // if (mode === async_sampler_code) {
-    //     if ($("#profiler-threads").val() === "0") {
-    //         command += " -threads";
-    //     }
-    //     command += " -e " + event;
-    // }
-    command += " -d " + duration;
-    // command += " -f " + frequency;
+    command += " " + duration;
     bistouryWS.sendCommand(currentHost, REQ_TYPE_PROFILER, command, stop, handleResult);
 }
 
@@ -296,7 +291,7 @@ function stopSearchStateInterval() {
 
 function startSearchStateInterval() {
     stopSearchStateInterval();
-    searchStateIntervalId = setInterval(searchProfilerState, 5000);
+    searchStateIntervalId = setInterval(searchProfilerState, 3000);
 }
 
 function startProcessStateInterval() {

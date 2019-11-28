@@ -16,6 +16,4 @@ public interface ProfilerService {
     List<Profiler> getLastRecords(String app, String agentId, LocalDateTime startTime);
 
     Optional<Profiler> getLastProfilerRecord(String app, String agentId);
-
-    List<Profiler> getRecordsByState(Profiler.State state, LocalDateTime startTime);
 }

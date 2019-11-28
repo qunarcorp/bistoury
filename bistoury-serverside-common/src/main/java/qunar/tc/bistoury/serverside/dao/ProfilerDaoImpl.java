@@ -28,14 +28,16 @@ public class ProfilerDaoImpl implements ProfilerDao {
 
     private static final String UPDATE_PROFILER_STATE_SQL = "update bistoury_profiler set state=? where profiler_id=?";
 
-    private static final String SELECT_PROFILER_BY_STATE_SQL = "select * from bistoury_profiler where state=? and start_time>?";
+    private static final String SELECT_PROFILER_BY_STATE_SQL = "select * from bistoury_profiler where start_time>? and state=?";
 
     private static final String SELECT_PROFILER_BY_PROFILER_ID_SQL = "select * from bistoury_profiler where profiler_id=?";
 
-    private static final String SELECT_LAST_RECORDS = "SELECT * FROM bistoury_profiler " +
+    //todo 修改select * from
+
+    private static final String SELECT_LAST_RECORDS = "SELECT id,profiler_id, operator, app_code, agent_id, pid, start_time,duration,frequency,mode,state,update_time FROM bistoury_profiler " +
             "where  app_code=? and agent_id=? and start_time>? order by start_time desc";
 
-    private static final String SELECT_LAST_RECORD = "SELECT * FROM bistoury_profiler where app_code=? and agent_id=? limit 1";
+    private static final String SELECT_LAST_RECORD = "SELECT id,profiler_id, operator, app_code, agent_id, pid, start_time,duration,frequency,mode,state,update_time FROM bistoury_profiler where app_code=? and agent_id=? order by start_time desc limit 1";
 
     private final JdbcTemplate jdbcTemplate = JdbcTemplateHolder.getOrCreateJdbcTemplate();
 
@@ -64,7 +66,7 @@ public class ProfilerDaoImpl implements ProfilerDao {
 
     @Override
     public List<Profiler> getRecordsByState(Profiler.State state, LocalDateTime startTime) {
-        return jdbcTemplate.query(SELECT_PROFILER_BY_STATE_SQL, PROFILER_ROW_MAPPER, state.code, TIME_FORMATTER.format(startTime));
+        return jdbcTemplate.query(SELECT_PROFILER_BY_STATE_SQL, PROFILER_ROW_MAPPER, TIME_FORMATTER.format(startTime), state.code);
     }
 
     @Override

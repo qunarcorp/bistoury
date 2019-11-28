@@ -14,11 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.ProfilerUtil;
+import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerDataManager;
+import qunar.tc.bistoury.proxy.service.profiler.ProfilerManager;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerService;
-import qunar.tc.bistoury.proxy.service.profiler.ProfilerStateManager;
+import qunar.tc.bistoury.proxy.service.profiler.ProfilerSettingsManager;
 import qunar.tc.bistoury.proxy.util.ProfilerAnalyzer;
 import qunar.tc.bistoury.serverside.bean.Profiler;
+import qunar.tc.bistoury.serverside.bean.ProfilerSettings;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 
 import javax.annotation.Resource;
@@ -46,6 +49,34 @@ public class AgentProfilerForUiController {
     @Resource
     private ProfilerService profilerService;
 
+    @Resource
+    private ProfilerSettingsManager profilerSettingsManager;
+
+    @Resource
+    private ProfilerManager profilerManager;
+
+    @Resource
+    private ProfilerDataManager profilerDataManager;
+
+    @Resource
+    private AgentConnectionStore agentConnectionStore;
+
+//    @RequestMapping("/start")
+//    @ResponseBody
+//    public Object start(String appCode, String agentId, String duration) {
+//        if (!agentConnectionStore.getConnection(agentId).isPresent()) {
+//            return ResultHelper.fail("no agent for agent.");
+//        }
+//        try {
+//            Map<String, String> config = ImmutableMap.of("-d", duration);
+//            ProfilerSettings settings = profilerSettingsManager.create(appCode, config);
+////            return ResultHelper.success(profilerManager.start(agentId, settings));
+//        } catch (Exception e) {
+//            LOGGER.error("start profiler error. appCode: {} agentId: {} duration: {}", appCode, agentId, e);
+//            return ResultHelper.fail(e.getMessage());
+//        }
+//    }
+
     @RequestMapping("/svg")
     public ResponseEntity<byte[]> download(String profilerId,
                                            String svgName,
@@ -57,12 +88,6 @@ public class AgentProfilerForUiController {
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         return new ResponseEntity<>(Files.readAllBytes(path), headers, HttpStatus.CREATED);
     }
-
-    @Resource
-    private ProfilerDataManager profilerDataManager;
-
-    @Resource
-    private ProfilerStateManager profilerStateManager;
 
     @RequestMapping("/result")
     @ResponseBody
@@ -86,7 +111,7 @@ public class AgentProfilerForUiController {
     @ResponseBody
     public Object getAnalysisState(String profilerId) {
         Optional<File> fileRef = ProfilerUtil.getProfilerDir(BistouryConstants.PROFILER_ROOT_PATH, profilerId);
-        Map<String, Object> result = ImmutableMap.of();
+        Map<String, String> result = ImmutableMap.of();
         if (fileRef.isPresent()) {
             result = ImmutableMap.of("name", fileRef.get().getName());
         }
@@ -97,7 +122,7 @@ public class AgentProfilerForUiController {
     @ResponseBody
     public Object searchStopState(String profilerId) {
         try {
-            profilerStateManager.searchStopState(profilerId);
+            profilerManager.searchStopState(profilerId);
         } catch (Exception e) {
             LOGGER.error("search stop state error.profiler id: {}", profilerId, e);
             ResultHelper.fail(e.getMessage());
@@ -109,7 +134,7 @@ public class AgentProfilerForUiController {
     @ResponseBody
     public Object forceStop(String agentId, String profilerId) {
         try {
-            profilerStateManager.forceStop(agentId, profilerId);
+            profilerManager.forceStop(agentId, profilerId);
         } catch (Exception e) {
             LOGGER.error("force stop profiler error.profiler id: {}", profilerId, e);
             ResultHelper.fail(e.getMessage());

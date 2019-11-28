@@ -73,6 +73,7 @@ public class ProfilerStartCommand extends AnnotatedCommand {
     public void process(CommandProcess process) {
         logger.info("receive profiler add command, mode: {}, config: {}", config);
         Map<String, String> result = new HashMap<>();
+        result.put("profilerId", profilerId);
         TypeResponse typeResponse = TypeResponseResult.create(result, BistouryConstants.REQ_PROFILER_START);
         CodeProcessResponse response = typeResponse.getData();
         try {
@@ -85,7 +86,7 @@ public class ProfilerStartCommand extends AnnotatedCommand {
             ProfilerClient profilerClient = ProfilerClients.getInstance();
             profilerClient.startProfiler(config);
             response.setCode(0);
-            result.put("profilerId", profilerId);
+            result.put("state", Boolean.TRUE.toString());
             response.setMessage("add profiler success.");
         } catch (Exception e) {
             logger.error("", BistouryLoggerHelper.formatMessage("profiler add error. config: {}", config), e);

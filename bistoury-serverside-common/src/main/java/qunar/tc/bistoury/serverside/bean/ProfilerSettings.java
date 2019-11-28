@@ -12,6 +12,10 @@ public class ProfilerSettings {
 
     private String command;
 
+    public ProfilerSettings(String appCode) {
+        this.appCode = appCode;
+    }
+
     public ProfilerSettings(String appCode, int duration, int frequency, int mode, String command) {
         this.appCode = appCode;
         this.duration = duration;

@@ -20,20 +20,7 @@ import java.util.Map;
 @Service
 public class ProfilerSettingsManagerImpl implements ProfilerSettingsManager {
 
-    private static final Splitter SPACE_SPLITTER = Splitter.on(" ").trimResults().omitEmptyStrings();
-
     private static final Joiner SPACE_JOINER = Joiner.on(" ").skipNulls();
-
-    @Resource
-    private ProfilerSettingsStore profilerSettingsStore;
-
-    @Override
-    public ProfilerSettings create(String command) {
-        if (Strings.isEmpty(command)) {
-            return null;
-        }
-        return getReaLCommand(SPACE_SPLITTER.splitToList(command));
-    }
 
     private static final String frequencyKey = "-f";
 
@@ -45,18 +32,16 @@ public class ProfilerSettingsManagerImpl implements ProfilerSettingsManager {
 
     private static final String modeKey = "-m";
 
-    private ProfilerSettings getReaLCommand(List<String> commandChunk) {
-        String appCode = commandChunk.get(1);
-        Map<String, String> params = getCommandParams(commandChunk.subList(2, commandChunk.size()));
-        return doGetReaLCommand(appCode, params);
-    }
+    @Resource
+    private ProfilerSettingsStore profilerSettingsStore;
 
-    private ProfilerSettings doGetReaLCommand(String appCode, Map<String, String> params) {
-        String duration = params.getOrDefault(durationKey, profilerSettingsStore.getDurationSeconds(appCode));
-        String frequency = params.getOrDefault(frequencyKey, profilerSettingsStore.getFrequencyMillis(appCode));
-        boolean threads = Boolean.parseBoolean(params.getOrDefault(threadsKey, String.valueOf(profilerSettingsStore.isThreads(appCode))));
-        String event = params.getOrDefault(eventKey, profilerSettingsStore.getEvent(appCode));
-        String modeCode = params.getOrDefault(eventKey, profilerSettingsStore.getModeCode(appCode));
+    @Override
+    public ProfilerSettings create(String appCode, Map<String, String> config) {
+        String duration = config.getOrDefault(durationKey, profilerSettingsStore.getDurationSeconds(appCode));
+        String frequency = config.getOrDefault(frequencyKey, profilerSettingsStore.getFrequencyMillis(appCode));
+        boolean threads = Boolean.parseBoolean(config.getOrDefault(threadsKey, String.valueOf(profilerSettingsStore.isThreads(appCode))));
+        String event = config.getOrDefault(eventKey, profilerSettingsStore.getEvent(appCode));
+        String modeCode = config.getOrDefault(eventKey, profilerSettingsStore.getModeCode(appCode));
 
         List<String> chunk = Lists.newArrayListWithExpectedSize(6);
         chunk.add(BistouryConstants.REQ_PROFILER_START);
@@ -79,15 +64,5 @@ public class ProfilerSettingsManagerImpl implements ProfilerSettingsManager {
         return new ProfilerSettings(appCode, Integer.parseInt(duration), Integer.parseInt(frequency),
                 modeCode == null ? Profiler.Mode.async_sampler.code : Integer.parseInt(modeCode),
                 SPACE_JOINER.join(chunk));
-    }
-
-    private Map<String, String> getCommandParams(List<String> paramChunk) {
-        Map<String, String> params = Maps.newHashMapWithExpectedSize(paramChunk.size() / 2);
-        for (int i = 0; i < paramChunk.size() / 2; i++) {
-            String paramKey = paramChunk.get(2 * i);
-            String value = paramChunk.get(2 * i + 1);
-            params.put(paramKey, value);
-        }
-        return params;
     }
 }
