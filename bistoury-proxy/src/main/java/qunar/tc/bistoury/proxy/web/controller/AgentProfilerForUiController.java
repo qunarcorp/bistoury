@@ -12,16 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.ProfilerUtil;
-import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerDataManager;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerManager;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerService;
-import qunar.tc.bistoury.proxy.service.profiler.ProfilerSettingsManager;
 import qunar.tc.bistoury.proxy.util.ProfilerAnalyzer;
 import qunar.tc.bistoury.serverside.bean.Profiler;
-import qunar.tc.bistoury.serverside.bean.ProfilerSettings;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 
 import javax.annotation.Resource;
@@ -50,32 +46,10 @@ public class AgentProfilerForUiController {
     private ProfilerService profilerService;
 
     @Resource
-    private ProfilerSettingsManager profilerSettingsManager;
-
-    @Resource
     private ProfilerManager profilerManager;
 
     @Resource
     private ProfilerDataManager profilerDataManager;
-
-    @Resource
-    private AgentConnectionStore agentConnectionStore;
-
-//    @RequestMapping("/start")
-//    @ResponseBody
-//    public Object start(String appCode, String agentId, String duration) {
-//        if (!agentConnectionStore.getConnection(agentId).isPresent()) {
-//            return ResultHelper.fail("no agent for agent.");
-//        }
-//        try {
-//            Map<String, String> config = ImmutableMap.of("-d", duration);
-//            ProfilerSettings settings = profilerSettingsManager.create(appCode, config);
-////            return ResultHelper.success(profilerManager.start(agentId, settings));
-//        } catch (Exception e) {
-//            LOGGER.error("start profiler error. appCode: {} agentId: {} duration: {}", appCode, agentId, e);
-//            return ResultHelper.fail(e.getMessage());
-//        }
-//    }
 
     @RequestMapping("/svg")
     public ResponseEntity<byte[]> download(String profilerId,
@@ -110,7 +84,7 @@ public class AgentProfilerForUiController {
     @RequestMapping("/analysis/state")
     @ResponseBody
     public Object getAnalysisState(String profilerId) {
-        Optional<File> fileRef = ProfilerUtil.getProfilerDir(BistouryConstants.PROFILER_ROOT_PATH, profilerId);
+        Optional<File> fileRef = ProfilerUtil.getProfilerDir(PROFILER_ROOT_PATH, profilerId);
         Map<String, String> result = ImmutableMap.of();
         if (fileRef.isPresent()) {
             result = ImmutableMap.of("name", fileRef.get().getName());

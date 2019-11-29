@@ -77,4 +77,7 @@ public class BistouryConstants {
     public static final String BISTOURY_VERSION_LINE_PREFIX = "bistoury version:";
 
     public static final String SHUTDOWN_COMMAND = "shutdown";
+
+    //todo 修改这个临时文件夹
+    public static final String PROFILER_ROOT_PATH = "/tmp/test/bistoury-profiler";
 }

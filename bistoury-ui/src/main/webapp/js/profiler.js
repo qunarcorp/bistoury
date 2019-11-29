@@ -227,7 +227,7 @@ function buildProfiler(result) {
                 bistoury.success("性能分析异常结束");
                 stopSearchStateInterval();
                 stopProcessStateInterval();
-                initStartState();
+                initNoStartState();
                 globalProfilerState = STOP_STATE;
             }
         }
