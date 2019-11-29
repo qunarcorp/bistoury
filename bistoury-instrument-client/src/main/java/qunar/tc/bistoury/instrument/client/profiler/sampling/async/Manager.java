@@ -44,4 +44,16 @@ public class Manager {
         return ASYNC_PROFILER.execute(command);
     }
 
+    //async-profiler profiler.cpp:658
+    private static final String STOP_ERROR_DETAIL_MESSAGE = "Profiler is not active";
+
+    public static void stop() {
+        try {
+            ASYNC_PROFILER.stop();
+        } catch (IllegalStateException e) {
+            if (!e.getMessage().equals(STOP_ERROR_DETAIL_MESSAGE)) {
+                throw e;
+            }
+        }
+    }
 }

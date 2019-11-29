@@ -2,3 +2,4 @@ qunar.tc.bistoury.agent.task.monitor.MonitorReportTaskFactory
 qunar.tc.bistoury.agent.task.cpujstack.CpuJStackTaskFactory
 qunar.tc.bistoury.agent.task.agentInfo.AgentInfoPushTaskFactory
 qunar.tc.bistoury.agent.task.heapHisto.HeapHistoDumpTaskFactory
+qunar.tc.bistoury.agent.task.profiler.ProfilerFileCleanTaskFactory

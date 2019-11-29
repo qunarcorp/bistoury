@@ -44,7 +44,7 @@ public class ProfilerClient implements InstrumentClient {
             init = true;
         }
 
-        if (profiler.getId().equals(id)) {
+        if (profiler != null && profiler.getId().equals(id)) {
             return profiler.getStatus();
         }
 
@@ -57,7 +57,7 @@ public class ProfilerClient implements InstrumentClient {
             init = true;
         }
 
-        if (Strings.isNullOrEmpty(profiler.getId())) {
+        if (profiler == null || Strings.isNullOrEmpty(profiler.getId())) {
             return;
         }
 
@@ -70,9 +70,9 @@ public class ProfilerClient implements InstrumentClient {
         }
     }
 
-    // todo: 用于强制关闭profiler，适用于这里profiler没有记录，但是有profiler进程的情况，作为一种后备手段
     public synchronized void stopAll() {
-
+        qunar.tc.bistoury.instrument.client.profiler.sampling.sync.Manager.stop();
+        qunar.tc.bistoury.instrument.client.profiler.sampling.async.Manager.stop();
     }
 
     private boolean isRunning(Profiler profiler) {

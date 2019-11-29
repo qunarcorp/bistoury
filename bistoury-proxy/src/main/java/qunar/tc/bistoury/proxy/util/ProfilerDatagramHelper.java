@@ -59,25 +59,22 @@ public class ProfilerDatagramHelper {
         });
     }
 
-    private static boolean getResultState(TypeResponse<Map<String, String>> response) {
-        Map<String, String> data = response.getData().getData();
-        String state = data.get("state");
-        return state != null && Boolean.valueOf(state);
-    }
-
-    public static Optional<String> getChangedProfilerId(Datagram datagram) {
+    public static Optional<TypeResponse<Map<String, String>>> getProfilerResponse(Datagram datagram) {
         if (!isProfilerResult(datagram)) {
             return Optional.empty();
         }
 
         TypeResponse<Map<String, String>> response = getProfilerResponse(datagram.getBody().slice());
-        if (!ProfilerDatagramHelper.getResultState(response)) {
-            return Optional.empty();
-        }
-        return Optional.of(response.getData().getData().get("profilerId"));
+        return Optional.of(response);
     }
 
-    public static String getStateSearchType(Datagram datagram) {
-        return getProfilerResponse(datagram.getBody().slice()).getData().getData().get("type");
+    public static boolean getResultState(TypeResponse<Map<String, String>> response) {
+        Map<String, String> data = response.getData().getData();
+        String state = data.get("state");
+        return state != null && Boolean.valueOf(state);
+    }
+
+    public static String getProfilerId(TypeResponse<Map<String, String>> response) {
+        return response.getData().getData().get("profilerId");
     }
 }

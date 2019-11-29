@@ -45,13 +45,15 @@ public class ProfilerStateSearchCommand extends AnnotatedCommand {
         Map<String, String> result = new HashMap<>();
         result.put("profilerId", id);
         TypeResponse typeResponse = TypeResponseResult.create(result, BistouryConstants.REQ_PROFILER_STATE_SEARCH);
+
+        ProfilerClient profilerClient = ProfilerClients.getInstance();
         try {
             if (BistouryConstants.REQ_PROFILER_START_STATE_SEARCH.equals(type)) {
-                result.put("state", String.valueOf(AgentProfilerContext.isProfiling()));
+                result.put("status", profilerClient.status(id));
                 result.put("type", BistouryConstants.REQ_PROFILER_START_STATE_SEARCH);
             } else if (BistouryConstants.REQ_PROFILER_FINNSH_STATE_SEARCH.equals(type)) {
                 result.put("type", BistouryConstants.REQ_PROFILER_FINNSH_STATE_SEARCH);
-                result.put("state", String.valueOf(isFinished(id)));
+                result.put("status", profilerClient.status(id));
             }
             typeResponse.getData().setCode(0);
 

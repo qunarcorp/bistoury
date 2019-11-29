@@ -84,7 +84,7 @@ public class ProfilerStartCommand extends AnnotatedCommand {
             }
 
             ProfilerClient profilerClient = ProfilerClients.getInstance();
-            profilerClient.startProfiler(config);
+            profilerClient.start(config);
             response.setCode(0);
             result.put("state", Boolean.TRUE.toString());
             response.setMessage("add profiler success.");

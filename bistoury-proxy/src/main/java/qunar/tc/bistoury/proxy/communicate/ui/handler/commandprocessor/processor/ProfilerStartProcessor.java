@@ -3,7 +3,10 @@ package qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.processo
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import qunar.tc.bistoury.common.TypeResponse;
 import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.AbstractCommand;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerManager;
@@ -21,7 +24,10 @@ import java.util.Set;
 @Service
 public class ProfilerStartProcessor extends AbstractCommand<String> {
 
-    private static final Splitter SPCAE_SPLITTER = Splitter.on(" ").trimResults();
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProfilerStartProcessor.class);
+
+    private static final Splitter SPACE_SPLITTER = Splitter.on(" ").trimResults();
 
     @Resource
     private ProfilerManager profilerManager;
@@ -53,18 +59,24 @@ public class ProfilerStartProcessor extends AbstractCommand<String> {
     }
 
     private String getAppCode(String command) {
-        return SPCAE_SPLITTER.splitToList(command).get(1);
+        return SPACE_SPLITTER.splitToList(command).get(1);
     }
 
     private Map<String, String> getConfig(String command) {
-        String duration = SPCAE_SPLITTER.splitToList(command).get(2);
+        String duration = SPACE_SPLITTER.splitToList(command).get(2);
         return ImmutableMap.of("-d", duration);
     }
 
     @Override
     public Datagram prepareResponse(Datagram datagram) {
-        Optional<String> profilerIdRef = ProfilerDatagramHelper.getChangedProfilerId(datagram);
-        profilerIdRef.ifPresent(profilerId -> profilerManager.start(profilerId));
+        try {
+            Optional<TypeResponse<Map<String, String>>> responseRef = ProfilerDatagramHelper.getProfilerResponse(datagram);
+            if (responseRef.isPresent() && ProfilerDatagramHelper.getResultState(responseRef.get())) {
+                profilerManager.start(ProfilerDatagramHelper.getProfilerId(responseRef.get()));
+            }
+        } catch (Exception e) {
+            LOGGER.error("start profiler error.", e);
+        }
         return datagram;
     }
 }

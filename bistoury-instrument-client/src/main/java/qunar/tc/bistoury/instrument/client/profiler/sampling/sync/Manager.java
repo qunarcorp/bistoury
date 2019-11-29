@@ -3,8 +3,8 @@ package qunar.tc.bistoury.instrument.client.profiler.sampling.sync;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
+import qunar.tc.bistoury.clientside.common.store.BistouryStore;
 import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
-import qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.task.DumpTask;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.task.ProfilerTask;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.task.Task;
@@ -69,24 +69,23 @@ public class Manager {
 
     private static volatile long startTime;
 
-    private static void createDumpPath(String tempDir) {
-        ProfilerConstants.PROFILER_ROOT_PATH = tempDir + File.separator + "bistoury-profiler";
-        ProfilerConstants.PROFILER_TEMP_PATH = tempDir + File.separator + "bistoury-profiler" + File.separator + "tmp";
-
+    private static void createDumpPath(String profilerDir) {
+        BistouryStore.PROFILER_ROOT_PATH = profilerDir;
+        BistouryStore.PROFILER_TEMP_PATH = profilerDir + File.separator + "tmp";
         if (isDebugMode) {
-            new File(ProfilerConstants.PROFILER_ROOT_PATH).delete();
-            new File(ProfilerConstants.PROFILER_TEMP_PATH).delete();
+            new File(BistouryStore.PROFILER_ROOT_PATH).delete();
+            new File(BistouryStore.PROFILER_TEMP_PATH).delete();
         }
-        new File(ProfilerConstants.PROFILER_ROOT_PATH).mkdirs();
-        new File(ProfilerConstants.PROFILER_TEMP_PATH + File.separator + profilerId).mkdirs();
+        new File(BistouryStore.PROFILER_ROOT_PATH).mkdirs();
+        new File(BistouryStore.PROFILER_TEMP_PATH + File.separator + profilerId).mkdirs();
     }
 
-    public static synchronized void init(long durationSeconds, long frequencyMillis, String profilerId, String tempDir) {
+    public static synchronized void init(long durationSeconds, long frequencyMillis, String profilerId, String profilerDir) {
         Manager.profilerId = profilerId;
         AgentProfilerContext.setProfilerId(profilerId);
         profilerTask = new ProfilerTask(frequencyMillis);
         dumpTask = new DumpTask(durationSeconds);
-        createDumpPath(tempDir);
+        createDumpPath(profilerDir);
 
         profilerTask.init();
         dumpTask.init();
@@ -103,8 +102,8 @@ public class Manager {
 
     public static void renameResult(long dumpTime) {
         long durationSeconds = (dumpTime - startTime) / 1000;
-        File preDumpPath = new File(ProfilerConstants.PROFILER_TEMP_PATH + File.separator + profilerId);
-        File realDumpPath = new File(ProfilerConstants.PROFILER_ROOT_PATH + File.separator + profilerId + "-" + durationSeconds);
+        File preDumpPath = new File(BistouryStore.PROFILER_TEMP_PATH + File.separator + profilerId);
+        File realDumpPath = new File(BistouryStore.PROFILER_ROOT_PATH + File.separator + profilerId + "-" + durationSeconds);
         preDumpPath.renameTo(realDumpPath);
     }
 
@@ -123,7 +122,7 @@ public class Manager {
     }
 
     private static String getFullPath(String fileName) {
-        String profilerIdPath = ProfilerConstants.PROFILER_TEMP_PATH + File.separator + profilerId;
+        String profilerIdPath = BistouryStore.PROFILER_TEMP_PATH + File.separator + profilerId;
         return profilerIdPath + File.separator + fileName;
     }
 

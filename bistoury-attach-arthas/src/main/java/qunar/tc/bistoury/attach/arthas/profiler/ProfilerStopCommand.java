@@ -54,7 +54,7 @@ public class ProfilerStopCommand extends AnnotatedCommand {
                 return;
             }
 
-            ProfilerClients.getInstance().stopProfiler();
+            ProfilerClients.getInstance().stop(id);
             result.put("state", Boolean.TRUE.toString());
             response.setCode(0);
             response.setMessage("stop profiler success.");

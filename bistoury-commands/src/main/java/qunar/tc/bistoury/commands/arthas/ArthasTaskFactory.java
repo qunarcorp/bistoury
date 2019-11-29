@@ -20,10 +20,10 @@ package qunar.tc.bistoury.commands.arthas;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
+import qunar.tc.bistoury.clientside.common.store.BistouryStore;
 import qunar.tc.bistoury.commands.arthas.telnet.ArthasTelnetStore;
 import qunar.tc.bistoury.commands.arthas.telnet.DebugTelnetStore;
 import qunar.tc.bistoury.commands.arthas.telnet.TelnetStore;
-import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.URLCoder;
 import qunar.tc.bistoury.remoting.netty.Task;
 import qunar.tc.bistoury.remoting.netty.TaskFactory;
@@ -104,7 +104,7 @@ public class ArthasTaskFactory implements TaskFactory<String> {
 
         if (header.getCode() == CommandCode.REQ_TYPE_PROFILER_START.getCode()) {
             //增加target vm临时文件夹参数
-            realCommand = realCommand + " -t " + URLCoder.encode(BistouryConstants.TMP_DIR);
+            realCommand = realCommand + " -t " + URLCoder.encode(BistouryStore.PROFILER_ROOT_PATH);
         }
 
         return new ArthasTask(storeMapping.get(header.getCode()), header.getId(), header.getMaxRunningMs(), pid, realCommand, handler);

@@ -212,16 +212,24 @@ function buildProfiler(result) {
             bistoury.error("手动停止性能分析失败: " + data.message)
         }
     } else if (resType === "profilerstatesearch") {
-        if (data.code === 0 && (data.data.state === 'true')) {
-            if (data.data.type === "profilerstartsearch") {
+        if (data.code === 0) {
+            var status = data.data.status;
+            if (status === "running") {
                 globalProfilerState = START_STATE;
-                return;
+            } else if (status === "finish") {
+                bistoury.success("性能分析正常停止");
+                stopSearchStateInterval();
+                stopProcessStateInterval();
+                initEndState();
+                searchProfilerHistory();
+                globalProfilerState = STOP_STATE;
+            } else if (status === "error") {
+                bistoury.success("性能分析异常结束");
+                stopSearchStateInterval();
+                stopProcessStateInterval();
+                initStartState();
+                globalProfilerState = STOP_STATE;
             }
-            bistoury.success("性能分析正常停止");
-            stopSearchStateInterval();
-            stopProcessStateInterval();
-            initEndState();
-            searchProfilerHistory();
         }
     }
 }

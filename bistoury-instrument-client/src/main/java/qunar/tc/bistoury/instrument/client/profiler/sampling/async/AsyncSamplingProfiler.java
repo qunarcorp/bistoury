@@ -3,11 +3,13 @@ package qunar.tc.bistoury.instrument.client.profiler.sampling.async;
 import com.google.common.base.Throwables;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
+import qunar.tc.bistoury.common.NamedThreadFactory;
 import qunar.tc.bistoury.common.ProfilerUtil;
 import qunar.tc.bistoury.instrument.client.profiler.Profiler;
 
 import java.io.File;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -15,7 +17,6 @@ import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.*;
 
 /**
  * @author cai.wen created on 2019/11/11 17:01
- * 先只支持生成火焰图
  */
 public class AsyncSamplingProfiler implements Profiler {
 
@@ -31,7 +32,7 @@ public class AsyncSamplingProfiler implements Profiler {
 
     private final String profilerId;
 
-    private String rootPath;
+    private final String profilerDir;
 
     private final boolean threads;
 
@@ -44,8 +45,9 @@ public class AsyncSamplingProfiler implements Profiler {
         durationSeconds = Long.parseLong(params.get(DURATION));
         event = params.get(EVENT);
         profilerId = params.get(PROFILER_ID);
-        rootPath = params.get(TMP_DIR) + File.separator + "bistoury-profiler";
         threads = Boolean.parseBoolean(params.get(THREADS));
+        profilerDir = params.get(TMP_DIR);
+        executor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("async-profiler-shutdown"));
     }
 
     @Override
@@ -65,9 +67,16 @@ public class AsyncSamplingProfiler implements Profiler {
         return newStatus;
     }
 
+    //async-profiler profiler.cpp:876
+    private static final String NOT_ACTIVE_PREFIX = "Profiler is not active";
+
     private String findStatus() {
-        // todo: run command
-        return null;
+        String statusResult = doRunCommand("status");
+        if (statusResult.startsWith(NOT_ACTIVE_PREFIX)) {
+            return ProfilerUtil.FINISH_STATUS;
+        } else {
+            return ProfilerUtil.RUNNING_STATUS;
+        }
     }
 
     @Override
@@ -124,6 +133,7 @@ public class AsyncSamplingProfiler implements Profiler {
         String command = createProfilerCommand(ProfilerCommand.ProfilerAction.stop);
         doRunCommand(command);
         status = ProfilerUtil.FINISH_STATUS;
+        executor.shutdownNow();
     }
 
     private void delayStop(int count, int delay) {
@@ -162,9 +172,9 @@ public class AsyncSamplingProfiler implements Profiler {
         }, durationSeconds, TimeUnit.SECONDS);
     }
 
-    private void doRunCommand(String command) {
+    private String doRunCommand(String command) {
         try {
-            Manager.execute(command);
+            return Manager.execute(command);
         } catch (Exception e) {
             throw new RuntimeException("execute async command error. command: " + command, e);
         }
@@ -178,7 +188,7 @@ public class AsyncSamplingProfiler implements Profiler {
             command.setInterval(frequencyMillis * 1000000);
         }
         if (action == ProfilerCommand.ProfilerAction.stop) {
-            String profilerPath = rootPath + File.separator + profilerId
+            String profilerPath = profilerDir + File.separator + profilerId
                     + "-" + (System.currentTimeMillis() - startTime) / 1000
                     + "-" + event;
             new File(profilerPath).mkdirs();

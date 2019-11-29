@@ -49,6 +49,10 @@ public class BistouryStore {
         return FileUtil.dealPath(STORE_PATH, child);
     }
 
+    public static volatile String PROFILER_ROOT_PATH = BistouryStore.getStorePath("bistoury-profiler");
+
+    public static volatile String PROFILER_TEMP_PATH = BistouryStore.getStorePath("bistoury-profiler" + File.separator + "tmp");
+
     public static String getDefaultStorePath() {
         return getStorePath(DEFAULT_CHILD);
     }

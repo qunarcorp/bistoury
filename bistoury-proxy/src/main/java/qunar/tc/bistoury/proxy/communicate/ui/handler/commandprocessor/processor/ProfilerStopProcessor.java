@@ -1,6 +1,8 @@
 package qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.processor;
 
 import com.google.common.collect.ImmutableSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.TypeResponse;
@@ -18,6 +20,8 @@ import java.util.Set;
 
 @Service
 public class ProfilerStopProcessor extends AbstractCommand<String> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProfilerStopProcessor.class);
 
     @Resource
     private ProfilerManager profilerManager;
@@ -44,8 +48,14 @@ public class ProfilerStopProcessor extends AbstractCommand<String> {
 
     @Override
     public Datagram prepareResponse(Datagram datagram) {
-        Optional<String> profilerIdRef = ProfilerDatagramHelper.getChangedProfilerId(datagram);
-        profilerIdRef.ifPresent(s -> profilerManager.stop(s));
+        try {
+            Optional<TypeResponse<Map<String, String>>> responseRef = ProfilerDatagramHelper.getProfilerResponse(datagram);
+            if (responseRef.isPresent() && ProfilerDatagramHelper.getResultState(responseRef.get())) {
+                profilerManager.stop(ProfilerDatagramHelper.getProfilerId(responseRef.get()));
+            }
+        } catch (Exception e) {
+            LOGGER.error("stop profiler error.", e);
+        }
         return datagram;
     }
 }

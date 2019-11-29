@@ -17,8 +17,6 @@
 
 package qunar.tc.bistoury.common;
 
-import java.io.File;
-
 /**
  * @author zhenyu.nie created on 2018 2018/11/28 19:59
  */
@@ -68,10 +66,6 @@ public class BistouryConstants {
     public static final String BISTOURY_COMMAND_THREAD_NAME = "bistoury-command-execute-daemon";
 
     public static final String SPY_CLASSNAME = "qunar.tc.bistoury.instrument.spy.BistourySpys1";
-
-    public static final String TMP_DIR = System.getProperty("java.io.tmpdir");
-
-    public static final String PROFILER_ROOT_PATH = System.getProperty("java.io.tmpdir") + File.separator + "bistoury-profiler";
 
     public static final String PROFILER_LIB_NAME = "profilerLib";
 
