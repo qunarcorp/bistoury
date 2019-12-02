@@ -18,13 +18,15 @@ public class AgentProfilerContext {
     public synchronized static void stopProfiling() {
         startTime = -1;
         isProfiling = false;
+        profilerId = null;
     }
 
-    public synchronized static void startProfiling(long intervalMillis) {
+    public synchronized static void startProfiling(String profilerId, long intervalMillis) {
         startTime = System.currentTimeMillis();
         AgentProfilerContext.intervalMillis = intervalMillis;
         intervalNs = intervalMillis * 1000000;
         isProfiling = true;
+        AgentProfilerContext.profilerId = profilerId;
     }
 
     public synchronized static boolean isProfiling() {

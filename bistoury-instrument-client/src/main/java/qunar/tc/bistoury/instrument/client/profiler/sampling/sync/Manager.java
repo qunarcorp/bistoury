@@ -65,7 +65,6 @@ public class Manager {
         dumpTask.init();
 
         startTime = System.currentTimeMillis();
-        AgentProfilerContext.startProfiling(frequencyMillis);
     }
 
     public synchronized static void stop() {

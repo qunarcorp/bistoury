@@ -30,6 +30,8 @@ public class ProfilerStartCommand extends AnnotatedCommand {
 
     private String profilerId;
 
+    private long frequency;
+
     private final Map<String, String> config = Maps.newHashMapWithExpectedSize(2);
 
     @Option(shortName = "d", longName = "duration")
@@ -39,6 +41,7 @@ public class ProfilerStartCommand extends AnnotatedCommand {
 
     @Option(shortName = "f", longName = "frequency")
     public void setFrequency(String frequency) {
+        this.frequency = Long.parseLong(frequency);
         config.put(FREQUENCY, frequency);
     }
 
@@ -86,6 +89,7 @@ public class ProfilerStartCommand extends AnnotatedCommand {
             ProfilerClient profilerClient = ProfilerClients.getInstance();
             profilerClient.start(config);
             response.setCode(0);
+            AgentProfilerContext.startProfiling(profilerId, frequency);
             result.put("state", Boolean.TRUE.toString());
             response.setMessage("add profiler success.");
         } catch (Exception e) {

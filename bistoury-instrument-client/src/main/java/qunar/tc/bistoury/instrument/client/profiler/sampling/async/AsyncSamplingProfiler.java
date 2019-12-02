@@ -5,6 +5,7 @@ import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.common.NamedThreadFactory;
 import qunar.tc.bistoury.common.ProfilerUtil;
+import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
 import qunar.tc.bistoury.instrument.client.profiler.Profiler;
 
 import java.io.File;
@@ -133,6 +134,7 @@ public class AsyncSamplingProfiler implements Profiler {
         String command = createProfilerCommand(ProfilerCommand.ProfilerAction.stop);
         doRunCommand(command);
         status = ProfilerUtil.FINISH_STATUS;
+        AgentProfilerContext.stopProfiling();
         executor.shutdownNow();
     }
 

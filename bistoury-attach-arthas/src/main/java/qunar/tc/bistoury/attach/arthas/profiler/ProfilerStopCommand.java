@@ -55,6 +55,7 @@ public class ProfilerStopCommand extends AnnotatedCommand {
             }
 
             ProfilerClients.getInstance().stop(id);
+            AgentProfilerContext.stopProfiling();
             result.put("state", Boolean.TRUE.toString());
             response.setCode(0);
             response.setMessage("stop profiler success.");

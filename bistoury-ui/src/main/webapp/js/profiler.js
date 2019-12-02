@@ -41,12 +41,9 @@ function startProfiler() {
 
 function openStartSettingModel() {
     var lastProfiler = searchLastProfiler();
-    if (lastProfiler != null) {
-        globalProfilerId = lastProfiler.profilerId;
-    }
-    if (lastProfiler != null && (lastProfiler.state === READY_STATE || lastProfiler.state === START_STATE)) {
-        globalProfilerState = lastProfiler.state;
-        bistoury.warning("正在等待数据库更新.请稍后");
+    var lastProfileId = lastProfiler == null ? null : lastProfiler.profilerId;
+    if (lastProfileId !== globalProfilerId) {
+        bistoury.warning("最新的性能分析记录已经变更,请刷新界面");
         return;
     }
     $(".model-profiler-setting").modal("show");
@@ -254,10 +251,10 @@ function searchProfilerState() {
 
 function sendStateCommand() {
     var currentHost = getCurrentHost();
-    var command
+    var command;
     if (globalProfilerState === READY_STATE) {
         command = "profilerstatesearch " + globalProfilerId + " profilerstartsearch";
-    } else if (globalProfilerState === START_STATE) {
+    } else if (globalProfilerState === START_STATE || globalProfilerState === STOP_STATE) {
         command = "profilerstatesearch " + globalProfilerId + " profilerfinishsearch";
     }
     bistouryWS.sendCommand(currentHost, REQ_TYPE_PROFILER_STATE_SEARCH, command, stop, handleResult);
