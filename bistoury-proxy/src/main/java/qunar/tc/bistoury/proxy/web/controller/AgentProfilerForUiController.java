@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import qunar.tc.bistoury.common.ProfilerUtil;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerDataManager;
-import qunar.tc.bistoury.proxy.service.profiler.ProfilerManager;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerService;
 import qunar.tc.bistoury.proxy.util.profiler.ProfilerAnalyzer;
 import qunar.tc.bistoury.serverside.bean.Profiler;
@@ -44,9 +43,6 @@ public class AgentProfilerForUiController {
 
     @Resource
     private ProfilerService profilerService;
-
-    @Resource
-    private ProfilerManager profilerManager;
 
     @Resource
     private ProfilerDataManager profilerDataManager;
@@ -90,30 +86,6 @@ public class AgentProfilerForUiController {
             result = ImmutableMap.of("name", fileRef.get().getName());
         }
         return ResultHelper.success(result);
-    }
-
-    @RequestMapping("/searchStopState")
-    @ResponseBody
-    public Object searchStopState(String profilerId) {
-        try {
-            profilerManager.searchStopState(profilerId);
-        } catch (Exception e) {
-            LOGGER.error("search stop state error.profiler id: {}", profilerId, e);
-            ResultHelper.fail(e.getMessage());
-        }
-        return ResultHelper.success();
-    }
-
-    @RequestMapping("/stop")
-    @ResponseBody
-    public Object forceStop(String agentId, String profilerId) {
-        try {
-            profilerManager.forceStop(agentId, profilerId);
-        } catch (Exception e) {
-            LOGGER.error("force stop profiler error.profiler id: {}", profilerId, e);
-            ResultHelper.fail(e.getMessage());
-        }
-        return ResultHelper.success();
     }
 
     private Path getFile(String profilerId, String svgName) {

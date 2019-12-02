@@ -204,7 +204,7 @@ public class ProfilerController {
             List<String> info = COLON_SPLITTER.splitToList(proxyUrl);
             String proxyIp = info.get(0);
             int tomcatPort = Integer.parseInt(info.get(1));
-            responseOutputStream.write(getFile(new ProxyInfo(proxyIp, tomcatPort, 0), profilerId, name));
+            copyFileStream(new ProxyInfo(proxyIp, tomcatPort, 0), profilerId, name, responseOutputStream);
             responseOutputStream.flush();
         }
     }
@@ -239,17 +239,23 @@ public class ProfilerController {
     }
 
 
-    private byte[] getFile(ProxyInfo proxyInfo, String profilerId, String name) {
+    private void copyFileStream(ProxyInfo proxyInfo, String profilerId, String name, ServletOutputStream responseOutputStream) {
         String url = String.format(profilerFileUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId, name);
-        //todo 改成循环读取
-        return getBytesFromUrl(url);
+        Request request = httpClient.preparePost(url).build();
+        try {
+            Response response = httpClient.executeRequest(request).get();
+            ByteStreams.copy(response.getResponseBodyAsStream(), responseOutputStream);
+        } catch (Exception e) {
+            LOGGER.error("get file from proxy error.", e);
+            throw new RuntimeException("get content error. " + e.getMessage());
+        }
     }
 
     private byte[] getBytesFromUrl(String url) {
         Request request = httpClient.preparePost(url).build();
         try {
             Response response = httpClient.executeRequest(request).get();
-            return ByteStreams.toByteArray(response.getResponseBodyAsStream());
+            return response.getResponseBodyAsBytes();
         } catch (Exception e) {
             LOGGER.error("get byte from proxy error.", e);
             throw new RuntimeException("get content error. " + e.getMessage());

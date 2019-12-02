@@ -71,7 +71,8 @@ public class ProfilerStateProcessor extends AbstractCommand<String> {
 
     private void changeDbStatus(String type, String status, String profilerId) {
         if (ERROR_STATUS.equals(status)) {
-            profilerManager.stopWithError(ERROR_STATUS);
+            profilerManager.stopWithError(profilerId);
+            return;
         } else if (FINISH_STATUS.equals(status)) {
             profilerManager.stop(profilerId);
             return;

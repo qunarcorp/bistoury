@@ -9,10 +9,6 @@ public interface ProfilerManager {
 
     String prepare(String agentId, ProfilerSettings settings);
 
-    void searchStopState(String profilerId);
-
-    void forceStop(String agentId, String profilerId);
-
     void start(String profilerId);
 
     void stop(String profilerId);
