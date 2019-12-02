@@ -192,7 +192,7 @@ public class AsyncSamplingProfiler implements Profiler {
                     + "-" + (System.currentTimeMillis() - startTime) / 1000
                     + "-" + event;
             new File(profilerPath).mkdirs();
-            String fileName = "async" + ".svg";
+            String fileName = "async" + ".collapsed";
             logger.info("", "async file. path: {} file: {}", profilerPath, fileName);
             String file = new File(profilerPath, fileName).getAbsolutePath();
             command.setFile(file);

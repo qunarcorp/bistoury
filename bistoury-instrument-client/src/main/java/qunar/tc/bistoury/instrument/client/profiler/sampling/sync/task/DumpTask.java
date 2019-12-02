@@ -1,16 +1,10 @@
 package qunar.tc.bistoury.instrument.client.profiler.sampling.sync.task;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.Manager;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.ProfilerData;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.ProfilerDataDumper;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -21,34 +15,14 @@ public class DumpTask implements Task {
 
     private static final Logger logger = BistouryLoggger.getLogger();
 
-    private final long duration;
-
     private final Lock lock = new ReentrantLock();
 
-    private boolean isDump = false;
+    private volatile boolean isDump = false;
 
-    public DumpTask(long duration) {
-        this.duration = duration;
-    }
+    private final ProfilerDataDumper dataDumper;
 
-    private final ProfilerDataDumper dataDumper = new ProfilerDataDumper();
-
-    private static final ThreadFactory dumpThreadFactory = new ThreadFactoryBuilder()
-            .setNameFormat(Manager.profilerThreadPoolDumpName)
-            .build();
-
-    private final ScheduledExecutorService scheduledExecutorService =
-            Executors.newSingleThreadScheduledExecutor(dumpThreadFactory);
-
-    @Override
-    public void init() {
-        scheduledExecutorService.schedule(new Runnable() {
-            @Override
-            public void run() {
-                doDump();
-                Manager.stop();
-            }
-        }, duration, TimeUnit.SECONDS);
+    public DumpTask() {
+        this.dataDumper = new ProfilerDataDumper();
     }
 
     private void doDump() {
@@ -66,9 +40,13 @@ public class DumpTask implements Task {
     }
 
     @Override
+    public void init() {
+
+    }
+
+    @Override
     public void stop() {
         doDump();
         ProfilerData.reset();
-        scheduledExecutorService.shutdownNow();
     }
 }

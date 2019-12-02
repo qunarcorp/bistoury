@@ -35,14 +35,6 @@ public class DefaultProfilerManager implements ProfilerManager {
         String command = settings.getCommand().replace(BistouryConstants.PROFILER_ID, profilerId)
                 + BistouryConstants.PID_PARAM + BistouryConstants.FILL_PID;
         settings.setCommand(command);
-        Optional<AgentConnection> agentConnRef = agentConnectionStore.getConnection(agentId);
-        if (!agentConnRef.isPresent()) {
-            throw new RuntimeException("no connection for profiler id. profilerId: " + profilerId);
-        }
-
-        Datagram searchDatagram = createStartDatagram(profilerId, settings.getCommand());
-        agentConnectionStore.getConnection(agentId)
-                .ifPresent(agentConn -> agentConn.write(searchDatagram));
         return profilerId;
     }
 

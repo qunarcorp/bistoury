@@ -2,11 +2,11 @@ package qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import qunar.tc.bistoury.common.profiler.method.MethodCache;
+import qunar.tc.bistoury.common.profiler.method.MethodInfo;
 import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.cpu.DumpData;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.cpu.ThreadCpuInfo;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.method.MethodCache;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.method.MethodInfo;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -126,7 +126,7 @@ public class ProfilerData {
         for (int i = 0; i < stackTraceElements.size(); i++) {
             StackTraceElement element = stackTraceElements.get(i);
             MethodInfo methodInfo = new MethodInfo(element.getClassName(), element.getMethodName());
-            methodIds[i] = MethodCache.addMethod(methodInfo);
+            methodIds[i] = MethodCache.getMethodTagId(methodInfo);
         }
         return methodIds;
     }

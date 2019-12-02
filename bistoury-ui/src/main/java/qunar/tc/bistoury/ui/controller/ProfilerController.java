@@ -2,6 +2,7 @@ package qunar.tc.bistoury.ui.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
 import com.ning.http.client.AsyncHttpClient;
@@ -47,7 +48,7 @@ public class ProfilerController {
                     .setConnectTimeout(3000)
                     .setReadTimeout(1000 * 60 * 3).build());
 
-    private static final String profilerSvgUrl = "http://%s:%d/proxy/profiler/svg?profilerId=%s&svgName=%s";
+    private static final String profilerFileUrl = "http://%s:%d/proxy/profiler/file?profilerId=%s&name=%s";
 
     private static final String profilerResultUrl = "http://%s:%d/proxy/profiler/result?profilerId=%s";
 
@@ -189,22 +190,23 @@ public class ProfilerController {
 
     @GetMapping("/download")
     public void forwardSvgFile(@RequestParam("profilerId") String profilerId,
-                               @RequestParam("svgName") String svgName,
+                               @RequestParam("name") String name,
                                @RequestParam("proxyUrl") String proxyUrl,
+                               @RequestParam(value = "contentType", required = false) String contentType,
                                HttpServletResponse response) throws Exception {
         response.setCharacterEncoding("UTF-8");
         response.setHeader("Cache-Control", "no-store");
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
-        response.setContentType("image/svg+xml");
-        ServletOutputStream responseOutputStream = response.getOutputStream();
-
-        List<String> info = COLON_SPLITTER.splitToList(proxyUrl);
-        String proxyIp = info.get(0);
-        int tomcatPort = Integer.parseInt(info.get(1));
-        responseOutputStream.write(getSvgFile(new ProxyInfo(proxyIp, tomcatPort, 0), profilerId, svgName));
-        responseOutputStream.flush();
-        responseOutputStream.close();
+        contentType = Strings.isNullOrEmpty(contentType) ? "image/svg+xml" : contentType;
+        response.setContentType(contentType);
+        try (ServletOutputStream responseOutputStream = response.getOutputStream()) {
+            List<String> info = COLON_SPLITTER.splitToList(proxyUrl);
+            String proxyIp = info.get(0);
+            int tomcatPort = Integer.parseInt(info.get(1));
+            responseOutputStream.write(getFile(new ProxyInfo(proxyIp, tomcatPort, 0), profilerId, name));
+            responseOutputStream.flush();
+        }
     }
 
     private String getAnalyzerResult(String url) {
@@ -237,8 +239,9 @@ public class ProfilerController {
     }
 
 
-    private byte[] getSvgFile(ProxyInfo proxyInfo, String profilerId, String svgName) {
-        String url = String.format(profilerSvgUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId, svgName);
+    private byte[] getFile(ProxyInfo proxyInfo, String profilerId, String name) {
+        String url = String.format(profilerFileUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId, name);
+        //todo 改成循环读取
         return getBytesFromUrl(url);
     }
 

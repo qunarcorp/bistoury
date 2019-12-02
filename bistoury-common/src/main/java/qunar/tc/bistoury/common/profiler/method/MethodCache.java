@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.method;
+package qunar.tc.bistoury.common.profiler.method;
 
 import com.google.common.collect.Maps;
 
@@ -15,7 +15,7 @@ public class MethodCache {
 
     private static final AtomicInteger INFO_ID_GENERATOR = new AtomicInteger(0);
 
-    public static int addMethod(MethodInfo methodInfo) {
+    public static int getMethodTagId(MethodInfo methodInfo) {
         Integer id = infoCache.get(methodInfo);
         if (id == null) {
             id = INFO_ID_GENERATOR.incrementAndGet();

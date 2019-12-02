@@ -1124,6 +1124,7 @@ while (my ($id, $node) = each %Node) {
 		$escaped_func =~ s/>/&gt;/g;
 		$escaped_func =~ s/"/&quot;/g;
 		$escaped_func =~ s/_\[[kwij]\]$//;	# strip any annotation
+
 		unless (defined $delta) {
 			$info = "$escaped_func ($samples_txt $countname, $pct%)";
 		} else {

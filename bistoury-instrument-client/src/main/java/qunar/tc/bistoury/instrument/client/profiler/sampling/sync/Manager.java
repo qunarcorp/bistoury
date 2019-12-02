@@ -8,7 +8,6 @@ import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.task.DumpTask;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.task.ProfilerTask;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.task.Task;
-import qunar.tc.bistoury.instrument.client.profiler.util.trie.Trie;
 
 import java.io.File;
 
@@ -25,43 +24,18 @@ public class Manager {
 
     public static final String profilerThreadPoolDumpName = "bistoury-profile-dump";
 
-    private static final String runnableDataPath = "runnable-traces.txt";
-    private static final String filterRunnableDataPath = "filter-runnable-traces.txt";
-    private static final String blockedDataPath = "blocked-traces.txt";
-    private static final String filterBlockedDataPath = "filter-blocked-traces.txt";
-    private static final String timedWaitingDataPath = "timed-waiting-traces.txt";
-    private static final String filterTimedWaitingDataPath = "filter-timed-waiting-traces.txt";
-    private static final String waitingDataPath = "waiting-traces.txt";
-    private static final String filterWaitingDataPath = "filter-waiting-traces.txt";
-    private static final String allStatePath = "all-state-traces.txt";
-    private static final String filterAllStatePath = "filter-all-state-traces.txt";
+    private static final String runnableDataPath = "runnable-traces.collapsed";
+    private static final String filterRunnableDataPath = "filter-runnable-traces.collapsed";
+    private static final String blockedDataPath = "blocked-traces.collapsed";
+    private static final String filterBlockedDataPath = "filter-blocked-traces.collapsed";
+    private static final String timedWaitingDataPath = "timed-waiting-traces.collapsed";
+    private static final String filterTimedWaitingDataPath = "filter-timed-waiting-traces.collapsed";
+    private static final String waitingDataPath = "waiting-traces.collapsed";
+    private static final String filterWaitingDataPath = "filter-waiting-traces.collapsed";
+    private static final String allStatePath = "all-state-traces.collapsed";
+    private static final String filterAllStatePath = "filter-all-state-traces.collapsed";
 
     private static volatile String profilerId;
-
-    private static final Trie compactPrefixPackage = new Trie();
-
-    static {
-        compactPrefixPackage.insert("java.");
-        compactPrefixPackage.insert("javax.");
-        compactPrefixPackage.insert("sun.");
-        compactPrefixPackage.insert("org.springframework.");
-        compactPrefixPackage.insert("org.jboss.");
-        compactPrefixPackage.insert("org.apache.");
-        compactPrefixPackage.insert("com.sun.");
-        compactPrefixPackage.insert("org.mybatis.");
-        compactPrefixPackage.insert("com.mysql.");
-        compactPrefixPackage.insert("io.netty.");
-        compactPrefixPackage.insert("com.google.");
-        compactPrefixPackage.insert("ch.qos.");
-        compactPrefixPackage.insert("org.slf4j.");
-        compactPrefixPackage.insert("io.termd.core.");
-        compactPrefixPackage.insert("com.taobao.arthas.");
-        compactPrefixPackage.insert("com.taobao.middleware.");
-    }
-
-    public static boolean isCompactClass(String className) {
-        return compactPrefixPackage.containsPrefixNode(className);
-    }
 
     private static Task profilerTask;
 
@@ -80,19 +54,19 @@ public class Manager {
         new File(BistouryStore.PROFILER_TEMP_PATH + File.separator + profilerId).mkdirs();
     }
 
-    public static synchronized void init(long durationSeconds, long frequencyMillis, String profilerId, String profilerDir) {
+    public static synchronized void init(long frequencyMillis, String profilerId, String profilerDir) {
         Manager.profilerId = profilerId;
         AgentProfilerContext.setProfilerId(profilerId);
         profilerTask = new ProfilerTask(frequencyMillis);
-        dumpTask = new DumpTask(durationSeconds);
+        dumpTask = new DumpTask();
         createDumpPath(profilerDir);
 
         profilerTask.init();
         dumpTask.init();
+
         startTime = System.currentTimeMillis();
         AgentProfilerContext.startProfiling(frequencyMillis);
     }
-
 
     public synchronized static void stop() {
         stopTask(profilerTask);

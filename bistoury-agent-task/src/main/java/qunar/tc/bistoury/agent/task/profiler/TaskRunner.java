@@ -38,7 +38,7 @@ public class TaskRunner implements Runnable {
     private void deleteIfExpired(File file) {
         long modifiedTime = file.lastModified();
         long currentTime = System.currentTimeMillis();
-        long diffHours = (currentTime - modifiedTime) / 60 * 60 * 1000;
+        long diffHours = (currentTime - modifiedTime) / (60 * 60 * 1000);
         if (diffHours > EXPIRE_HOURS) {
             boolean deleteState = file.delete();
             if (!deleteState) {

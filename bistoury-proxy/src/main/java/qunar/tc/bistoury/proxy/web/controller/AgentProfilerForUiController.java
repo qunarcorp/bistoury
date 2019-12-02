@@ -16,7 +16,7 @@ import qunar.tc.bistoury.common.ProfilerUtil;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerDataManager;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerManager;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerService;
-import qunar.tc.bistoury.proxy.util.ProfilerAnalyzer;
+import qunar.tc.bistoury.proxy.util.profiler.ProfilerAnalyzer;
 import qunar.tc.bistoury.serverside.bean.Profiler;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 
@@ -51,13 +51,13 @@ public class AgentProfilerForUiController {
     @Resource
     private ProfilerDataManager profilerDataManager;
 
-    @RequestMapping("/svg")
+    @RequestMapping("/file")
     public ResponseEntity<byte[]> download(String profilerId,
-                                           String svgName,
+                                           String name,
                                            HttpServletResponse response) throws Exception {
         response.setCharacterEncoding("UTF-8");
         HttpHeaders headers = new HttpHeaders();
-        Path path = getSvgFile(profilerId, svgName);
+        Path path = getFile(profilerId, name);
         headers.setContentDispositionFormData("attachment", path.toString());
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         return new ResponseEntity<>(Files.readAllBytes(path), headers, HttpStatus.CREATED);
@@ -71,9 +71,9 @@ public class AgentProfilerForUiController {
         }
         profilerDataManager.requestData(profilerId);
         try {
-            if (profilerService.getProfilerRecord(profilerId).getMode() == Profiler.Mode.sampler) {
-                profilerAnalyzer.analyze(profilerId);
-            }
+            Profiler.Mode mode = profilerService.getProfilerRecord(profilerId).getMode();
+            profilerAnalyzer.analyze(profilerId, mode);
+
             return profilerAnalyzer.renameProfilerDir(profilerId);
         } catch (Exception e) {
             LOGGER.error("analyze result error. profiler id: {}", profilerId);
@@ -116,7 +116,7 @@ public class AgentProfilerForUiController {
         return ResultHelper.success();
     }
 
-    private Path getSvgFile(String profilerId, String svgName) {
+    private Path getFile(String profilerId, String svgName) {
         File profilerFile = ProfilerUtil.getProfilerDir(PROFILER_ROOT_PATH, profilerId).orNull();
         return Paths.get(Objects.requireNonNull(profilerFile).getAbsolutePath(), svgName);
     }

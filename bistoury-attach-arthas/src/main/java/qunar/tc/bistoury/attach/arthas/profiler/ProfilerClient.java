@@ -84,5 +84,6 @@ public class ProfilerClient implements InstrumentClient {
         if (isRunning(profiler)) {
             profiler.stop();
         }
+        stopAll();
     }
 }

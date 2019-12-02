@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.instrument.client.profiler.util.trie;
+package qunar.tc.bistoury.common.profiler.compact;
 
 public class Trie {
 

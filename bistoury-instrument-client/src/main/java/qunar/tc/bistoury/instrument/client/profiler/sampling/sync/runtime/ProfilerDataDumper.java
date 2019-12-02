@@ -7,10 +7,11 @@ import com.google.common.util.concurrent.AtomicLongMap;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
+import qunar.tc.bistoury.common.profiler.compact.CompactClassHelper;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.Manager;
 import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.cpu.DumpData;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.method.MethodCache;
-import qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.method.MethodInfo;
+import qunar.tc.bistoury.common.profiler.method.MethodCache;
+import qunar.tc.bistoury.common.profiler.method.MethodInfo;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -154,7 +155,7 @@ public class ProfilerDataDumper {
         //最底层的一般是Thread的子类,直接打印
         result.add(firstMethodInfo);
 
-        boolean isPreCompact = Manager.isCompactClass(firstMethodInfo.getClassName());
+        boolean isPreCompact = CompactClassHelper.isCompactClass(firstMethodInfo.getClassName());
         MethodInfo preInfo = null;
         for (int methodId : reverseIds) {
             MethodInfo methodInfo = idMap.get(methodId);
@@ -165,7 +166,7 @@ public class ProfilerDataDumper {
             }
             preInfo = methodInfo;
 
-            boolean isCompact = Manager.isCompactClass(methodInfo.getClassName());
+            boolean isCompact = CompactClassHelper.isCompactClass(methodInfo.getClassName());
             if (isPreCompact && isCompact) {
                 continue;
             }

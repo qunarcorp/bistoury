@@ -59,11 +59,23 @@ var syncTreeData = [
 
 var asyncTreeData = [
     {
-        text: "完整栈",
+        text: "性能火焰图",
         selectable: true,
         state: {
             selected: true
         }
+    },
+    // {
+    //     text: "热点方法图",
+    //     selectable: true,
+    // },
+    // {
+    //     text: "java热点方法图",
+    //     selectable: true,
+    // },
+    {
+        text: "java热点方法图(压缩常用中间件)",
+        selectable: true,
     },
 
 ];
@@ -110,8 +122,42 @@ function initSyncTree(info) {
 
 function initAsyncTree(info) {
     var treeViewObject = $('#svg-tree');
-    treeViewObject.treeview({data: asyncTreeData});
-    download("async.svg")
+    treeViewObject.treeview({data: asyncTreeData})
+        .on('nodeSelected', function (event, data) {
+            switch (data.nodeId) {
+                case "0.0":
+                    $(".svg-page-content").css("display", "block");
+                    $("#tree-page").css("display", "none");
+                    $("#tree-page-java").css("display", "none");
+                    $("#tree-page-java-compact").css("display", "none");
+                    download("async.svg");
+                    break;
+                // case "0.1":
+                //     $(".svg-page-content").css("display", "none");
+                //     $("#tree-page").css("display", "block");
+                //     $("#tree-page-java").css("display", "none");
+                //     $("#tree-page-java-compact").css("display", "none");
+                //     addTree("hotMethod.json", "#tree-page");
+                //     break;
+                // case "0.2":
+                //     $(".svg-page-content").css("display", "none");
+                //     $("#tree-page").css("display", "none");
+                //     $("#tree-page-java").css("display", "block");
+                //     $("#tree-page-java-compact").css("display", "none");
+                //     addTree("hotMethod-java.json", "#tree-page-java");
+                //     break;
+                case "0.1":
+                    $(".svg-page-content").css("display", "none");
+                    $("#tree-page").css("display", "none");
+                    $("#tree-page-java").css("display", "none");
+                    $("#tree-page-java-compact").css("display", "block");
+                    addTree("hotMethod-java-compact.json", "#tree-page-java-compact");
+                    break;
+            }
+        });
+    $(".svg-page-content").css("display", "block");
+    $("#tree-page").css("display", "none");
+    download("async.svg");
 }
 
 $(document).ready(function () {
@@ -156,7 +202,7 @@ function chooseSvg(state, isCompact) {
 function download(fileName) {
     var url = "/profiler/download.do";
     var profilerId = getProfilerId();
-    url = url + "?profilerId=" + profilerId + "&svgName=" + fileName + "&proxyUrl=" + proxyUrl;
+    url = url + "?profilerId=" + profilerId + "&name=" + fileName + "&proxyUrl=" + proxyUrl;
 
     var embedHtml = ' <embed id="svg-file" src="' + url + '"/>';
     $(".svg-page-content").html(embedHtml)
@@ -205,4 +251,113 @@ function searchAnalysisInfo(profilerId) {
         }
     })
     return profilerFileVo;
+}
+
+var treeIdSet = new Set();
+var maxSamples;
+var allSamples;
+
+function addTree(fileName, treeId) {
+    if (treeIdSet.has(treeId)) {
+        return;
+    }
+    treeIdSet.add(treeId);
+    var treedata = getTreeData(fileName);
+    var data = [];
+    //不能从0开始，有bug，会替换成j1_1
+    var index = 1;
+    maxSamples = treedata.nodes[0].count;
+    allSamples = treedata.count;
+    treedata.nodes.forEach(element => {
+        data.push({
+            id: index++,
+            text: element.text + getPercentProcess(element.count)
+        })
+    });
+
+    $(treeId).jstree({
+        'core': {
+            "check_callback": true,
+            'data': data
+        }
+    }).on("select_node.jstree", function (e, node) {
+        var isParent = (node.node.children.length > 0);
+        if (isParent) {
+            var nodeID = $(treeId).jstree(true).get_selected()[0];
+            var children = $(treeId).jstree(true).get_node(nodeID).children;
+            $(treeId).jstree(true).delete_node(children);
+            return;
+        }
+        var nodeId = $(treeId).jstree('get_selected')[0];
+        var data = treedata.nodes;
+        var isFirst = true;
+        nodeId.split("-").forEach(index => {
+            if (isFirst) {
+                data = data[index - 1];
+                isFirst = false;
+            } else {
+                data = data.nodes[index];
+            }
+        });
+        createNode(treeId, nodeId, data);
+        // createNode(id, nodeId, data, element.text, Math.ceil(element.count / data.count * 100), element.count
+
+    });
+}
+
+function createNode(treeId, nodeId, parent) {
+    if (parent === undefined || parent.nodes === undefined) {
+        return;
+    }
+    var index = 0;
+    if (parent.nodes.length === 1) {
+        doCreateNode(nodeId, treeId, nodeId + "-0", parent.nodes[0].text, parent.nodes[0].count);
+        createNode(treeId, nodeId + "-0", parent.nodes[0]);
+    } else {
+        parent.nodes.forEach(element => {
+            doCreateNode(nodeId, treeId, nodeId + "-" + (index++), element.text, element.count);
+        });
+    }
+
+    $(treeId).jstree("open_node", nodeId);
+}
+
+function doCreateNode(parent_node, treeId, id, text, count) {
+    $(treeId).jstree().create_node(parent_node, {
+        "id": id,
+        "text": text + getPercentProcess(count)
+    }, "last", function () {
+
+    });
+}
+
+function getPercentProcess(count) {
+    var displayPercent = Math.ceil(count / maxSamples * 100);
+    var percent = Math.ceil(count / allSamples * 100);
+    return "&nbsp;&nbsp;&nbsp;" + '<progress value="' + displayPercent + '" max="100">' + '</progress> ' + count + " samples(" + percent + "%)";
+};
+
+
+function getTreeData(fileName) {
+    var data;
+    $.ajax({
+        "url": "/profiler/download.do",
+        "type": "get",
+        "dataType": 'JSON',
+        async: false,
+        "data": {
+            profilerId: getProfilerId(),
+            name: fileName,
+            proxyUrl: proxyUrl,
+            contentType: "application/json"
+        },
+        success: function (ret) {
+            if (ret.status === 0) {
+                data = ret.data;
+            } else {
+                bistoury.error("获取性能分析的热点数据失败");
+            }
+        }
+    })
+    return data;
 }

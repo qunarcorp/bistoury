@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.instrument.client.profiler.sampling.sync.runtime.method;
+package qunar.tc.bistoury.common.profiler.method;
 
 import java.util.Objects;
 

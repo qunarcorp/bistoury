@@ -1,4 +1,4 @@
-package qunar.tc.bistoury.instrument.client.profiler.util.trie;
+package qunar.tc.bistoury.common.profiler.compact;
 
 import java.util.HashMap;
 import java.util.Map;
