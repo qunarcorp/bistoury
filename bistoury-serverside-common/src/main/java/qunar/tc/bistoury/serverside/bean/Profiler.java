@@ -134,7 +134,7 @@ public class Profiler {
 
     public enum State {
 
-        start(0), stop(1), ready(2), analyzed(3);
+        start(0), stop(1), ready(2), analyzed(3), error(4);
 
         public final int code;
 

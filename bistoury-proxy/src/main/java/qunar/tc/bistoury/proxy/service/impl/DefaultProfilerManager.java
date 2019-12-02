@@ -2,7 +2,6 @@ package qunar.tc.bistoury.proxy.service.impl;
 
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.common.BistouryConstants;
-import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerManager;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerService;
@@ -11,17 +10,15 @@ import qunar.tc.bistoury.serverside.bean.Profiler;
 import qunar.tc.bistoury.serverside.bean.ProfilerSettings;
 
 import javax.annotation.Resource;
-import java.util.Optional;
 
-import static qunar.tc.bistoury.proxy.util.ProfilerDatagramHelper.*;
+import static qunar.tc.bistoury.proxy.util.ProfilerDatagramHelper.createFinishStateSearchDatagram;
+import static qunar.tc.bistoury.proxy.util.ProfilerDatagramHelper.createStopDatagram;
 
 /**
  * @author cai.wen created on 2019/10/30 16:54
  */
 @Service
 public class DefaultProfilerManager implements ProfilerManager {
-
-    private final Object obj = new Object();
 
     @Resource
     private ProfilerService profilerService;
@@ -62,6 +59,11 @@ public class DefaultProfilerManager implements ProfilerManager {
     @Override
     public void stop(String profilerId) {
         profilerService.stopProfiler(profilerId);
+    }
+
+    @Override
+    public void stopWithError(String profilerId) {
+        profilerService.stopWithError(profilerId);
     }
 }
 

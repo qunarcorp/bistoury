@@ -87,7 +87,7 @@ CREATE TABLE `bistoury_profiler`
     `pid`         INT(10) UNSIGNED NOT NULL COMMENT '目标vm对应的pid',
     `start_time`  TIMESTAMP        NOT NULL DEFAULT '1970-01-01 08:00:01' COMMENT '性能分析开始时间',
     `update_time` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `state`       INT(3) UNSIGNED  NOT NULL COMMENT '状态,0: 开始, 1: 已结束',
+    `state`       INT(3) UNSIGNED  NOT NULL COMMENT '状态, 0: 开始 1: 已结束 2: 准备 4: 错误',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_profiler_id` (`profiler_id`),
     INDEX idx_start_time ('start_time'),

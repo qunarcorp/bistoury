@@ -254,7 +254,7 @@ function sendStateCommand() {
     var command;
     if (globalProfilerState === READY_STATE) {
         command = "profilerstatesearch " + globalProfilerId + " profilerstartsearch";
-    } else if (globalProfilerState === START_STATE || globalProfilerState === STOP_STATE) {
+    } else {
         command = "profilerstatesearch " + globalProfilerId + " profilerfinishsearch";
     }
     bistouryWS.sendCommand(currentHost, REQ_TYPE_PROFILER_STATE_SEARCH, command, stop, handleResult);

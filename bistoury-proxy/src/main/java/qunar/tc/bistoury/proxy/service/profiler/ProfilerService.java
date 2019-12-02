@@ -16,4 +16,6 @@ public interface ProfilerService {
     Profiler getProfilerRecord(String profilerId);
 
     void stopProfiler(String profilesId);
+
+    void stopWithError(String profilerId);
 }

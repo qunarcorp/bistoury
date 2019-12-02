@@ -16,4 +16,6 @@ public interface ProfilerManager {
     void start(String profilerId);
 
     void stop(String profilerId);
+
+    void stopWithError(String profilerId);
 }

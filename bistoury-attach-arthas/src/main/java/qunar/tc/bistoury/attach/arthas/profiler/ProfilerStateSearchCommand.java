@@ -12,7 +12,6 @@ import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.common.TypeResponse;
 import qunar.tc.bistoury.common.URLCoder;
-import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,11 +63,5 @@ public class ProfilerStateSearchCommand extends AnnotatedCommand {
             process.write(URLCoder.encode(JacksonSerializer.serialize(typeResponse)));
             process.end();
         }
-    }
-
-    private boolean isFinished(String profilerId) {
-        return profilerId == null ||
-                !profilerId.equals(AgentProfilerContext.getProfilerId())
-                || !AgentProfilerContext.isProfiling();
     }
 }

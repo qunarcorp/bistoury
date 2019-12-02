@@ -64,9 +64,17 @@ public class ProfilerServiceImpl implements ProfilerService {
 
     @Override
     @Transactional
-    public void stopProfiler(String profilesId) {
-        Profiler profiler = getProfilerRecord(profilesId);
+    public void stopProfiler(String profilerId) {
+        Profiler profiler = getProfilerRecord(profilerId);
         profilerLockDao.delete(profiler.getAppCode(), profiler.getAgentId());
-        profilerDao.changeState(Profiler.State.stop, profilesId);
+        profilerDao.changeState(Profiler.State.stop, profilerId);
+    }
+
+    @Override
+    @Transactional
+    public void stopWithError(String profilerId) {
+        Profiler profiler = getProfilerRecord(profilerId);
+        profilerLockDao.delete(profiler.getAppCode(), profiler.getAgentId());
+        profilerDao.changeState(Profiler.State.error, profilerId);
     }
 }
