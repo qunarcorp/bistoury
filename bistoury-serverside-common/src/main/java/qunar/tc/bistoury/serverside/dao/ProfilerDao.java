@@ -17,8 +17,6 @@ public interface ProfilerDao {
 
     void prepareProfiler(Profiler profiler);
 
-    List<Profiler> getRecordsByState(Profiler.State state, LocalDateTime startTime);
-
     Optional<Profiler> getLastRecord(String app, String agentId);
 
     Profiler getRecordByProfilerId(String profilerId);

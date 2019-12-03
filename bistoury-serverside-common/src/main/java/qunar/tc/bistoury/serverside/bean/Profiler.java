@@ -3,7 +3,6 @@ package qunar.tc.bistoury.serverside.bean;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * @author cai.wen created on 2019/10/29 20:39

@@ -9,7 +9,6 @@ import qunar.tc.bistoury.serverside.jdbc.JdbcTemplateHolder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
@@ -28,16 +27,16 @@ public class ProfilerDaoImpl implements ProfilerDao {
 
     private static final String UPDATE_PROFILER_STATE_SQL = "update bistoury_profiler set state=? where profiler_id=?";
 
-    private static final String SELECT_PROFILER_BY_STATE_SQL = "select * from bistoury_profiler where start_time>? and state=?";
+    private static final String SELECT_PROFILER_BY_PROFILER_ID_SQL = "SELECT id,profiler_id, operator, app_code, agent_id, pid, start_time,duration,frequency,mode,state,update_time" +
+            " from bistoury_profiler where profiler_id=?";
 
-    private static final String SELECT_PROFILER_BY_PROFILER_ID_SQL = "select * from bistoury_profiler where profiler_id=?";
-
-    //todo 修改select * from
-
-    private static final String SELECT_LAST_RECORDS = "SELECT id,profiler_id, operator, app_code, agent_id, pid, start_time,duration,frequency,mode,state,update_time FROM bistoury_profiler " +
+    private static final String SELECT_LAST_RECORDS = "SELECT id,profiler_id, operator, app_code, agent_id, pid, start_time,duration,frequency,mode,state,update_time " +
+            "FROM bistoury_profiler " +
             "where  app_code=? and agent_id=? and start_time>? order by start_time desc";
 
-    private static final String SELECT_LAST_RECORD = "SELECT id,profiler_id, operator, app_code, agent_id, pid, start_time,duration,frequency,mode,state,update_time FROM bistoury_profiler where app_code=? and agent_id=? order by start_time desc limit 1";
+    private static final String SELECT_LAST_RECORD = "SELECT id,profiler_id, operator, app_code, agent_id, pid, start_time,duration,frequency,mode,state,update_time " +
+            "FROM bistoury_profiler where app_code=? and agent_id=? " +
+            "order by start_time desc limit 1";
 
     private final JdbcTemplate jdbcTemplate = JdbcTemplateHolder.getOrCreateJdbcTemplate();
 
@@ -62,11 +61,6 @@ public class ProfilerDaoImpl implements ProfilerDao {
                 profiler.getProfilerId(), profiler.getOperator(), profiler.getAppCode(), profiler.getAgentId(),
                 profiler.getPid(), new Date(), profiler.getDuration(), profiler.getFrequency(),
                 profiler.getMode().code, Profiler.State.ready.code);
-    }
-
-    @Override
-    public List<Profiler> getRecordsByState(Profiler.State state, LocalDateTime startTime) {
-        return jdbcTemplate.query(SELECT_PROFILER_BY_STATE_SQL, PROFILER_ROW_MAPPER, TIME_FORMATTER.format(startTime), state.code);
     }
 
     @Override

@@ -12,7 +12,10 @@ import com.ning.http.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
 import qunar.tc.bistoury.serverside.bean.Profiler;
@@ -54,8 +57,6 @@ public class ProfilerController {
 
     private static final String profilerIsAnalyzedUrl = "http://%s:%d/proxy/profiler/analysis/state?profilerId=%s";
 
-    private static final String profilerStartUrl = "http://%s:%d/proxy/profiler/start?appCode=%s&agentId=%s&duration=%s";
-
     @Resource
     private ProxyService proxyService;
 
@@ -95,48 +96,6 @@ public class ProfilerController {
                 ResultHelper.success(ImmutableMap.of("info", profiler, "curTime",
                         LocalDateTime.now().format(DATE_TIME_FORMATTER))))
                 .orElseGet(ResultHelper::success);
-    }
-
-    @PostMapping("/start")
-    @ResponseBody
-    public Object start(String appCode, String agentId, String lastProfilerId, long duration) {
-        try {
-            checkLastProfiler(appCode, agentId, lastProfilerId);
-            List<String> proxyWebSocketUrls = proxyService.getAllProxyUrls();
-            for (String proxyWebSocketUrl : proxyWebSocketUrls) {
-                Optional<ProxyInfo> proxyRef = ProxyInfoParse.parseProxyInfo(proxyWebSocketUrl);
-                if (!proxyRef.isPresent()) {
-                    continue;
-                }
-                Optional<String> profilerIdRef = doStartProfiler(proxyRef.get(), appCode, agentId, duration);
-                if (profilerIdRef.isPresent()) {
-                    return ResultHelper.success(profilerIdRef.get());
-                }
-            }
-        } catch (Exception e) {
-            return ResultHelper.fail(e.getMessage());
-        }
-        return ResultHelper.fail("start profiler error.");
-    }
-
-    private void checkLastProfiler(String appCode, String agentId, String lastProfilerId) {
-        Optional<Profiler> profiler_ref = profilerService.getLastProfilerRecord(appCode, agentId);
-        if (profiler_ref.isPresent()) {
-            if (lastProfilerId == null || (!lastProfilerId.equals(profiler_ref.get().getProfilerId()))) {
-                throw new RuntimeException("性能分析状态已经发生了更新,请刷新界面,查看最新的状态.");
-            }
-        }
-    }
-
-    private Optional<String> doStartProfiler(ProxyInfo proxyInfo, String appCode, String agentId, long duration) {
-        String url = String.format(profilerStartUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), appCode, agentId, String.valueOf(duration));
-        byte[] content = getBytesFromUrl(url);
-        ApiResult<String> apiResult = JacksonSerializer.deSerialize(content, new TypeReference<ApiResult<String>>() {
-        });
-        if (apiResult.getStatus() == 0) {
-            return Optional.of(apiResult.getData());
-        }
-        return Optional.empty();
     }
 
     private final TypeReference analyzerResponse = new TypeReference<ApiResult<Map<String, String>>>() {
