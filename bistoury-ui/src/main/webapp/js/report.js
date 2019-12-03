@@ -325,7 +325,7 @@ function createNode(treeId, nodeId, parent) {
 function doCreateNode(parent_node, treeId, id, text, count) {
     $(treeId).jstree().create_node(parent_node, {
         "id": id,
-        "text": text + getPercentProcess(count)
+        "text": text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g, "&quot;").replace(/'/g, "&#039;") + getPercentProcess(count)
     }, "last", function () {
 
     });
