@@ -41,7 +41,7 @@ function startProfiler() {
 
 function openStartSettingModel() {
     var lastProfiler = searchLastProfiler();
-    var lastProfileId = lastProfiler == null ? null : lastProfiler.profilerId;
+    var lastProfileId = lastProfiler == null ? undefined : lastProfiler.profilerId;
     if (lastProfileId !== globalProfilerId) {
         bistoury.warning("最新的性能分析记录已经变更,请刷新界面");
         return;

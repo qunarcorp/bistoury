@@ -36,7 +36,7 @@ public class SamplingProfiler implements Profiler {
             .setNameFormat(Manager.profilerThreadPoolDumpName)
             .build();
 
-    private static final ScheduledExecutorService dumpExecutorService =
+    private final ScheduledExecutorService dumpExecutorService =
             Executors.newSingleThreadScheduledExecutor(dumpThreadFactory);
 
     public SamplingProfiler(Map<String, String> config) {
@@ -65,6 +65,7 @@ public class SamplingProfiler implements Profiler {
             public void run() {
                 Manager.stop();
                 status = ProfilerUtil.FINISH_STATUS;
+                dumpExecutorService.shutdown();
             }
         }, durationSeconds, TimeUnit.SECONDS);
         status = ProfilerUtil.RUNNING_STATUS;
@@ -75,5 +76,6 @@ public class SamplingProfiler implements Profiler {
         logger.info("destroy sampling profiler.");
         Manager.stop();
         status = ProfilerUtil.FINISH_STATUS;
+        dumpExecutorService.shutdownNow();
     }
 }

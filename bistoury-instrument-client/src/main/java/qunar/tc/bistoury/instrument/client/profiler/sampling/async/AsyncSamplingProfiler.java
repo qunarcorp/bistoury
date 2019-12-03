@@ -48,7 +48,7 @@ public class AsyncSamplingProfiler implements Profiler {
         profilerId = params.get(PROFILER_ID);
         threads = Boolean.parseBoolean(params.get(THREADS));
         profilerDir = params.get(TMP_DIR);
-        executor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("async-profiler-shutdown"));
+        executor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("bistoury-async-profiler-shutdown"));
     }
 
     @Override

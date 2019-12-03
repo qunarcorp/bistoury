@@ -55,7 +55,8 @@ public class BistouryClassloader extends URLClassLoader {
         // 优先从parent（SystemClassLoader）里加载系统类和spy类，避免抛出ClassNotFoundException
         if (name != null && (name.startsWith("sun.")
                 || name.startsWith("java.")
-                || name.startsWith("qunar.tc.bistoury.instrument.spy."))) {
+                || name.startsWith("qunar.tc.bistoury.instrument.spy.")
+                || name.startsWith("one.profiler."))) {
             return super.loadClass(name, resolve);
         }
 
