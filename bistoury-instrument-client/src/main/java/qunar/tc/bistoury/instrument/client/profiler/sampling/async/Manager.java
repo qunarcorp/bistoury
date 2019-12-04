@@ -16,7 +16,6 @@ public class Manager {
     private static final String profilerLibPath;
 
     private Manager() {
-
     }
 
     static {
@@ -51,6 +50,7 @@ public class Manager {
         try {
             ASYNC_PROFILER.stop();
         } catch (IllegalStateException e) {
+            //ignore "Profiler is not active" error
             if (!e.getMessage().equals(STOP_ERROR_DETAIL_MESSAGE)) {
                 throw e;
             }

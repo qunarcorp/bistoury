@@ -4,27 +4,28 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
 import java.io.File;
+import java.util.Locale;
 
 /**
  * @author cai.wen created on 2019/11/11 17:38
  */
 public class OsUtils {
 
-    private static final String OS_NAME = System.getProperty("os.name");
+    private static final String OS_NAME = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
 
     private OsUtils() {
     }
 
     public static boolean isLinux() {
-        return OS_NAME.toLowerCase().startsWith("linux");
+        return OS_NAME.startsWith("linux");
     }
 
     public static boolean isWindows() {
-        return OS_NAME.toLowerCase().startsWith("windows");
+        return OS_NAME.startsWith("windows");
     }
 
     public static boolean isMac() {
-        return OS_NAME.toLowerCase().startsWith("mac") || OS_NAME.startsWith("darwin");
+        return OS_NAME.startsWith("mac") || OS_NAME.startsWith("darwin");
     }
 
     public static boolean isSupportPerf() {

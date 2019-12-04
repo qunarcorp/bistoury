@@ -8,6 +8,7 @@ import com.google.common.io.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.common.JacksonSerializer;
+import qunar.tc.bistoury.common.OsUtils;
 import qunar.tc.bistoury.common.ProfilerUtil;
 import qunar.tc.bistoury.common.profiler.compact.CompactClassHelper;
 import qunar.tc.bistoury.serverside.bean.Profiler;
@@ -43,7 +44,7 @@ public class ProfilerAnalyzer {
 
     private static final String perlPath = System.getProperty("perl.path");
 
-    private static final Joiner COMMANDS_JOINER = Joiner.on(" | ").skipNulls();
+    private static final Joiner COMMANDS_JOINER = Joiner.on(" ; ").skipNulls();
 
     private static final String preAnalyzePath = createTempPath("tmp");
 
@@ -55,9 +56,15 @@ public class ProfilerAnalyzer {
     public void analyze(final String profilerId, Profiler.Mode mode) {
         String commands = COMMANDS_JOINER.join(getAllPreAnalyzeCommand(profilerId, mode));
         try {
-            if (isLinux()) {
-                Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", commands}, null).waitFor();
-            } else if (isWindows()) {
+            if (OsUtils.isLinux()) {
+                new ProcessBuilder()
+                        .redirectErrorStream(true)
+                        .redirectError(new File("/tmp/profiler-error.log"))
+                        .redirectOutput(new File("/tmp/profiler-out.log"))
+                        .command("/bin/sh", "-c", commands)
+                        .start()
+                        .waitFor();
+            } else if (OsUtils.isWindows()) {
                 Runtime.getRuntime().exec("cmd /c" + commands).waitFor();
             }
             if (mode == Profiler.Mode.async_sampler) {
@@ -122,7 +129,7 @@ public class ProfilerAnalyzer {
     private static final String JavaHotMethodCompactFile = "hotMethod-java-compact.json";
 
     private void parseHotMethod(File collapsedFile, File targetFile, Function<List<String>, List<String>> methodFilter) throws IOException {
-        TreeNode<MethodCounter> treeNode = HotSpotMethodParser.parse(collapsedFile, methodFilter);
+        TreeNode<FunctionCounter> treeNode = HotSpotMethodParser.parse(collapsedFile, methodFilter);
         HotSpotMethodFormatter.DisplayNode root = HotSpotMethodFormatter.format(treeNode);
         String jsonText = JacksonSerializer.serialize(ResultHelper.success(root));
         com.google.common.io.Files.write(jsonText, targetFile, Charsets.UTF_8);
@@ -149,7 +156,7 @@ public class ProfilerAnalyzer {
         String svgPath = parent + File.separator + nameWithoutExtension + ".svg";
         String realPerlPath = Strings.isNullOrEmpty(perlPath) ? "perl" : perlPath;
         String flameGraphFile = mode == Profiler.Mode.async_sampler ? flameGraphForCount : flameGraphForTime;
-        return realPerlPath + " " + flameGraphFile + " " + dumpTxt.toString() + ">" + svgPath;
+        return realPerlPath + " " + flameGraphFile + " " + dumpTxt.toString() + ">  " + svgPath;
     }
 
     public static ProfilerAnalyzer getInstance() {
@@ -160,15 +167,5 @@ public class ProfilerAnalyzer {
         File file = new File(PROFILER_ROOT_PATH, dirName);
         file.mkdirs();
         return file.getAbsolutePath();
-    }
-
-    private static boolean isLinux() {
-        String os = System.getProperty("os.name");
-        return os.toLowerCase().contains("linux");
-    }
-
-    private static boolean isWindows() {
-        String os = System.getProperty("os.name");
-        return os.toLowerCase().contains("windows");
     }
 }

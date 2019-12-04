@@ -20,33 +20,33 @@ public class HotSpotMethodParser {
 
     private static final Pattern countPattern = Pattern.compile("\\d+$");
 
-    public static TreeNode<MethodCounter> parse(File collapsedFile, Function<List<String>, List<String>> methodFilter) throws IOException {
-        return Files.readLines(collapsedFile, Charsets.UTF_8, new StackLineProcessor(methodFilter));
+    public static TreeNode<FunctionCounter> parse(File collapsedFile, Function<List<String>, List<String>> stackFilter) throws IOException {
+        return Files.readLines(collapsedFile, Charsets.UTF_8, new StackLineProcessor(stackFilter));
     }
 
-    private static class StackLineProcessor implements LineProcessor<TreeNode<MethodCounter>> {
+    private static class StackLineProcessor implements LineProcessor<TreeNode<FunctionCounter>> {
 
         private final FunctionInfo rootInfo = new FunctionInfo("all");
 
-        private final MethodCounter rootCounter = new MethodCounter(rootInfo);
+        private final FunctionCounter rootCounter = new FunctionCounter(rootInfo);
 
-        private final TreeNode<MethodCounter> rootNode = new TreeNode<>(rootCounter);
+        private final TreeNode<FunctionCounter> rootNode = new TreeNode<>(rootCounter);
 
         private static final Splitter COLON_SPLITTER = Splitter.on(";").omitEmptyStrings().trimResults();
 
-        private final Function<List<String>, List<String>> methodFilter;
+        private final Function<List<String>, List<String>> stackFilter;
 
-        StackLineProcessor(Function<List<String>, List<String>> methodFilter) {
-            this.methodFilter = methodFilter;
+        private StackLineProcessor(Function<List<String>, List<String>> stackFilter) {
+            this.stackFilter = stackFilter;
         }
 
         @Override
         public boolean processLine(String line) {
             CallStackCounter stackCounter = createCallStackCounter(line);
-            TreeNode<MethodCounter> curNode = rootNode;
+            TreeNode<FunctionCounter> curNode = rootNode;
             rootNode.getNode().add(stackCounter.getCount());
-            for (FunctionInfo methodInfo : stackCounter.getFunctionInfos()) {
-                TreeNode<MethodCounter> info = curNode.getOrCreate(new MethodCounter(methodInfo));
+            for (FunctionInfo functionInfo : stackCounter.getFunctionInfos()) {
+                TreeNode<FunctionCounter> info = curNode.getOrCreate(new FunctionCounter(functionInfo));
                 info.getNode().add(stackCounter.getCount());
                 curNode = info;
             }
@@ -60,21 +60,19 @@ public class HotSpotMethodParser {
             List<String> infos = COLON_SPLITTER.splitToList(line.subSequence(0, matcher.start()));
             infos = new ArrayList<>(infos);
             Collections.reverse(infos);
-            List<String> compactInfos = methodFilter.apply(infos);
+            List<String> compactInfos = stackFilter.apply(infos);
             List<FunctionInfo> stack = Lists.newArrayListWithExpectedSize(compactInfos.size());
             for (String info : compactInfos) {
-                FunctionInfo methodInfo = new FunctionInfo(info.replace("//", "."));
-                stack.add(methodInfo);
+                FunctionInfo func = new FunctionInfo(info.replace("//", "."));
+                stack.add(func);
             }
             return new CallStackCounter(stack, count);
-
         }
 
         @Override
-        public TreeNode<MethodCounter> getResult() {
+        public TreeNode<FunctionCounter> getResult() {
             return rootNode;
         }
-
     }
 
 }

@@ -12,26 +12,23 @@ public class HotSpotMethodFormatter {
 
     private static final HotSpotMethodFormatter INSTANCE = new HotSpotMethodFormatter();
 
-
     private HotSpotMethodFormatter() {
-
     }
 
-    public static DisplayNode format(TreeNode<MethodCounter> methodCounterTreeNode) {
+    public static DisplayNode format(TreeNode<FunctionCounter> methodCounterTreeNode) {
         return INSTANCE.doFormat(methodCounterTreeNode);
     }
 
-    private static final Comparator<TreeNode<MethodCounter>> treeNodeComparator = (node1, node2)
+    private static final Comparator<TreeNode<FunctionCounter>> treeNodeComparator = (node1, node2)
             -> node2.getNode().compareTo(node1.getNode());
 
-    public DisplayNode doFormat(TreeNode<MethodCounter> methodCounterTreeNode) {
-
+    public DisplayNode doFormat(TreeNode<FunctionCounter> methodCounterTreeNode) {
         long count = methodCounterTreeNode.getNode().getCount();
-        List<TreeNode<MethodCounter>> children = methodCounterTreeNode.getChildren();
+        List<TreeNode<FunctionCounter>> children = methodCounterTreeNode.getChildren();
         children.sort(treeNodeComparator);
         String info = methodCounterTreeNode.getNode().getFunctionInfo().getFuncName();
         List<DisplayNode> displayChildren = Lists.newArrayListWithExpectedSize(children.size());
-        for (TreeNode<MethodCounter> child : children) {
+        for (TreeNode<FunctionCounter> child : children) {
             displayChildren.add(doFormat(child));
         }
 

@@ -50,8 +50,8 @@ public class ProfilerStateSearchCommand extends AnnotatedCommand {
             if (BistouryConstants.REQ_PROFILER_START_STATE_SEARCH.equals(type)) {
                 result.put("status", profilerClient.status(id));
                 result.put("type", BistouryConstants.REQ_PROFILER_START_STATE_SEARCH);
-            } else if (BistouryConstants.REQ_PROFILER_FINNSH_STATE_SEARCH.equals(type)) {
-                result.put("type", BistouryConstants.REQ_PROFILER_FINNSH_STATE_SEARCH);
+            } else if (BistouryConstants.REQ_PROFILER_FINISH_STATE_SEARCH.equals(type)) {
+                result.put("type", BistouryConstants.REQ_PROFILER_FINISH_STATE_SEARCH);
                 result.put("status", profilerClient.status(id));
             }
             typeResponse.getData().setCode(0);
