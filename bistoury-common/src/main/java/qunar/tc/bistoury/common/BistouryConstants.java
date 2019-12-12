@@ -17,6 +17,8 @@
 
 package qunar.tc.bistoury.common;
 
+import java.io.File;
+
 /**
  * @author zhenyu.nie created on 2018 2018/11/28 19:59
  */
@@ -78,6 +80,9 @@ public class BistouryConstants {
 
     public static final String SHUTDOWN_COMMAND = "shutdown";
 
-    //todo 修改这个临时文件夹
-    public static final String PROFILER_ROOT_PATH = "/tmp/bistoury-profiler";
+    public static final String PROFILER_ROOT_PATH = System.getProperty("java.io.tmpdir") + File.separator + "bistoury-profiler";
+
+    public static final String PROFILER_ROOT_TEMP_PATH = PROFILER_ROOT_PATH + File.separator + "tmp";
+
+    public static final String PROFILER_ROOT_AGENT_PATH = PROFILER_ROOT_PATH + File.separator + "agent";
 }

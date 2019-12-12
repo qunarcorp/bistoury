@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static qunar.tc.bistoury.common.BistouryConstants.PROFILER_ROOT_PATH;
+import static qunar.tc.bistoury.common.BistouryConstants.PROFILER_ROOT_TEMP_PATH;
 
 /**
  * @author cai.wen created on 2019/10/25 16:55
@@ -46,7 +47,7 @@ public class ProfilerAnalyzer {
 
     private static final Joiner COMMANDS_JOINER = Joiner.on(" ; ").skipNulls();
 
-    private static final String preAnalyzePath = createTempPath("tmp");
+    private static final String preAnalyzePath = PROFILER_ROOT_TEMP_PATH;
 
     private static final String analyzePath = PROFILER_ROOT_PATH;
 
@@ -59,8 +60,8 @@ public class ProfilerAnalyzer {
             if (OsUtils.isLinux()) {
                 new ProcessBuilder()
                         .redirectErrorStream(true)
-                        .redirectError(new File("/tmp/profiler-error.log"))
-                        .redirectOutput(new File("/tmp/profiler-out.log"))
+                        .redirectError(new File("/tmp/bistoury-profiler-error.log"))
+                        .redirectOutput(new File("/tmp/bistoury-profiler-out.log"))
                         .command("/bin/sh", "-c", commands)
                         .start()
                         .waitFor();
@@ -161,11 +162,5 @@ public class ProfilerAnalyzer {
 
     public static ProfilerAnalyzer getInstance() {
         return INSTANCE;
-    }
-
-    private static String createTempPath(String dirName) {
-        File file = new File(PROFILER_ROOT_PATH, dirName);
-        file.mkdirs();
-        return file.getAbsolutePath();
     }
 }

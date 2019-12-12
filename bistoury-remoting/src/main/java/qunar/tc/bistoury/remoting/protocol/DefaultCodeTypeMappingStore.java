@@ -77,7 +77,11 @@ public class DefaultCodeTypeMappingStore implements CodeTypeMappingStore {
         register(stringClass, ImmutableSet.of(REQ_TYPE_REFRESH_TIP.getCode()));
         //cancel
         register(stringClass, ImmutableSet.of(REQ_TYPE_CANCEL.getCode()));
-
+        //profiler file
+        register(stringClass, ImmutableSet.of(REQ_TYPE_PROFILER_FILE.getCode()));
+        register(stringClass, ImmutableSet.of(REQ_TYPE_PROFILER_FILE_END.getCode()));
+        register(stringClass, ImmutableSet.of(REQ_TYPE_PROFILER_FILE_ERROR.getCode()));
+        register(stringClass, ImmutableSet.of(REQ_TYPE_PROFILER_ALL_FILE_END.getCode()));
     }
 
     public void register(Class<?> type, Set<Integer> codes) {

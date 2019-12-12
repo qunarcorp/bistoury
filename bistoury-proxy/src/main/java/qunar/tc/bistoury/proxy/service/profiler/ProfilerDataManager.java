@@ -6,5 +6,5 @@ package qunar.tc.bistoury.proxy.service.profiler;
 
 public interface ProfilerDataManager {
 
-    void requestData(String profilerId);
+    void requestData(String profilerId, String agentId);
 }

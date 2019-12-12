@@ -271,7 +271,7 @@ function addTree(fileName, treeId) {
     treedata.nodes.forEach(element => {
         data.push({
             id: index++,
-            text: element.text + getPercentProcess(element.count)
+            text: replaceSpecialChar(element.text) + getPercentProcess(element.count)
         })
     });
 
@@ -325,7 +325,7 @@ function createNode(treeId, nodeId, parent) {
 function doCreateNode(parent_node, treeId, id, text, count) {
     $(treeId).jstree().create_node(parent_node, {
         "id": id,
-        "text": text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g, "&quot;").replace(/'/g, "&#039;") + getPercentProcess(count)
+        "text": replaceSpecialChar(text) + getPercentProcess(count)
     }, "last", function () {
 
     });
@@ -335,7 +335,14 @@ function getPercentProcess(count) {
     var displayPercent = Math.ceil(count / maxSamples * 100);
     var percent = Math.ceil(count / allSamples * 100);
     return "&nbsp;&nbsp;&nbsp;" + '<progress value="' + displayPercent + '" max="100">' + '</progress> ' + count + " samples(" + percent + "%)";
-};
+}
+
+function replaceSpecialChar(text) {
+    return text.replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
 
 function getTreeData(fileName) {

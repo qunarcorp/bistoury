@@ -65,10 +65,10 @@ public class AgentProfilerForUiController {
         if (Strings.isNullOrEmpty(profilerId)) {
             return ResultHelper.fail("profiler id is empty.");
         }
-        profilerDataManager.requestData(profilerId);
         try {
-            Profiler.Mode mode = profilerService.getProfilerRecord(profilerId).getMode();
-            profilerAnalyzer.analyze(profilerId, mode);
+            Profiler profiler = profilerService.getProfilerRecord(profilerId);
+            profilerDataManager.requestData(profilerId, profiler.getAgentId());
+            profilerAnalyzer.analyze(profilerId, profiler.getMode());
 
             return profilerAnalyzer.renameProfilerDir(profilerId);
         } catch (Exception e) {
