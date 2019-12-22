@@ -39,3 +39,5 @@ tomcat.8080/**
 
 # pods ignore
 Pods/
+
+bistoury-*.tar.gz 
