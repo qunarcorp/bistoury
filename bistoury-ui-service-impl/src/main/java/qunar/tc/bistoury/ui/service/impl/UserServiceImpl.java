@@ -17,22 +17,25 @@
 
 package qunar.tc.bistoury.ui.service.impl;
 
+import java.util.List;
+import java.util.ServiceLoader;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import qunar.tc.bistoury.serverside.configuration.DynamicConfig;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.ui.dao.UserDao;
 import qunar.tc.bistoury.ui.model.User;
-import qunar.tc.bistoury.ui.service.AESCryptService;
 import qunar.tc.bistoury.ui.service.UserService;
-
-import javax.annotation.PostConstruct;
-import java.util.List;
 
 /**
  * @author leix.xie
@@ -44,11 +47,18 @@ public class UserServiceImpl implements UserService {
 
     private static final Splitter SPLITTER = Splitter.on(",").omitEmptyStrings().trimResults();
 
+    private static final PasswordEncoder PASSWORD_ENCODER;
+    static {
+       ServiceLoader<PasswordEncoder> sloader = ServiceLoader.load(PasswordEncoder.class);
+       PASSWORD_ENCODER = sloader.iterator().next();
+    }
+    
+    public static String encodePwd(String rawPassword) {
+        return PASSWORD_ENCODER.encode(rawPassword);
+    }
+    
     @Autowired
     private UserDao userDao;
-
-    @Autowired
-    private AESCryptService aesCryptService;
 
     private List<String> admins;
 
@@ -61,14 +71,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean login(User user) {
         User checkUser = this.userDao.getUserByUserCode(user.getUserCode());
-        if (checkUser == null || !this.aesCryptService.encrypt(user.getPassword()).equals(checkUser.getPassword())) {
+        if (checkUser == null || !PASSWORD_ENCODER.matches(user.getPassword(), checkUser.getPassword())) {
             return false;
         }
         return true;
     }
 
+    /**
+     * 为true表示禁止帐号注册功能
+     */
+    private final boolean disable4register = Boolean.getBoolean("bistoury.ui.register_disabled");
+
     @Override
     public int register(User user) {
+        if (disable4register) {
+            throw new IllegalAccessError("User register is disabled!");
+        }
         Preconditions.checkNotNull(user, "user cannot be null");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(user.getUserCode()), "user code cannot be null or empty");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(user.getPassword()), "password cannot be null or empty");
@@ -76,8 +94,18 @@ public class UserServiceImpl implements UserService {
         if (checkUser != null) {
             return -1;
         }
-        user.setPassword(this.aesCryptService.encrypt(user.getPassword()));
+        user.setPassword(PASSWORD_ENCODER.encode(user.getPassword()));
         return this.userDao.registerUser(user);
+    }
+    
+    public boolean changePwd(String uid, String oldPwd, String newPwd) {
+        User checkUser = this.userDao.getUserByUserCode(uid);
+        if (checkUser == null || !PASSWORD_ENCODER.matches(oldPwd, checkUser.getPassword())) {
+            return false;
+        }
+        
+        int ret = userDao.updatePwd(uid, oldPwd, newPwd);
+        return ret > 0;
     }
 
     @Override
