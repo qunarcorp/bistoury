@@ -9,18 +9,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @author qxo
  * @date 2020/01/01
  */
-public class PasswordEncoder4OldAESCryptImpl implements PasswordEncoder {
+public class PasswordEncoderForOldAESCryptImpl implements PasswordEncoder {
 
-    private final AESCryptServiceImpl old = new AESCryptServiceImpl();
+    private final AESCryptServiceImpl aesCryptService = new AESCryptServiceImpl();
 
     @Override
     public String encode(CharSequence rawPassword) {
-        return rawPassword == null ? null : old.encrypt(rawPassword.toString());
+        return rawPassword == null ? null : aesCryptService.encrypt(rawPassword.toString());
     }
 
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return rawPassword == null ? false : old.encrypt(rawPassword.toString()).equals(encodedPassword);
+        return rawPassword == null ? false : aesCryptService.encrypt(rawPassword.toString()).equals(encodedPassword);
     }
 
 }

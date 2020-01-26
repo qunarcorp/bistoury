@@ -28,6 +28,7 @@ start(){
     echo "BISTOURY_ADMIN_PWD=$BISTOURY_ADMIN_PWD"
     export BISTOURY_ADMIN_PWD=$(java -cp '../lib/*' qunar.tc.bistoury.ui.security.PasswordEncoderMain "$BISTOURY_ADMIN_PWD" | awk '/encodePwd:/{print $4}')
     #echo "BISTOURY_ADMIN_PWD=$BISTOURY_ADMIN_PWD"
+    export BISTOURY_UI_PASSWORD_ENCODER=new
 
     cd $H2_DATABASE_DIR
     ./h2.sh -j $2 -i $LOCAL_IP -l $APP_LOG_DIR start

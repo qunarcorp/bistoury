@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
@@ -47,12 +48,36 @@ public class UserServiceImpl implements UserService {
 
     private static final Splitter SPLITTER = Splitter.on(",").omitEmptyStrings().trimResults();
 
+    /**
+     * 密码加密器,可通过环境变理BISTOURY_UI_PASSWORD_ENCODER来指定实现类,
+     * 也可用new表示采用推存的加密实现类:Pbkdf2PasswordEncoder
+     * 用old表示旧实现PasswordEncoderForOldAESCryptImpl
+     * 如未指定默认采用SPI方式,且SPI默认实现为旧的PasswordEncoderForOldAESCryptImpl
+     */
     private static final PasswordEncoder PASSWORD_ENCODER;
     static {
-       ServiceLoader<PasswordEncoder> sloader = ServiceLoader.load(PasswordEncoder.class);
-       PASSWORD_ENCODER = sloader.iterator().next();
+       String cls = System.getenv("BISTOURY_UI_PASSWORD_ENCODER");
+       if ("new".equals(cls)) {
+           PASSWORD_ENCODER = new Pbkdf2PasswordEncoder();
+       } else if ("old".equals(cls)) {
+           PASSWORD_ENCODER = new PasswordEncoderForOldAESCryptImpl();
+       } else if (cls != null) {
+           ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+           try {
+               PASSWORD_ENCODER = (PasswordEncoder)classLoader.loadClass(cls).newInstance();
+           } catch (InstantiationException e) {
+               throw new IllegalStateException(e);
+           } catch (IllegalAccessException e) {
+               throw new IllegalStateException(e);
+           } catch (ClassNotFoundException e) {
+               throw new IllegalStateException(e);
+           }
+       } else {
+           ServiceLoader<PasswordEncoder> sloader = ServiceLoader.load(PasswordEncoder.class);
+           PASSWORD_ENCODER = sloader.iterator().next();
+       }
     }
-    
+
     public static String encodePwd(String rawPassword) {
         return PASSWORD_ENCODER.encode(rawPassword);
     }
@@ -80,11 +105,11 @@ public class UserServiceImpl implements UserService {
     /**
      * 为true表示禁止帐号注册功能
      */
-    private final boolean disable4register = Boolean.getBoolean("bistoury.ui.register_disabled");
+    private final boolean disableRegister = Boolean.getBoolean("bistoury.ui.register_disabled");
 
     @Override
     public int register(User user) {
-        if (disable4register) {
+        if (disableRegister) {
             throw new IllegalAccessError("User register is disabled!");
         }
         Preconditions.checkNotNull(user, "user cannot be null");
@@ -96,16 +121,6 @@ public class UserServiceImpl implements UserService {
         }
         user.setPassword(PASSWORD_ENCODER.encode(user.getPassword()));
         return this.userDao.registerUser(user);
-    }
-    
-    public boolean changePwd(String uid, String oldPwd, String newPwd) {
-        User checkUser = this.userDao.getUserByUserCode(uid);
-        if (checkUser == null || !PASSWORD_ENCODER.matches(oldPwd, checkUser.getPassword())) {
-            return false;
-        }
-        
-        int ret = userDao.updatePwd(uid, oldPwd, newPwd);
-        return ret > 0;
     }
 
     @Override
