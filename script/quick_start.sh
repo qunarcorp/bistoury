@@ -4,7 +4,7 @@ BISTOURY_BASE_DIR=`pwd`
 
 H2_DATABASE_DIR="$BISTOURY_BASE_DIR/h2"
 
-APP_LOG_DIR="/tmp"
+test -z "${APP_LOG_DIR}" && APP_LOG_DIR="/tmp"
 
 BISTOURY_UI_DIR="$BISTOURY_BASE_DIR/bistoury-ui"
 BISTOURY_UI_BIN_DIR="$BISTOURY_UI_DIR/bin"
@@ -16,10 +16,8 @@ BISTOURY_AGENT_DIR="$BISTOURY_BASE_DIR/bistoury-agent"
 BISTOURY_AGENT_BIN_DIR="$BISTOURY_AGENT_DIR/bin"
 BISTOURY_AGENT_APP_LIB_CLASS="";
 
-BISTOURY_TMP_DIR="/tmp/bistoury"
+test -z "$BISTOURY_TMP_DIR" && BISTOURY_TMP_DIR="/tmp/bistoury"
 BISTOURY_PROXY_CONF_FILE="$BISTOURY_TMP_DIR/proxy.conf"
-
-LOCAL_IP=`/sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"|tail -1`
 
 start(){
 
@@ -32,11 +30,13 @@ start(){
     #等待proxy启动
     sleep 5
 
-    cd $BISTOURY_AGENT_BIN_DIR
-    if [[ -n $BISTOURY_AGENT_APP_LIB_CLASS ]]; then
-        ./bistoury-agent.sh -p $1 -i $LOCAL_IP -j $2 -c "$BISTOURY_AGENT_APP_LIB_CLASS" start
-    else
-        ./bistoury-agent.sh -p $1 -i $LOCAL_IP -j $2 start
+    if [ -n "$1" ] ; then
+        cd $BISTOURY_AGENT_BIN_DIR
+        if [[ -n $BISTOURY_AGENT_APP_LIB_CLASS ]]; then
+            ./bistoury-agent.sh -p $1 -i $LOCAL_IP -j $2 -c "$BISTOURY_AGENT_APP_LIB_CLASS" start
+        else
+            ./bistoury-agent.sh -p $1 -i $LOCAL_IP -j $2 start
+        fi
     fi
 
     cd $BISTOURY_UI_BIN_DIR
@@ -81,6 +81,7 @@ while getopts p:i:j:l:c:h opt;do
     esac
 done
 
+test -z "$LOCAL_IP" && LOCAL_IP=`/sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"|tail -1`
 if [[ ! -w "$BISTOURY_TMP_DIR" ]] ; then
     mkdir -p "$BISTOURY_TMP_DIR"
 fi
@@ -94,12 +95,12 @@ if [[ "start" == $CMD ]] && [[ ! -n $BISTOURY_AGENT_APP_LIB_CLASS ]]; then
     echo "没有指定-c参数，agent将通过org.springframework.web.servlet.DispatcherServlet获取应用jar包路径"
 fi
 
-if [[ "start" == $CMD ]] && [[ -n "$APP_PID" &&  -n "$JAVA_HOME" ]]; then
+if [[ "start" == $CMD ]] && [[ -n "$JAVA_HOME" ]]; then
     PROXY_TOMCAT_PORT=9090
     PROXY_WEBSOCKET_PORT=9881;
 
     echo "$LOCAL_IP:$PROXY_TOMCAT_PORT:$PROXY_WEBSOCKET_PORT">$BISTOURY_PROXY_CONF_FILE
-    start $APP_PID $JAVA_HOME $BISTOURY_AGENT_APP_LIB_CLASS $LOCAL_IP
+    start "$APP_PID" $JAVA_HOME $BISTOURY_AGENT_APP_LIB_CLASS $LOCAL_IP
 elif [[ "stop" == $CMD ]]; then
     stop
     rm -rf $BISTOURY_PROXY_CONF_FILE

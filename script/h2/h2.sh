@@ -3,13 +3,11 @@
 H2_DIR=`pwd`
 H2_LOG_FILE=$H2_DIR/h2.log
 H2_PID_FILE=$H2_DIR/h2.pid
-BISTOURY_TMP_DIR="/tmp/bistoury"
+test -z "$BISTOURY_TMP_DIR" && BISTOURY_TMP_DIR="/tmp/bistoury"
 H2_PORT_FILE="$BISTOURY_TMP_DIR/h2port.conf"
 
-H2_DATA_BASE_URL="/tmp/bistoury/h2/bistoury;MODE=MYSQL;TRACE_LEVEL_SYSTEM_OUT=2;AUTO_SERVER=TRUE;"
+H2_DATA_BASE_URL="${BISTOURY_TMP_DIR}/h2/bistoury;MODE=MYSQL;TRACE_LEVEL_SYSTEM_OUT=2;AUTO_SERVER=TRUE;"
 APP_LOG_DIR="\/tmp"
-
-LOCAL_IP=`/sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"|tail -1`
 
 H2_PORT=9092;
 echo "$H2_PORT">$H2_PORT_FILE
@@ -29,6 +27,8 @@ while getopts i:j:l:h opt;do
     esac
 done
 
+test -z "$LOCAL_IP" && LOCAL_IP=`/sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"|tail -1`
+
 if [[ "$JAVA_HOME" != "" ]];then
     JAVA="$JAVA_HOME/bin/java"
 else
@@ -44,7 +44,7 @@ start(){
     #替换数据库初始化文件中的sql
     local_host=`hostname`
     APP_LOG_DIR=` echo $APP_LOG_DIR | sed 's#\/#\\\/#g'`
-    sed 's/${local_ip}/'$LOCAL_IP'/g' data.sql | sed 's/${local_host}/'$local_host'/g'|sed 's/${log_dir}/'$APP_LOG_DIR'/g' >newdata.sql
+    sed 's@${local_ip}@'$LOCAL_IP'@g' data.sql | sed 's/${local_host}/'$local_host'/g'|sed 's@${log_dir}@'$APP_LOG_DIR'@g' >newdata.sql
 
     $JAVA -cp h2-1.4.199.jar org.h2.tools.RunScript -url "jdbc:h2:file:$H2_DATA_BASE_URL" -script ./newdata.sql
 
