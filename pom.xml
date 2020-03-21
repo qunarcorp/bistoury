@@ -64,7 +64,7 @@
 
     <properties>
         <maven_compiler_plugin_version>3.2</maven_compiler_plugin_version>
-        <org.springframework.version>4.3.10.RELEASE</org.springframework.version>
+        <org.springframework.version>5.2.4.RELEASE</org.springframework.version>
         <jackson.version>2.9.2</jackson.version>
         <gitlab.version>1.2.5</gitlab.version>
         <servlet.version>3.1.0</servlet.version>
