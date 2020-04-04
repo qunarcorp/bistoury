@@ -90,7 +90,7 @@ quick_start.sh 可以设置一些启动参数，如下表所示：
 
 #### 当端口冲突了怎么解决
 
-Bistoury 快捷部署脚本默认会占用一些端口，其中 proxy 默认使用 9090 端口，ui 默认使用 9091 端口，agent 和 proxy 通信默认使用 9880 端口，ui 和 proxy 通信默认使用 9881 端口，h2 数据库默认使用 9092 端口，端口冲突解决方法如下：
+Bistoury 快捷部署脚本默认会占用一些端口，其中 proxy 默认使用 9090 端口，ui 默认使用 9091 端口，agent 和 proxy 通信默认使用 9880 端口，agent 和应用通信使用的3668端口，ui 和 proxy 通信默认使用 9881 端口，h2 数据库默认使用 9092 端口，端口冲突解决方法如下：
 
 - 修改自己占用的端口
 - [修改 bistoury 的端口](https://github.com/qunarcorp/bistoury/blob/master/docs/cn/FAQ.md#%E7%AB%AF%E5%8F%A3%E9%97%AE%E9%A2%98)
