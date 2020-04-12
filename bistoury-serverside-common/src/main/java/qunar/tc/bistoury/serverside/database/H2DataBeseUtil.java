@@ -30,16 +30,21 @@ import java.io.IOException;
  * @describe
  */
 public class H2DataBeseUtil {
-    private static final String portPath = "/tmp/bistoury/h2port.conf";
+    private static final String BISTOURY_TMP_DIR;
+    static {
+        String tmp = System.getenv("BISTOURY_TMP_DIR");
+        BISTOURY_TMP_DIR = tmp == null || tmp.length() < 1 ? "/tmp/bistoury" : tmp;
+    }
+    private static final String portPath = BISTOURY_TMP_DIR + "/h2port.conf";
 
     public String getUrl() {
         try {
             String port = getPort();
-            return "jdbc:h2:tcp://localhost:" + port + "//tmp/bistoury/h2/bistoury;MODE=MYSQL;TRACE_LEVEL_SYSTEM_OUT=2;AUTO_SERVER=TRUE;";
+            return "jdbc:h2:tcp://localhost:" + port + "/" + BISTOURY_TMP_DIR + "/h2/bistoury;MODE=MYSQL;TRACE_LEVEL_SYSTEM_OUT=2;AUTO_SERVER=TRUE;";
         } catch (Exception e) {
             System.err.println("获取h2端口失败，使用默认端口：9092\n" + e);
         }
-        return "jdbc:h2:tcp://localhost//tmp/bistoury/h2/bistoury;MODE=MYSQL;TRACE_LEVEL_SYSTEM_OUT=2;AUTO_SERVER=TRUE;";
+        return "jdbc:h2:tcp://localhost/" + BISTOURY_TMP_DIR + "/h2/bistoury;MODE=MYSQL;TRACE_LEVEL_SYSTEM_OUT=2;AUTO_SERVER=TRUE;";
     }
 
     public static String getPort() throws IOException {

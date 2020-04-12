@@ -6,9 +6,6 @@ BISTOURY_BIN="$(dirname "$BISTOURY_BIN")"
 BISTOURY_BIN_DIR="$(cd "$BISTOURY_BIN"; pwd)"
 BISTOURY_MAIN="qunar.tc.bistoury.indpendent.agent.Main"
 
-. "$BISTOURY_BIN_DIR/base.sh"
-. "$BISTOURY_BIN_DIR/bistoury-agent-env.sh"
-
 for CMD in "$@";do true; done
 
 APP_PID=""
@@ -28,6 +25,9 @@ while getopts p:i:j:c:h opt;do
            exit 0
     esac
 done
+
+. "$BISTOURY_BIN_DIR/base.sh"
+. "$BISTOURY_BIN_DIR/bistoury-agent-env.sh"
 
 if [[ "$JAVA_HOME" != "" ]];then
     JAVA="$JAVA_HOME/bin/java"
