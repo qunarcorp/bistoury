@@ -19,12 +19,20 @@ BISTOURY_AGENT_APP_LIB_CLASS="";
 BISTOURY_TMP_DIR="/tmp/bistoury"
 BISTOURY_PROXY_CONF_FILE="$BISTOURY_TMP_DIR/proxy.conf"
 
-LOCAL_IP=`/sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"|tail -1`
-
 start(){
+
+    test -z "$LOCAL_IP" && LOCAL_IP=`/sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:"|tail -1`
+    export JAVA_OPTS="$JAVA_OPTS -Dbistoury.ui.register_disabled=true"
+    test -z "$BISTOURY_ADMIN_PWD" && BISTOURY_ADMIN_PWD=admin
+    cd  $BISTOURY_UI_BIN_DIR
+    echo "BISTOURY_ADMIN_PWD=$BISTOURY_ADMIN_PWD"
+    export BISTOURY_ADMIN_PWD=$(java -cp '../lib/*' qunar.tc.bistoury.ui.security.PasswordEncoderMain "$BISTOURY_ADMIN_PWD" | awk '/encodePwd:/{print $4}')
+    #echo "BISTOURY_ADMIN_PWD=$BISTOURY_ADMIN_PWD"
+    export BISTOURY_UI_PASSWORD_ENCODER=new
 
     cd $H2_DATABASE_DIR
     ./h2.sh -j $2 -i $LOCAL_IP -l $APP_LOG_DIR start
+    unset BISTOURY_ADMIN_PWD
     sleep 5
 
     cd $BISTOURY_PROXY_BIN_DIR
