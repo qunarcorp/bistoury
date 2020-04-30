@@ -65,8 +65,15 @@ public abstract class AbstractTelnet implements Telnet {
         StringBuilder sb = new StringBuilder();
         while (true) {
             int size = in.read(b);
-            if (size != -1) {
+            if (size == -1) {
+                throw new IllegalVersionException();
+            } else if (size == 0) {
+                // continue
+            } else {
                 String str = new String(b, 0, size);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("read data, [{}]", str);
+                }
                 sb.append(str);
                 if (str.trim().endsWith(CommunicateUtil.LAST_PROMPT_STR)) {
                     return parseVersion(sb.toString());
