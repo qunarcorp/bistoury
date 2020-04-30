@@ -78,7 +78,7 @@ public class SystemTask implements Task {
         if (realCommand.contains(BistouryConstants.FILL_DUMP_TARGET)) {
             isJstack = true;
             jstackFileName = JSTACK_DUMP_DIR + File.separator + "jstack-" + TIME_FORMATTER.print(System.currentTimeMillis()) + ".txt";
-            realCommand = realCommand.replace(BistouryConstants.FILL_DUMP_TARGET, " > " + jstackFileName);
+            realCommand = realCommand.replace(BistouryConstants.FILL_DUMP_TARGET, " | tee " + jstackFileName);
         }
 
         this.processBuilder = new ProcessBuilder()
