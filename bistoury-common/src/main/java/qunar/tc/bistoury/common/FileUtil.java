@@ -168,4 +168,14 @@ public final class FileUtil {
         }
         return sb.toString();
     }
+
+    public static void ensureDirectoryExists(final String path) {
+        File file = new File(path);
+        if (!file.exists() || !file.isDirectory()) {
+            boolean mkdirs = file.mkdirs();
+            if (!mkdirs) {
+                throw new RuntimeException("mkdirs error, path: " + path);
+            }
+        }
+    }
 }
