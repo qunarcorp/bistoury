@@ -56,6 +56,7 @@ public class DecompilerTask implements Task {
     private static final String JAVA_FILE_SUFFIX = ".java";
     private static final String CLASS_FILE_SUFFIX = ".class";
     private static final String JAR_FILE_URL_PREFIX = "jar:file:";
+    private static final String FILE_URL_PREFIX = "file:";
     private static final String JAR_FILE_URL_SPLITTER = ".jar!";
     private static final File DECOMPILER_RESULT_SAVER_DIRECTORY = new File(BistouryStore.getStorePath("decompiled"));
 
@@ -147,7 +148,14 @@ public class DecompilerTask implements Task {
         final String filePath = url.getFile();
         List<InputStream> jarFileStreams = Lists.newArrayList();
 
-        try (JarFile jarFile = new JarFile(filePath.substring(5, filePath.indexOf(JAR_FILE_URL_SPLITTER) + 4))) {
+        int beginIndex = 0;
+        if (filePath.startsWith(FILE_URL_PREFIX)) {
+            beginIndex = 5;
+        } else if (filePath.startsWith(JAR_FILE_URL_PREFIX)) {
+            beginIndex = 9;
+        }
+
+        try (JarFile jarFile = new JarFile(filePath.substring(beginIndex, filePath.indexOf(JAR_FILE_URL_SPLITTER) + 4))) {
             Enumeration<JarEntry> entries = jarFile.entries();
             PathInfo pathInfo = new PathInfo(className);
             //处理内部类

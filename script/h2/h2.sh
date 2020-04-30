@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 H2_DIR=`pwd`
 H2_LOG_FILE=$H2_DIR/h2.log

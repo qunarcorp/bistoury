@@ -88,6 +88,10 @@
             <groupId>junit</groupId>
             <artifactId>junit-dep</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

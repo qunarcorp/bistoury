@@ -90,15 +90,10 @@ quick_start.sh 可以设置一些启动参数，如下表所示：
 
 #### 当端口冲突了怎么解决
 
-Bistoury 快捷部署脚本默认会占用一些端口，其中 proxy 默认使用 9090 端口，ui 默认使用 9091 端口，agent 和 proxy 通信默认使用 9880 端口，ui 和 proxy 通信默认使用 9881 端口，h2 数据库默认使用 9092 端口，端口冲突解决方法如下：
+Bistoury 快捷部署脚本默认会占用一些端口，其中 proxy 默认使用 9090 端口，ui 默认使用 9091 端口，agent 和 proxy 通信默认使用 9880 端口，agent 和应用通信使用的3668端口，ui 和 proxy 通信默认使用 9881 端口，h2 数据库默认使用 9092 端口，端口冲突解决方法如下：
 
 - 修改自己占用的端口
-- 9090 端口占用修改位置：`bistoury/bistoury-proxy-bin/conf/server.properties` 中的 `tomcat.port` 值和 quick_start.sh 中`PROXY_TOMCAT_PORT` 的值
-- 9091端口占用修改位置：`bistoury/bistoury-ui-bin/conf/server.properties` 中的 `tomcat.port` 值
-- 9880 端口占用修改位置：`bistoury/bistoury-proxy-bin/conf/global.properties` 中的 `agent.newport` 值
-- 9881 端口占用修改位置：`bistoury/bistoury-proxy-bin/conf/global.properties` 中的 `server.port` 值和 quick_start.sh 中 `PROXY_WEBSOCKET_PORT` 的值
-- 9092 端口占用修改位置：`bistoury/h2/h2.sh` 中的 `H2_PORT` 的值
-
+- [修改 bistoury 的端口](https://github.com/qunarcorp/bistoury/blob/master/docs/cn/FAQ.md#%E7%AB%AF%E5%8F%A3%E9%97%AE%E9%A2%98)
 #### 提示 not find proxy for agent
 
 - 到 agent 启动日志中检查 agent 是否启动成功，检查日志中是否存在 `bistoury netty client start success` 字样日志，如果没有，检查 jvm 参数 `bistoury.proxy.host` 是否配置为正确的 proxy 域名或 ip:prot，如果存在这样的日志（`bistoury netty client start success, ProxyConfig{ip='192.168.2.22', port=9880, heartbeatSec=30}`），按照日志后面的 ip 到对应的 proxy 上进行后续检查

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cd "${0%/*}"
 
@@ -38,9 +38,9 @@ if [[ ! -w "$BISTOURY_PACKAGE_DIR" ]] ; then
 mkdir -p "$BISTOURY_PACKAGE_DIR"
 fi
 
-mv bistoury-ui/target/bistoury-ui-bin $BISTOURY_PACKAGE_DIR
-mv bistoury-proxy/target/bistoury-proxy-bin $BISTOURY_PACKAGE_DIR
-mv bistoury-dist/target/bistoury-agent-bin $BISTOURY_PACKAGE_DIR
+mv bistoury-ui/target/bistoury-ui-bin $BISTOURY_PACKAGE_DIR/bistoury-ui
+mv bistoury-proxy/target/bistoury-proxy-bin $BISTOURY_PACKAGE_DIR/bistoury-proxy
+mv bistoury-dist/target/bistoury-agent-bin $BISTOURY_PACKAGE_DIR/bistoury-agent
 cp $SCRIPT_DIR/quick_start.sh $BISTOURY_PACKAGE_DIR
 cp -R $SCRIPT_DIR/h2 $BISTOURY_PACKAGE_DIR
 
