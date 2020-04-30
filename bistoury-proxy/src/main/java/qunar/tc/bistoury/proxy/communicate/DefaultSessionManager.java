@@ -78,7 +78,7 @@ public class DefaultSessionManager implements SessionManager {
 
         doWithConnectionClose(uiConnection, uiConnectionToSessionsMapping, session, theSession -> {
             theSession.writeToAgent(RemotingBuilder.buildRequestDatagram(
-                    CommandCode.REQ_TYPE_CANCEL.getCode(), theSession.getId(), new RequestPayloadHolder("")));
+                    CommandCode.REQ_TYPE_CANCEL.getCode(), theSession.getId(), new RequestPayloadHolder(theSession.getId())));
             theSession.broken();
         });
         doWithConnectionClose(agentConnection, agentConnectionToUiConnectionMapping, uiConnection, Connection::close);
