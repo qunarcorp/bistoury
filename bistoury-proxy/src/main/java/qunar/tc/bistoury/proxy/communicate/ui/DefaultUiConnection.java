@@ -38,11 +38,12 @@ public class DefaultUiConnection extends AbstractConnection implements UiConnect
 
     private final Set<WritableListener> listeners = Sets.newHashSet();
 
-    private boolean writable = true;
+    private boolean writable;
 
     public DefaultUiConnection(Channel channel) {
         super("ui", channel);
         this.channel = channel;
+        this.writable = channel.isWritable();
     }
 
     @Override
