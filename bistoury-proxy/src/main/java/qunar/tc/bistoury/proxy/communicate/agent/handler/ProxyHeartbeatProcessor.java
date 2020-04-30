@@ -62,7 +62,7 @@ public class ProxyHeartbeatProcessor implements AgentMessageProcessor {
         logger.debug("receive heartbeat, {}", message);
         String ip = getIp(ctx.channel());
         message.release();
-        connectionStore.register(ip, message.getHeader().getVersion(), ctx.channel());
+        connectionStore.register(ip, message.getHeader().getAgentVersion(), ctx.channel());
         ctx.channel().writeAndFlush(heartbeatResponse);
     }
 

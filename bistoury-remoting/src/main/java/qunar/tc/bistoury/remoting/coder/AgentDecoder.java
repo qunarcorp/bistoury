@@ -82,7 +82,7 @@ public class AgentDecoder extends ByteToMessageDecoder {
         RemotingHeader header = new RemotingHeader();
         header.setMagicCode(msg.readInt());
         header.setVersion(msg.readShort());
-        header.setVersion(msg.readShort());
+        header.setAgentVersion(msg.readShort());
         header.setId(PayloadHolderUtils.readString(msg));
         header.setCode(msg.readInt());
         header.setFlag(msg.readInt());
