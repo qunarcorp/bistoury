@@ -159,6 +159,12 @@ public class SystemTask implements Task {
         @Override
         public void finish() throws Exception {
             int code = process.waitFor();
+            if (isJstack) {
+                handler.handle("\033[31m[提示]\033[0m 请在1小时内通过【文件下载】或者在 "
+                        + JSTACK_DUMP_DIR + " 目录下获取jstack文件" +
+                        "\n文件：" + jstackFileName +
+                        "\n如果命令有错误信息，则文件不存在");
+            }
             future.set(code);
         }
 
