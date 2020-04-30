@@ -17,97 +17,16 @@
 
 package qunar.tc.bistoury.commands.arthas.telnet;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableList;
-import com.google.common.io.CharSource;
-import org.apache.commons.net.telnet.TelnetClient;
-import qunar.tc.bistoury.agent.common.ResponseHandler;
-import qunar.tc.bistoury.common.BistouryConstants;
-
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
-import java.util.List;
-
 /**
  * @author zhenyu.nie created on 2018 2018/10/15 19:01
  */
-public abstract class Telnet {
+public interface Telnet {
 
-    protected static final int DEFAULT_BUFFER_SIZE = 4 * 1024;
+    void write(String command) throws Exception;
 
-    protected static final Charset charset = Charsets.UTF_8;
+    String getVersion();
 
-    protected static final String PROMPT = "$";
+    byte[] read() throws Exception;
 
-    protected static final byte PROMPT_BYTE = '$';
-
-    private final TelnetClient client;
-
-    protected final InputStream in;
-
-    private final BufferedWriter out;
-
-    private String version;
-
-    public Telnet(TelnetClient client) throws IOException {
-        this.client = client;
-        this.in = client.getInputStream();
-        this.out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream(), charset));
-        this.version = readVersionUtilPrompt();
-    }
-
-    public void write(String command) throws Exception {
-        out.write(command);
-        out.newLine();
-        out.flush();
-    }
-
-    private String readVersionUtilPrompt() throws IOException {
-        byte[] b = new byte[DEFAULT_BUFFER_SIZE];
-        StringBuilder sb = new StringBuilder();
-        while (true) {
-            int size = in.read(b);
-            if (size != -1) {
-                String str = new String(b, 0, size);
-                sb.append(str);
-                if (str.trim().endsWith(PROMPT)) {
-                    return parseVersion(sb.toString());
-                }
-            }
-        }
-    }
-
-    private String parseVersion(String str) {
-        List<String> lines = ImmutableList.of();
-        try {
-            lines = CharSource.wrap(str).readLines();
-        } catch (IOException e) {
-            // not happen
-        }
-
-        for (String line : lines) {
-            line = line.trim();
-            if (line.startsWith(BistouryConstants.BISTOURY_VERSION_LINE_PREFIX)) {
-                return line.substring(BistouryConstants.BISTOURY_VERSION_LINE_PREFIX.length()).trim();
-            }
-        }
-        return "";
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public abstract void read(String command, ResponseHandler responseHandler) throws Exception;
-
-    public void close() {
-        try {
-            client.disconnect();
-        } catch (Exception e) {
-            // ignore
-        }
-    }
+    void close();
 }

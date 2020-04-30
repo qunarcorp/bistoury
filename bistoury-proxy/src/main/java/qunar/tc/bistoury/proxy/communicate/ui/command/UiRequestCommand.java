@@ -32,5 +32,7 @@ public interface UiRequestCommand {
 
     boolean supportMulti();
 
+    boolean supportPause();
+
     CommunicateCommandProcessor getProcessor();
 }

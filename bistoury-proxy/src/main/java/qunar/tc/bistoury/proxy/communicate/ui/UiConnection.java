@@ -19,6 +19,7 @@ package qunar.tc.bistoury.proxy.communicate.ui;
 
 import io.netty.channel.Channel;
 import qunar.tc.bistoury.proxy.communicate.Connection;
+import qunar.tc.bistoury.proxy.communicate.WritableListener;
 
 /**
  * @author zhenyu.nie created on 2019 2019/5/13 14:18
@@ -26,4 +27,10 @@ import qunar.tc.bistoury.proxy.communicate.Connection;
 public interface UiConnection extends Connection {
 
     Channel getChannel();
+
+    void setWritable(boolean writable);
+
+    void addWritableListener(WritableListener listener);
+
+    void removeWritableListener(WritableListener listener);
 }

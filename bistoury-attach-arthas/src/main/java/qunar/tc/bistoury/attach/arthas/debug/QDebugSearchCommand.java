@@ -22,6 +22,7 @@ import com.taobao.arthas.core.shell.command.CommandProcess;
 import com.taobao.middleware.cli.annotations.Argument;
 import com.taobao.middleware.cli.annotations.Name;
 import com.taobao.middleware.logger.Logger;
+import qunar.tc.bistoury.attach.common.AttachJacksonSerializer;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.common.*;
 
@@ -76,7 +77,7 @@ public class QDebugSearchCommand extends AnnotatedCommand {
             codeResponse.setMessage(e.getMessage());
         }
 
-        process.write(URLCoder.encode(JacksonSerializer.serialize(typeResponse)));
+        process.write(URLCoder.encode(AttachJacksonSerializer.serialize(typeResponse)));
         process.end();
     }
 }

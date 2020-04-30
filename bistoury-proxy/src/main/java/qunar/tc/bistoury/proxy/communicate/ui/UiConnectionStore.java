@@ -17,8 +17,9 @@
 
 package qunar.tc.bistoury.proxy.communicate.ui;
 
-import com.google.common.base.Optional;
 import io.netty.channel.Channel;
+
+import java.util.Optional;
 
 /**
  * @author zhenyu.nie created on 2019 2019/5/15 11:38

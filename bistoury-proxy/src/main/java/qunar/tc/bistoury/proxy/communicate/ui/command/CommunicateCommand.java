@@ -30,12 +30,19 @@ public class CommunicateCommand {
 
     private final boolean supportMulti;
 
+    private final boolean supportPause;
+
     private final CommunicateCommandProcessor<?> processor;
 
-    public CommunicateCommand(int code, int minAgentVersion, boolean supportMulti, CommunicateCommandProcessor processor) {
+    public CommunicateCommand(int code,
+                              int minAgentVersion,
+                              boolean supportMulti,
+                              boolean supportPause,
+                              CommunicateCommandProcessor processor) {
         this.code = code;
         this.minAgentVersion = minAgentVersion;
         this.supportMulti = supportMulti;
+        this.supportPause = supportPause;
         this.processor = processor;
     }
 
@@ -49,6 +56,10 @@ public class CommunicateCommand {
 
     public boolean isSupportMulti() {
         return supportMulti;
+    }
+
+    public boolean isSupportPause() {
+        return supportPause;
     }
 
     public CommunicateCommandProcessor<?> getProcessor() {

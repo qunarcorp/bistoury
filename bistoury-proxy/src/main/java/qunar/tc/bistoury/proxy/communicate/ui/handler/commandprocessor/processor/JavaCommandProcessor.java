@@ -17,7 +17,9 @@
 
 package qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.processor;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
+import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
@@ -29,6 +31,7 @@ import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -41,6 +44,7 @@ public class JavaCommandProcessor extends AbstractCommand<MachineCommand> {
 
     private static final String LOCATION = ".location";
     private static final String JSTACK = "jstack";
+    private static final String JSTAT = "jstat";
 
     private Map<String, String> globalConfig;
 
@@ -51,19 +55,26 @@ public class JavaCommandProcessor extends AbstractCommand<MachineCommand> {
     }
 
     @Override
-    protected MachineCommand prepareCommand(RequestData<MachineCommand> data, String agentId) {
-        String command = data.getCommand().getCommand();
-        final String commandLocation = globalConfig.get(command + LOCATION);
-        final String newCommand;
+    protected Optional<RequestData<MachineCommand>> doPreprocessor(RequestData<MachineCommand> requestData, ChannelHandlerContext ctx) {
+        String command = requestData.getCommand().getCommand();
+        final String commandLocation = globalConfig.get(command.trim() + LOCATION);
+        if (Strings.isNullOrEmpty(commandLocation)) {
+            return Optional.empty();
+        }
+        String newCommand;
         if (JSTACK.equals(command)) {
             newCommand = commandLocation + " " + BistouryConstants.FILL_PID;
-        } else {
+        } else if (JSTAT.equals(command)) {
             newCommand = commandLocation + " -gcutil " + BistouryConstants.FILL_PID + " 1000 1000";
+        } else {
+            return Optional.empty();
         }
+
         MachineCommand machineCommand = new MachineCommand();
         machineCommand.setCommand(newCommand);
-        machineCommand.setWorkDir(data.getAgentServerInfos().iterator().next().getLogdir());
-        return machineCommand;
+        machineCommand.setWorkDir(requestData.getAgentServerInfos().iterator().next().getLogdir());
+        requestData.setCommand(machineCommand);
+        return Optional.of(requestData);
     }
 
     @Override

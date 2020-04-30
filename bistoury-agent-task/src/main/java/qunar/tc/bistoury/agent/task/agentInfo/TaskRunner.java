@@ -22,13 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.clientside.common.meta.MetaStore;
 import qunar.tc.bistoury.clientside.common.meta.MetaStores;
-import qunar.tc.bistoury.commands.arthas.telnet.DebugTelnetStore;
 import qunar.tc.bistoury.commands.arthas.telnet.Telnet;
 import qunar.tc.bistoury.commands.arthas.telnet.TelnetStore;
+import qunar.tc.bistoury.commands.arthas.telnet.UrlEncodedTelnetStore;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.common.URLCoder;
 import qunar.tc.bistoury.common.VersionUtil;
-import qunar.tc.bistoury.remoting.netty.AgentInfoPushReceiver;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +44,7 @@ public class TaskRunner implements Runnable {
 
     private static final MetaStore META_STORE = MetaStores.getMetaStore();
 
-    private static final TelnetStore TELNET_STORE = DebugTelnetStore.getInstance();
+    private static final TelnetStore TELNET_STORE = UrlEncodedTelnetStore.getInstance();
 
     private static final String MIN_VERSION = "1.2.8";
 
@@ -89,7 +88,9 @@ public class TaskRunner implements Runnable {
                 String newCommand = TaskRunner.command + " " + URLCoder.encode(JacksonSerializer.serialize(agentInfo));
                 telnet.write(newCommand);
                 //如果不read，一定概率会出现push失败
-                telnet.read(newCommand, new AgentInfoPushReceiver());
+                while (telnet.read() != null) {
+                    // continue
+                }
             }
 
         } catch (Exception e) {

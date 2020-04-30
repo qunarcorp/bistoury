@@ -21,6 +21,8 @@ import com.taobao.middleware.logger.Logger;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.commons.AnalyzerAdapter;
+import org.objectweb.asm.commons.LocalVariablesSorter;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 
 /**
@@ -30,18 +32,14 @@ import qunar.tc.bistoury.attach.common.BistouryLoggger;
  */
 public class MonitorClassVisitor extends ClassVisitor {
     private static final Logger logger = BistouryLoggger.getLogger();
-    private String source;
     private String className;
     private String methodName;
     private String methodDesc;
-    private int line;
 
-    public MonitorClassVisitor(final ClassVisitor cv, final String source, final String methodName, final String methodDesc, final int line) {
-        super(Opcodes.ASM5, cv);
-        this.source = source;
+    MonitorClassVisitor(final ClassVisitor cv, final String methodName, final String methodDesc) {
+        super(Opcodes.ASM7, cv);
         this.methodName = methodName;
         this.methodDesc = methodDesc;
-        this.line = line;
     }
 
     @Override
@@ -57,12 +55,19 @@ public class MonitorClassVisitor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        final MethodVisitor methodVisitor = super.visitMethod(access, name, desc, signature, exceptions);
         if (name.equals(methodName) && desc.equals(methodDesc)) {
             logger.debug("visit method, name: {}, desc: {}", name, desc);
-            MonitorMethodVisitor monitorMV = new MonitorMethodVisitor(access, desc, signature, exceptions, className, name, line, cv);
-            return monitorMV;
+
+            MonitorMethodVisitor monitorMV = new MonitorMethodVisitor(methodVisitor, access, name, desc, className);
+
+            AnalyzerAdapter analyzerAdapter = new AnalyzerAdapter(className, access, name, desc, monitorMV);
+            monitorMV.setAnalyzerAdapter(analyzerAdapter);
+            LocalVariablesSorter localVariablesSorter = new LocalVariablesSorter(access, desc, analyzerAdapter);
+            monitorMV.setLocalVariablesSorter(localVariablesSorter);
+
+            return localVariablesSorter;
         } else {
-            final MethodVisitor methodVisitor = super.visitMethod(access, name, desc, signature, exceptions);
             return methodVisitor;
         }
     }

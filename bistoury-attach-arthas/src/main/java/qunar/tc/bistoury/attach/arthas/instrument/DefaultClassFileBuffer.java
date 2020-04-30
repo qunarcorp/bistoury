@@ -18,8 +18,10 @@
 package qunar.tc.bistoury.attach.arthas.instrument;
 
 import com.taobao.arthas.core.advisor.Enhancer;
+import com.taobao.arthas.core.util.affect.EnhancerAffect;
 import qunar.tc.bistoury.instrument.client.common.ClassFileBuffer;
 
+import java.io.File;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 
@@ -52,7 +54,12 @@ public class DefaultClassFileBuffer implements ClassFileBuffer {
 
     @Override
     public void setClassBuffer(Class clazz, byte[] buffer) {
+        dumpClassIfNecessary(clazz.getName(), buffer);
         classBytesCache.put(clazz, buffer);
+    }
+
+    private void dumpClassIfNecessary(String className, byte[] buffer) {
+        Enhancer.dumpClassIfNecessary(className.replace(".", File.separator), buffer, new EnhancerAffect());
     }
 
     @Override

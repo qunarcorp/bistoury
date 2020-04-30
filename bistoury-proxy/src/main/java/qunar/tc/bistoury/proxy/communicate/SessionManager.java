@@ -20,6 +20,7 @@ package qunar.tc.bistoury.proxy.communicate;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
 import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.UiConnection;
+import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommand;
 
 import java.util.Set;
 
@@ -28,7 +29,7 @@ import java.util.Set;
  */
 public interface SessionManager {
 
-    Session create(RequestData requestData, AgentConnection agentConnection, UiConnection uiConnection);
+    Session create(CommunicateCommand command, RequestData requestData, AgentConnection agentConnection, UiConnection uiConnection);
 
     Session getSession(String id);
 

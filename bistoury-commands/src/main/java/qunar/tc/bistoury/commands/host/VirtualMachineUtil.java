@@ -17,12 +17,14 @@
 
 package qunar.tc.bistoury.commands.host;
 
+import com.google.common.base.Preconditions;
 import com.sun.management.OperatingSystemMXBean;
 import com.sun.tools.attach.AgentInitializationException;
 import com.sun.tools.attach.AgentLoadException;
 import com.sun.tools.attach.VirtualMachine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.agent.common.JavaVersionUtils;
 
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
@@ -30,9 +32,11 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.*;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -44,6 +48,7 @@ import java.util.Set;
  * @describe：
  */
 public class VirtualMachineUtil {
+
     private static final Logger logger = LoggerFactory.getLogger(VirtualMachineUtil.class);
 
     private static final String LOCAL_CONNECTOR_ADDRESS_PROP = "com.sun.management.jmxremote.localConnectorAddress";
@@ -57,8 +62,8 @@ public class VirtualMachineUtil {
             JMXConnector connector = JMXConnectorFactory.connect(url);
             return new VMConnector(connector);
         } catch (Exception e) {
-            logger.error("attach to tomcat vm error ", e);
-            return null;
+            logger.error("attach to tomcat vm {} error", pid, e);
+            throw new IllegalStateException("attach to tomcat vm " + pid + " error", e);
         } finally {
             if (vm != null) {
                 try {
@@ -86,6 +91,20 @@ public class VirtualMachineUtil {
 
             // 2. 未启动，尝试启动
             // JDK8后有更直接的vm.startLocalManagementAgent()方法
+            if (JavaVersionUtils.isGreaterThanOrEqualToJava8()) {
+                try {
+                    //jdk8以后才有这个方法
+                    Method startLocalManagementAgentMethod = vm.getClass().getMethod("startLocalManagementAgent");
+                    Object result = startLocalManagementAgentMethod.invoke(vm);
+                    if (result != null && (address = result.toString()) != null) {
+                        return address;
+                    }
+                } catch (Exception e) {
+                    logger.error("jdk greater than or equal to jdk8， but start local management agent fail ", e);
+                }
+            }
+
+            //jdk8以前会手动尝试启动，jdk8调用方法启动失败后也会尝试手动启动
             String home = vm.getSystemProperties().getProperty("java.home");
 
             // Normally in ${java.home}/jre/lib/management-agent.jar but might
@@ -129,10 +148,11 @@ public class VirtualMachineUtil {
         }
     }
 
-    static class VMConnector {
+    static class VMConnector implements Closeable {
         private final JMXConnector connector;
 
         VMConnector(JMXConnector connector) {
+            Preconditions.checkNotNull(connector);
             this.connector = connector;
         }
 
@@ -178,15 +198,9 @@ public class VirtualMachineUtil {
             return memoryPoolMXBeans;
         }
 
-
-        public void disconnect() throws IOException {
-            if (connector != null) {
-                connector.close();
-            }
-        }
-
-        public JMXConnector getConnector() {
-            return connector;
+        @Override
+        public void close() throws IOException {
+            connector.close();
         }
     }
 }

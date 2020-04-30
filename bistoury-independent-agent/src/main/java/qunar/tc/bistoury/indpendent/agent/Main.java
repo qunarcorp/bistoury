@@ -27,6 +27,10 @@ import java.util.List;
 /**
  * @author zhenyu.nie created on 2018 2018/10/18 19:37
  */
+
+/**
+ * 如果Java版本高于java 9，启动agent需要在启动参数中添加--add-opens=java.base/jdk.internal.perf=ALL-UNNAMED
+ */
 public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
@@ -39,8 +43,21 @@ public class Main {
 
     public static void log() {
         List<String> args = ManagementFactory.getRuntimeMXBean().getInputArguments();
+        logger.info(getString("OS Name:", System.getProperty("os.name")));
+        logger.info(getString("OS Version:", System.getProperty("os.version")));
+        logger.info(getString("Architecture:", System.getProperty("os.arch")));
+        logger.info(getString("Java Home:", System.getProperty("java.home")));
+        logger.info(getString("JVM Version:", System.getProperty("java.runtime.version")));
+        logger.info(getString("JVM Vendor:", System.getProperty("java.vm.vendor")));
+        logger.info(getString("CATALINA_BASE:", System.getProperty("catalina.base")));
+        logger.info(getString("CATALINA_HOME:", System.getProperty("catalina.home")));
         for (String arg : args) {
             logger.info("Command line argument: {}", arg);
         }
+    }
+
+
+    private static String getString(String key, String value) {
+        return String.format("%-23s%s", key, value);
     }
 }

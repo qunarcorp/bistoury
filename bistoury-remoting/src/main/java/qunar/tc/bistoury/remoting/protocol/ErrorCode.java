@@ -37,7 +37,7 @@ public enum ErrorCode {
     NOT_SUPPORT_MULTI(-107, "该命令不支持多机执行"),
     LESS_VERSION(-108, "版本不支持该命令，请升级"),
     NO_HOST(-109, "请选择一台主机"),
-    COMMAND_PROCESSOR_ERROR(-110, "命令解析错误"),
+    COMMAND_PROCESSOR_ERROR(-110, "命令解析错误，请检查命令是否正确"),
     AGENT_CANNOT_CONNECT(-111, "Agent暂时无法连接"),
     HOST_VALIDATE_ERROR(-112, "主机校验失败，所选主机不属于该应用");
 

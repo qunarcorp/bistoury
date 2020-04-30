@@ -27,6 +27,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
+import qunar.tc.bistoury.agent.common.job.ResponseJobStore;
 import qunar.tc.bistoury.remoting.protocol.RemotingHeader;
 
 import java.util.List;
@@ -40,11 +41,14 @@ public class TaskProcessor implements Processor<Object> {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskProcessor.class);
 
+    private final ResponseJobStore jobStore;
+
     private final TaskStore taskStore;
 
     private final Map<Integer, TaskFactory<?>> taskFactories;
 
-    public TaskProcessor(TaskStore taskStore, List<TaskFactory> taskFactories) {
+    public TaskProcessor(ResponseJobStore jobStore, TaskStore taskStore, List<TaskFactory> taskFactories) {
+        this.jobStore = jobStore;
         this.taskStore = taskStore;
 
         ImmutableMap.Builder<Integer, TaskFactory<?>> builder = new ImmutableMap.Builder<>();
@@ -70,7 +74,7 @@ public class TaskProcessor implements Processor<Object> {
             Preconditions.checkState(factory != null);
             logger.info("receive {} command, id [{}], command [{}]", factory.name(), id, command);
 
-            Task task = createTask(factory, header, command, handler);
+            RunnableTask task = createTask(factory, header, command, handler);
             if (task == null) {
                 return;
             }
@@ -109,11 +113,11 @@ public class TaskProcessor implements Processor<Object> {
     }
 
     @SuppressWarnings("unchecked")
-    private Task createTask(TaskFactory factory, RemotingHeader header, Object command, ResponseHandler handler) {
-
+    private RunnableTask createTask(TaskFactory factory, RemotingHeader header, Object command, ResponseHandler handler) {
         Task task = factory.create(header, command, handler);
-        if (taskStore.register(task)) {
-            return task;
+        RunnableTask runnableTask = RunnableTasks.wrap(jobStore, task);
+        if (taskStore.register(runnableTask)) {
+            return runnableTask;
         } else {
             return null;
         }

@@ -140,7 +140,6 @@ samp {
     overflow-x: hidden;
     z-index: 1500;
 }
-
 .jqconsole-ansi-bold {
     font-weight: bold !important;
 }
@@ -297,7 +296,7 @@ samp {
 }
 
 .jqconsole-ansi-color-blue {
-    color: blue !important;
+    color: #0099ff !important;
 }
 
 .jqconsole-ansi-color-magenta {

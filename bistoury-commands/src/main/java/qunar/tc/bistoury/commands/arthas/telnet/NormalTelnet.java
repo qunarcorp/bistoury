@@ -22,22 +22,16 @@ import org.apache.commons.net.telnet.TelnetClient;
 import java.io.IOException;
 
 /**
- * @author zhenyu.nie created on 2018 2018/11/28 19:28
+ * @author zhenyu.nie created on 2018 2018/11/28 19:02
  */
-public class DebugTelnetStore extends AbstractTelnetStore {
+public class NormalTelnet extends AbstractTelnet {
 
-    private static final TelnetStore INSTANCE = new DebugTelnetStore();
-
-    public static TelnetStore getInstance() {
-        return INSTANCE;
-    }
-
-    private DebugTelnetStore() {
-
+    public NormalTelnet(TelnetClient client) throws IOException {
+        super(client);
     }
 
     @Override
-    protected Telnet doCreateTelnet(TelnetClient client) throws IOException {
-        return new DebugTelnet(client);
+    protected ResultProcessor getProcessor(Writer writer) {
+        return new SkipFirstLineProcessor(new PromptProcessor(writer));
     }
 }

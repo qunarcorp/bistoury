@@ -27,7 +27,15 @@ $(document).ready(function () {
             "sysenv",
             "dump",
             "classloader",
-            "options"
+            "options",
+            "logger",
+            "getstatic",
+            "vmoption",
+            "mbean",
+            "ognl",
+            "jad",
+            "sc",
+            "sm"
         ];
         var arthasCommands = [
             "dashboard",
@@ -53,7 +61,11 @@ $(document).ready(function () {
             "sysenv",
             "ognl",
             "mc",
-            "mbean"
+            "mbean",
+            "heapdump",
+            "vmoption",
+            "logger",
+            "stop"
         ];
 
         var debugCommand = [

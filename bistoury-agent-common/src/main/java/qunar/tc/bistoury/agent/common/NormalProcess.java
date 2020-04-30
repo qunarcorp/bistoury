@@ -29,26 +29,27 @@ public class NormalProcess extends ClosableProcess {
 
     private static final int BUF_SIZE = 4 * 1024;
 
+    private static final byte[] EMPTY_BYTES = new byte[0];
+
     private final RateLimiter rateLimiter = RateLimiter.create(16); //限制每秒read的次数
+
+    private final byte[] buffer = new byte[BUF_SIZE];
 
     NormalProcess(Process delegate) {
         super(delegate);
     }
 
     @Override
-    public int readAndWaitFor(ResponseHandler handler) throws Exception {
-        try (InputStream inputStream = getInputStream()) {
-            byte[] buffer = new byte[BUF_SIZE];
-            while (true) {
-                rateLimiter.acquire();
-                int count = inputStream.read(buffer);
-                if (count > 0) {
-                    handler.handle(Arrays.copyOfRange(buffer, 0, count));
-                } else if (count < 0) {
-                    break;
-                }
-            }
+    public byte[] read() throws Exception {
+        rateLimiter.acquire();
+        InputStream inputStream = getInputStream();
+        int count = inputStream.read(buffer);
+        if (count > 0) {
+            return Arrays.copyOfRange(buffer, 0, count);
+        } else if (count == 0) {
+            return EMPTY_BYTES;
+        } else {
+            return null;
         }
-        return waitFor();
     }
 }

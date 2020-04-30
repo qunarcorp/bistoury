@@ -39,6 +39,7 @@ import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommandStore;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.*;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.encryption.DefaultRequestEncryption;
+import qunar.tc.bistoury.proxy.generator.IdGenerator;
 import qunar.tc.bistoury.proxy.util.AppCenterServerFinder;
 import qunar.tc.bistoury.serverside.agile.Conf;
 import qunar.tc.bistoury.serverside.common.encryption.RSAEncryption;
@@ -64,24 +65,28 @@ public class NettyServerForUi implements NettyServer {
 
     private final int port;
 
-    private UiConnectionStore uiConnectionStore;
+    private final IdGenerator idGenerator;
 
-    private AgentConnectionStore agentConnectionStore;
+    private final UiConnectionStore uiConnectionStore;
 
-    private SessionManager sessionManager;
+    private final AgentConnectionStore agentConnectionStore;
 
-    private CommunicateCommandStore commandStore;
+    private final SessionManager sessionManager;
 
-    private AppServerService appServerService;
+    private final CommunicateCommandStore commandStore;
+
+    private final AppServerService appServerService;
 
     private volatile Channel channel;
 
     public NettyServerForUi(Conf conf,
+                            IdGenerator idGenerator,
                             CommunicateCommandStore commandStore,
                             UiConnectionStore uiConnectionStore,
                             AgentConnectionStore agentConnectionStore,
                             SessionManager sessionManager, AppServerService appServerService) {
         this.port = conf.getInt("server.port", -1);
+        this.idGenerator = idGenerator;
         this.uiConnectionStore = uiConnectionStore;
         this.agentConnectionStore = agentConnectionStore;
         this.sessionManager = sessionManager;
@@ -113,7 +118,11 @@ public class NettyServerForUi implements NettyServer {
                                 .addLast(new WebSocketEncoder())
                                 .addLast(new TabHandler())
                                 .addLast(new HostsValidatorHandler(new AppCenterServerFinder(appServerService)))
-                                .addLast(new UiRequestHandler(commandStore, uiConnectionStore, agentConnectionStore, sessionManager));
+                                .addLast(new UiRequestHandler(
+                                        commandStore,
+                                        uiConnectionStore,
+                                        agentConnectionStore,
+                                        sessionManager));
                     }
                 });
         try {

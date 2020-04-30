@@ -17,12 +17,12 @@
 
 package qunar.tc.bistoury.proxy.communicate.ui;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.channel.Channel;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -52,6 +52,6 @@ public class DefaultUiConnectionStore implements UiConnectionStore {
         if (connection != null) {
             return Optional.of(connection);
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 }

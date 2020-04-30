@@ -20,10 +20,14 @@ package qunar.tc.bistoury.attach.arthas.debug;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.arthas.instrument.InstrumentClient;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
+import qunar.tc.bistoury.common.NamedThreadFactory;
 import qunar.tc.bistoury.common.Snapshot;
 import qunar.tc.bistoury.instrument.client.common.InstrumentInfo;
 import qunar.tc.bistoury.instrument.client.debugger.Debugger;
 import qunar.tc.bistoury.instrument.client.debugger.DefaultDebugger;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * @author zhenyu.nie created on 2018 2018/11/22 20:15
@@ -36,6 +40,8 @@ public class QDebugClient implements InstrumentClient {
 
     private final SnapshotCache snapshotCache;
 
+    private final ScheduledExecutorService cleanExecutor;
+
     QDebugClient(InstrumentInfo instrumentInfo) {
         logger.info("start init qdebugg client");
         try {
@@ -46,7 +52,9 @@ public class QDebugClient implements InstrumentClient {
                     debugger.unRegisterBreakpoint(snapshot.getSource(), snapshot.getLine(), snapshot.getId());
                 }
             };
-            DefaultSnapshotStore snapshotStore = new DefaultSnapshotStore(instrumentInfo.getLock(), removeListener);
+
+            this.cleanExecutor = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("snapshot-cache-clean"));
+            DefaultSnapshotStore snapshotStore = new DefaultSnapshotStore(instrumentInfo.getLock(), removeListener, cleanExecutor);
             debugger.startup(instrumentInfo, snapshotStore);
 
             this.debugger = debugger;
@@ -79,6 +87,9 @@ public class QDebugClient implements InstrumentClient {
     public void destroy() {
         try {
             logger.info("start destroy qdebugclient");
+            if (cleanExecutor != null) {
+                cleanExecutor.shutdownNow();
+            }
             if (debugger != null) {
                 debugger.destroy();
             }

@@ -52,7 +52,10 @@ public enum CommandCode {
     REQ_TYPE_CPU_THREAD_NUM(308, 22),
 
     REQ_TYPE_MONITOR(401, 40),
-    REQ_TYPE_QMONITOR_QUERY(402, 41);
+    REQ_TYPE_QMONITOR_QUERY(402, 41),
+
+    REQ_TYPE_JOB_PAUSE(601, 601),
+    REQ_TYPE_JOB_RESUME(602, 602);
 
     private int code;
     private int oldCode;

@@ -28,7 +28,6 @@ import com.taobao.middleware.cli.annotations.Summary;
 import qunar.tc.bistoury.attach.arthas.instrument.InstrumentClientStore;
 
 import java.lang.instrument.Instrumentation;
-import java.lang.instrument.UnmodifiableClassException;
 
 /**
  * @author zhenyu.nie created on 2018 2018/11/30 19:52
@@ -39,28 +38,28 @@ public class QShutdownCommand extends AnnotatedCommand {
 
     @Override
     public void process(CommandProcess process) {
+        shutdown(process);
+    }
+
+    public static void shutdown(CommandProcess process) {
         try {
-            // 退出之前需要重置所有的增强类
             try {
-                EnhancerAffect enhancerAffect = clearArthasInstrument(process);
+                // 退出之前需要重置所有的增强类
+                Instrumentation inst = process.session().getInstrumentation();
+                EnhancerAffect enhancerAffect = Enhancer.reset(inst, new WildcardMatcher("*"));
                 process.write(enhancerAffect.toString()).write("\n");
             } catch (Exception e) {
-                // ignore
+                //ignore
             }
 
             InstrumentClientStore.destroy();
 
-            process.write("bistoury Server is going to shut down...\n");
+            process.write("Bistoury Server is going to shut down...\n");
         } finally {
             process.end();
             ShellServer server = process.session().getServer();
             server.close();
         }
-    }
-
-    private EnhancerAffect clearArthasInstrument(CommandProcess process) throws UnmodifiableClassException {
-        Instrumentation inst = process.session().getInstrumentation();
-        return Enhancer.reset(inst, new WildcardMatcher("*"));
     }
 
 }

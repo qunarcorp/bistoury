@@ -83,6 +83,11 @@ public abstract class AbstractCommand<T> implements CommunicateCommandProcessor<
     }
 
     @Override
+    public boolean supportPause() {
+        return true;
+    }
+
+    @Override
     public final CommunicateCommandProcessor getProcessor() {
         return this;
     }
