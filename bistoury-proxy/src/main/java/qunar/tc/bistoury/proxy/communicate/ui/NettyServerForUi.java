@@ -119,7 +119,6 @@ public class NettyServerForUi implements NettyServer {
                                 .addLast(new TabHandler())
                                 .addLast(new HostsValidatorHandler(new AppCenterServerFinder(appServerService)))
                                 .addLast(new UiRequestHandler(
-                                        idGenerator,
                                         commandStore,
                                         uiConnectionStore,
                                         agentConnectionStore,

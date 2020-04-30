@@ -20,6 +20,7 @@ package qunar.tc.bistoury.proxy.communicate;
 import com.google.common.util.concurrent.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
 import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.UiConnection;
@@ -67,6 +68,11 @@ public class DefaultSession implements Session {
         boolean isEndMessage = isEndMessage(message);
         if (isEndMessage) {
             end.set(true);
+        } else {
+            if (agentConnection.getVersion() < BistouryConstants.MIN_AGENT_VERSION_SUPPORT_JOB_PAUSE &&
+                    !agentConnection.isWritable()) {
+                broken();
+            }
         }
 
         ListenableFuture<WriteResult> result = uiConnection.write(message);

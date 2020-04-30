@@ -25,6 +25,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.channel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.proxy.communicate.Session;
 import qunar.tc.bistoury.proxy.communicate.SessionManager;
 import qunar.tc.bistoury.proxy.communicate.WritableListener;
@@ -34,7 +35,6 @@ import qunar.tc.bistoury.proxy.communicate.ui.*;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommand;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommandStore;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.CommunicateCommandProcessor;
-import qunar.tc.bistoury.proxy.generator.IdGenerator;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
@@ -53,8 +53,6 @@ public class UiRequestHandler extends ChannelDuplexHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(UiRequestHandler.class);
 
-    private final IdGenerator idGenerator;
-
     private final UiConnectionStore uiConnectionStore;
 
     private final AgentConnectionStore agentConnectionStore;
@@ -63,12 +61,10 @@ public class UiRequestHandler extends ChannelDuplexHandler {
 
     private final CommunicateCommandStore commandStore;
 
-    public UiRequestHandler(IdGenerator idGenerator,
-                            CommunicateCommandStore commandStore,
+    public UiRequestHandler(CommunicateCommandStore commandStore,
                             UiConnectionStore uiConnectionStore,
                             AgentConnectionStore agentConnectionStore,
                             SessionManager sessionManager) {
-        this.idGenerator = idGenerator;
         this.commandStore = commandStore;
         this.uiConnectionStore = uiConnectionStore;
         this.agentConnectionStore = agentConnectionStore;
@@ -197,7 +193,7 @@ public class UiRequestHandler extends ChannelDuplexHandler {
 
         session.writeToAgent(datagram);
         if (session.isSupportPause()) {
-            UiWritableListener listener = new UiWritableListener(session, idGenerator);
+            UiWritableListener listener = new UiWritableListener(session);
             uiConnection.addWritableListener(listener);
             session.getEndState().addListener(
                     () -> uiConnection.removeWritableListener(listener),
@@ -210,22 +206,21 @@ public class UiRequestHandler extends ChannelDuplexHandler {
 
         private final Session session;
 
-        private final IdGenerator idGenerator;
-
         private boolean writable = true;
 
-        private UiWritableListener(Session session, IdGenerator idGenerator) {
+        private UiWritableListener(Session session) {
             this.session = session;
-            this.idGenerator = idGenerator;
         }
 
         @Override
         public void onChange(boolean writable) {
             if (this.writable != writable) {
                 this.writable = writable;
-                CommandCode code = writable ? CommandCode.REQ_TYPE_JOB_RESUME : CommandCode.REQ_TYPE_JOB_PAUSE;
-                Datagram datagram = RemotingBuilder.buildRequestDatagram(code.getCode(), idGenerator.generateId(), new RequestPayloadHolder(session.getId()));
-                session.writeToAgent(datagram);
+                if (session.getAgentConnection().getVersion() >= BistouryConstants.MIN_AGENT_VERSION_SUPPORT_JOB_PAUSE) {
+                    CommandCode code = writable ? CommandCode.REQ_TYPE_JOB_RESUME : CommandCode.REQ_TYPE_JOB_PAUSE;
+                    Datagram datagram = RemotingBuilder.buildRequestDatagram(code.getCode(), session.getId(), new RequestPayloadHolder(session.getId()));
+                    session.writeToAgent(datagram);
+                }
             }
         }
     }
@@ -234,7 +229,7 @@ public class UiRequestHandler extends ChannelDuplexHandler {
         Set<Session> sessions = sessionManager.getSessionByUiConnection(uiConnection);
         for (Session session : sessions) {
             String id = session.getId();
-            Datagram datagram = RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_CANCEL.getCode(), idGenerator.generateId(), new RequestPayloadHolder(id));
+            Datagram datagram = RemotingBuilder.buildRequestDatagram(CommandCode.REQ_TYPE_CANCEL.getCode(), id, new RequestPayloadHolder(id));
             session.writeToAgent(datagram);
             session.finish();
         }

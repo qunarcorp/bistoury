@@ -63,4 +63,6 @@ public class BistouryConstants {
     public static final String SHUTDOWN_COMMAND = "shutdown";
 
     public static final String STOP_COMMAND = "stop";
+
+    public static final int MIN_AGENT_VERSION_SUPPORT_JOB_PAUSE = 12;
 }
