@@ -9,6 +9,8 @@
 
 `Bistoury` 在公司内部原有agent的基础上集成Alibaba开源的[arthas](https://github.com/alibaba/arthas)和唯品会开源的[vjtools](https://github.com/vipshop/vjtools)，提供了更加丰富的功能，感谢他们做出的优秀工作。
 
+[English document](README_EN.md)
+
 ## 简介
 
 Arthas和vjtools已经是很优秀的工具，我们为什么还要开发Bistoury？
