@@ -12,11 +12,11 @@ $(document).ready(function () {
         dump: false,
         other: false
     }
+    var historyData = {}
 
-    function getDownloadFileList(type) {
-        currentType = type;
+    function getDownloadFileList() {
         $('#download-file-table').bootstrapTable('removeAll');
-        bistouryWS.sendCommand(currentHost, 701, type, null, handleResult)
+        bistouryWS.sendCommand(currentHost, 701, currentType, null, handleResult)
     }
 
     function handleResult(content) {
@@ -31,14 +31,19 @@ $(document).ready(function () {
         if (resType == "downloadfilelist") {
             var res = result.data;
             if (res.code == 0) {
-                $('#download-file-table').bootstrapTable('removeAll');
-                $('#download-file-table').bootstrapTable('append', res.data);
+                historyData[currentType] = res.data;
+                buildFileListTable(res.data);
             } else {
                 bistoury.error(res.message);
             }
 
         }
         console.log(JSON.parse(content))
+    }
+
+    function buildFileListTable(data) {
+        $('#download-file-table').bootstrapTable('removeAll');
+        $('#download-file-table').bootstrapTable('append', data);
     }
 
     function getAppList() {
@@ -97,8 +102,14 @@ $(document).ready(function () {
                 + "&token=" + bistouryWS.getToken()
         }).then(function (res) {
             if (res.ok) {
-                var filename = res.headers.get('Content-Disposition').split("=")[1];
+                let content = res.headers.get('Content-Disposition');
+                if (!content) {
+                    bistoury.error("Content-Disposition 获取失败");
+                    return;
+                }
+
                 res.blob().then(function (data) {
+                    var filename = content.split("=")[1];
                     var blobUrl = window.URL.createObjectURL(data);
                     var a = document.createElement('a');
                     a.setAttribute('href', blobUrl);
@@ -106,6 +117,13 @@ $(document).ready(function () {
                     a.click();
                 }).catch(function (reason) {
                     console.log(reason);
+                    if (bistoury.isJsonDataStr(reason)) {
+                        var error = JSON.parse(reason);
+                        if (error.code) {
+                            bistoury.errorCode(error.code)
+                            return;
+                        }
+                    }
                     bistoury.error(reason)
                 })
             } else {
@@ -120,50 +138,67 @@ $(document).ready(function () {
         })
     }
 
+    function refreshDownloadFileLis() {
+        $('#download-file-table').bootstrapTable('removeAll');
+        getDownloadFileList();
+    }
+
     $("#agree-download").click(function () {
         download(currentFile);
         $("#download-modal").modal("hide");
     });
 
     $("#list-all-file").click(function () {
+        currentType = "all";
+        removeListFileActiveClass();
+        $(this).addClass("active");
         if (firstIn.all) {
+            buildFileListTable(historyData.all);
             return;
         }
         firstIn.all = true;
-        removeListFileActiveClass();
-        $(this).addClass("active");
-        getDownloadFileList("all");
+        getDownloadFileList();
     });
 
     $("#list-log-file").click(function () {
+        currentType = "log";
+        removeListFileActiveClass();
+        $(this).addClass("active");
         if (firstIn.log) {
+            buildFileListTable(historyData.log);
             return;
         }
         firstIn.log = true;
-        removeListFileActiveClass();
-        $(this).addClass("active");
-        getDownloadFileList("log");
+        getDownloadFileList();
     });
 
     $("#list-dump-file").click(function () {
+        currentType = "dump";
+        removeListFileActiveClass();
+        $(this).addClass("active");
         if (firstIn.dump) {
+            buildFileListTable(historyData.dump);
             return;
         }
         firstIn.dump = true;
-        removeListFileActiveClass();
-        $(this).addClass("active");
-        getDownloadFileList("dump");
+        getDownloadFileList();
     });
 
     $("#list-other-file").click(function () {
+        currentType = "other";
+        removeListFileActiveClass();
+        $(this).addClass("active");
         if (firstIn.other) {
+            buildFileListTable(historyData.other);
             return;
         }
         firstIn.other = true;
-        removeListFileActiveClass();
-        $(this).addClass("active");
-        getDownloadFileList("other");
+        getDownloadFileList();
     });
+
+    $("#list-all-refresh").click(function () {
+        refreshDownloadFileLis();
+    })
 
     function removeListFileActiveClass() {
         $('#download-file-table').bootstrapTable('removeAll');
@@ -185,11 +220,24 @@ $(document).ready(function () {
             onNodeSelected: function (event, data) {
                 currentHost = data.value;
                 removeListFileActiveClass();
+                initDownloadFileList();
                 $("#list-log-file").addClass("active");
                 $("#download-file-panel").show();
-                getDownloadFileList("log");
+                currentType = "log";
+                firstIn.log = true;
+                getDownloadFileList();
             }
         });
+    }
+
+    function initDownloadFileList() {
+        firstIn = {
+            all: false,
+            log: false,
+            dump: false,
+            other: false
+        }
+        historyData = {};
     }
 
     function initDownloadFileTable() {
@@ -253,10 +301,7 @@ $(document).ready(function () {
                     return "<a class='download-file' style='cursor: pointer'>download</a>"
                 }
             }],
-            onRefresh: function () {
-                $('#download-file-table').bootstrapTable('removeAll');
-                getDownloadFileList(currentType);
-            }
+            onRefresh: refreshDownloadFileLis
         });
     }
 

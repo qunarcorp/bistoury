@@ -73,6 +73,7 @@ public class DownloadWebSocket extends WebSocketClient {
             int length = buffer.getInt();
 
             if (type == ResponseCode.RESP_TYPE_EXCEPTION.getOldCode()) {
+                response.setStatus(500);
                 outputStream.write(buffer.array(), 20, length);
                 outputStream.flush();
                 latch.countDown();

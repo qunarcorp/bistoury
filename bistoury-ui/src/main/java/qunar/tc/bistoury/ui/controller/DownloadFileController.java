@@ -30,6 +30,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author leix.xie
@@ -70,9 +71,9 @@ public class DownloadFileController {
                          HttpServletResponse response) {
 
         Preconditions.checkArgument(!Strings.isNullOrEmpty(appcode), "app code cannot be null or empty");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(agentIp), "agent ip  cannot be null or empty");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(path), "path  cannot be null or empty");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(filename), "filename  cannot be null or empty");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(agentIp), "agent ip cannot be null or empty");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(path), "path cannot be null or empty");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(filename), "filename cannot be null or empty");
         Preconditions.checkArgument(this.appService.checkUserPermission(appcode, LoginContext.getLoginContext().getLoginUser()), "no permission for " + appcode);
 
         List<String> webSocketUrl = proxyService.getWebSocketUrl(agentIp);
@@ -102,7 +103,7 @@ public class DownloadFileController {
             CountDownLatch latch = new CountDownLatch(1);
             webSocket = new DownloadWebSocket(uri, latch, outputStream, response, filename, command);
             webSocket.connect();
-            latch.await();
+            latch.await(60, TimeUnit.MINUTES);
         } finally {
             if (webSocket != null) {
                 webSocket.close();

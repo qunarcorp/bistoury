@@ -17,7 +17,7 @@ public class DownloadDirUtils {
     private static DynamicConfig dynamicConfig;
 
     private static final String DEFAULT_KEY_PREFIX = "default";
-    private static final String DOWNLOAD_OTHER_KEY = ".download.dump.dir";
+    private static final String DOWNLOAD_OTHER_KEY = ".download.other.dir";
     private static final String DOWNLOAD_DUMP_KEY = ".download.dump.dir";
 
     private static final String ALL_DIR = "all";
