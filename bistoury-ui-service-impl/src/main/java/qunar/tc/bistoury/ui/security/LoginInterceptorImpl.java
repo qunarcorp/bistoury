@@ -81,6 +81,7 @@ public class LoginInterceptorImpl implements LoginInterceptor {
         loginContext.setReturnUrl(buffer.toString());
         loginContext.setRemoteIP(request.getRemoteHost());
         loginContext.setAdmin(this.userService.isAdmin(userCode));
+        loginContext.setToken(com.google.common.base.Strings.nullToEmpty(loginManager.token(request)));
         request.setAttribute(LoginContext.CONTEXT, loginContext);
     }
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.proxy.communicate.ui;
+package qunar.tc.bistoury.remoting.protocol;
 
 import java.util.List;
 

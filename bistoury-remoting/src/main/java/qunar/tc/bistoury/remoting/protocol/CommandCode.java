@@ -55,7 +55,10 @@ public enum CommandCode {
     REQ_TYPE_QMONITOR_QUERY(402, 41),
 
     REQ_TYPE_JOB_PAUSE(601, 601),
-    REQ_TYPE_JOB_RESUME(602, 602);
+    REQ_TYPE_JOB_RESUME(602, 602),
+
+    REQ_TYPE_LIST_DOWNLOAD_FILE(701, 701),
+    REQ_TYPE_DOWNLOAD_FILE(702, 702);
 
     private int code;
     private int oldCode;

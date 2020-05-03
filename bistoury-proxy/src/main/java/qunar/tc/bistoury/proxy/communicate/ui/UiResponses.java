@@ -71,7 +71,7 @@ public class UiResponses {
     }
 
     public static Datagram createProcessRequestErrorResponse(RequestData requestData, String data) {
-        return RemotingBuilder.buildErrorResponseDatagram(ErrorCode.COMMAND_PROCESSOR_ERROR.getCode(), null);
+        return RemotingBuilder.buildErrorResponseDatagram(ErrorCode.COMMAND_PROCESSOR_ERROR.getCode(), data);
     }
 
     public static Datagram createWrongFrameResponse() {

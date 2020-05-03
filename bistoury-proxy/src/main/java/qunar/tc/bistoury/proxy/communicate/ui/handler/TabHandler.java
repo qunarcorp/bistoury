@@ -22,15 +22,11 @@ import com.google.common.base.Splitter;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import qunar.tc.bistoury.common.JacksonSerializer;
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.UiResponses;
 import qunar.tc.bistoury.proxy.communicate.ui.linuxcommand.CommandSplitter;
 import qunar.tc.bistoury.proxy.communicate.ui.linuxcommand.LinuxCommandParser;
 import qunar.tc.bistoury.remoting.command.MachineCommand;
-import qunar.tc.bistoury.remoting.protocol.CommandCode;
-import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
-import qunar.tc.bistoury.remoting.protocol.RemotingHeader;
-import qunar.tc.bistoury.remoting.protocol.ResponseCode;
+import qunar.tc.bistoury.remoting.protocol.*;
 import qunar.tc.bistoury.remoting.protocol.payloadHolderImpl.ResponseStringPayloadHolder;
 
 import java.util.List;
@@ -52,43 +48,46 @@ public class TabHandler extends ChannelDuplexHandler {
             ctx.fireChannelRead(msg);
             return;
         }
-        List<CommandSplitter.CommandPart> list = CommandSplitter.split(data.getCommand());
-        String lastCommand = list.get(list.size() - 1).getContent();
-        List<String> parts = SPLITTER.splitToList(lastCommand);
-        char firstChar = parts.get(parts.size() - 1).trim().charAt(0);
-        char lastChar = lastCommand.charAt(lastCommand.length() - 1);
+        try {
+            List<CommandSplitter.CommandPart> list = CommandSplitter.split(data.getCommand());
+            String lastCommand = list.get(list.size() - 1).getContent();
+            List<String> parts = SPLITTER.splitToList(lastCommand);
+            char firstChar = parts.get(parts.size() - 1).trim().charAt(0);
+            char lastChar = lastCommand.charAt(lastCommand.length() - 1);
 
-        final boolean isLastEmpty = CharMatcher.WHITESPACE.matches(lastChar);
-        if (!needAutoComplete(firstChar) && !isLastEmpty) {  // 特殊字符开头的不补全
-            ctx.writeAndFlush(UiResponses.createFinishResponse(data));
-            return;
-        }
+            final boolean isLastEmpty = CharMatcher.WHITESPACE.matches(lastChar);
+            if (!needAutoComplete(firstChar) && !isLastEmpty) {  // 特殊字符开头的不补全
+                ctx.writeAndFlush(UiResponses.createFinishResponse(data));
+                return;
+            }
 
-        if (parts.size() == 1 && !isLastEmpty) { // 命令补全
-            String part = parts.get(0);
-            Set<String> legalCommands = LinuxCommandParser.getLegalCommands();
-            String ret = "";
-            for (String legalCommand : legalCommands) {
-                if (legalCommand.startsWith(part)) {
-                    ret += legalCommand + "\n";
+            if (parts.size() == 1 && !isLastEmpty) { // 命令补全
+                String part = parts.get(0);
+                Set<String> legalCommands = LinuxCommandParser.getLegalCommands();
+                String ret = "";
+                for (String legalCommand : legalCommands) {
+                    if (legalCommand.startsWith(part)) {
+                        ret += legalCommand + "\n";
+                    }
                 }
+                RemotingHeader requestHeader = new RemotingHeader();
+                ctx.writeAndFlush(RemotingBuilder.buildResponseDatagram(ResponseCode.RESP_TYPE_CONTENT.getCode(), requestHeader, new ResponseStringPayloadHolder(ret)));
+                ctx.writeAndFlush(RemotingBuilder.buildResponseDatagram(ResponseCode.RESP_TYPE_SINGLE_END.getCode(), requestHeader, null));
+                ctx.writeAndFlush(UiResponses.createFinishResponse(data));
+            } else {
+                MachineCommand command = new MachineCommand();
+                data.setType(CommandCode.REQ_TYPE_COMMAND.getCode());
+                if (isLastEmpty) { // 执行 ls
+                    command.setCommand("ls");
+                } else { // 执行 ls 文件名*
+                    command.setCommand("ls " + parts.get(parts.size() - 1) + "*");
+                }
+                data.setCommand(JacksonSerializer.serialize(command));
+                ctx.fireChannelRead(data);
             }
-            RemotingHeader requestHeader = new RemotingHeader();
-            ctx.writeAndFlush(RemotingBuilder.buildResponseDatagram(ResponseCode.RESP_TYPE_CONTENT.getCode(), requestHeader, new ResponseStringPayloadHolder(ret)));
-            ctx.writeAndFlush(RemotingBuilder.buildResponseDatagram(ResponseCode.RESP_TYPE_SINGLE_END.getCode(), requestHeader, null));
-            ctx.writeAndFlush(UiResponses.createFinishResponse(data));
-        } else {
-            MachineCommand command = new MachineCommand();
-            data.setType(CommandCode.REQ_TYPE_COMMAND.getCode());
-            if (isLastEmpty) { // 执行 ls
-                command.setCommand("ls");
-            } else { // 执行 ls 文件名*
-                command.setCommand("ls " + parts.get(parts.size() - 1) + "*");
-            }
-            data.setCommand(JacksonSerializer.serialize(command));
-            ctx.fireChannelRead(data);
+        } catch (Throwable t) {
+            ctx.writeAndFlush(UiResponses.createProcessRequestErrorResponse(data, t.getMessage()));
         }
-
     }
 
     /**

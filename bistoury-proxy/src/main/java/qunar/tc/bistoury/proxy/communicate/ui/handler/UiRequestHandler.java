@@ -35,9 +35,7 @@ import qunar.tc.bistoury.proxy.communicate.ui.*;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommand;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommandStore;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.CommunicateCommandProcessor;
-import qunar.tc.bistoury.remoting.protocol.CommandCode;
-import qunar.tc.bistoury.remoting.protocol.Datagram;
-import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
+import qunar.tc.bistoury.remoting.protocol.*;
 import qunar.tc.bistoury.remoting.protocol.payloadHolderImpl.RequestPayloadHolder;
 
 import java.util.List;
@@ -128,9 +126,8 @@ public class UiRequestHandler extends ChannelDuplexHandler {
         }
 
         CommunicateCommandProcessor<?> processor = communicateCommand.getProcessor();
-        Optional<? extends RequestData<?>> requestDataOptional = processor.preprocessor(inputData, ctx);
+        Optional<? extends RequestData<?>> requestDataOptional = preProcessor(processor, inputData, ctx);
         if (!requestDataOptional.isPresent()) {
-            ctx.channel().writeAndFlush(UiResponses.createProcessRequestErrorResponse(inputData));
             return;
         }
 
@@ -169,6 +166,20 @@ public class UiRequestHandler extends ChannelDuplexHandler {
 
         ListenableFuture<List<Session.State>> sessionsFuture = Futures.successfulAsList(sessions.stream().map(Session::getEndState).collect(Collectors.toList()));
         sessionsFuture.addListener(() -> uiConnection.write(UiResponses.createFinishResponse(requestData)), MoreExecutors.directExecutor());
+    }
+
+    private Optional<? extends RequestData<?>> preProcessor(CommunicateCommandProcessor<?> processor, RequestData<String> inputData, ChannelHandlerContext ctx) {
+        try {
+            Optional<? extends RequestData<?>> requestData = processor.preprocessor(inputData, ctx);
+            if (!requestData.isPresent()) {
+                ctx.channel().writeAndFlush(UiResponses.createProcessRequestErrorResponse(inputData));
+            }
+            return requestData;
+        } catch (Exception e) {
+            ctx.channel().writeAndFlush(UiResponses.createProcessRequestErrorResponse(inputData, "\033[31m[ERROR]:\033[0m Command preprocess failed: " + e.getMessage()));
+            logger.error("pre processor command fail", e);
+            return Optional.empty();
+        }
     }
 
     @Override

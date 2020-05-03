@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
 import qunar.tc.bistoury.serverside.bean.ApiStatus;
+import qunar.tc.bistoury.serverside.exception.PermissionDenyException;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 
 /**

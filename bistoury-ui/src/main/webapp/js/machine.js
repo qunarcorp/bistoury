@@ -520,6 +520,7 @@ $(document).ready(function () {
                 initThreadCurve();
                 initMemPoolCurve();
                 initVisuaCurve();
+                initHeapHisto();
 
                 cleanData();
                 removeActiveClass();
@@ -669,6 +670,10 @@ $(document).ready(function () {
 
     function getCurveData() {
         return new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+
+    function initHeapHisto() {
+        $('#jvm-heap-histo-table').bootstrapTable('removeAll');
     }
 
     function initVisuaCurve() {
@@ -1124,7 +1129,33 @@ $(document).ready(function () {
                 title: 'Class',
                 field: 'className',
                 sortable: true,
-                searchable: true
+                searchable: true,
+                formatter: function (vaule) {
+                    switch (vaule) {
+                        case "[B":
+                            return "byte[]";
+                        case "[C":
+                            return "char[]";
+                        case "[I":
+                            return "int[]";
+                        case "[Z":
+                            return "boolean[]";
+                        case "[S":
+                            return "short[]";
+                        case "[J":
+                            return "long[]";
+                        case "[F":
+                            return "float[]";
+                        case "[D":
+                            return "double[]";
+                        default:
+                            break;
+                    }
+                    if ((vaule + "").indexOf("[L") == 0) {
+                        return vaule.substr(2, vaule.length - 2) + "[]"
+                    }
+                    return vaule;
+                }
             }, {
                 title: 'Count',
                 field: 'count',

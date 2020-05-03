@@ -15,31 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.ui.exception;
+package qunar.tc.bistoury.serverside.common.encryption;
+
+import qunar.tc.bistoury.remoting.protocol.RequestData;
+
+import java.io.IOException;
 
 /**
- * @author leix.xie
- * @date 2019/7/4 15:40
- * @describe
+ * @author zhenyu.nie created on 2019 2019/5/16 15:52
  */
-public class PermissionDenyException extends RuntimeException {
-    public PermissionDenyException() {
-        super();
-    }
+public interface RequestEncryption {
+    RequestData<String> decrypt(String in) throws IOException;
 
-    public PermissionDenyException(String message) {
-        super(message);
-    }
-
-    public PermissionDenyException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public PermissionDenyException(Throwable cause) {
-        super(cause);
-    }
-
-    protected PermissionDenyException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
+    String encrypt(RequestData<String> requestData, final String key) throws IOException;
 }

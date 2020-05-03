@@ -2,7 +2,7 @@ code,
 kbd,
 pre,
 samp {
-    font-family: Consolas, Monospace;
+    font-family: Monospace,Consolas;
     font-size: 14px;
 }
 

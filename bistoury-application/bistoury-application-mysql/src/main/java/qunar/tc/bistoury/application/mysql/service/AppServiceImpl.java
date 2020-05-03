@@ -20,7 +20,6 @@ package qunar.tc.bistoury.application.mysql.service;
 import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import qunar.tc.bistoury.application.api.AppService;
 import qunar.tc.bistoury.application.api.pojo.Application;
 import qunar.tc.bistoury.application.mysql.dao.ApplicationDao;
@@ -50,6 +49,12 @@ public class AppServiceImpl implements AppService {
     @Override
     public Application getAppInfo(String appCode) {
         return this.applicationDao.getApplicationByAppCode(appCode);
+    }
+
+    @Override
+    public boolean checkUserPermission(final String appCode, final String usercode) {
+        List<String> users = this.applicationUserDao.getUsersByAppCode(appCode);
+        return users != null && users.contains(usercode);
     }
 
 }

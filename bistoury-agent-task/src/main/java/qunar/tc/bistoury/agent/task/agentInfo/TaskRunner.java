@@ -17,6 +17,11 @@
 
 package qunar.tc.bistoury.agent.task.agentInfo;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ListeningScheduledExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +35,7 @@ import qunar.tc.bistoury.common.URLCoder;
 import qunar.tc.bistoury.common.VersionUtil;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static qunar.tc.bistoury.common.BistouryConstants.REQ_AGENT_INFO;
@@ -53,6 +59,10 @@ public class TaskRunner implements Runnable {
     private static final String AGENT_PUSH_INTERVAL_MIN = "agent.push.interval.min";
     private static final int DEFAULT_AGENT_INFO_PUSH_INTERVAL_MINUTES = 1;
 
+    private static final String PUSH_PROPERTIES_LIMIT = "push.properties.limit";
+
+    private static final Splitter PUSH_LIMIT_SPLITTER = Splitter.on("|").trimResults().omitEmptyStrings();
+
     private ListeningScheduledExecutorService executor;
 
     TaskRunner(ListeningScheduledExecutorService executor) {
@@ -65,12 +75,32 @@ public class TaskRunner implements Runnable {
         if (telnet != null) {
             try {
                 Map<String, String> info = META_STORE.getAgentInfo();
-                push(info, telnet);
+                push(filterInfo(info), telnet);
             } finally {
                 telnet.close();
             }
         }
         executor.schedule(this, getAgentInfoPushIntervalMinutes(), TimeUnit.MINUTES);
+    }
+
+    private Map<String, String> filterInfo(Map<String, String> info) {
+        Map<String, String> newInfo = Maps.newHashMap(info);
+        String limitLine = newInfo.remove(PUSH_PROPERTIES_LIMIT);
+        Set<String> limitKeys = getLimitKeys(limitLine);
+        if (limitKeys.isEmpty()) {
+            return newInfo;
+        }
+
+        ImmutableMap.Builder<String, String> result = ImmutableMap.builder();
+        for (String key : limitKeys) {
+            result.put(key, newInfo.get(key));
+        }
+        return result.build();
+    }
+
+    private Set<String> getLimitKeys(String limitLine) {
+        limitLine = Strings.nullToEmpty(limitLine);
+        return ImmutableSet.copyOf(PUSH_LIMIT_SPLITTER.split(limitLine));
     }
 
     private int getAgentInfoPushIntervalMinutes() {

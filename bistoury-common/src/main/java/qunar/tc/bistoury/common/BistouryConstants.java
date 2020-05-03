@@ -26,6 +26,8 @@ public class BistouryConstants {
 
     public static final String FILL_PID = "$$FILLPID$$";
 
+    public static final String FILL_DUMP_TARGET = "$$DUMPTARGET$$";
+
     public static final String PID_PARAM = " -pid";
 
     public static final String REQ_JAR_DEBUG = "jardebug";

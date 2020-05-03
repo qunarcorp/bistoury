@@ -35,6 +35,7 @@ public class LoginContext {
     private String remoteIP;
     private String returnUrl;
     private boolean isAjax;
+    private String token;
 
     public static LoginContext getLoginContext() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
@@ -101,4 +102,12 @@ public class LoginContext {
         this.isAjax = isAjax;
     }
 
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

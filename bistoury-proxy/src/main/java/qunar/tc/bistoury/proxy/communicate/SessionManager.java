@@ -18,7 +18,7 @@
 package qunar.tc.bistoury.proxy.communicate;
 
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.UiConnection;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommand;
 

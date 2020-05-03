@@ -206,7 +206,7 @@ public class Enhancer implements ClassFileTransformer {
         if (!GlobalOptions.isDump) {
             return;
         }
-        final File dumpClassFile = new File("./bistoury-class-dump/" + className + ".class");
+        final File dumpClassFile = new File("/tmp/bistoury-class-dump/" + className + ".class");
         final File classPath = new File(dumpClassFile.getParent());
 
         // 创建类所在的包路径

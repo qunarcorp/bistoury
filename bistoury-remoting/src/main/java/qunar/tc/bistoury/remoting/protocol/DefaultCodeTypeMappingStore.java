@@ -37,17 +37,18 @@ public class DefaultCodeTypeMappingStore implements CodeTypeMappingStore {
         final Class stringClass = String.class;
 
         //arthas
-        register(String.class, ImmutableSet.of(REQ_TYPE_ARTHAS.getCode(),
+        register(stringClass, ImmutableSet.of(REQ_TYPE_ARTHAS.getCode(),
                 REQ_TYPE_DEBUG.getCode(),
                 REQ_TYPE_MONITOR.getCode(),
                 REQ_TYPE_JAR_INFO.getCode(),
                 REQ_TYPE_CONFIG.getCode(),
                 REQ_TYPE_JAR_DEBUG.getCode()));
 
-        //jstack
+        //线程级cpu监控
         register(CpuTimeCommand.class, ImmutableSet.of(REQ_TYPE_CPU_JSTACK_TIMES.getCode()));
-        register(String.class, ImmutableSet.of(REQ_TYPE_CPU_JSTACK_THREADS.getCode()));
+        register(stringClass, ImmutableSet.of(REQ_TYPE_CPU_JSTACK_THREADS.getCode()));
         register(ThreadNumCommand.class, ImmutableSet.of(REQ_TYPE_CPU_THREAD_NUM.getCode()));
+
         //decompiler
         register(DecompilerCommand.class, ImmutableSet.of(REQ_TYPE_DECOMPILER.getCode()));
         //HeapHisto
@@ -76,6 +77,10 @@ public class DefaultCodeTypeMappingStore implements CodeTypeMappingStore {
         register(stringClass, ImmutableSet.of(REQ_TYPE_JOB_PAUSE.getCode()));
         //job resume
         register(stringClass, ImmutableSet.of(REQ_TYPE_JOB_RESUME.getCode()));
+        //download file list
+        register(stringClass, ImmutableSet.of(REQ_TYPE_LIST_DOWNLOAD_FILE.getCode()));
+        //download file
+        register(DownloadCommand.class, ImmutableSet.of(REQ_TYPE_DOWNLOAD_FILE.getCode()));
 
     }
 
