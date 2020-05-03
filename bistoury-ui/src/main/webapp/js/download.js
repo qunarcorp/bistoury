@@ -4,8 +4,17 @@ $(document).ready(function () {
     var GB = 1024.0 * MB;
     var TB = 1024.0 * GB;
     var currentHost;
+    var currentFile;
+    var currentType;
+    var firstIn = {
+        all: false,
+        log: false,
+        dump: false,
+        other: false
+    }
 
     function getDownloadFileList(type) {
+        currentType = type;
         $('#download-file-table').bootstrapTable('removeAll');
         bistouryWS.sendCommand(currentHost, 701, type, null, handleResult)
     }
@@ -62,7 +71,7 @@ $(document).ready(function () {
                 if (ret.status == 0) {
                     var list = [];
 
-                    ret.data.forEach(function (machine) {
+                    ret.data.list.forEach(function (machine) {
                         list.push({text: machine.host, value: machine, selectable: true});
                     })
                     func(list);
@@ -74,25 +83,83 @@ $(document).ready(function () {
 
     }
 
+    function download(file) {
+        fetch("/file/download.do", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: "appcode=" + currentHost.appCode
+                + "&host=" + currentHost.host
+                + "&agentIp=" + currentHost.ip
+                + "&path=" + file.path
+                + "&filename=" + file.name
+                + "&token=" + bistouryWS.getToken()
+        }).then(function (res) {
+            if (res.ok) {
+                var filename = res.headers.get('Content-Disposition').split("=")[1];
+                res.blob().then(function (data) {
+                    var blobUrl = window.URL.createObjectURL(data);
+                    var a = document.createElement('a');
+                    a.setAttribute('href', blobUrl);
+                    a.setAttribute('download', filename);
+                    a.click();
+                }).catch(function (reason) {
+                    console.log(reason);
+                    bistoury.error(reason)
+                })
+            } else {
+                res.text().then(function (value) {
+                    bistoury.error(value);
+                })
+            }
+
+        }).catch(function (reason) {
+            console.log(reason)
+            bistoury.error(reason)
+        })
+    }
+
+    $("#agree-download").click(function () {
+        download(currentFile);
+        $("#download-modal").modal("hide");
+    });
+
     $("#list-all-file").click(function () {
+        if (firstIn.all) {
+            return;
+        }
+        firstIn.all = true;
         removeListFileActiveClass();
         $(this).addClass("active");
         getDownloadFileList("all");
     });
 
     $("#list-log-file").click(function () {
+        if (firstIn.log) {
+            return;
+        }
+        firstIn.log = true;
         removeListFileActiveClass();
         $(this).addClass("active");
         getDownloadFileList("log");
     });
 
     $("#list-dump-file").click(function () {
+        if (firstIn.dump) {
+            return;
+        }
+        firstIn.dump = true;
         removeListFileActiveClass();
         $(this).addClass("active");
         getDownloadFileList("dump");
     });
 
     $("#list-other-file").click(function () {
+        if (firstIn.other) {
+            return;
+        }
+        firstIn.other = true;
         removeListFileActiveClass();
         $(this).addClass("active");
         getDownloadFileList("other");
@@ -188,7 +255,7 @@ $(document).ready(function () {
             }],
             onRefresh: function () {
                 $('#download-file-table').bootstrapTable('removeAll');
-                getDownloadFileList();
+                getDownloadFileList(currentType);
             }
         });
     }
@@ -196,45 +263,9 @@ $(document).ready(function () {
     window.operateEvents = {
         "click .download-file": function (e, value, row, index) {
             console.log(row);
-            var file = row;
-            download(file);
+            currentFile = row;
+            $("#download-modal").modal("show")
         }
-    }
-
-    function download(file) {
-        fetch("/file/download.do", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: "appcode=" + currentHost.appCode
-                + "&host=" + currentHost.host
-                + "&agentIp=" + currentHost.ip
-                + "&path=" + file.path
-                + "&filename=" + file.name
-        }).then(function (res) {
-            if (res.ok) {
-                var filename = res.headers.get('Content-Disposition').split("=")[1];
-                res.blob().then(function (data) {
-                    var blobUrl = window.URL.createObjectURL(data);
-                    var a = document.createElement('a');
-                    a.setAttribute('href', blobUrl);
-                    a.setAttribute('download', filename);
-                    a.click();
-                }).catch(function (reason) {
-                    console.log(reason);
-                    bistoury.error(reason)
-                })
-            } else {
-                res.text().then(function (value) {
-                    bistoury.error(value);
-                })
-            }
-
-        }).catch(function (reason) {
-            console.log(reason)
-            bistoury.error(reason)
-        })
     }
 
     function dateFormat(dateStr) {
@@ -272,7 +303,6 @@ $(document).ready(function () {
         initDownloadFileTable();
         getAppList();
     }
-
 
     init()
 
