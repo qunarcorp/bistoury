@@ -4,7 +4,6 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import com.google.common.io.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.common.JacksonSerializer;
@@ -18,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,23 +25,21 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static qunar.tc.bistoury.common.BistouryConstants.PROFILER_ROOT_PATH;
-import static qunar.tc.bistoury.common.BistouryConstants.PROFILER_ROOT_TEMP_PATH;
+import static qunar.tc.bistoury.serverside.common.BistouryServerConstants.PROFILER_ROOT_PATH;
+import static qunar.tc.bistoury.serverside.common.BistouryServerConstants.PROFILER_ROOT_TEMP_PATH;
 
 /**
  * @author cai.wen created on 2019/10/25 16:55
  */
 public class ProfilerAnalyzer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProfilerAnalyzer.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProfilerAnalyzer.class);
 
     private static final ProfilerAnalyzer INSTANCE = new ProfilerAnalyzer();
 
-    private static String flameGraphForTime = new File(Resources.getResource("script/flamegraph-time.pl").getPath())
-            .getAbsolutePath();
+    private final File flameGraphForTime = new File(System.getProperty("java.io.tmpdir") + File.separator + "flamegraph-time.pl");
 
-    private static String flameGraphForCount = new File(Resources.getResource("script/flamegraph-count.pl").getPath())
-            .getAbsolutePath();
+    private final File flameGraphForCount = new File(System.getProperty("java.io.tmpdir") + File.separator + "flamegraph-count.pl");
 
     private static final String perlPath = System.getProperty("perl.path");
 
@@ -52,12 +50,21 @@ public class ProfilerAnalyzer {
     private static final String analyzePath = PROFILER_ROOT_PATH;
 
     private ProfilerAnalyzer() {
+        try {
+            flameGraphForTime.delete();
+            flameGraphForCount.delete();
+            Files.copy(getClass().getResourceAsStream("/script/flamegraph-count.pl"), Paths.get(flameGraphForCount.getAbsolutePath()));
+            Files.copy(getClass().getResourceAsStream("/script/flamegraph-time.pl"), Paths.get(flameGraphForTime.getAbsolutePath()));
+            logger.info("pl info: flamegraph-count: {}, flamegraph-time: {}", flameGraphForCount.getAbsolutePath(), flameGraphForTime.getAbsolutePath());
+        } catch (IOException e) {
+            logger.error("copy pl file error.", e);
+        }
     }
 
     public void analyze(final String profilerId, Profiler.Mode mode) {
         String commands = COMMANDS_JOINER.join(getAllPreAnalyzeCommand(profilerId, mode));
         try {
-            if (OsUtils.isLinux()) {
+            if (OsUtils.isLinux() || OsUtils.isMac()) {
                 new ProcessBuilder()
                         .redirectErrorStream(true)
                         .redirectError(new File("/tmp/bistoury-profiler-error.log"))
@@ -72,7 +79,7 @@ public class ProfilerAnalyzer {
                 doParseFile(profilerId);
             }
         } catch (Exception e) {
-            LOGGER.error("profiler analyze error. id: {}", profilerId, e);
+            logger.error("profiler analyze error. id: {}", profilerId, e);
             throw new RuntimeException("analyze profiler id error, id: " + profilerId, e);
         }
     }
@@ -142,7 +149,7 @@ public class ProfilerAnalyzer {
             File profilerDir = ProfilerUtil.getProfilerDir(preAnalyzePath, profilerId).orNull();
             allChild = Files.list(Objects.requireNonNull(profilerDir).toPath());
         } catch (IOException e) {
-            LOGGER.error("list pre analyze file error.");
+            logger.error("list pre analyze file error.");
             throw new RuntimeException("list pre analyze file error", e);
         }
 
@@ -156,7 +163,7 @@ public class ProfilerAnalyzer {
         String nameWithoutExtension = com.google.common.io.Files.getNameWithoutExtension(dumpTxt.toFile().getName());
         String svgPath = parent + File.separator + nameWithoutExtension + ".svg";
         String realPerlPath = Strings.isNullOrEmpty(perlPath) ? "perl" : perlPath;
-        String flameGraphFile = mode == Profiler.Mode.async_sampler ? flameGraphForCount : flameGraphForTime;
+        String flameGraphFile = mode == Profiler.Mode.async_sampler ? flameGraphForCount.getAbsolutePath() : flameGraphForTime.getAbsolutePath();
         return realPerlPath + " " + flameGraphFile + " " + dumpTxt.toString() + ">  " + svgPath;
     }
 

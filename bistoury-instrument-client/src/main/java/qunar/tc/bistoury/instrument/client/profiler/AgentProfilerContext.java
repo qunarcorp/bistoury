@@ -1,5 +1,9 @@
 package qunar.tc.bistoury.instrument.client.profiler;
 
+
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 /**
  * @author cai.wen created on 2019/10/22 20:16
  */
@@ -14,6 +18,8 @@ public class AgentProfilerContext {
     private static long intervalMillis;
 
     private static long intervalNs;
+
+    private static DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern("MM-dd-yyyy HH:mm:ss");
 
     public synchronized static void stopProfiling() {
         startTime = -1;
@@ -33,8 +39,8 @@ public class AgentProfilerContext {
         return isProfiling;
     }
 
-    public synchronized static long getStartTime() {
-        return startTime;
+    public synchronized static String getStartTime() {
+        return dateTimeFormatter.print(startTime);
     }
 
     public synchronized static String getProfilerId() {

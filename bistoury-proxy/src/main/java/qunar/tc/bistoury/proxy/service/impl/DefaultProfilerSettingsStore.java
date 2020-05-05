@@ -1,6 +1,9 @@
 package qunar.tc.bistoury.proxy.service.impl;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import org.springframework.stereotype.Service;
+import qunar.tc.bistoury.common.profiler.compact.CompactClassHelper;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerSettingsStore;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
@@ -14,21 +17,26 @@ public class DefaultProfilerSettingsStore implements ProfilerSettingsStore {
     private volatile Map<String, String> profilerConfig;
 
     private static final String DEFAULT = "default";
-
     private static final String DURATION_SUFFIX = ".duration";
-
-    private static final String FREQUENCY_SUFFIX = ".frequency";
-
+    private static final String INTERVAL_SUFFIX = ".interval";
     private static final String THREADS_SUFFIX = ".threads";
-
     private static final String EVENT_SUFFIX = ".event";
-
     private static final String MODE_SUFFIX = ".mode";
+
+    private static final String profilerCompactPackageKey = "profiler.compact.package.prefix";
+    private final Splitter SEMICOLON_SPLITTER = Splitter.on(";").omitEmptyStrings();
 
     @PostConstruct
     public void init() {
         DynamicConfigLoader.<LocalDynamicConfig>load("profiler.properties")
                 .addListener(conf -> profilerConfig = conf.asMap());
+        DynamicConfigLoader.<LocalDynamicConfig>load("agent_config.properties")
+                .addListener(conf -> {
+                    String profileCompactPackages = conf.asMap().get(profilerCompactPackageKey);
+                    if (!Strings.isNullOrEmpty(profileCompactPackages)) {
+                        CompactClassHelper.init(SEMICOLON_SPLITTER.splitToList(profileCompactPackages));
+                    }
+                });
     }
 
     @Override
@@ -38,9 +46,9 @@ public class DefaultProfilerSettingsStore implements ProfilerSettingsStore {
     }
 
     @Override
-    public String getFrequencyMillis(String appCode) {
-        String frequency = profilerConfig.get(appCode + FREQUENCY_SUFFIX);
-        return frequency == null ? profilerConfig.get(DEFAULT + FREQUENCY_SUFFIX) : frequency;
+    public String getIntervalMillis(String appCode) {
+        String interval = profilerConfig.get(appCode + INTERVAL_SUFFIX);
+        return interval == null ? profilerConfig.get(DEFAULT + INTERVAL_SUFFIX) : interval;
     }
 
     @Override

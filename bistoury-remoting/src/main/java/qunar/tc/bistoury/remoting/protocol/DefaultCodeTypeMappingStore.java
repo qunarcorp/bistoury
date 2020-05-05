@@ -45,7 +45,8 @@ public class DefaultCodeTypeMappingStore implements CodeTypeMappingStore {
                 REQ_TYPE_JAR_DEBUG.getCode(),
                 REQ_TYPE_PROFILER_STOP.getCode(),
                 REQ_TYPE_PROFILER_START.getCode(),
-                REQ_TYPE_PROFILER_STATE_SEARCH.getCode()));
+                REQ_TYPE_PROFILER_STATE_SEARCH.getCode(),
+                REQ_TYPE_PROFILER_INFO.getCode()));
 
         //线程级cpu监控
         register(CpuTimeCommand.class, ImmutableSet.of(REQ_TYPE_CPU_JSTACK_TIMES.getCode()));

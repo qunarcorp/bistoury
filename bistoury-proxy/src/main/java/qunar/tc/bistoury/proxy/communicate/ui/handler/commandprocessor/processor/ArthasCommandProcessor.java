@@ -23,9 +23,9 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.common.BistouryConstants;
-import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.AbstractCommand;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.serverside.agile.Conf;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
@@ -76,8 +76,8 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
                 CommandCode.REQ_TYPE_MONITOR.getCode(),
                 CommandCode.REQ_TYPE_JAR_INFO.getCode(),
                 CommandCode.REQ_TYPE_CONFIG.getCode(),
-                CommandCode.REQ_TYPE_JAR_DEBUG.getCode()
-        );
+                CommandCode.REQ_TYPE_JAR_DEBUG.getCode(),
+                CommandCode.REQ_TYPE_PROFILER_INFO.getCode());
     }
 
     @Override

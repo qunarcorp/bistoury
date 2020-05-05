@@ -19,14 +19,10 @@ public class ProfilerSettingsManagerImpl implements ProfilerSettingsManager {
 
     private static final Joiner SPACE_JOINER = Joiner.on(" ").skipNulls();
 
-    private static final String frequencyKey = "-f";
-
+    private static final String intervalKey = "-i";
     private static final String durationKey = "-d";
-
     private static final String eventKey = "-e";
-
     private static final String threadsKey = "-threads";
-
     private static final String modeKey = "-m";
 
     @Resource
@@ -35,7 +31,7 @@ public class ProfilerSettingsManagerImpl implements ProfilerSettingsManager {
     @Override
     public ProfilerSettings create(String appCode, Map<String, String> config) {
         String duration = config.getOrDefault(durationKey, profilerSettingsStore.getDurationSeconds(appCode));
-        String frequency = config.getOrDefault(frequencyKey, profilerSettingsStore.getFrequencyMillis(appCode));
+        String interval = config.getOrDefault(intervalKey, profilerSettingsStore.getIntervalMillis(appCode));
         boolean threads = Boolean.parseBoolean(config.getOrDefault(threadsKey, String.valueOf(profilerSettingsStore.isThreads(appCode))));
         String event = config.getOrDefault(eventKey, profilerSettingsStore.getEvent(appCode));
         String modeCode = config.getOrDefault(eventKey, profilerSettingsStore.getModeCode(appCode));
@@ -45,8 +41,8 @@ public class ProfilerSettingsManagerImpl implements ProfilerSettingsManager {
         chunk.add(BistouryConstants.PROFILER_ID);
         chunk.add(durationKey);
         chunk.add(duration);
-        chunk.add(frequencyKey);
-        chunk.add(frequency);
+        chunk.add(intervalKey);
+        chunk.add(interval);
         if (threads) {
             chunk.add(threadsKey);
         }
@@ -58,7 +54,7 @@ public class ProfilerSettingsManagerImpl implements ProfilerSettingsManager {
             chunk.add(modeKey);
             chunk.add(modeCode);
         }
-        return new ProfilerSettings(appCode, Integer.parseInt(duration), Integer.parseInt(frequency),
+        return new ProfilerSettings(appCode, Integer.parseInt(duration), Integer.parseInt(interval),
                 modeCode == null ? Profiler.Mode.async_sampler.code : Integer.parseInt(modeCode),
                 SPACE_JOINER.join(chunk));
     }

@@ -70,8 +70,8 @@ CREATE TABLE `bistoury_profiler_lock`
     `app_code` VARCHAR(50) DEFAULT '' NOT NULL COMMENT '对应的appCode',
     `agent_id` VARCHAR(32) DEFAULT '' NOT NULL COMMENT 'agent机器对应的id',
     PRIMARY KEY (`id`),
-    UNIQUE INDEX uniq_app_code_agent_id (app_code, agent_id)
-) CHARSET = utf8mb4 comment '性能分析插入锁表';
+    UNIQUE KEY `uniq_app_code_agent_id` (`app_code`, `agent_id`)
+) CHARSET = utf8mb4;
 
 DROP TABLE IF EXISTS `bistoury_profiler`;
 CREATE TABLE `bistoury_profiler`
@@ -82,7 +82,7 @@ CREATE TABLE `bistoury_profiler`
     `app_code`    VARCHAR(50)      NOT NULL DEFAULT '' COMMENT '对应的appCode',
     `agent_id`    VARCHAR(32)      NOT NULL DEFAULT '' COMMENT 'agent机器对应的id',
     `duration`    INT(10)          NOT NULL COMMENT '性能分析时长,单位s',
-    `frequency`   INT(10)          NOT NULL COMMENT '抽样间隔时长,单位ms',
+    `interval_ms`   INT(10)          NOT NULL COMMENT '抽样间隔时长,单位ms',
     `mode`        INT(3) UNSIGNED  NOT NULL COMMENT '分析模式,异步抽样-0,同步抽样-1',
     `pid`         INT(10) UNSIGNED NOT NULL COMMENT '目标vm对应的pid',
     `start_time`  TIMESTAMP        NOT NULL DEFAULT '1970-01-01 08:00:01' COMMENT '性能分析开始时间',
@@ -90,6 +90,6 @@ CREATE TABLE `bistoury_profiler`
     `state`       INT(3) UNSIGNED  NOT NULL COMMENT '状态, 0: 开始 1: 已结束 2: 准备 4: 错误',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_profiler_id` (`profiler_id`),
-    INDEX idx_start_time ('start_time'),
-    INDEX idx_app_code_agent_id (app_code, agent_id)
-) CHARSET = utf8mb4 comment '性能分析记录表';
+    INDEX idx_start_time (start_time),
+    INDEX idx_app_code_agent_id (`app_code`, `agent_id`)
+) CHARSET = utf8mb4;

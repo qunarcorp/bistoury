@@ -6,7 +6,7 @@ public class ProfilerSettings {
 
     private int duration;
 
-    private int frequency;
+    private int interval;
 
     private int mode;
 
@@ -16,10 +16,10 @@ public class ProfilerSettings {
         this.appCode = appCode;
     }
 
-    public ProfilerSettings(String appCode, int duration, int frequency, int mode, String command) {
+    public ProfilerSettings(String appCode, int duration, int interval, int mode, String command) {
         this.appCode = appCode;
         this.duration = duration;
-        this.frequency = frequency;
+        this.interval = interval;
         this.mode = mode;
         this.command = command;
     }
@@ -40,12 +40,12 @@ public class ProfilerSettings {
         this.duration = duration;
     }
 
-    public int getFrequency() {
-        return frequency;
+    public int getInterval() {
+        return interval;
     }
 
-    public void setFrequency(int frequency) {
-        this.frequency = frequency;
+    public void setInterval(int interval) {
+        this.interval = interval;
     }
 
     public int getMode() {

@@ -6,10 +6,10 @@ import com.taobao.middleware.cli.annotations.Argument;
 import com.taobao.middleware.cli.annotations.Name;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.arthas.util.TypeResponseResult;
+import qunar.tc.bistoury.attach.common.AttachJacksonSerializer;
 import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.common.BistouryConstants;
-import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.common.TypeResponse;
 import qunar.tc.bistoury.common.URLCoder;
 
@@ -45,7 +45,7 @@ public class ProfilerStateSearchCommand extends AnnotatedCommand {
         result.put("profilerId", id);
         TypeResponse typeResponse = TypeResponseResult.create(result, BistouryConstants.REQ_PROFILER_STATE_SEARCH);
 
-        ProfilerClient profilerClient = ProfilerClients.getInstance();
+        GProfilerClient profilerClient = GProfilerClients.getInstance();
         try {
             if (BistouryConstants.REQ_PROFILER_START_STATE_SEARCH.equals(type)) {
                 result.put("status", profilerClient.status(id));
@@ -58,9 +58,10 @@ public class ProfilerStateSearchCommand extends AnnotatedCommand {
 
         } catch (Exception e) {
             typeResponse.getData().setCode(-1);
+            typeResponse.getData().setMessage("profiler state search error, " + e.getMessage());
             logger.error("", BistouryLoggerHelper.formatMessage("get state for id: {} error.", id), e);
         } finally {
-            process.write(URLCoder.encode(JacksonSerializer.serialize(typeResponse)));
+            process.write(URLCoder.encode(AttachJacksonSerializer.serialize(typeResponse)));
             process.end();
         }
     }

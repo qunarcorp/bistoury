@@ -6,7 +6,6 @@ import qunar.tc.bistoury.serverside.bean.ProfilerSettings;
 /**
  * @author cai.wen created on 2019/10/30 14:50
  */
-
 public interface ProfilerService {
 
     void startProfiler(String profilerId);

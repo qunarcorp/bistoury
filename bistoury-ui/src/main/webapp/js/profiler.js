@@ -22,6 +22,8 @@ var sampler_code = "1";
 
 var globalProfilerState;
 
+var currentHost = getCurrentHost();
+
 function startProfiler() {
     var duration = $("#profiler-duration").val();
     console.log("start profiler.");
@@ -42,7 +44,7 @@ function startProfiler() {
 function openStartSettingModel() {
     var lastProfiler = searchLastProfiler();
     var lastProfileId = lastProfiler == null ? undefined : lastProfiler.profilerId;
-    if (lastProfileId !== globalProfilerId) {
+    if (lastProfileId !== undefined && lastProfileId !== globalProfilerId) {
         bistoury.warning("最新的性能分析记录已经变更,请刷新界面");
         return;
     }
@@ -108,35 +110,42 @@ function getMode(mode) {
 function initHistoryTable(data) {
     $("#history-body").empty();
     data.forEach(function (profiler) {
-        var aElement = document.createElement("a");
         var trElement = document.createElement('tr');
         var tdElement = document.createElement("td");
-        aElement.text = profiler.startTime;
-        var reportUrl = "html/report.html?profilerId=" + profiler.profilerId;
-        aElement.setAttribute("href", reportUrl);
-        aElement.setAttribute("target", "_blank");
+        if (profiler.state === STOP_STATE) {
+            var reportElement = document.createElement("a");
+            reportElement.text = profiler.startTime;
+            var reportUrl = "html/report.html?profilerId=" + profiler.profilerId;
+            reportElement.setAttribute("href", reportUrl);
+            reportElement.setAttribute("target", "_blank");
+            tdElement.appendChild(reportElement);
+        } else {
+            var errorText = document.createTextNode(profiler.startTime + "(异常结束)")
+            tdElement.appendChild(errorText);
+        }
         trElement.appendChild(tdElement);
-        tdElement.appendChild(aElement);
 
         var durationText = document.createTextNode(profiler.duration);
-        var frequencyText = document.createTextNode(profiler.frequency);
+        var intervalText = document.createTextNode(profiler.interval);
         var modeText = document.createTextNode(getMode(profiler.mode));
         var durationElement = document.createElement("td");
         var modeElement = document.createElement("td");
-        var frequencyElement = document.createElement("td");
-        modeElement.appendChild(modeText)
+        var intervalElement = document.createElement("td");
+        modeElement.appendChild(modeText);
         durationElement.appendChild(durationText);
-        frequencyElement.appendChild(frequencyText);
+        intervalElement.appendChild(intervalText);
 
         trElement.appendChild(modeElement);
         trElement.appendChild(durationElement);
-        trElement.appendChild(frequencyElement);
+        trElement.appendChild(intervalElement);
 
         $("#history-body").append(trElement);
     });
 }
 
 function initNoStartState() {
+    currentHost = getCurrentHost();
+
     var lastProfiler = searchLastProfiler();
 
     searchProfilerHistory();
@@ -216,7 +225,7 @@ function buildProfiler(result) {
             } else if (status === "finish") {
                 bistoury.success("性能分析正常停止");
                 stopSearchStateInterval();
-                stopProcessStateInterval();
+                stopProcessStateWithFinish();
                 initEndState();
                 searchProfilerHistory();
                 globalProfilerState = STOP_STATE;
@@ -250,7 +259,6 @@ function searchProfilerState() {
 }
 
 function sendStateCommand() {
-    var currentHost = getCurrentHost();
     var command;
     if (globalProfilerState === READY_STATE) {
         command = "profilerstatesearch " + globalProfilerId + " profilerstartsearch";
@@ -317,6 +325,15 @@ function stopProcessStateInterval() {
     profiler_process.style.width = 0 + "%";
     profiler_process.innerHTML = profiler_process.style.width;
     $("#profiler-process-div").css('display', 'none');
+    if (processIntervalId) {
+        clearInterval(processIntervalId);
+    }
+}
+
+function stopProcessStateWithFinish() {
+    var profiler_process = document.getElementById("cpu-profiler-process");
+    profiler_process.style.width = 100 + "%";
+    profiler_process.innerHTML = profiler_process.style.width;
     if (processIntervalId) {
         clearInterval(processIntervalId);
     }

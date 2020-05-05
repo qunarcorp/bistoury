@@ -299,6 +299,15 @@ code {
     margin-right: 10px;
 }
 
+.content .panel-profiler-left {
+    width: 30%;
+    float: left;
+}
+
+.content .panel-profiler-right {
+    width: 68%;
+    float: right;
+}
 
 .profiler-option-div {
     display: flex;

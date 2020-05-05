@@ -1,3 +1,5 @@
+var REQ_TYPE_PROFILER_STOP = 52;
+var REQ_TYPE_PROFILER_INFO = 58;
 $(document).ready(function () {
     document.onkeydown = function (e) {
         if ($(e.target).hasClass("chosen-search-input")) {
@@ -77,6 +79,10 @@ $(document).ready(function () {
             "qdebugsearch",
             "qdebugreleaseinfo",
         ];
+
+        var profilerStop = "profilerstop";
+
+        var profilerInfo = "profilerinfo";
 
         function arrayContains(array, obj) {
             for (var i = 0; i < array.length; ++i) {
@@ -537,6 +543,10 @@ $(document).ready(function () {
                         return true;
                     }
                     send(5, commandLine);
+                } else if (command === profilerStop) {
+                    send(REQ_TYPE_PROFILER_STOP, commandLine);
+                } else if (command === profilerInfo) {
+                    send(REQ_TYPE_PROFILER_INFO, commandLine);
                 } else {
                     send(1, commandLine);
                 }
@@ -964,6 +974,9 @@ $(document).ready(function () {
                             }
                             output(content);
                         } else {
+                            if (isProfilerReq(context.reqType)) {
+                                content = parseProfilerMsg(context.reqType, content);
+                            }
                             output(content);
                         }
                     } else {
@@ -1028,6 +1041,35 @@ $(document).ready(function () {
                     // ignore
                 }
             };
+
+            var isProfilerReq = function (reqType) {
+                return reqType === REQ_TYPE_PROFILER_INFO || reqType === REQ_TYPE_PROFILER_STOP;
+            };
+
+            var parseProfilerMsg = function (reqType, content) {
+                if (reqType === REQ_TYPE_PROFILER_STOP) {
+                    return doParseProfilerStopContent(content);
+                } else if (reqType === REQ_TYPE_PROFILER_INFO) {
+                    return doParseProfilerInfoContent(content);
+                }
+                return content;
+            };
+
+            var doParseProfilerStopContent = function (content) {
+                var response = JSON.parse(content);
+                return response.data.message;
+            };
+
+            var doParseProfilerInfoContent = function (content) {
+                var response = JSON.parse(content);
+                var msg = "";
+                var data = response.data.data;
+                return msg + "is active: " + data.isProfiling
+                    + "\nstart time: " + data.startTime
+                    + "\nid: " + data.id
+                    + "\ninterval(ms): " + data.interval;
+            };
+
             var endWith = function (line, ch) {
                 if (!line) {
                     return false;

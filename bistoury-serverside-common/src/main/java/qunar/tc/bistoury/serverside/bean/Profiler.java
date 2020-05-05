@@ -29,7 +29,7 @@ public class Profiler {
 
     private int duration;
 
-    private int frequency;
+    private int interval;
 
     private Mode mode;
 
@@ -115,12 +115,12 @@ public class Profiler {
         this.duration = duration;
     }
 
-    public int getFrequency() {
-        return frequency;
+    public int getInterval() {
+        return interval;
     }
 
-    public void setFrequency(int frequency) {
-        this.frequency = frequency;
+    public void setInterval(int interval) {
+        this.interval = interval;
     }
 
     public Mode getMode() {

@@ -7,13 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.common.TypeResponse;
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.AbstractCommand;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerManager;
 import qunar.tc.bistoury.proxy.service.profiler.ProfilerSettingsManager;
 import qunar.tc.bistoury.proxy.util.ProfilerDatagramHelper;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.serverside.bean.ProfilerSettings;
 
 import javax.annotation.Resource;
@@ -23,7 +23,6 @@ import java.util.Set;
 
 @Service
 public class ProfilerStartProcessor extends AbstractCommand<String> {
-
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProfilerStartProcessor.class);
 
@@ -42,7 +41,7 @@ public class ProfilerStartProcessor extends AbstractCommand<String> {
 
     @Override
     public int getMinAgentVersion() {
-        return 0;
+        return 12;
     }
 
     @Override

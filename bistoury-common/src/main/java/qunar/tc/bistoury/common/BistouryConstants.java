@@ -67,11 +67,11 @@ public class BistouryConstants {
 
     public static final String REQ_PROFILER_FINISH_STATE_SEARCH = "profilerfinishsearch";
 
+    public static final String REQ_PROFILER_INFO = "profilerinfo";
+
     public static final String BISTOURY_COMMAND_THREAD_NAME = "bistoury-command-execute-daemon";
 
     public static final String SPY_CLASSNAME = "qunar.tc.bistoury.instrument.spy.BistourySpys1";
-
-    public static final String PROFILER_LIB_NAME = "profilerLib";
 
     public static final String PROFILER_ID = "$$profilerId$$";
 
@@ -91,4 +91,8 @@ public class BistouryConstants {
     public static final String PROFILER_ROOT_TEMP_PATH = PROFILER_ROOT_PATH + File.separator + "tmp";
 
     public static final String PROFILER_ROOT_AGENT_PATH = PROFILER_ROOT_PATH + File.separator + "agent";
+
+    public static final String PROFILER_DIR_HEADER = "profilerDir";
+
+    public static final String PROFILER_NAME_HEADER = "profilerName";
 }

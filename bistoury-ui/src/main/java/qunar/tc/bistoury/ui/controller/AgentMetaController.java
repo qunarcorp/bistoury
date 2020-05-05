@@ -33,7 +33,7 @@ import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.serverside.util.ResultHelper;
 import qunar.tc.bistoury.ui.service.ProxyService;
 import qunar.tc.bistoury.ui.util.ProxyInfo;
-import qunar.tc.bistoury.ui.util.ProxyInfoParse;
+import qunar.tc.bistoury.ui.util.ProxyInfoParser;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -74,7 +74,7 @@ public class AgentMetaController {
         byte[] byteIps = JacksonSerializer.serializeToBytes(ips);
         List<String> proxyWebSocketUrls = proxyService.getAllProxyUrls();
         for (String proxyWebSocketUrl : proxyWebSocketUrls) {
-            Optional<ProxyInfo> optional = ProxyInfoParse.parseProxyInfo(proxyWebSocketUrl);
+            Optional<ProxyInfo> optional = ProxyInfoParser.parseProxyInfo(proxyWebSocketUrl);
             if (!optional.isPresent()) {
                 continue;
             }

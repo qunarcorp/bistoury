@@ -184,7 +184,7 @@ function init(info) {
     $("#start_time").html("开始时间: " + profiler.startTime)
     $("#duration").html("实际性能分析时长:" + info.realDuration + "s")
     $("#default_duration").html("预设性能分析时长:" + profiler.duration + "s");
-    $("#default_frequency").html("预设性能分析间隔:" + profiler.frequency + "ms");
+    $("#default_interval").html("预设性能分析间隔:" + profiler.interval + "ms");
     var proxy = info.proxyInfo;
     proxyUrl = proxy.ip + ":" + proxy.tomcatPort;
 }
@@ -297,8 +297,8 @@ function addTree(fileName, treeId) {
                 isFirst = false;
             } else {
                 data = data.nodes[index];
-            }
-        });
+    }
+    });
         createNode(treeId, nodeId, data);
         // createNode(id, nodeId, data, element.text, Math.ceil(element.count / data.count * 100), element.count
 
@@ -316,7 +316,7 @@ function createNode(treeId, nodeId, parent) {
     } else {
         parent.nodes.forEach(element => {
             doCreateNode(nodeId, treeId, nodeId + "-" + (index++), element.text, element.count);
-        });
+    });
     }
 
     $(treeId).jstree("open_node", nodeId);

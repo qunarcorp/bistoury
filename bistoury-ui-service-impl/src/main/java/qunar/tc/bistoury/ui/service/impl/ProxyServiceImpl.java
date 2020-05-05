@@ -36,7 +36,7 @@ import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.serverside.store.RegistryStore;
 import qunar.tc.bistoury.ui.service.ProxyService;
 import qunar.tc.bistoury.ui.util.ProxyInfo;
-import qunar.tc.bistoury.ui.util.ProxyInfoParse;
+import qunar.tc.bistoury.ui.util.ProxyInfoParser;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -88,9 +88,24 @@ public class ProxyServiceImpl implements ProxyService {
         return result;
     }
 
+    @Override
+    public Optional<ProxyInfo> getNewProxyInfo(String agentIp) {
+        for (String proxyWebSocketUrl : getAllProxyUrls()) {
+            final Optional<ProxyInfo> proxyInfoRef = ProxyInfoParser.parseProxyInfo(proxyWebSocketUrl);
+
+            if (proxyInfoRef.isPresent()) {
+                String url = buildProxyAgentUrl(proxyInfoRef.get());
+                if (existAgent(url, agentIp)) {
+                    return proxyInfoRef;
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
     private void doGetWebSocketUrl(List<String> result, List<String> proxyWebSocketUrls, final String agentIp) {
         for (String proxyWebSocketUrl : proxyWebSocketUrls) {
-            Optional<ProxyInfo> optional = ProxyInfoParse.parseProxyInfo(proxyWebSocketUrl);
+            Optional<ProxyInfo> optional = ProxyInfoParser.parseProxyInfo(proxyWebSocketUrl);
             if (!optional.isPresent()) {
                 continue;
             }

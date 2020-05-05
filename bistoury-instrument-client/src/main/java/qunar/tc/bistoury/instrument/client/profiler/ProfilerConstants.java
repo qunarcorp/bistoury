@@ -5,7 +5,7 @@ package qunar.tc.bistoury.instrument.client.profiler;
  */
 public class ProfilerConstants {
 
-    public static final String FREQUENCY = "frequency";
+    public static final String INTERVAL = "interval";
 
     public static final String DURATION = "duration";
 
@@ -17,5 +17,5 @@ public class ProfilerConstants {
 
     public static final String PROFILER_ID = "profilerId";
 
-    public static final String TMP_DIR = "tmpDir";
+    public static final String STORE_DIR = "storeDir";
 }

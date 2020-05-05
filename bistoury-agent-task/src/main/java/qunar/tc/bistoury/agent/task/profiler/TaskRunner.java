@@ -17,8 +17,8 @@ public class TaskRunner implements Runnable {
 
     @Override
     public void run() {
-        File profilerDir = new File(BistouryStore.PROFILER_ROOT_PATH);
-        File profilerTempDir = new File(BistouryStore.PROFILER_TEMP_PATH);
+        File profilerDir = new File(BistouryStore.DEFAULT_PROFILER_ROOT_PATH);
+        File profilerTempDir = new File(BistouryStore.DEFAULT_PROFILER_TEMP_PATH);
         deleteChildrenIfExpired(profilerDir);
         deleteChildrenIfExpired(profilerTempDir);
     }
@@ -35,14 +35,20 @@ public class TaskRunner implements Runnable {
         }
     }
 
-    private void deleteIfExpired(File file) {
-        long modifiedTime = file.lastModified();
+    private void deleteIfExpired(File dir) {
+        long modifiedTime = dir.lastModified();
         long currentTime = System.currentTimeMillis();
         long diffHours = (currentTime - modifiedTime) / (60 * 60 * 1000);
         if (diffHours > EXPIRE_HOURS) {
-            boolean deleteState = file.delete();
+            File[] children = dir.listFiles();
+            children = children == null ? new File[0] : children;
+            boolean deleteState = true;
+            for (File child : children) {
+                deleteState = deleteState && child.delete();
+            }
+            deleteState = deleteState && dir.delete();
             if (!deleteState) {
-                logger.warn("delete profiler file error. modifiedTime: {}, currentTime: {}", modifiedTime, currentTime);
+                logger.warn("delete profiler file error. file:{} modifiedTime: {}, currentTime: {}", dir, modifiedTime, currentTime);
             }
         }
     }

@@ -1,7 +1,6 @@
 package qunar.tc.bistoury.ui.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
@@ -23,7 +22,7 @@ import qunar.tc.bistoury.serverside.util.ResultHelper;
 import qunar.tc.bistoury.ui.service.ProfilerService;
 import qunar.tc.bistoury.ui.service.ProxyService;
 import qunar.tc.bistoury.ui.util.ProxyInfo;
-import qunar.tc.bistoury.ui.util.ProxyInfoParse;
+import qunar.tc.bistoury.ui.util.ProxyInfoParser;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
@@ -81,9 +80,13 @@ public class ProfilerController {
     public Object lastThreeDaysProfiler(String appCode, String agentId) {
         List<Profiler> profilers = profilerService.getLastRecords(appCode, agentId, LocalDateTime.now().minusHours(3 * 24));
         profilers = profilers.stream()
-                .filter(profiler -> profiler.getState() == Profiler.State.stop)
+                .filter(profiler -> notStartOrReadyState(profiler.getState()))
                 .collect(Collectors.toList());
         return ResultHelper.success(profilers);
+    }
+
+    private boolean notStartOrReadyState(Profiler.State state) {
+        return state != Profiler.State.start && state != Profiler.State.ready;
     }
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -104,13 +107,14 @@ public class ProfilerController {
     private Optional<ProfilerInfoVo> analyze(String profilerId) {
         Optional<ProfilerInfoVo> profilerFileVoRef = getAnalyzedProxyForProfiler(profilerId);
         if (!profilerFileVoRef.isPresent()) {
-            return doAnalyze(profilerId);
+            String agentId = profilerService.getRecord(profilerId).getAgentId();
+            return doAnalyze(agentId, profilerId);
         }
         return profilerFileVoRef;
     }
 
-    private Optional<ProfilerInfoVo> doAnalyze(String profilerId) {
-        ProxyInfo proxyInfo = getProxyForAgent();
+    private Optional<ProfilerInfoVo> doAnalyze(String agentId, String profilerId) {
+        ProxyInfo proxyInfo = getProxyForAgent(agentId);
         try {
             String url = String.format(profilerResultUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId);
             String profilerFileName = getAnalyzerResult(url);
@@ -125,7 +129,7 @@ public class ProfilerController {
     private Optional<ProfilerInfoVo> getAnalyzedProxyForProfiler(String profilerId) {
         List<String> proxyWebSocketUrls = proxyService.getAllProxyUrls();
         for (String proxyWebSocketUrl : proxyWebSocketUrls) {
-            Optional<ProxyInfo> proxyRef = ProxyInfoParse.parseProxyInfo(proxyWebSocketUrl);
+            Optional<ProxyInfo> proxyRef = ProxyInfoParser.parseProxyInfo(proxyWebSocketUrl);
             if (!proxyRef.isPresent()) {
                 continue;
             }
@@ -140,17 +144,20 @@ public class ProfilerController {
 
     private String doGetName(ProxyInfo proxyInfo, String profilerId) {
         String url = String.format(profilerIsAnalyzedUrl, proxyInfo.getIp(), proxyInfo.getTomcatPort(), profilerId);
-        byte[] content = getBytesFromUrl(url);
-        ApiResult<Map<String, String>> response = JacksonSerializer.deSerialize(content, analyzerResponse);
-        return response.getData().get("name");
+        try {
+            byte[] content = getBytesFromUrl(url);
+            ApiResult<Map<String, String>> response = JacksonSerializer.deSerialize(content, analyzerResponse);
+            return response.getData().get("name");
+        } catch (Exception e) {
+            LOGGER.warn("get profiler error. url: {}", url);
+            return null;
+        }
     }
-
-    private static final Splitter COLON_SPLITTER = Splitter.on(":");
 
     @GetMapping("/download")
     public void forwardSvgFile(@RequestParam("profilerId") String profilerId,
                                @RequestParam("name") String name,
-                               @RequestParam("proxyUrl") String proxyUrl,
+                               @RequestParam("proxyUrl") String infoWithoutTomcatPort,
                                @RequestParam(value = "contentType", required = false) String contentType,
                                HttpServletResponse response) throws Exception {
         response.setCharacterEncoding("UTF-8");
@@ -160,10 +167,11 @@ public class ProfilerController {
         contentType = Strings.isNullOrEmpty(contentType) ? "image/svg+xml" : contentType;
         response.setContentType(contentType);
         try (ServletOutputStream responseOutputStream = response.getOutputStream()) {
-            List<String> info = COLON_SPLITTER.splitToList(proxyUrl);
-            String proxyIp = info.get(0);
-            int tomcatPort = Integer.parseInt(info.get(1));
-            copyFileStream(new ProxyInfo(proxyIp, tomcatPort, 0), profilerId, name, responseOutputStream);
+            Optional<ProxyInfo> proxyInfoRef = ProxyInfoParser.parseProxyInfoWithoutTomcatPort(infoWithoutTomcatPort);
+            if (!proxyInfoRef.isPresent()) {
+                return;
+            }
+            copyFileStream(proxyInfoRef.get(), profilerId, name, responseOutputStream);
             responseOutputStream.flush();
         }
     }
@@ -183,18 +191,12 @@ public class ProfilerController {
         }
     }
 
-
-    private ProxyInfo getProxyForAgent() {
-        List<String> proxyWebSocketUrls = proxyService.getAllProxyUrls();
-
-        for (String proxyWebSocketUrl : proxyWebSocketUrls) {
-            Optional<ProxyInfo> proxyRef = ProxyInfoParse.parseProxyInfo(proxyWebSocketUrl);
-            if (!proxyRef.isPresent()) {
-                continue;
-            }
-            return proxyRef.get();
+    private ProxyInfo getProxyForAgent(String agentId) {
+        Optional<ProxyInfo> proxyInfoRef = proxyService.getNewProxyInfo(agentId);
+        if (!proxyInfoRef.isPresent()) {
+            throw new RuntimeException("获取可用的proxy失败");
         }
-        throw new RuntimeException("获取可用的proxy失败");
+        return proxyInfoRef.get();
     }
 
 

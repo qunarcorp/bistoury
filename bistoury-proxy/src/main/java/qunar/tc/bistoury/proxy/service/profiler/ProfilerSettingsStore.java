@@ -4,7 +4,7 @@ public interface ProfilerSettingsStore {
 
     String getDurationSeconds(String appCode);
 
-    String  getFrequencyMillis(String appCode);
+    String getIntervalMillis(String appCode);
 
     boolean isThreads(String appCode);
 

@@ -83,6 +83,11 @@ public class ResponseWriter {
         Datagram datagram = RemotingBuilder.buildResponseDatagram(code, requestHeader, new ResponsePayloadHolder(bytes));
         ctx.writeAndFlush(datagram);
     }
+
+    public void writeFullResponse(ChannelHandlerContext ctx, final byte[] bytes, RemotingHeader responseHeader) {
+        Datagram datagram = RemotingBuilder.buildFullResponseDatagram(responseHeader, new ResponsePayloadHolder(bytes));
+        ctx.writeAndFlush(datagram);
+    }
 }
 
     

@@ -48,7 +48,6 @@ public class SystemTask implements Task {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormat.forPattern(TIME_PATTERN);
 
-
     private final String id;
 
     private final ProcessBuilder processBuilder;

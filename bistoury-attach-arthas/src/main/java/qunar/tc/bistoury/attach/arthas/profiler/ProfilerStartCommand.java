@@ -9,15 +9,24 @@ import com.taobao.middleware.cli.annotations.Name;
 import com.taobao.middleware.cli.annotations.Option;
 import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.arthas.util.TypeResponseResult;
+import qunar.tc.bistoury.attach.common.AttachJacksonSerializer;
 import qunar.tc.bistoury.attach.common.BistouryLoggerHelper;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
-import qunar.tc.bistoury.common.*;
-import qunar.tc.bistoury.instrument.client.profiler.AgentProfilerContext;
+import qunar.tc.bistoury.common.BistouryConstants;
+import qunar.tc.bistoury.common.CodeProcessResponse;
+import qunar.tc.bistoury.common.TypeResponse;
+import qunar.tc.bistoury.common.URLCoder;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.*;
+import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.DURATION;
+import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.EVENT;
+import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.INTERVAL;
+import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.MODE;
+import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.PROFILER_ID;
+import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.STORE_DIR;
+import static qunar.tc.bistoury.instrument.client.profiler.ProfilerConstants.THREADS;
 
 
 /**
@@ -28,10 +37,6 @@ public class ProfilerStartCommand extends AnnotatedCommand {
 
     private static final Logger logger = BistouryLoggger.getLogger();
 
-    private String profilerId;
-
-    private long frequency;
-
     private final Map<String, String> config = Maps.newHashMapWithExpectedSize(2);
 
     @Option(shortName = "d", longName = "duration")
@@ -39,15 +44,9 @@ public class ProfilerStartCommand extends AnnotatedCommand {
         config.put(DURATION, duration);
     }
 
-    @Option(shortName = "f", longName = "frequency")
-    public void setFrequency(String frequency) {
-        this.frequency = Long.parseLong(frequency);
-        config.put(FREQUENCY, frequency);
-    }
-
-    @Option(shortName = "t", longName = "tmpdir")
-    public void setTmpdir(String tmpdir) {
-        config.put(TMP_DIR, URLCoder.decode(tmpdir));
+    @Option(shortName = "i", longName = "interval")
+    public void setInterval(String interval) {
+        config.put(INTERVAL, interval);
     }
 
     @Option(shortName = "e", longName = "event")
@@ -57,13 +56,17 @@ public class ProfilerStartCommand extends AnnotatedCommand {
 
     @Argument(index = 0, argName = "id")
     public void setId(String id) {
-        this.profilerId = id;
         config.put(PROFILER_ID, id);
     }
 
     @Option(shortName = "m", longName = "mode")
     public void setMode(String mode) {
         config.put(MODE, mode);
+    }
+
+    @Option(shortName = "s", longName = "storeDir")
+    public void setStoreDir(String storeDir) {
+        config.put(STORE_DIR, URLCoder.decode(storeDir));
     }
 
     @Option(longName = "threads", flag = true)
@@ -76,27 +79,27 @@ public class ProfilerStartCommand extends AnnotatedCommand {
     public void process(CommandProcess process) {
         logger.info("receive profiler add command, mode: {}, config: {}", config);
         Map<String, String> result = new HashMap<>();
-        result.put("profilerId", profilerId);
+        result.put("profilerId", config.get(PROFILER_ID));
         TypeResponse typeResponse = TypeResponseResult.create(result, BistouryConstants.REQ_PROFILER_START);
         CodeProcessResponse response = typeResponse.getData();
         try {
-            if (AgentProfilerContext.isProfiling()) {
+            GProfilerClient profilerClient = GProfilerClients.getInstance();
+            if (profilerClient.isRunning()) {
                 response.setMessage("target vm is profiling.");
                 response.setCode(-1);
                 return;
             }
 
-            ProfilerClient profilerClient = ProfilerClients.getInstance();
             profilerClient.start(config);
             response.setCode(0);
-            AgentProfilerContext.startProfiling(profilerId, frequency);
             result.put("state", Boolean.TRUE.toString());
             response.setMessage("add profiler success.");
         } catch (Exception e) {
             logger.error("", BistouryLoggerHelper.formatMessage("profiler add error. config: {}", config), e);
+            response.setCode(-1);
             response.setMessage("add profiler error. reason:" + e.getMessage());
         } finally {
-            process.write(URLCoder.encode(JacksonSerializer.serialize(typeResponse)));
+            process.write(URLCoder.encode(AttachJacksonSerializer.serialize(typeResponse)));
             process.end();
             config.clear();
         }

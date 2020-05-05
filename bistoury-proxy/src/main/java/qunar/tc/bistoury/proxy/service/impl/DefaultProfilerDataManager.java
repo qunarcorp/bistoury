@@ -3,7 +3,6 @@ package qunar.tc.bistoury.proxy.service.impl;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.springframework.stereotype.Service;
-import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.common.ProfilerUtil;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
@@ -23,6 +22,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static qunar.tc.bistoury.common.BistouryConstants.PROFILER_ROOT_TEMP_PATH;
+
 
 /**
  * @author cai.wen created on 2019/10/30 10:24
@@ -64,7 +66,7 @@ public class DefaultProfilerDataManager implements ProfilerDataManager {
     }
 
     private void scheduleCheckState(ProfileRequestState requestState) {
-        if (requestState.isEnd() || ProfilerUtil.getProfilerDir(BistouryConstants.PROFILER_ROOT_TEMP_PATH, requestState.getProfilerId()).isPresent()) {
+        if (requestState.isEnd() || ProfilerUtil.getProfilerDir(PROFILER_ROOT_TEMP_PATH, requestState.getProfilerId()).isPresent()) {
             requestState.endWrite();
             return;
         }

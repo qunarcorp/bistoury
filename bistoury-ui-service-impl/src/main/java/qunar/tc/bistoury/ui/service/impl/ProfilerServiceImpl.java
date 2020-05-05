@@ -2,10 +2,10 @@ package qunar.tc.bistoury.ui.service.impl;
 
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.serverside.bean.Profiler;
-import qunar.tc.bistoury.serverside.dao.ProfilerDao;
-import qunar.tc.bistoury.serverside.dao.ProfilerDaoImpl;
+import qunar.tc.bistoury.ui.dao.ProfilerDao;
 import qunar.tc.bistoury.ui.service.ProfilerService;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +16,8 @@ import java.util.Optional;
 @Service
 public class ProfilerServiceImpl implements ProfilerService {
 
-    private final ProfilerDao profilerDao = new ProfilerDaoImpl();
+    @Resource
+    private ProfilerDao profilerDao;
 
     @Override
     public Profiler getRecord(String profilerId) {

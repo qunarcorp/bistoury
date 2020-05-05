@@ -33,6 +33,7 @@ import qunar.tc.bistoury.attach.arthas.debug.*;
 import qunar.tc.bistoury.attach.arthas.jar.JarInfoCommand;
 import qunar.tc.bistoury.attach.arthas.monitor.QMonitorAddCommand;
 import qunar.tc.bistoury.attach.arthas.monitor.QMonitorSnapshotCommand;
+import qunar.tc.bistoury.attach.arthas.profiler.ProfilerInfoCommand;
 import qunar.tc.bistoury.attach.arthas.profiler.ProfilerStateSearchCommand;
 import qunar.tc.bistoury.attach.arthas.profiler.ProfilerStartCommand;
 import qunar.tc.bistoury.attach.arthas.profiler.ProfilerStopCommand;
@@ -120,5 +121,6 @@ public class QBuiltinCommandPack extends BuiltinCommandPack {
         commands.add(Command.create(ProfilerStartCommand.class));
         commands.add(Command.create(ProfilerStopCommand.class));
         commands.add(Command.create(ProfilerStateSearchCommand.class));
+        commands.add(Command.create(ProfilerInfoCommand.class));
     }
 }

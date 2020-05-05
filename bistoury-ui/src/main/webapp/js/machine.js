@@ -503,6 +503,8 @@ $(document).ready(function () {
                 if (currentHost != data.value) {
                     keepRunning = false;
                     currentHost = data.value;
+                    stopProcessStateInterval();
+                    stopSearchStateInterval();
                 }
                 startTime = new Date().getTime();
                 currentThreadTime = new Date().getTime();
