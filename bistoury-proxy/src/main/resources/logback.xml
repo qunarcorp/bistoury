@@ -4,7 +4,7 @@
     <!-- console -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss} QTraceId[%X{qtraceid}] [%thread] %5p %c:%L] %m%n</pattern>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5p %c:%L] %m%n</pattern>
         </encoder>
     </appender>
 

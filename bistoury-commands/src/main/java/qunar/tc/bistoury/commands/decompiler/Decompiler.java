@@ -49,7 +49,7 @@ public class Decompiler {
     static {
         StringBuilder sb = new StringBuilder();
         sb.append(NOTE_CHAR).append(SEPARATOR);
-        sb.append(NOTE_CHAR).append("Source code recreated from a .class file by QUNAR Agent").append(SEPARATOR);
+        sb.append(NOTE_CHAR).append("Source code recreated from a .class file by Bistoury").append(SEPARATOR);
         sb.append(NOTE_CHAR).append("(powered by Fernflower decompiler)").append(SEPARATOR);
         sb.append(NOTE_CHAR).append(SEPARATOR);
         sb.append(SEPARATOR);

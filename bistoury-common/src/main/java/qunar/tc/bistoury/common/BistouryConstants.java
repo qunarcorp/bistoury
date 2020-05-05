@@ -28,6 +28,8 @@ public class BistouryConstants {
 
     public static final String FILL_PID = "$$FILLPID$$";
 
+    public static final String FILL_DUMP_TARGET = "$$DUMPTARGET$$";
+
     public static final String PID_PARAM = " -pid";
 
     public static final String REQ_JAR_DEBUG = "jardebug";
@@ -79,6 +81,10 @@ public class BistouryConstants {
     public static final String BISTOURY_VERSION_LINE_PREFIX = "bistoury version:";
 
     public static final String SHUTDOWN_COMMAND = "shutdown";
+
+    public static final String STOP_COMMAND = "stop";
+
+    public static final int MIN_AGENT_VERSION_SUPPORT_JOB_PAUSE = 12;
 
     public static final String PROFILER_ROOT_PATH = System.getProperty("java.io.tmpdir") + File.separator + "bistoury-profiler";
 

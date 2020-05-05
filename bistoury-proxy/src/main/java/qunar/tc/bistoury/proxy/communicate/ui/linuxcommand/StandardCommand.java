@@ -281,7 +281,11 @@ public enum StandardCommand {
     ognl("ognl", new OptionsCreator()),
     mc("mc", new OptionsCreator()),
     pwd("pwd", new OptionsCreator()),
-    mbean("mbean", new OptionsCreator());
+    mbean("mbean", new OptionsCreator()),
+    heapdump("heapdump", new OptionsCreator()),
+    vmoption("vmoption", new OptionsCreator()),
+    logger("logger", new OptionsCreator()),
+    stop("stop", new OptionsCreator());
 
 
     /**

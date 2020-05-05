@@ -43,10 +43,15 @@ public class BistouryStore {
             System.setProperty("bistoury.store.path", path);
         }
         STORE_PATH = path;
+        FileUtil.ensureDirectoryExists(STORE_PATH);
     }
 
     public static String getStorePath(final String child) {
         return FileUtil.dealPath(STORE_PATH, child);
+    }
+
+    public static String getDumpFileStorePath() {
+        return getStorePath("dump");
     }
 
     public static volatile String PROFILER_ROOT_PATH = BistouryStore.getStorePath("bistoury-profiler");

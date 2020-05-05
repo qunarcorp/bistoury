@@ -47,7 +47,7 @@ public class RemotingHeader {
     //协议版本
     public static final short PROTOCOL_VERSION = 1;
     //agent版本
-    public static final short AGENT_VERSION = 11;
+    public static final short AGENT_VERSION = 12;
 
     public static final int DEFAULT_MAGIC_CODE = 0xdec1_0ade;
 

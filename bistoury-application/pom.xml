@@ -26,8 +26,8 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${server_java_source_version}</source>
+                    <target>${server_java_target_version}</target>
                 </configuration>
             </plugin>
         </plugins>

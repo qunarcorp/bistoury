@@ -21,9 +21,9 @@ package qunar.tc.bistoury.agent.common.pid;
 // (powered by Fernflower decompiler)
 //
 
+import qunar.tc.bistoury.agent.common.pid.bean.Arguments;
 import qunar.tc.bistoury.agent.common.pid.bean.Res;
 import sun.jvmstat.monitor.*;
-import sun.tools.jps.Arguments;
 
 import java.util.ArrayList;
 import java.util.Iterator;

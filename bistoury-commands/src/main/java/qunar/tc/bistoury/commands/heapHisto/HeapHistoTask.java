@@ -17,20 +17,21 @@
 
 package qunar.tc.bistoury.commands.heapHisto;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.SettableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
+import qunar.tc.bistoury.agent.common.job.BytesJob;
+import qunar.tc.bistoury.agent.common.job.ContinueResponseJob;
+import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 import qunar.tc.bistoury.remoting.netty.Task;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 /**
  * @author: leix.xie
@@ -38,11 +39,8 @@ import java.util.concurrent.Callable;
  * @describe：
  */
 public class HeapHistoTask implements Task {
+
     private static final Logger logger = LoggerFactory.getLogger(HeapHistoTask.class);
-
-    private static final ListeningExecutorService agentExecutor = AgentRemotingExecutor.getExecutor();
-
-    private final static ObjectMapper MAPPER = new ObjectMapper();
 
     private final static HeapHistoStore HEAPHISTO_STORE = HeapHistoStore.getInstance();
 
@@ -58,7 +56,7 @@ public class HeapHistoTask implements Task {
 
     private final long selectTimestamp;
 
-    private volatile ListenableFuture<Integer> future;
+    private final SettableFuture<Integer> future = SettableFuture.create();
 
     public HeapHistoTask(String id, int pid, final long selectTimestamp, final String param, ResponseHandler handler, long maxRunningMs) {
         this.id = id;
@@ -70,51 +68,62 @@ public class HeapHistoTask implements Task {
     }
 
     @Override
-    public ListenableFuture<Integer> execute() {
-        this.future = agentExecutor.submit(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                try {
-                    List<HistogramBean> histogramBeans;
-                    if (selectTimestamp > 0) {
-                        histogramBeans = HEAPHISTO_STORE.getHistogramBean(selectTimestamp);
-                    } else {
-                        HeapHistoBeanHandle heapHistoBeanHandle = new HeapHistoBeanHandle(param, pid);
-                        histogramBeans = heapHistoBeanHandle.heapHisto();
-                    }
-                    handlerSuccess(histogramBeans);
-                } catch (Exception e) {
-                    logger.error("get heap histo error", e);
-                    handlerError("get heap histo error, " + e.getClass().getName() + ", " + e.getMessage());
-                }
-                return null;
-            }
-        });
+    public ContinueResponseJob createJob() {
+        return new Job();
+    }
+
+    @Override
+    public ListenableFuture<Integer> getResultFuture() {
         return future;
     }
 
-    private void handlerSuccess(Object data) {
+    private class Job extends BytesJob {
+
+        private Job() {
+            super(id, handler, future);
+        }
+
+        @Override
+        protected byte[] getBytes() throws Exception {
+            try {
+                List<HistogramBean> histogramBeans;
+                if (selectTimestamp > 0) {
+                    histogramBeans = HEAPHISTO_STORE.getHistogramBean(selectTimestamp);
+                } else {
+                    HeapHistoBeanHandle heapHistoBeanHandle = new HeapHistoBeanHandle(param, pid);
+                    histogramBeans = heapHistoBeanHandle.heapHisto();
+                }
+                return handlerSuccess(histogramBeans);
+            } catch (Exception e) {
+                logger.error("get heap histo error", e);
+                return handlerError("get heap histo error, " + e.getClass().getName() + ", " + e.getMessage());
+            }
+        }
+
+        @Override
+        public ListeningExecutorService getExecutor() {
+            return AgentRemotingExecutor.getExecutor();
+        }
+    }
+
+    private byte[] handlerSuccess(Object data) {
         Map<String, Object> result = new HashMap<>();
         result.put("type", "heapHisto");
         result.put("code", 0);
         result.put("data", data);
-        handlerResult(result);
+        return toBytes(result);
     }
 
-    private void handlerError(String errorMsg) {
+    private byte[] handlerError(String errorMsg) {
         Map<String, Object> result = new HashMap<>();
         result.put("type", "heapHisto");
         result.put("code", -1);
         result.put("message", errorMsg);
-        handlerResult(result);
+        return toBytes(result);
     }
 
-    private void handlerResult(Map<String, Object> result) {
-        try {
-            handler.handle(MAPPER.writeValueAsString(result));
-        } catch (JsonProcessingException e) {
-            logger.error("heap histo serialize error");
-        }
+    private byte[] toBytes(Map<String, Object> result) {
+        return JacksonSerializer.serializeToBytes(result);
     }
 
     @Override
@@ -125,17 +134,5 @@ public class HeapHistoTask implements Task {
     @Override
     public long getMaxRunningMs() {
         return maxRunningMs;
-    }
-
-    @Override
-    public void cancel() {
-        try {
-            if (future != null) {
-                future.cancel(true);
-                future = null;
-            }
-        } catch (Exception e) {
-            logger.error("cancel heap histo task error", e);
-        }
     }
 }

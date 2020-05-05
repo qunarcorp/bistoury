@@ -40,7 +40,7 @@ public class GitRepositoryStoreServiceImpl implements GitRepositoryStoreService 
     @PostConstruct
     public void init() {
         DynamicConfig<LocalDynamicConfig> dynamicConfig = DynamicConfigLoader.load("config.properties");
-        gitRepository = dynamicConfig.getString(GIT_KEY);
+        gitRepository = dynamicConfig.getString(GIT_KEY, "");
         gitlabRepositoryApiImpl = new GitlabRepositoryApiImpl(gitPrivateTokenService, dynamicConfig);
         githubRepositoryApiImpl = new GithubRepositoryApiImpl(gitPrivateTokenService, dynamicConfig);
     }

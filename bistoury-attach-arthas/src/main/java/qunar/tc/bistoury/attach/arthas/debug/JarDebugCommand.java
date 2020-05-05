@@ -23,6 +23,7 @@ import com.taobao.arthas.core.shell.command.CommandProcess;
 import com.taobao.middleware.cli.annotations.Name;
 import com.taobao.middleware.cli.annotations.Option;
 import com.taobao.middleware.logger.Logger;
+import qunar.tc.bistoury.attach.common.AttachJacksonSerializer;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.common.*;
 
@@ -70,7 +71,8 @@ public class JarDebugCommand extends AnnotatedCommand {
             codeResponse.setCode(-1);
             codeResponse.setMessage("获取类列表失败，" + e.getMessage());
         } finally {
-            process.write(URLCoder.encode(JacksonSerializer.serialize(typeResponse)));
+            logger.info("", "finish jar debug command, code :{}", codeResponse.getCode());
+            process.write(URLCoder.encode(AttachJacksonSerializer.serialize(typeResponse)));
             process.end();
         }
     }

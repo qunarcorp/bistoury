@@ -25,14 +25,14 @@
                 newCommand = JSON.stringify(newCommand);
             }
             var content = {
-                user: getUserName(),
+                user: bistouryWS.getUserName(),
                 type: type,
                 app: machine.appCode,
                 hosts: ['' + machine.host + ''],
                 command: bistouryWS.proxy[agentIp] ? newCommand : oldCommand,
-                token: getToken()
+                token: bistouryWS.getToken()
             };
-            var data = encrypt(JSON.stringify(content));
+            var data = bistouryWS.encrypt(JSON.stringify(content));
             ws.send(data);
         }).fail(function () {
             callBack(stopFunc);
@@ -150,15 +150,15 @@
         }
     }
 
-    function getUserName() {
+    BistouryWebSocket.prototype.getUserName = function () {
         return $.cookie('login_id');
     }
 
-    function getToken() {
+    BistouryWebSocket.prototype.getToken = function () {
         return $.cookie('login_token').replace(/\s/g, '+');
     }
 
-    function encrypt(content) {
+    BistouryWebSocket.prototype.encrypt = function (content) {
         var k1 = makeid();
         var dataEnc = encryptByDES(content, k1);
 

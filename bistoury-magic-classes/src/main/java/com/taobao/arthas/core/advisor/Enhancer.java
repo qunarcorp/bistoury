@@ -202,11 +202,11 @@ public class Enhancer implements ClassFileTransformer {
     /**
      * dump class to file
      */
-    private static void dumpClassIfNecessary(String className, byte[] data, EnhancerAffect affect) {
+    public static void dumpClassIfNecessary(String className, byte[] data, EnhancerAffect affect) {
         if (!GlobalOptions.isDump) {
             return;
         }
-        final File dumpClassFile = new File("./arthas-class-dump/" + className + ".class");
+        final File dumpClassFile = new File("/tmp/bistoury-class-dump/" + className + ".class");
         final File classPath = new File(dumpClassFile.getParent());
 
         // 创建类所在的包路径

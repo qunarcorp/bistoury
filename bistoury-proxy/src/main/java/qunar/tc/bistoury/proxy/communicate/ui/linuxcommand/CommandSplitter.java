@@ -17,111 +17,195 @@
 
 package qunar.tc.bistoury.proxy.communicate.ui.linuxcommand;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Strings;
 import org.apache.commons.cli.ParseException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * 用于切分组合命令
  */
 public class CommandSplitter {
 
-    private enum State {
-        nameStart, nameEnd, argStart, argEnd, quoteStart, quoteEnd, firstAnd
+    public static List<CommandPart> split(String line) {
+        line = Strings.nullToEmpty(line).trim();
+        if (line.indexOf('`') >= 0) {
+            throw new RuntimeException("Illegal character [`] in command, please check command");
+        }
+        List<CommandPart> commandParts = new ArrayList<>();
+        analysis(line, commandParts);
+        return commandParts;
     }
 
-    private static final char pipe = '|';
-    private static final char and = '&';
-    private static final char semicolon = ';';
-    private static final char doubleQuotation = '"';
-    private static final char singleQuotation = '\'';
-    private static final char whiteSpace = ' ';
-
-    /**
-     * 切分命令, 并返回命令对象以及分隔符
-     */
-    public static List<CommandPart> split(String line) throws ParseException {
-        List<CommandPart> commands = Lists.newArrayList();
-        State state = State.nameStart;
+    private static void analysis(String line, List<CommandPart> commandParts) {
+        int length = line.length();
+        boolean startPipe = true;
         int commandStart = 0;
-        char quote = '"';
-        for (int i = 0; i < line.length(); i++) {
+        int pipeStart = 0;
+        for (int i = 0; i < length; i++) {
             char c = line.charAt(i);
-            switch (state) {
-                case firstAnd: {
-                    if (c == and) {
-                        commands.add(new CommandPart(PartType.command, line.substring(commandStart, i - 1)));
-                        commands.add(new CommandPart(PartType.separator, "&&"));
-                        commandStart = i + 1;
-                        state = State.nameStart;
-                    } else {
-                        throw new ParseException("命令包含非法字符 index " + i + " " + c);
-                    }
-                    break;
+            if (startPipe && (!isLetter(c))) {
+                throw new RuntimeException("Illegal command start");
+            }
+
+            startPipe = false;
+
+            if (isEscape(c) && i < length - 1) {
+                i++;
+                continue;
+            }
+
+            if (isQuotation(c)) {
+                i = analysisQuotation(i, line);
+                if (i == -1) {
+                    throw new RuntimeException("Quotes are not closed properly");
                 }
-                case nameStart: {
-                    if (c == and) {
-                        state = State.firstAnd;
-                    } else if (c == pipe || c == semicolon) {
-                        commands.add(new CommandPart(PartType.command, line.substring(commandStart, i)));
-                        commands.add(new CommandPart(PartType.separator, c));
-                        commandStart = i + 1;
-                    } else if (c == whiteSpace) {
-                        state = State.nameEnd;
-                    }
-                    break;
+
+                if (i == length - 1) {
+                    commandParts.add(new CommandPart(PartType.command, line.substring(commandStart, i + 1)));
                 }
-                case argStart: {
-                    if (c == doubleQuotation || c == singleQuotation) {
-                        state = State.quoteStart;
-                        break;
-                    } else if (c == and) {
-                        state = State.firstAnd;
-                    } else if (c == pipe || c == semicolon) {
-                        commands.add(new CommandPart(PartType.command, line.substring(commandStart, i)));
-                        commands.add(new CommandPart(PartType.separator, c));
-                        commandStart = i + 1;
-                        state = State.nameStart;
-                    } else if (c == whiteSpace) {
-                        state = State.argEnd;
-                    }
-                    break;
-                }
-                case quoteStart: {
-                    if (c == quote) {
-                        state = State.quoteEnd;
-                    }
-                    break;
-                }
-                case nameEnd:
-                case argEnd:
-                case quoteEnd: {
-                    if (c == and) {
-                        state = State.firstAnd;
-                    } else if (c == pipe || c == semicolon) {
-                        commands.add(new CommandPart(PartType.command, line.substring(commandStart, i)));
-                        commands.add(new CommandPart(PartType.separator, c));
-                        commandStart = i + 1;
-                        state = State.nameStart;
-                    } else if (c != whiteSpace) {
-                        if (c == doubleQuotation || c == singleQuotation) {
-                            quote = c;
-                            state = State.quoteStart;
-                        } else {
-                            state = State.argStart;
-                        }
-                    }
-                    break;
-                }
-                default: {
-                    // ignored
-                }
+
+                continue;
+            }
+
+            if (c == '$') {
+                throw new RuntimeException("Illegal character [$] in command, please check command");
+            }
+            if (c == '>') {
+                throw new RuntimeException("Illegal character [>] in command, please check command");
+            }
+
+            if (c == '<') {
+                throw new RuntimeException("Illegal character [<] in command, please check command");
+            }
+            if (isPipe(c)) {
+                commandParts.add(new CommandPart(PartType.command, line.substring(commandStart, i)));
+
+                pipeStart = i;
+
+                i = skipPipe(i + 1, line);
+
+                final String pipe = line.substring(pipeStart, i + 1);
+                commandParts.add(new CommandPart(PartType.separator, pipe));
+
+                i = skipWhitespace(i + 1, line);
+
+                startPipe = true;
+                commandStart = i + 1;
+                continue;
+            }
+            if (i == length - 1) {
+                commandParts.add(new CommandPart(PartType.command, line.substring(commandStart, i + 1)));
             }
         }
-        if (commandStart < line.length())
-            commands.add(new CommandPart(PartType.command, line.substring(commandStart)));
-        return commands;
+    }
+
+    public static int skipPipe(int start, String line) {
+        int i;
+        for (i = start; i < line.length(); i++) {
+            if (!isPipe(line.charAt(i))) {
+                break;
+            }
+        }
+        return --i;
+    }
+
+    public static int skipWhitespace(int start, String line) {
+        int i;
+        for (i = start; i < line.length(); i++) {
+            if (!CharMatcher.whitespace().matches(line.charAt(i))) {
+                break;
+            }
+        }
+        return --i;
+    }
+
+    public static int analysisQuotation(int start, String line) {
+        Stack<Character> stack = new Stack<>();
+        boolean hasSingleQuotation = false;
+        boolean hasDoubleQuotation = false;
+        int i;
+
+        int length = line.length();
+        for (i = start; i < length; i++) {
+            char c = line.charAt(i);
+            //如果是转义字符，直接跳过下一个字符
+            if (isEscape(c) && i < length - 1) {
+                i++;
+                continue;
+            }
+            if (isSingleQuotation(c)) {
+                //如果是没有遇见过单引号，则入栈，否则从栈中弹出直到遇到
+                if (!hasSingleQuotation) {
+                    stack.push(c);
+                    hasSingleQuotation = true;
+                } else {
+                    while (!stack.empty()) {
+                        Character pop = stack.pop();
+                        if (isSingleQuotation(pop)) {
+                            hasSingleQuotation = false;
+                            break;
+                        }
+                    }
+                }
+            } else if (isDoubleQuotation(c)) {
+                if (!hasDoubleQuotation) {
+                    stack.push(c);
+                    hasDoubleQuotation = true;
+                } else {
+                    while (!stack.empty()) {
+                        Character pop = stack.pop();
+                        if (isDoubleQuotation(pop)) {
+                            hasDoubleQuotation = false;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                stack.push(c);
+            }
+            if (stack.empty()) {
+                break;
+            }
+        }
+
+        return stack.empty() ? i : -1;
+    }
+
+    private static boolean isNumberOrLetter(char ch) {
+        return isLetter(ch) || isNumber(ch);
+    }
+
+    private static boolean isNumber(char ch) {
+        return ch >= '0' && ch <= '9';
+    }
+
+    private static boolean isLetter(char ch) {
+        return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
+    }
+
+    private static boolean isPipe(char ch) {
+        return ch == '|' || ch == '&' || ch == ';';
+    }
+
+    private static boolean isEscape(char ch) {
+        //return ch == '\\'
+        return ch == 92;
+    }
+
+    private static boolean isQuotation(char ch) {
+        return isSingleQuotation(ch) || isDoubleQuotation(ch);
+    }
+
+    private static boolean isSingleQuotation(char ch) {
+        return ch == '\'';
+    }
+
+    private static boolean isDoubleQuotation(char ch) {
+        return ch == '\"';
     }
 
     public enum PartType {

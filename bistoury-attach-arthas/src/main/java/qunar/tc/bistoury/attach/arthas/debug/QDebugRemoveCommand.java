@@ -22,8 +22,12 @@ import com.taobao.arthas.core.shell.command.CommandProcess;
 import com.taobao.middleware.cli.annotations.Argument;
 import com.taobao.middleware.cli.annotations.Name;
 import com.taobao.middleware.logger.Logger;
+import qunar.tc.bistoury.attach.common.AttachJacksonSerializer;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
-import qunar.tc.bistoury.common.*;
+import qunar.tc.bistoury.common.BistouryConstants;
+import qunar.tc.bistoury.common.CodeProcessResponse;
+import qunar.tc.bistoury.common.TypeResponse;
+import qunar.tc.bistoury.common.URLCoder;
 
 /**
  * @author zhenyu.nie created on 2018 2018/11/28 20:05
@@ -59,7 +63,7 @@ public class QDebugRemoveCommand extends AnnotatedCommand {
             codeResponse.setMessage(e.getMessage());
         }
 
-        process.write(URLCoder.encode(JacksonSerializer.serialize(typeResponse)));
+        process.write(URLCoder.encode(AttachJacksonSerializer.serialize(typeResponse)));
         process.end();
     }
 }

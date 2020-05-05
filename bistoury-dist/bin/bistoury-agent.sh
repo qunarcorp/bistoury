@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -euo pipefail
 
 BISTOURY_BIN="${BASH_SOURCE-$0}"
@@ -48,20 +48,61 @@ if [[ -n $APP_PID ]]; then
     JAVA_OPTS="$JAVA_OPTS -Dbistoury.user.pid=$APP_PID"
 fi
 
-CLASSPATH="$CLASSPATH:$JAVA_HOME/lib/tools.jar:$JAVA_HOME/lib/sa-jdi.jar"
-JAVA_OPTS="$JAVA_OPTS -Dbistoury.app.lib.class=$BISTOURY_APP_LIB_CLASS -Xmx80m -Xmn50m -XX:+UseParallelGC -XX:+UseParallelOldGC -XX:+UseCodeCacheFlushing -Xloggc:${BISTOURY_LOG_DIR}/bistoury-gc-${TIMESTAMP}.log -XX:+PrintGC -XX:+PrintGCDetails -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${BISTOURY_LOG_DIR}"
+JAVA_OPTS="$JAVA_OPTS -Dbistoury.app.lib.class=$BISTOURY_APP_LIB_CLASS -Dbistoury.log.dir=$BISTOURY_LOG_DIR -Xmx80m -Xmn50m -XX:+UseParallelGC -XX:+UseParallelOldGC -XX:+UseCodeCacheFlushing -Xloggc:${BISTOURY_LOG_DIR}/bistoury-gc-${TIMESTAMP}.log -XX:+PrintGC -XX:+PrintGCDetails -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${BISTOURY_LOG_DIR}"
 BISTOURY_PID_FILE="$BISTOURY_PID_DIR/bistoury-agent.pid"
 BISTOURY_DAEMON_OUT="$BISTOURY_LOG_DIR/bistoury-agent.out"
 
+resetEvn(){
+    local JAVA_VERSION=""
+    local IFS=$'\n'
+    local tempClassPath=""
+    local lines=$("${JAVA_HOME}"/bin/java -version 2>&1 | tr '\r' '\n')
+    for line in $lines; do
+      if [[ (-z $JAVA_VERSION) && ($line = *"version"*) ]]
+      then
+        local ver=$(echo $line | sed -e 's/.*version "\(.*\)"\(.*\)/\1/; 1q')
+        # on macOS, sed doesn't support '?'
+        if [[ $ver = "1."* ]]
+        then
+          JAVA_VERSION=$(echo $ver | sed -e 's/1\.\([0-9]*\)\(.*\)/\1/; 1q')
+        else
+          JAVA_VERSION=$(echo $ver | sed -e 's/\([0-9]*\)\(.*\)/\1/; 1q')
+        fi
+      fi
+    done
+
+    # when java version less than 9, we can use tools.jar to confirm java home.
+    # when java version greater than 9, there is no tools.jar.
+    if [[ "$JAVA_VERSION" -lt 9 ]];then
+      # possible java homes
+      javaHomes=("${JAVA_HOME%%/}" "${JAVA_HOME%%/}/.." "${JAVA_HOME%%/}/../..")
+      for javaHome in ${javaHomes[@]}
+      do
+          toolsJar="$javaHome/lib/tools.jar"
+          saJdiJar="$JAVA_HOME/lib/sa-jdi.jar"
+          if [ -f $toolsJar ] && [ -f $saJdiJar ]; then
+            tempClassPath="$toolsJar:$saJdiJar"
+          fi
+      done
+
+      if [ -z $tempClassPath ]; then
+          echo "tools.jar and sa-jdi.jar was not found, so bistoury agent could not be launched!"
+          exit 0;
+      else
+        CLASSPATH="$CLASSPATH:$tempClassPath"
+      fi
+    else
+        JAVA_OPTS="$JAVA_OPTS --add-opens=java.base/jdk.internal.perf=ALL-UNNAMED"
+    fi
+
+    echo "JAVA_HOME: $JAVA_HOME"
+}
 
 start(){
     echo "Start bistoury agent ..."
-    if [[ -f "$BISTOURY_PID_FILE" ]]; then
-      if kill -0 `cat "$BISTOURY_PID_FILE"` > /dev/null 2>&1; then
-         echo already running as process `cat "$BISTOURY_PID_FILE"`.
-         exit 0
-      fi
-    fi
+
+    resetEvn
+
     nohup "$JAVA" -cp "$CLASSPATH" ${JAVA_OPTS} ${BISTOURY_MAIN} > "$BISTOURY_DAEMON_OUT" 2>&1 < /dev/null &
     if [[ $? -eq 0 ]]
     then

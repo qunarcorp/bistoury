@@ -55,7 +55,7 @@ public class AgentClient {
         if (start) {
             return;
         }
-
+        DumpFileCleaner.getInstance().start();
         refreshClient();
         startFailoverTask();
         start = true;

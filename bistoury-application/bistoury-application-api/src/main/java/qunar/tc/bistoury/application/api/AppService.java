@@ -13,4 +13,6 @@ public interface AppService {
 	Set<String> getApps(String userCode);
 
 	Application getAppInfo(String appCode);
+
+    boolean checkUserPermission(String appCode, String usercode);
 }

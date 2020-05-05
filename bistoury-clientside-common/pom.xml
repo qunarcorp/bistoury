@@ -22,5 +22,4 @@
             <artifactId>bistoury-common</artifactId>
         </dependency>
     </dependencies>
-
 </project>

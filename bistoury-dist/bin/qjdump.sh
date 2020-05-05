@@ -68,30 +68,17 @@ START()
   echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jstack."
   sleep ${SLEEP_TIME}
 
-  # qjtop
-  QJTOP_SCRIPT=$BISTOURY_BIN_DIR/qjtop.sh
-  which $QJTOP_SCRIPT 2>/dev/null
-  if [[ $? == 0 ]]; then
-    VJTOP_DURATION=2
-    echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process vjtop."
-    echo -e "It will take ${VJTOP_DURATION} seconds, please wait."
-    VJTOP_LOG=${LOGDIR}/vjtop-${PID}-${DATE}.log
-    $QJTOP_SCRIPT -n 1 -d $VJTOP_DURATION $PID > ${VJTOP_LOG}
-    if [[ $? != 0 ]]; then
-      echo -e "\033[31mprocess vjtop error.\033[0m"
-    fi
-    echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process vjtop."
-  else
-    # no vjtop, use other replacement
-    # jinfo -flags $PID
-    echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jinfo -flags."
-    JINFO_FLAGS_LOG=${LOGDIR}/jinfo-flags-${PID}-${DATE}.log
-    ${JAVA_HOME}/bin/jinfo -flags $PID 1>${JINFO_FLAGS_LOG} 2>&1
-    if [[ $? != 0 ]]; then
-      echo -e "\033[31mprocess jinfo -flags error.\033[0m"
-    fi
-    echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jinfo -flags."
+  # no vjtop, use other replacement
+  # jinfo -flags $PID
+  echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jinfo -flags."
+  JINFO_FLAGS_LOG=${LOGDIR}/jinfo-flags-${PID}-${DATE}.log
+  ${JAVA_HOME}/bin/jinfo -flags $PID 1>${JINFO_FLAGS_LOG} 2>&1
+  if [[ $? != 0 ]]; then
+    echo -e "\033[31mprocess jinfo -flags error.\033[0m"
+  fi
+  echo -e "$(date '+%Y-%m-%d %H:%M:%S') Finish to process jinfo -flags."
 
+  if [[ `${JAVA_HOME}/bin/java -version 2>&1 | egrep "1\.[78]\."` ]]; then
     #jmap -heap
     echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jmap -heap."
     JMAP_HEAP_LOG=${LOGDIR}/jmap_heap-${PID}-${DATE}.log
@@ -124,7 +111,7 @@ START()
 
   # jmap -dump:live
   if [[ $NEED_HEAP_DUMP == 1 ]]; then
-    JMAP_DUMP_FILE=${LOGDIR}/jmap_dump_live-${PID}-${DATE}.bin
+    JMAP_DUMP_FILE=${LOGDIR}/jmap_dump_live-${PID}-${DATE}.hprof
     echo -e "$(date '+%Y-%m-%d %H:%M:%S') Begin to process jmap -dump:live."
     ${JAVA_HOME}/bin/jmap -dump:live,format=b,file=${JMAP_DUMP_FILE} $PID
     if [[ $? != 0 ]]; then

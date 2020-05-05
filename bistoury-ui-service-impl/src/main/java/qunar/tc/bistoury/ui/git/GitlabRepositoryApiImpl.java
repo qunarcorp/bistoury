@@ -52,7 +52,7 @@ public class GitlabRepositoryApiImpl implements GitRepositoryApi {
     public GitlabRepositoryApiImpl(GitPrivateTokenService privateTokenService, DynamicConfig config) {
         this.gitPrivateTokenService = privateTokenService;
         filePathFormat = config.getString("file.path.format", "{0}src/main/java/{1}.java");
-        gitEndPoint = config.getString("git.endpoint");
+        gitEndPoint = config.getString("git.endpoint", "");
     }
 
     @Override
@@ -92,6 +92,11 @@ public class GitlabRepositoryApiImpl implements GitRepositoryApi {
 
 
     private GitlabAPI createGitlabApi() {
+
+        if (Strings.isNullOrEmpty(gitEndPoint)) {
+            throw new RuntimeException("git 链接配置错误");
+        }
+
         String userCode = LoginContext.getLoginContext().getLoginUser();
         Optional<PrivateToken> token = gitPrivateTokenService.queryToken(userCode);
         if (!token.isPresent()) {

@@ -4,15 +4,17 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.commons.AnalyzerAdapter;
+import org.objectweb.asm.commons.LocalVariablesSorter;
 import org.objectweb.asm.util.CheckClassAdapter;
 import qunar.tc.bistoury.instrument.client.metrics.Metrics;
 import qunar.tc.bistoury.instrument.client.metrics.MetricsReportor;
 import qunar.tc.bistoury.instrument.client.metrics.QMonitorMetricsReportor;
-import qunar.tc.bistoury.instrument.client.monitor.MonitorMethodVisitor;
 
 import java.io.*;
 
 import static org.objectweb.asm.Opcodes.ASM5;
+import static org.objectweb.asm.Opcodes.ASM7;
 
 /**
  * @author: leix.xie
@@ -30,24 +32,29 @@ public class ASMTest extends ClassVisitor {
     public ASMTest(final ClassVisitor cv, final String source) {
         super(ASM5, cv);
         this.source = source;
+
     }
 
     /**
      * 主方法
      */
     public static void main(String[] args) throws Exception {
-        final String source = "E:\\qunar\\tcdev\\bistoury\\bistoury-instrument-client\\target\\test-classes\\qunar\\tc\\test\\Test.class";
-        final ClassReader classReader = new ClassReader(new FileInputStream(source));
-        final ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        final ClassVisitor classVisitor = new ASMTest(new CheckClassAdapter(classWriter), source);
-        classReader.accept(classVisitor, ClassReader.SKIP_FRAMES);
-        byte[] bytes = classWriter.toByteArray();
-        print(bytes);
+        try {
+            final String source = "/Users/leix.xie/workspace/opensource/bistoury/bistoury-instrument-client/target/test-classes/qunar/tc/test/Test.class";
+            final ClassReader classReader = new ClassReader(new FileInputStream(source));
+            final ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+            final ClassVisitor classVisitor = new ASMTest(new CheckClassAdapter(classWriter), source);
+            classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
+            byte[] bytes = classWriter.toByteArray();
+            print(bytes);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
         //startReport();
     }
 
     private static void print(byte[] bytes) {
-        File file = new File("E:\\qunar\\tcdev\\bistoury\\bistoury-instrument-client\\target\\App.class");
+        File file = new File("/Users/leix.xie/workspace/opensource/bistoury/bistoury-instrument-client/target/Test.class");
         try (FileOutputStream outputStream = new FileOutputStream(file);) {
             outputStream.write(bytes);
         } catch (FileNotFoundException e) {
@@ -68,12 +75,22 @@ public class ASMTest extends ClassVisitor {
         this.className = name;
     }
 
+
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         System.out.println(name);
-        //final MethodVisitor methodVisitor = super.visitMethod(access, name, desc, signature, exceptions);
-        MonitorMethodVisitor monitorMV = new MonitorMethodVisitor(access, desc, signature, exceptions, className, name, 16, cv);
-        return monitorMV;
+        final MethodVisitor methodVisitor = super.visitMethod(access, name, desc, signature, exceptions);
+        /*if (!"setCount".equals(name)) {
+            return methodVisitor;
+        }*/
+        MonitorAdviceAdapter monitorMV = new MonitorAdviceAdapter(ASM7, methodVisitor, access, name, desc, className, exceptions);
+        AnalyzerAdapter analyzerAdapter = new AnalyzerAdapter(className, access, name, desc, monitorMV);
+        monitorMV.setAnalyzerAdapter(analyzerAdapter);
+        LocalVariablesSorter localVariablesSorter = new LocalVariablesSorter(access, desc, analyzerAdapter);
+        monitorMV.setLocalVariablesSorter(localVariablesSorter);
+        //MonitorAdviceAdapter monitorMV = new MonitorAdviceAdapter(ASM7, new LocalVariablesSorter(access, desc, methodVisitor), access, name, desc, className, exceptions);
+
+        return localVariablesSorter;
     }
 
    /* private AgentMethod getTraceMethod(final String methodName, final String desc) {

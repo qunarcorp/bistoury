@@ -146,6 +146,8 @@ html, body {
 
 .progress-value {
     position: absolute;
+    left: 10px;
+    background-color: #ff000000;
 }
 
 .host-model .modal-dialog {

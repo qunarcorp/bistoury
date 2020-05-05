@@ -34,10 +34,9 @@
             <groupId>junit</groupId>
             <artifactId>junit-dep</artifactId>
         </dependency>
-        <!--只是为了导入tool.jar-->
         <dependency>
-            <groupId>com.vip.vjtools</groupId>
-            <artifactId>vjmap</artifactId>
+            <groupId>com.github.olivergondza</groupId>
+            <artifactId>maven-jdk-tools-wrapper</artifactId>
         </dependency>
     </dependencies>
 

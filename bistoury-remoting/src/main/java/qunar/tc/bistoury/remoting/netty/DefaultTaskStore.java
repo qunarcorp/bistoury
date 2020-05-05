@@ -18,7 +18,6 @@
 package qunar.tc.bistoury.remoting.netty;
 
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.ListenableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.common.NamedThreadFactory;
@@ -60,7 +59,7 @@ public class DefaultTaskStore implements TaskStore {
                 long currentTime = System.currentTimeMillis();
                 for (Map.Entry<String, WrapTask> entry : tasks.entrySet()) {
                     WrapTask wrapTask = entry.getValue();
-                    Task task = wrapTask.getTask();
+                    RunnableTask task = wrapTask.getTask();
                     if (currentTime - wrapTask.getTimestamp() > task.getMaxRunningMs()) {
                         logger.warn("try cancel task [{}], running too long times", task.getId());
                         task.cancel();
@@ -74,7 +73,7 @@ public class DefaultTaskStore implements TaskStore {
     };
 
     @Override
-    public boolean register(Task task) {
+    public boolean register(RunnableTask task) {
         synchronized (this) {
             if (close) {
                 return false;
@@ -91,18 +90,27 @@ public class DefaultTaskStore implements TaskStore {
     }
 
     @Override
-    public void cancel(final String id) {
-        WrapTask task = tasks.putIfAbsent(id, cancelStubTask);
+    public void pause(String id) {
+        WrapTask task = tasks.get(id);
+        if (task != null) {
+            task.getTask().pause();
+        }
+    }
+
+    @Override
+    public void resume(String id) {
+        WrapTask task = tasks.get(id);
+        if (task != null) {
+            task.getTask().resume();
+        }
+    }
+
+    @Override
+    public void cancel(String id) {
+        WrapTask task = tasks.get(id);
         if (task != null) {
             task.getTask().cancel();
             tasks.remove(id);
-        } else {
-            clearExecutor.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    tasks.remove(id, cancelStubTask);
-                }
-            }, 1, TimeUnit.MINUTES);
         }
     }
 
@@ -118,40 +126,18 @@ public class DefaultTaskStore implements TaskStore {
         }
     }
 
-    private static final WrapTask cancelStubTask = new WrapTask(new Task() {
-        @Override
-        public String getId() {
-            return "";
-        }
-
-        @Override
-        public long getMaxRunningMs() {
-            return Long.MAX_VALUE;
-        }
-
-        @Override
-        public ListenableFuture<Integer> execute() {
-            return null;
-        }
-
-        @Override
-        public void cancel() {
-
-        }
-    }, 0);
-
     private static class WrapTask {
 
-        private final Task task;
+        private final RunnableTask task;
 
         private final long timestamp;
 
-        private WrapTask(Task task, long timestamp) {
+        private WrapTask(RunnableTask task, long timestamp) {
             this.task = task;
             this.timestamp = timestamp;
         }
 
-        public Task getTask() {
+        public RunnableTask getTask() {
             return task;
         }
 

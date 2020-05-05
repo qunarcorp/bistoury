@@ -1,7 +1,5 @@
 package qunar.tc.test;
 
-import qunar.tc.bistoury.instrument.client.monitor.AgentMonitor;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +10,11 @@ import java.util.List;
  */
 public class Test {
     private int count;
+
+    Test() {
+
+    }
+
     private List<Integer> list = new ArrayList() {{
         add(1);
         add(2);
@@ -21,35 +24,48 @@ public class Test {
     }};
 
     public int getCount() {
-        if (true) {
-            throw new RuntimeException("测试");
-        }
-        AgentMonitor.start();
-        try {
-            setCount(1, 2L);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            AgentMonitor.start();
-        }
-        return count;
+        setCount(1, 2L);
+        return 1;
     }
 
-    public void setCount(int count, long e) throws IllegalArgumentException {
-        this.count = count;
-        int a = 1;
-        Integer b = 2;
-        Integer c = 3;
-        Integer d = 4;
-        System.out.println(a + b + c + d + e);
+    public void setCount(int count, long e) {
+        Long a1 = 101L;
+        Long a3 = 103L;
+        try {
+            try {
+                Long a4 = 104L;
+                this.count = count;
+                int a = 1;
+                long a2 = 102L;
+                long a5 = 105L;
+                long a6 = 106L;
+                Integer b = 2;
+                Integer c = 3;
+                Integer d = 4;
+                System.out.println(a + b + c + d + e);
+            } catch (RuntimeException e1) {
+                throw e1;
+            } finally {
+                System.out.println("finally");
+            }
+        } catch (RuntimeException r) {
+            throw r;
+        } finally {
+            System.out.println("finally2");
+        }
     }
 
     /**
      * 主方法
      */
-    /*public static void main(String[] args) throws Exception {
-        System.out.println("a");
-    }*/
+    public static void main(String[] args) {
+        try {
+            long a = System.currentTimeMillis();
+            System.out.println(a);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 
    /*  public static void test() throws Exception {
         Thread.sleep(1000);

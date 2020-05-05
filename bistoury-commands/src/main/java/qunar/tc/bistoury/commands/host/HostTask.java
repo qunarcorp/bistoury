@@ -19,13 +19,17 @@ package qunar.tc.bistoury.commands.host;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.SettableFuture;
 import com.sun.management.OperatingSystemMXBean;
-import com.vip.vjtools.vjtop.data.PerfData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
+import qunar.tc.bistoury.agent.common.job.BytesJob;
+import qunar.tc.bistoury.agent.common.job.ContinueResponseJob;
+import qunar.tc.bistoury.commands.perf.PerfData;
 import qunar.tc.bistoury.common.FileUtil;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
@@ -39,7 +43,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 /**
  * @author: leix.xie
@@ -47,49 +50,30 @@ import java.util.concurrent.Callable;
  * @describe：
  */
 public class HostTask implements Task {
+
     private static final Logger logger = LoggerFactory.getLogger(HostTask.class);
-    private static final ListeningExecutorService agentExecutor = AgentRemotingExecutor.getExecutor();
+
     private static final Joiner SPACE_JOINER = Joiner.on(" ").skipNulls();
+
     private static final String LOADAVG_FILENAME = "/proc/loadavg";
-    private static short KB = 1024;
+
+    private static final short KB = 1024;
 
     private final String id;
 
     private final int pid;
 
     private final ResponseHandler handler;
+
     private final long maxRunningMs;
 
-    private volatile VirtualMachineUtil.VMConnector connect;
-    private Map<String, Counter> counters;
-    private RuntimeMXBean runtimeBean;
-    private OperatingSystemMXBean osBean;
-    private MemoryMXBean memoryMXBean;
-    private ThreadMXBean threadBean;
-    private ClassLoadingMXBean classLoadingBean;
-    private List<GarbageCollectorMXBean> gcMxBeans;
-    private List<MemoryPoolMXBean> memoryPoolMXBeans;
-    private volatile ListenableFuture<Integer> future;
+    private final SettableFuture<Integer> future = SettableFuture.create();
 
     public HostTask(String id, int pid, ResponseHandler handler, long maxRunningMs) {
         this.id = id;
         this.pid = pid;
         this.handler = handler;
         this.maxRunningMs = maxRunningMs;
-    }
-
-    private void init() throws Exception {
-        connect = VirtualMachineUtil.connect(pid);
-        PerfData prefData = PerfData.connect(pid);
-        counters = prefData.getAllCounters();
-
-        this.runtimeBean = connect.getRuntimeMXBean();
-        this.osBean = connect.getOperatingSystemMXBean();
-        this.memoryMXBean = connect.getMemoryMXBean();
-        this.threadBean = connect.getThreadMXBean();
-        this.classLoadingBean = connect.getClassLoadingMXBean();
-        this.gcMxBeans = connect.getGarbageCollectorMXBeans();
-        this.memoryPoolMXBeans = connect.getMemoryPoolMXBeans();
     }
 
     @Override
@@ -103,49 +87,69 @@ public class HostTask implements Task {
     }
 
     @Override
-    public ListenableFuture<Integer> execute() {
-        this.future = agentExecutor.submit(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                try {
-                    init();
-                    Map<String, Object> result = new HashMap<>();
-                    result.put("type", "hostInfo");
-                    result.put("jvm", getJvmInfo());
-                    result.put("host", getHostInfo());
-                    result.put("memPool", getMemoryPoolMXBeansInfo());
-                    result.put("visuaGC", getVisuaGCInfo());
-                    String jsonString = JacksonSerializer.serialize(result);
-                    handler.handle(jsonString);
-                    return null;
-                } catch (Exception e) {
-                    logger.error("get MXBean error", e);
-                    throw new RuntimeException(e);
-                } finally {
-                    try {
-                        if (connect != null) {
-                            connect.disconnect();
-                        }
-                    } catch (IOException e) {
-                        logger.error("disconnect vm error ", e);
-                    }
-                }
-            }
-        });
+    public ContinueResponseJob createJob() {
+        return new Job();
+    }
+
+    @Override
+    public ListenableFuture<Integer> getResultFuture() {
         return future;
     }
 
-    private List<MemoryPoolInfo> getMemoryPoolMXBeansInfo() {
+    private class Job extends BytesJob {
+
+        private Job() {
+            super(id, handler, future);
+        }
+
+        @Override
+        protected byte[] getBytes() throws Exception {
+            VirtualMachineUtil.VMConnector connect = VirtualMachineUtil.connect(pid);
+            MxBean mxBean = new MxBean(getCounters(pid),
+                    connect.getRuntimeMXBean(),
+                    connect.getOperatingSystemMXBean(),
+                    connect.getMemoryMXBean(),
+                    connect.getThreadMXBean(),
+                    connect.getClassLoadingMXBean(),
+                    connect.getGarbageCollectorMXBeans(),
+                    connect.getMemoryPoolMXBeans());
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("type", "hostInfo");
+            result.put("jvm", getJvmInfo(mxBean));
+            result.put("host", getHostInfo(mxBean));
+            result.put("memPool", getMemoryPoolMXBeansInfo(mxBean.getMemoryPoolMXBeans()));
+            result.put("visuaGC", getVisuaGCInfo(mxBean.getCounters()));
+            return JacksonSerializer.serializeToBytes(result);
+        }
+
+        @Override
+        public ListeningExecutorService getExecutor() {
+            return AgentRemotingExecutor.getExecutor();
+        }
+    }
+
+    private Map<String, Counter> getCounters(int pid) {
+        try {
+            PerfData prefData = PerfData.connect(pid);
+            return prefData.getAllCounters();
+        } catch (Exception e) {
+            logger.warn("get perf counters error", e);
+            return ImmutableMap.of();
+        }
+    }
+
+    private static List<MemoryPoolInfo> getMemoryPoolMXBeansInfo(List<MemoryPoolMXBean> memoryPoolMXBeans) {
         List<MemoryPoolInfo> memoryPoolInfos = new ArrayList<>();
         for (MemoryPoolMXBean memoryPoolMXBean : memoryPoolMXBeans) {
             MemoryUsage usage = memoryPoolMXBean.getUsage();
-            MemoryPoolInfo info = new MemoryPoolInfo(memoryPoolMXBean.getName(), usage.getInit() / KB, usage.getUsed() / KB, usage.getCommitted() / KB, usage.getMax() / KB);
+            MemoryPoolInfo info = new MemoryPoolInfo(memoryPoolMXBean.getName().replaceAll("^PS|^G1|\\s|\\'|-", ""), usage.getInit() / KB, usage.getUsed() / KB, usage.getCommitted() / KB, usage.getMax() / KB);
             memoryPoolInfos.add(info);
         }
         return memoryPoolInfos;
     }
 
-    private VMSnapshotBean getVisuaGCInfo() {
+    private VMSnapshotBean getVisuaGCInfo(Map<String, Counter> counters) {
         VMSnapshotBean vmSnapshotBean = new VMSnapshotBean();
         vmSnapshotBean.setEdenSize(getValue(counters, "sun.gc.generation.0.space.0.maxCapacity") / KB);
         vmSnapshotBean.setEdenCapacity(getValue(counters, "sun.gc.generation.0.space.0.capacity") / KB);
@@ -195,7 +199,7 @@ public class HostTask implements Task {
         return 0L;
     }
 
-    private String getStringValue(Map<String, Counter> counters, String key) {
+    private static String getStringValue(Map<String, Counter> counters, String key) {
         Counter counter = counters.get(key);
         if (counter != null && counter.getValue() != null) {
             return counter.getValue().toString();
@@ -203,7 +207,14 @@ public class HostTask implements Task {
         return "";
     }
 
-    private VMSummaryInfo getJvmInfo() {
+    private static VMSummaryInfo getJvmInfo(MxBean mxBean) {
+        Map<String, Counter> counters = mxBean.getCounters();
+        RuntimeMXBean runtimeBean = mxBean.getRuntimeBean();
+        OperatingSystemMXBean osBean = mxBean.getOsBean();
+        ThreadMXBean threadBean = mxBean.getThreadBean();
+        ClassLoadingMXBean classLoadingBean = mxBean.getClassLoadingBean();
+        MemoryMXBean memoryMXBean = mxBean.getMemoryMXBean();
+
         VMSummaryInfo vmInfo = new VMSummaryInfo();
 
         //运行时间
@@ -270,7 +281,7 @@ public class HostTask implements Task {
         vmInfo.setNonHeapMaxMemory(memoryUsage.getMax() / KB);
 
         //垃圾收集器
-        vmInfo.setGcInfos(getGCInfo());
+        vmInfo.setGcInfos(getGCInfo(mxBean));
 
         //jvm参数
         vmInfo.setVmOptions(SPACE_JOINER.join(runtimeBean.getInputArguments()));
@@ -279,12 +290,17 @@ public class HostTask implements Task {
         //库路径
         vmInfo.setLibraryPath(runtimeBean.getLibraryPath());
         //引导类路径
-        vmInfo.setBootClassPath(runtimeBean.getBootClassPath());
+        try {
+            vmInfo.setBootClassPath(runtimeBean.getBootClassPath());
+        } catch (Exception e) {
+            //jdk9以上版本会抛出 UnsupportedOperationException，忽略
+        }
 
         return vmInfo;
     }
 
-    private List<String> getGCInfo() {
+    private static List<String> getGCInfo(MxBean mxBean) {
+        List<GarbageCollectorMXBean> gcMxBeans = mxBean.getGcMxBeans();
         List<String> gcInfos = new ArrayList<>(gcMxBeans.size());
         for (GarbageCollectorMXBean b : gcMxBeans) {
             GCBean gcBean = new GCBean();
@@ -296,7 +312,10 @@ public class HostTask implements Task {
         return gcInfos;
     }
 
-    private HostInfo getHostInfo() {
+    private static HostInfo getHostInfo(MxBean mxBean) {
+        OperatingSystemMXBean osBean = mxBean.getOsBean();
+        ThreadMXBean threadBean = mxBean.getThreadBean();
+
         HostInfo hostInfo = new HostInfo();
         String osName = System.getProperty("os.name");
         int availableProcessors = Runtime.getRuntime().availableProcessors();
@@ -351,7 +370,7 @@ public class HostTask implements Task {
         return hostInfo;
     }
 
-    private void getDiskInfo(HostInfo hostInfo) {
+    private static void getDiskInfo(HostInfo hostInfo) {
         File[] disks = File.listRoots();
         long freeSpace = 0;
         long usableSpace = 0;
@@ -366,93 +385,135 @@ public class HostTask implements Task {
         hostInfo.setTotalSpace(totalSpace);
     }
 
-    @Override
-    public void cancel() {
-        try {
-            if (future != null) {
-                future.cancel(true);
-                future = null;
-            }
-        } catch (Exception e) {
-            logger.error("destroy host task error", e);
+    private static class MemoryPoolInfo {
+        private String key;
+        private String name;
+        private long init;
+        private long used;
+        private long committed;
+        private long max;
+
+        public MemoryPoolInfo() {
         }
 
-        try {
-            VirtualMachineUtil.VMConnector connect = this.connect;
-            if (connect != null) {
-                connect.disconnect();
-            }
-        } catch (Exception e) {
-            logger.error("destroy host task error", e);
+        public MemoryPoolInfo(String name, long init, long used, long committed, long max) {
+            this.key = name;
+            this.name = name;
+            this.init = init;
+            this.used = used;
+            this.committed = committed;
+            this.max = max;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public long getInit() {
+            return init;
+        }
+
+        public void setInit(long init) {
+            this.init = init;
+        }
+
+        public long getUsed() {
+            return used;
+        }
+
+        public void setUsed(long used) {
+            this.used = used;
+        }
+
+        public long getCommitted() {
+            return committed;
+        }
+
+        public void setCommitted(long committed) {
+            this.committed = committed;
+        }
+
+        public long getMax() {
+            return max;
+        }
+
+        public void setMax(long max) {
+            this.max = max;
         }
     }
-}
 
-class MemoryPoolInfo {
-    private String key;
-    private String name;
-    private long init;
-    private long used;
-    private long committed;
-    private long max;
+    static class MxBean {
+        private final Map<String, Counter> counters;
 
-    public MemoryPoolInfo() {
-    }
+        private final RuntimeMXBean runtimeBean;
 
-    public MemoryPoolInfo(String name, long init, long used, long committed, long max) {
-        this.key = name.replaceAll("\\s", "");
-        this.name = name;
-        this.init = init;
-        this.used = used;
-        this.committed = committed;
-        this.max = max;
-    }
+        private final OperatingSystemMXBean osBean;
 
-    public String getKey() {
-        return key;
-    }
+        private final MemoryMXBean memoryMXBean;
 
-    public void setKey(String key) {
-        this.key = key;
-    }
+        private final ThreadMXBean threadBean;
 
-    public String getName() {
-        return name;
-    }
+        private final ClassLoadingMXBean classLoadingBean;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+        private final List<GarbageCollectorMXBean> gcMxBeans;
 
-    public long getInit() {
-        return init;
-    }
+        private final List<MemoryPoolMXBean> memoryPoolMXBeans;
 
-    public void setInit(long init) {
-        this.init = init;
-    }
+        MxBean(Map<String, Counter> counters, RuntimeMXBean runtimeBean, OperatingSystemMXBean osBean,
+               MemoryMXBean memoryMXBean, ThreadMXBean threadBean, ClassLoadingMXBean classLoadingBean,
+               List<GarbageCollectorMXBean> gcMxBeans, List<MemoryPoolMXBean> memoryPoolMXBeans) {
+            this.counters = counters;
+            this.runtimeBean = runtimeBean;
+            this.osBean = osBean;
+            this.memoryMXBean = memoryMXBean;
+            this.threadBean = threadBean;
+            this.classLoadingBean = classLoadingBean;
+            this.gcMxBeans = gcMxBeans;
+            this.memoryPoolMXBeans = memoryPoolMXBeans;
+        }
 
-    public long getUsed() {
-        return used;
-    }
+        public Map<String, Counter> getCounters() {
+            return counters;
+        }
 
-    public void setUsed(long used) {
-        this.used = used;
-    }
+        public RuntimeMXBean getRuntimeBean() {
+            return runtimeBean;
+        }
 
-    public long getCommitted() {
-        return committed;
-    }
+        public OperatingSystemMXBean getOsBean() {
+            return osBean;
+        }
 
-    public void setCommitted(long committed) {
-        this.committed = committed;
-    }
+        public MemoryMXBean getMemoryMXBean() {
+            return memoryMXBean;
+        }
 
-    public long getMax() {
-        return max;
-    }
+        public ThreadMXBean getThreadBean() {
+            return threadBean;
+        }
 
-    public void setMax(long max) {
-        this.max = max;
+        public ClassLoadingMXBean getClassLoadingBean() {
+            return classLoadingBean;
+        }
+
+        public List<GarbageCollectorMXBean> getGcMxBeans() {
+            return gcMxBeans;
+        }
+
+        public List<MemoryPoolMXBean> getMemoryPoolMXBeans() {
+            return memoryPoolMXBeans;
+        }
     }
 }
