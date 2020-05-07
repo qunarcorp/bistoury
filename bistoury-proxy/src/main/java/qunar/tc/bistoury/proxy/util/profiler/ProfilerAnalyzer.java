@@ -37,9 +37,12 @@ public class ProfilerAnalyzer {
 
     private static final ProfilerAnalyzer INSTANCE = new ProfilerAnalyzer();
 
-    private final File flameGraphForTime = new File(System.getProperty("java.io.tmpdir") + File.separator + "flamegraph-time.pl");
+    //todo 最好放到bin目录下
+    private final String PL_FILE_STORE_PATH = System.getProperty("catalina.base") + File.separator + "pl_script";
 
-    private final File flameGraphForCount = new File(System.getProperty("java.io.tmpdir") + File.separator + "flamegraph-count.pl");
+    private final File flameGraphForTimeFile = new File(PL_FILE_STORE_PATH + File.separator + "flamegraph-time.pl");
+
+    private final File flameGraphForCountFile = new File(PL_FILE_STORE_PATH + File.separator + "flamegraph-count.pl");
 
     private static final String perlPath = System.getProperty("perl.path");
 
@@ -51,11 +54,12 @@ public class ProfilerAnalyzer {
 
     private ProfilerAnalyzer() {
         try {
-            flameGraphForTime.delete();
-            flameGraphForCount.delete();
-            Files.copy(getClass().getResourceAsStream("/script/flamegraph-count.pl"), Paths.get(flameGraphForCount.getAbsolutePath()));
-            Files.copy(getClass().getResourceAsStream("/script/flamegraph-time.pl"), Paths.get(flameGraphForTime.getAbsolutePath()));
-            logger.info("pl info: flamegraph-count: {}, flamegraph-time: {}", flameGraphForCount.getAbsolutePath(), flameGraphForTime.getAbsolutePath());
+            flameGraphForTimeFile.delete();
+            flameGraphForCountFile.delete();
+            new File(PL_FILE_STORE_PATH).mkdirs();
+            Files.copy(getClass().getResourceAsStream("/script/flamegraph-count.pl"), Paths.get(flameGraphForCountFile.getAbsolutePath()));
+            Files.copy(getClass().getResourceAsStream("/script/flamegraph-time.pl"), Paths.get(flameGraphForTimeFile.getAbsolutePath()));
+            logger.info("pl info: flamegraph-count: {}, flamegraph-time: {}", flameGraphForCountFile.getAbsolutePath(), flameGraphForTimeFile.getAbsolutePath());
         } catch (IOException e) {
             logger.error("copy pl file error.", e);
         }
@@ -163,7 +167,7 @@ public class ProfilerAnalyzer {
         String nameWithoutExtension = com.google.common.io.Files.getNameWithoutExtension(dumpTxt.toFile().getName());
         String svgPath = parent + File.separator + nameWithoutExtension + ".svg";
         String realPerlPath = Strings.isNullOrEmpty(perlPath) ? "perl" : perlPath;
-        String flameGraphFile = mode == Profiler.Mode.async_sampler ? flameGraphForCount.getAbsolutePath() : flameGraphForTime.getAbsolutePath();
+        String flameGraphFile = mode == Profiler.Mode.async_sampler ? flameGraphForCountFile.getAbsolutePath() : flameGraphForTimeFile.getAbsolutePath();
         return realPerlPath + " " + flameGraphFile + " " + dumpTxt.toString() + ">  " + svgPath;
     }
 
