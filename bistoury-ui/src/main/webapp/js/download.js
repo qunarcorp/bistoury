@@ -76,7 +76,7 @@ $(document).ready(function () {
                 if (ret.status == 0) {
                     var list = [];
 
-                    ret.data.list.forEach(function (machine) {
+                    ret.data.forEach(function (machine) {
                         list.push({text: machine.host, value: machine, selectable: true});
                     })
                     func(list);
