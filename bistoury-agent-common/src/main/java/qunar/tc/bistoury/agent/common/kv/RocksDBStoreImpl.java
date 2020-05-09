@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.common.CharsetUtils;
 
 import java.io.File;
+import java.util.Map;
 
 
 /**
@@ -105,6 +106,13 @@ public class RocksDBStoreImpl implements KvDb {
         } catch (Exception e) {
             LOG.error("get value from rocks db error, key:{}", key, e);
             return null;
+        }
+    }
+
+    @Override
+    public void putBatch(Map<String, String> data) {
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            put(entry.getKey(), entry.getValue());
         }
     }
 }

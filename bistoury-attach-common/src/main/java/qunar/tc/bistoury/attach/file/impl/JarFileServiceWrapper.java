@@ -23,6 +23,7 @@ import com.taobao.middleware.logger.Logger;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.attach.file.JarStorePathUtil;
 import qunar.tc.bistoury.attach.file.URLUtil;
+import qunar.tc.bistoury.common.FileUtil;
 
 import java.io.File;
 import java.io.InputStream;
@@ -55,7 +56,7 @@ public class JarFileServiceWrapper {
     public String getJarPath(final String jarFile) {
         File file = new File(JarStorePathUtil.getJarStorePath());
         if (!file.exists() || !file.isDirectory() || !STARTED.get()) {
-            deleteDirectory(file);
+            FileUtil.deleteDirectory(file, false);
             unPackJar(jarFile, file);
             STARTED.compareAndSet(false, true);
         }
@@ -85,22 +86,4 @@ public class JarFileServiceWrapper {
             logger.error("", "unpack jar error", e);
         }
     }
-
-    private void deleteDirectory(File file) {
-        if (file == null) {
-            return;
-        }
-        if (file.isDirectory()) {
-            String[] list = file.list();
-            if (list == null) {
-                return;
-            }
-            for (int i = 0; i < list.length; i++) {
-                deleteDirectory(new File(file, list[i]));
-            }
-        } else {
-            file.delete();
-        }
-    }
-
 }

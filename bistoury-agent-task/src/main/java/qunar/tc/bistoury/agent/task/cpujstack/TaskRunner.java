@@ -40,6 +40,7 @@ import qunar.tc.bistoury.agent.task.proc.ProcUtil;
 import qunar.tc.bistoury.agent.task.proc.ProcessStateCalculator;
 import qunar.tc.bistoury.common.JacksonSerializer;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -116,13 +117,15 @@ public class TaskRunner implements Runnable {
         addThreadMinuteCpuTime(threadInfos, threadMinuteTimes);
 
         int totalTime = 0;
+        Map<String, String> dbMinuteCpuTimes = new HashMap<>();
         for (Map.Entry<String, Double> entry : threadMinuteTimes.entrySet()) {
             Integer time = (int) (entry.getValue() * 10000);
             if (time > 0) {
-                kvDb.put(KvUtils.getThreadMinuteCpuTimeKey(timestamp, entry.getKey()), String.valueOf(time));
+                dbMinuteCpuTimes.put(KvUtils.getThreadMinuteCpuTimeKey(timestamp, entry.getKey()), String.valueOf(time));
                 totalTime += time;
             }
         }
+        kvDb.putBatch(dbMinuteCpuTimes);
 
         kvDb.put(KvUtils.getThreadNumKey(timestamp), String.valueOf(threadMinuteTimes.size()));
         kvDb.put(KvUtils.getThreadMinuteCpuTimeKey(timestamp), String.valueOf(totalTime));
@@ -137,11 +140,13 @@ public class TaskRunner implements Runnable {
             public void onSuccess(Map<Integer, Double> momentCpuTime) {
                 Map<String, Double> transformMomentCpuTime = ProcUtil.transformHexThreadId(momentCpuTime);
                 int totalTime = 0;
+                Map<String, String> dbMomentCpuTimes = new HashMap<>();
                 for (Map.Entry<String, Double> entry : transformMomentCpuTime.entrySet()) {
                     int time = (int) (entry.getValue() * 10000);
-                    kvDb.put(KvUtils.getThreadMomentCpuTimeKey(timestamp, entry.getKey()), String.valueOf(time));
+                    dbMomentCpuTimes.put(KvUtils.getThreadMomentCpuTimeKey(timestamp, entry.getKey()), String.valueOf(time));
                     totalTime += time;
                 }
+                kvDb.putBatch(dbMomentCpuTimes);
                 kvDb.put(KvUtils.getThreadMomentCpuTimeKey(timestamp), String.valueOf(totalTime));
                 kvDb.put(KvUtils.getCollectSuccessKey(timestamp), "true");
             }
