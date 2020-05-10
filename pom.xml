@@ -610,7 +610,16 @@
                 <artifactId>Java-WebSocket</artifactId>
                 <version>1.4.0</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.xerial</groupId>
+                <artifactId>sqlite-jdbc</artifactId>
+                <version>3.28.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.xerial.snappy</groupId>
+                <artifactId>snappy-java</artifactId>
+                <version>1.1.1.7</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

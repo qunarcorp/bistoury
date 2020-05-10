@@ -178,4 +178,24 @@ public final class FileUtil {
             }
         }
     }
+
+    public static void deleteDirectory(File file, boolean deleteChildDirectory) {
+        if (file == null) {
+            return;
+        }
+        if (file.isDirectory()) {
+            String[] list = file.list();
+            if (list == null || list.length == 0) {
+                if (deleteChildDirectory) {
+                    file.delete();
+                }
+                return;
+            }
+            for (int i = 0; i < list.length; i++) {
+                deleteDirectory(new File(file, list[i]), deleteChildDirectory);
+            }
+        } else {
+            file.delete();
+        }
+    }
 }
