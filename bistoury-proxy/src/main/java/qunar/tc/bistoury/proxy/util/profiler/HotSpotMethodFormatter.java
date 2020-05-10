@@ -8,32 +8,29 @@ import java.util.List;
 /**
  * @author cai.wen created on 19-11-24
  */
-public class HotSpotMethodFormatter {
+class HotSpotMethodFormatter {
 
     private static final HotSpotMethodFormatter INSTANCE = new HotSpotMethodFormatter();
+
+    private static final Comparator<TreeNode<FunctionCounter>> treeNodeComparator = Comparator.comparing(TreeNode::getNode);
 
     private HotSpotMethodFormatter() {
     }
 
-    public static DisplayNode format(TreeNode<FunctionCounter> methodCounterTreeNode) {
+    static DisplayNode format(TreeNode<FunctionCounter> methodCounterTreeNode) {
         return INSTANCE.doFormat(methodCounterTreeNode);
     }
 
-    private static final Comparator<TreeNode<FunctionCounter>> treeNodeComparator = (node1, node2)
-            -> node2.getNode().compareTo(node1.getNode());
-
-    public DisplayNode doFormat(TreeNode<FunctionCounter> methodCounterTreeNode) {
+    private DisplayNode doFormat(TreeNode<FunctionCounter> methodCounterTreeNode) {
         long count = methodCounterTreeNode.getNode().getCount();
         List<TreeNode<FunctionCounter>> children = methodCounterTreeNode.getChildren();
-        children.sort(treeNodeComparator);
+        children.sort(treeNodeComparator.reversed());
         String info = methodCounterTreeNode.getNode().getFunctionInfo().getFuncName();
         List<DisplayNode> displayChildren = Lists.newArrayListWithExpectedSize(children.size());
         for (TreeNode<FunctionCounter> child : children) {
             displayChildren.add(doFormat(child));
         }
-
-        DisplayNode root = new DisplayNode(info, count, displayChildren);
-        return root;
+        return new DisplayNode(info, count, displayChildren);
     }
 
     public static class DisplayNode {
@@ -44,7 +41,7 @@ public class HotSpotMethodFormatter {
 
         private List<DisplayNode> nodes;
 
-        public DisplayNode(String text, long count, List<DisplayNode> nodes) {
+        private DisplayNode(String text, long count, List<DisplayNode> nodes) {
             this.text = text;
             this.count = count;
             this.nodes = nodes;
@@ -60,6 +57,13 @@ public class HotSpotMethodFormatter {
 
         public List<DisplayNode> getNodes() {
             return nodes;
+        }
+
+        @Override
+        public String toString() {
+            return "DisplayNode{" +
+                    "text='" + text + '\'' +
+                    '}';
         }
     }
 

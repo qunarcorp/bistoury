@@ -16,14 +16,11 @@ public class TreeNode<T> {
 
     private Map<T, TreeNode<T>> children = Maps.newHashMap();
 
-    private TreeNode() {
-    }
-
     TreeNode(T t) {
         this.node = t;
     }
 
-    public TreeNode<T> getOrCreate(T t) {
+    TreeNode<T> getOrCreate(T t) {
         TreeNode<T> child = children.get(t);
         if (child == null) {
             child = new TreeNode<>(t);
@@ -51,5 +48,12 @@ public class TreeNode<T> {
     @Override
     public int hashCode() {
         return node.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "TreeNode{" +
+                "node=" + node +
+                '}';
     }
 }

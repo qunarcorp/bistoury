@@ -35,10 +35,8 @@ public class Manager {
         logger.info("", "async profiler lib path: {}", profilerLibPath);
         try {
             ASYNC_PROFILER = AsyncProfiler.getInstance(profilerLibPath);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("", "load async profiler lib error.", e);
-        } catch (UnsatisfiedLinkError unsatisfiedLinkError) {
-            logger.error("", "load async profiler lib unsatisfiedLinkError.", unsatisfiedLinkError);
         }
     }
 

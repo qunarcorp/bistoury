@@ -29,4 +29,11 @@ public class FunctionInfo {
     public int hashCode() {
         return Objects.hash(funcName);
     }
+
+    @Override
+    public String toString() {
+        return "FunctionInfo{" +
+                "funcName='" + funcName + '\'' +
+                '}';
+    }
 }
