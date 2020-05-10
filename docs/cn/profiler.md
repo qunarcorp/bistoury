@@ -4,8 +4,11 @@
 升级bistoury到最新版
 
 ## bistoury中的性能分析
-怎样去定位java程序的性能问题，常见的是抽样分析，但是类似于jstack对于程序的影响过大（而且有`Safepoint bias problem`）, 像新上的接口耗时上涨了20ms，这种如果使用线程dump之类的，可能无法定位具体问题所在。  
-而bistoury基于异步抽样，是可以很好的定位java程序实际cpu耗时所在方法。  
+
+怎样去定位java程序的性能问题，常见的是抽样分析，但是类似于jstack对于程序的影响过大（而且有`Safepoint bias problem`）, 而且像新上的接口耗时上涨了20ms，这种如果使用线程dump之类的，可能无法定位具体问题所在
+
+而bistoury基于异步抽样，是可以很好的定位java程序实际cpu耗时所在方法
+
 基于[async-profiler](https://github.com/jvm-profiling-tools/async-profiler)
 
 
