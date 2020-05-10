@@ -168,7 +168,7 @@ public class ProfilerAnalyzer {
         String svgPath = parent + File.separator + nameWithoutExtension + ".svg";
         String realPerlPath = Strings.isNullOrEmpty(perlPath) ? "perl" : perlPath;
         String flameGraphFile = mode == Profiler.Mode.async_sampler ? flameGraphForCountFile.getAbsolutePath() : flameGraphForTimeFile.getAbsolutePath();
-        return realPerlPath + " " + flameGraphFile + " " + dumpTxt.toString() + ">  " + svgPath;
+        return realPerlPath + " " + flameGraphFile + " --color=java " + dumpTxt.toString() + ">  " + svgPath;
     }
 
     public static ProfilerAnalyzer getInstance() {
