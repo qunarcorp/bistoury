@@ -76,7 +76,7 @@ public class BistouryConstants {
     public static final String PROFILER_ID = "$$profilerId$$";
 
     // todo: 先这么写吧
-    public static final String CURRENT_VERSION = "2.0.6";
+    public static final String CURRENT_VERSION = "2.0.7";
 
     public static final String BISTOURY_VERSION_LINE_PREFIX = "bistoury version:";
 

@@ -1214,14 +1214,14 @@ field: m
 ### 实例
 dump到指定文件
 ```shell
-admin@local@bistoury_demo_app:\>heapdump /home/root/Desktop/bistoury-2.0.6/dump1.hprof
-Dumping heap to /home/root/Desktop/bistoury-2.0.6/dump1.hprof...
+admin@local@bistoury_demo_app:\>heapdump /home/root/Desktop/bistoury-2.0.7/dump1.hprof
+Dumping heap to /home/root/Desktop/bistoury-2.0.7/dump1.hprof...
 Heap dump file created
 ```
 只dump live 对象
 ```shell
-admin@local@bistoury_demo_app:\>heapdump --live /home/root/Desktop/bistoury-2.0.6/dump2.hprof
-Dumping heap to /home/root/Desktop/bistoury-2.0.6/dump2.hprof...
+admin@local@bistoury_demo_app:\>heapdump --live /home/root/Desktop/bistoury-2.0.7/dump2.hprof
+Dumping heap to /home/root/Desktop/bistoury-2.0.7/dump2.hprof...
 Heap dump file created
 ```
 dump 到临时文件
