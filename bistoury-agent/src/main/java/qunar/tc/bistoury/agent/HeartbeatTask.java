@@ -17,7 +17,6 @@
 
 package qunar.tc.bistoury.agent;
 
-import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -28,7 +27,7 @@ import qunar.tc.bistoury.common.NamedThreadFactory;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
 import qunar.tc.bistoury.remoting.protocol.ResponseCode;
-import qunar.tc.bistoury.remoting.protocol.payloadHolderImpl.ResponsePayloadHolder;
+import qunar.tc.bistoury.remoting.protocol.payloadHolderImpl.ResponseStringPayloadHolder;
 import qunar.tc.bistoury.remoting.util.LocalHost;
 
 import java.util.concurrent.Executors;
@@ -51,7 +50,7 @@ class HeartbeatTask {
 
     public HeartbeatTask(long heartbeatSec) {
         this.heartbeatSec = heartbeatSec;
-        heartbeatRequest = RemotingBuilder.buildAgentRequest(ResponseCode.RESP_TYPE_HEARTBEAT.getCode(), new ResponsePayloadHolder(LocalHost.getLocalHost().getBytes(Charsets.UTF_8)));
+        heartbeatRequest = RemotingBuilder.buildAgentRequest(ResponseCode.RESP_TYPE_HEARTBEAT.getCode(), new ResponseStringPayloadHolder(LocalHost.getLocalHost()));
     }
 
     public void start(final Channel channel, final AtomicBoolean running) {
