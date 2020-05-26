@@ -46,7 +46,9 @@ Bistoury提供可视化页面实时查看机器和应用的各种信息，包括
 - [生产部署](docs/cn/deploy.md)
 - [常见问题汇总](docs/cn/FAQ.md)
 - [设计文档](docs/cn/design/design.md)
-
+- [应用pid获取](docs/cn/PID.md))
+- [文件下载](docs/cn/downloadFile.md)
+- [性能分析](docs/cn/profiler.md)
 ## java版本要求
 
 ui、proxy使用Java1.8+，agent使用java1.7+，由于agent会attach到应用中，所以应用也需要使用Java1.7+，最好保持应用和agent的版本一致。点击[这里](docs/cn/java11.md)使用Java11运行bistoury
