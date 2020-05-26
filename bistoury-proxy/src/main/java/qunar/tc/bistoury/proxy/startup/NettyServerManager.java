@@ -38,7 +38,7 @@ import qunar.tc.bistoury.proxy.communicate.ui.UiConnectionStore;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommandStore;
 import qunar.tc.bistoury.proxy.generator.IdGenerator;
 import qunar.tc.bistoury.serverside.agile.Conf;
-import qunar.tc.bistoury.serverside.agile.LocalHost;
+import qunar.tc.bistoury.remoting.util.LocalHost;
 import qunar.tc.bistoury.serverside.common.ZKClient;
 import qunar.tc.bistoury.serverside.common.ZKClientCache;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;

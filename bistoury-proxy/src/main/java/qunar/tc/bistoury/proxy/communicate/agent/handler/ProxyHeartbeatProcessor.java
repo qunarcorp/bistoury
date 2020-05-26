@@ -17,7 +17,10 @@
 
 package qunar.tc.bistoury.proxy.communicate.agent.handler;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
@@ -66,7 +69,7 @@ public class ProxyHeartbeatProcessor implements AgentMessageProcessor {
     @Override
     public void process(ChannelHandlerContext ctx, Datagram message) {
         logger.debug("receive heartbeat, {}", message);
-        String ip = getIp(ctx.channel());
+        String ip = getIp(message, ctx.channel());
         message.release();
         connectionStore.register(ip, message.getHeader().getAgentVersion(), ctx.channel());
         ctx.channel().writeAndFlush(heartbeatResponse);
@@ -75,6 +78,15 @@ public class ProxyHeartbeatProcessor implements AgentMessageProcessor {
     private String getIp(Channel channel) {
         InetSocketAddress address = (InetSocketAddress) channel.remoteAddress();
         return address.getAddress().getHostAddress();
+    }
+
+    private String getIp(Datagram datagram, Channel channel) {
+        final ByteBuf byteBuf = datagram.getBody();
+        final String ip = byteBuf.toString(Charsets.UTF_8);
+        if (Strings.isNullOrEmpty(ip)) {
+            return getIp(channel);
+        }
+        return ip;
     }
 
     private Datagram initHeartbeatResponse() {

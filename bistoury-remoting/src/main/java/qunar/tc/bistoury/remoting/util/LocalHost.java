@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package qunar.tc.bistoury.serverside.agile;
+package qunar.tc.bistoury.remoting.util;
 
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
