@@ -74,6 +74,8 @@ public class NettyServerForUi implements NettyServer {
 
     private final AppServerService appServerService;
 
+    private final AppCenterServerFinder serverFinder;
+
     private volatile Channel channel;
 
     public NettyServerForUi(Conf conf,
@@ -89,6 +91,7 @@ public class NettyServerForUi implements NettyServer {
         this.sessionManager = sessionManager;
         this.commandStore = commandStore;
         this.appServerService = appServerService;
+        this.serverFinder = new AppCenterServerFinder(this.appServerService);
     }
 
     @Override
@@ -114,7 +117,7 @@ public class NettyServerForUi implements NettyServer {
                                 .addLast(new RequestDecoder(new DefaultRequestEncryption(new RSAEncryption())))
                                 .addLast(new WebSocketEncoder())
                                 .addLast(new TabHandler())
-                                .addLast(new HostsValidatorHandler(new AppCenterServerFinder(appServerService)))
+                                .addLast(new HostsValidatorHandler(serverFinder))
                                 .addLast(new UiRequestHandler(
                                         commandStore,
                                         uiConnectionStore,
