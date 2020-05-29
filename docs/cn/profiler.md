@@ -25,10 +25,10 @@
 
 查看结果:
 
-火焰图
+### 火焰图
 ![性能分析栈](../image/profiler_stack.png)
 
-java热点方法
+### java热点方法
 ![性能分析方法](../image/profiler_method.png)
 
 ## 系统支持
