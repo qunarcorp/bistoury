@@ -96,3 +96,12 @@ qq群：717242486
 
 线程dump
 ![thread_dump](docs/image/thread_dump.png)
+
+文件下载
+![downlaod](docs/image/download.png)
+
+火焰图
+![性能分析栈](docs/image/profiler_stack.png)
+
+java热点方法
+![性能分析方法](docs/image/profiler_method.png)
