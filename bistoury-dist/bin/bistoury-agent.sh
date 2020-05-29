@@ -6,6 +6,9 @@ BISTOURY_BIN="$(dirname "$BISTOURY_BIN")"
 BISTOURY_BIN_DIR="$(cd "$BISTOURY_BIN"; pwd)"
 BISTOURY_MAIN="qunar.tc.bistoury.indpendent.agent.Main"
 
+ARTHAS_INPUT_RC_DIR=$HOME"/.arthas/conf"
+ARTHAS_INPUT_RC_PATH=$ARTHAS_INPUT_RC_DIR"/inputrc";
+
 . "$BISTOURY_BIN_DIR/base.sh"
 . "$BISTOURY_BIN_DIR/bistoury-agent-env.sh"
 
@@ -34,6 +37,15 @@ if [[ "$JAVA_HOME" != "" ]];then
 else
     JAVA=java;
 fi
+
+if [[ ! -w "$ARTHAS_INPUT_RC_DIR" ]] ; then
+  mkdir -p "$ARTHAS_INPUT_RC_DIR"
+fi
+
+if [ ! -f "$ARTHAS_INPUT_RC_PATH" ];then
+  cp "$BISTOURY_BIN_DIR"/inputrc "$ARTHAS_INPUT_RC_PATH"
+fi
+
 
 if [[ ! -n $BISTOURY_APP_LIB_CLASS ]]; then
     echo "请通过-c参数指定应用依赖的jar包中的一个类（推荐使用公司内部中间件的jar包或Spring相关包中的类，如org.springframework.web.servlet.DispatcherServlet），agent通过该类获取应用jar包路径"
