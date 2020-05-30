@@ -8,4 +8,4 @@
 
 **注意**：当Java版本高于Java8时，启动agent时，请在启动参数添加` --add-opens=java.base/jdk.internal.perf=ALL-UNNAMED`
 
-**注意** 当agent和应用的java版本不一致时，可能会出错，建议agent和应用使用想要的大版本。
+**注意** 当agent和应用的java版本不一致时，可能会出错，建议agent和应用使用相同的大版本。
