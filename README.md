@@ -46,7 +46,7 @@ Bistoury提供可视化页面实时查看机器和应用的各种信息，包括
 - [生产部署](docs/cn/deploy.md)
 - [常见问题汇总](docs/cn/FAQ.md)
 - [设计文档](docs/cn/design/design.md)
-- [应用pid获取](docs/cn/PID.md))
+- [应用pid获取](docs/cn/PID.md)
 - [文件下载](docs/cn/downloadFile.md)
 - [性能分析](docs/cn/profiler.md)
 ## java版本要求
