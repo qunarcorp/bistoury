@@ -141,7 +141,10 @@
         });
     }
     Bistoury.prototype.error = function (errorMsg) {
-        errorMsg = errorMsg.substr(errorMsg.indexOf("Command preprocess failed: ") + 27);
+        var index = errorMsg.indexOf("Command preprocess failed: ");
+        if (index >= 0) {
+            errorMsg = errorMsg.substr(index + 27);
+        }
         spop({
             template: this.getErrorMsg(errorMsg),
             style: 'error',
