@@ -84,7 +84,7 @@
         <junit.version>4.10</junit.version>
         <zookeeper.version>3.4.6</zookeeper.version>
         <curator.framework.version>2.6.0</curator.framework.version>
-        <netty.all.version>4.1.41.Final</netty.all.version>
+        <netty.all.version>4.1.42.Final</netty.all.version>
         <netty.version>3.10.5.Final</netty.version>
         <slf4j.version>1.7.5</slf4j.version>
         <tomcat-jdbc.version>7.0.30</tomcat-jdbc.version>
