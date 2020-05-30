@@ -20,7 +20,7 @@ package qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.processo
 import com.google.common.collect.ImmutableSet;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.common.BistouryConstants;
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.AbstractCommand;
 import qunar.tc.bistoury.remoting.command.HeapHistoCommand;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;

@@ -306,15 +306,29 @@ html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc
 <script type="text/javascript" src="js/header.js"></script>
 <p><a href="../../../../api/url/redirect.do?name=debug.help.url">&#x5728;&#x7EBF;Debug&#x4F7F;&#x7528;&#x8BF4;&#x660E;</a></p>
 <p><a href="../../../../api/url/redirect.do?name=monitor.help.url">&#x52A8;&#x6001;&#x76D1;&#x63A7;&#x4F7F;&#x7528;&#x8BF4;&#x660E;</a></p>
-<p><a href="../../../../api/url/redirect.do?name=jstack.help.url">&#x7EBF;&#x7A0B;&#x7EA7;cpu&#x4F7F;&#x7528;&#x7387;&#x76D1;&#x63A7;</a></p>
-<p><a href="../../../../api/url/redirect.do?name=jmap.help.url">&#x5806;&#x5185;&#x5B58;&#x5BF9;&#x8C61;&#x76D1;&#x63A7;</a></p>
+<p><a href="../../../../api/url/redirect.do?name=jstack.help.url">&#x7EBF;&#x7A0B;&#x7EA7;cpu&#x4F7F;&#x7528;&#x7387;&#x76D1;&#x63A7;&#x4F7F;&#x7528;&#x8BF4;&#x660E;</a></p>
+<p><a href="../../../../api/url/redirect.do?name=jmap.help.url">&#x5806;&#x5185;&#x5B58;&#x5BF9;&#x8C61;&#x76D1;&#x63A7;&#x4F7F;&#x7528;&#x8BF4;&#x660E;</a></p>
 <h1 class="mume-header" id="bistoury">Bistoury</h1>
 
+<p><img src="https://img.shields.io/github/license/qunarcorp/bistoury" alt="license">
+<img src="https://img.shields.io/github/v/release/qunarcorp/bistoury" alt="release"></p>
 <h2 class="mume-header" id="bistoury%E6%98%AF%E4%BB%80%E4%B9%88">Bistoury&#x662F;&#x4EC0;&#x4E48;&#xFF1F;</h2>
 
-<blockquote>
-<p><code>Bistoury</code> &#x53BB;&#x54EA;&#x7F51;&#x5F00;&#x6E90;&#x7684;&#x4E00;&#x4E2A;&#x5BF9;&#x5E94;&#x7528;&#x900F;&#x660E;&#xFF0C;&#x65E0;&#x4FB5;&#x5165;&#x7684;Java&#x8BCA;&#x65AD;&#x5DE5;&#x5177;&#xFF0C;Bistoury&#x5728;&#x516C;&#x53F8;&#x5185;&#x90E8;&#x539F;&#x6709;agent&#x7684;&#x57FA;&#x7840;&#x4E0A;&#x96C6;&#x6210;Alibaba&#x5F00;&#x6E90;&#x7684;<a href="https://github.com/alibaba/arthas">Arthas</a>&#x548C;&#x552F;&#x54C1;&#x4F1A;&#x5F00;&#x6E90;&#x7684;<a href="https://github.com/vipshop/vjtools">vjtools</a>&#xFF0C;&#x63D0;&#x4F9B;&#x66F4;&#x52A0;&#x4E30;&#x5BCC;&#x7684;&#x529F;&#x80FD;&#x3002;</p>
-</blockquote>
+<p><code>Bistoury</code> &#x662F;&#x53BB;&#x54EA;&#x513F;&#x7F51;&#x5F00;&#x6E90;&#x7684;&#x4E00;&#x4E2A;&#x5BF9;&#x5E94;&#x7528;&#x900F;&#x660E;&#xFF0C;&#x65E0;&#x4FB5;&#x5165;&#x7684;java&#x5E94;&#x7528;&#x8BCA;&#x65AD;&#x5DE5;&#x5177;&#xFF0C;&#x7528;&#x4E8E;&#x63D0;&#x5347;&#x5F00;&#x53D1;&#x4EBA;&#x5458;&#x7684;&#x8BCA;&#x65AD;&#x6548;&#x7387;&#x548C;&#x80FD;&#x529B;&#x3002;</p>
+<p><code>Bistoury</code> &#x7684;&#x76EE;&#x6807;&#x662F;&#x4E00;&#x7AD9;&#x5F0F;java&#x5E94;&#x7528;&#x8BCA;&#x65AD;&#x89E3;&#x51B3;&#x65B9;&#x6848;&#xFF0C;&#x8BA9;&#x5F00;&#x53D1;&#x4EBA;&#x5458;&#x65E0;&#x9700;&#x767B;&#x5F55;&#x673A;&#x5668;&#x6216;&#x4FEE;&#x6539;&#x7CFB;&#x7EDF;&#xFF0C;&#x5C31;&#x53EF;&#x4EE5;&#x4ECE;&#x65E5;&#x5FD7;&#x3001;&#x5185;&#x5B58;&#x3001;&#x7EBF;&#x7A0B;&#x3001;&#x7C7B;&#x4FE1;&#x606F;&#x3001;&#x8C03;&#x8BD5;&#x3001;&#x673A;&#x5668;&#x548C;&#x7CFB;&#x7EDF;&#x5C5E;&#x6027;&#x7B49;&#x5404;&#x4E2A;&#x65B9;&#x9762;&#x5BF9;&#x5E94;&#x7528;&#x8FDB;&#x884C;&#x8BCA;&#x65AD;&#xFF0C;&#x63D0;&#x5347;&#x5F00;&#x53D1;&#x4EBA;&#x5458;&#x8BCA;&#x65AD;&#x95EE;&#x9898;&#x7684;&#x6548;&#x7387;&#x548C;&#x80FD;&#x529B;&#x3002;</p>
+<p><code>Bistoury</code> &#x5728;&#x516C;&#x53F8;&#x5185;&#x90E8;&#x539F;&#x6709;agent&#x7684;&#x57FA;&#x7840;&#x4E0A;&#x96C6;&#x6210;Alibaba&#x5F00;&#x6E90;&#x7684;<a href="https://github.com/alibaba/arthas">arthas</a>&#x548C;&#x552F;&#x54C1;&#x4F1A;&#x5F00;&#x6E90;&#x7684;<a href="https://github.com/vipshop/vjtools">vjtools</a>&#xFF0C;&#x63D0;&#x4F9B;&#x4E86;&#x66F4;&#x52A0;&#x4E30;&#x5BCC;&#x7684;&#x529F;&#x80FD;&#xFF0C;&#x611F;&#x8C22;&#x4ED6;&#x4EEC;&#x505A;&#x51FA;&#x7684;&#x4F18;&#x79C0;&#x5DE5;&#x4F5C;&#x3002;</p>
+<h2 class="mume-header" id="%E7%AE%80%E4%BB%8B">&#x7B80;&#x4ECB;</h2>
+
+<p>Arthas&#x548C;vjtools&#x5DF2;&#x7ECF;&#x662F;&#x5F88;&#x4F18;&#x79C0;&#x7684;&#x5DE5;&#x5177;&#xFF0C;&#x6211;&#x4EEC;&#x4E3A;&#x4EC0;&#x4E48;&#x8FD8;&#x8981;&#x5F00;&#x53D1;Bistoury&#xFF1F;</p>
+<p>Arthas&#x548C;vjtools&#x901A;&#x8FC7;&#x547D;&#x4EE4;&#x884C;&#x6216;&#x7C7B;&#x4F3C;&#x7684;&#x65B9;&#x5F0F;&#x4F7F;&#x7528;&#xFF0C;&#x4E0D;&#x53EF;&#x5426;&#x8BA4;&#x547D;&#x4EE4;&#x884C;&#x5728;&#x5F88;&#x591A;&#x65F6;&#x5019;&#x5177;&#x6709;&#x6BD4;&#x8F83;&#x9AD8;&#x7684;&#x6548;&#x7387;&#xFF1B;&#x4F46;&#x56FE;&#x5F62;&#x5316;&#x754C;&#x9762;&#x4E5F;&#x6709;&#x5176;&#x81EA;&#x8EAB;&#x7684;&#x4F18;&#x70B9;&#xFF0C;&#x7279;&#x522B;&#x662F;&#x5728;&#x53C2;&#x6570;&#x590D;&#x6742;&#x65F6;&#x4F7F;&#x7528;&#x8D77;&#x6765;&#x66F4;&#x52A0;&#x7B80;&#x5355;&#xFF0C;&#x6548;&#x7387;&#x66F4;&#x9AD8;&#x3002;Bistoury&#x5728;&#x4FDD;&#x7559;&#x547D;&#x4EE4;&#x884C;&#x754C;&#x9762;&#x7684;&#x57FA;&#x7840;&#x4E0A;&#xFF0C;&#x8FD8;&#x5BF9;&#x5F88;&#x591A;&#x547D;&#x4EE4;&#x63D0;&#x4F9B;&#x4E86;&#x56FE;&#x5F62;&#x5316;&#x754C;&#x9762;&#xFF0C;&#x65B9;&#x9762;&#x7528;&#x6237;&#x4F7F;&#x7528;&#x3002;</p>
+<p>Arthas&#x548C;vjtools&#x9488;&#x5BF9;&#x5355;&#x53F0;&#x673A;&#x5668;&#xFF0C;&#x4ECE;&#x673A;&#x5668;&#x7684;&#x7EF4;&#x5EA6;&#x5BF9;&#x7CFB;&#x7EDF;&#x8FDB;&#x884C;&#x8BCA;&#x65AD;&#xFF0C;&#x6CA1;&#x6709;&#x63D0;&#x4F9B;&#x5168;&#x5C40;&#x7684;&#x89C6;&#x89D2;&#xFF1B;&#x800C;&#x5728;&#x7EBF;&#x5E94;&#x7528;&#x5F80;&#x5F80;&#x90E8;&#x7F72;&#x5728;&#x591A;&#x53F0;&#x673A;&#x5668;&#xFF0C;Bistoury&#x53EF;&#x4EE5;&#x548C;&#x4F7F;&#x7528;&#x65B9;&#x5E94;&#x7528;&#x4E2D;&#x5FC3;&#x6574;&#x5408;&#xFF0C;&#x4ECE;&#x5E94;&#x7528;&#x7684;&#x7EF4;&#x5EA6;&#x5BF9;&#x7CFB;&#x7EDF;&#x8FDB;&#x884C;&#x8BCA;&#x65AD;&#xFF0C;&#x63D0;&#x4F9B;&#x4E86;&#x66F4;&#x591A;&#x7684;&#x53EF;&#x80FD;&#x3002;</p>
+<p>Arthas&#x548C;vjtools&#x5728;&#x4F7F;&#x7528;&#x4E0A;&#xFF0C;&#x8981;&#x4E48;&#x767B;&#x5F55;&#x673A;&#x5668;&#xFF0C;&#x8981;&#x4E48;&#x9700;&#x8981;&#x4F7F;&#x7528;&#x8005;&#x63D0;&#x4F9B;&#x76F8;&#x5E94;&#x7684;ip&#x548C;&#x7AEF;&#x53E3;&#xFF1B;Bistoury&#x53BB;&#x6389;&#x5404;&#x79CD;&#x8BBE;&#x7F6E;&#xFF0C;&#x63D0;&#x4F9B;&#x7EDF;&#x4E00;&#x7684;web&#x5165;&#x53E3;&#xFF0C;&#x4ECE;&#x9875;&#x9762;&#x4E0A;&#x9009;&#x62E9;&#x5E94;&#x7528;&#x548C;&#x673A;&#x5668;&#x5373;&#x53EF;&#x4F7F;&#x7528;&#x3002;</p>
+<p>&#x9664;&#x4E86;&#x8FD9;&#x4E9B;&#x9488;&#x5BF9;&#x6027;&#x4F18;&#x5316;&#xFF0C;Bistoury&#x5728;&#x4FDD;&#x7559;arthas&#x548C;vjtools&#x7684;&#x6240;&#x6709;&#x529F;&#x80FD;&#x4E4B;&#x5916;&#xFF0C;&#x8FD8;&#x63D0;&#x4F9B;&#x4E86;&#x66F4;&#x52A0;&#x4E30;&#x5BCC;&#x7684;&#x529F;&#x80FD;&#x3002;</p>
+<p>Bistoury&#x7684;<a href="../../../../api/url/redirect.do?name=debug.help.url">&#x5728;&#x7EBF;debug&#x529F;&#x80FD;</a>&#x53BB;&#x6389;&#x4E86;&#x5404;&#x79CD;&#x590D;&#x6742;&#x53C2;&#x6570;&#xFF0C;&#x6A21;&#x62DF;ide&#x8C03;&#x8BD5;&#x4F53;&#x9A8C;&#xFF0C;&#x901A;&#x8FC7;web&#x754C;&#x9762;&#x63D0;&#x4F9B;&#x65AD;&#x70B9;&#x8C03;&#x8BD5;&#x7684;&#x529F;&#x80FD;&#xFF0C;&#x53EF;&#x4EE5;&#x5728;&#x4E0D;&#x963B;&#x585E;&#x5E94;&#x7528;&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#x6355;&#x83B7;&#x65AD;&#x70B9;&#x5904;&#x7684;&#x4FE1;&#x606F;&#xFF08;&#x5305;&#x62EC;&#x672C;&#x5730;&#x53D8;&#x91CF;&#x3001;&#x6210;&#x5458;&#x53D8;&#x91CF;&#x3001;&#x9759;&#x6001;&#x53D8;&#x91CF;&#x548C;&#x65B9;&#x6CD5;&#x8C03;&#x7528;&#x6808;&#xFF09;&#x3002;</p>
+<p>Bistoury&#x63D0;&#x4F9B;&#x4E86;<a href="../../../../api/url/redirect.do?name=jstack.help.url">&#x7EBF;&#x7A0B;&#x7EA7;cpu&#x4F7F;&#x7528;&#x7387;&#x76D1;&#x63A7;</a>&#xFF0C;&#x53EF;&#x4EE5;&#x76D1;&#x63A7;&#x7CFB;&#x7EDF;&#x6BCF;&#x4E2A;&#x7EBF;&#x7A0B;&#x7684;&#x5206;&#x949F;&#x7EA7;cpu&#x4F7F;&#x7528;&#x7387;&#xFF0C;&#x5E76;&#x63D0;&#x4F9B;&#x6700;&#x8FD1;&#x51E0;&#x5929;&#x7684;&#x5386;&#x53F2;&#x6570;&#x636E;&#x67E5;&#x8BE2;&#x3002;</p>
+<p>Bistoury&#x53EF;&#x4EE5;<a href="../../../../api/url/redirect.do?name=monitor.help.url">&#x52A8;&#x6001;&#x5BF9;&#x65B9;&#x6CD5;&#x6DFB;&#x52A0;&#x76D1;&#x63A7;</a>&#xFF0C;&#x76D1;&#x63A7;&#x65B9;&#x6CD5;&#x7684;&#x8C03;&#x7528;&#x6B21;&#x6570;&#x3001;&#x5F02;&#x5E38;&#x6B21;&#x6570;&#x548C;&#x6267;&#x884C;&#x65F6;&#x95F4;&#xFF0C;&#x540C;&#x65F6;&#x4E5F;&#x4FDD;&#x7559;&#x6700;&#x8FD1;&#x51E0;&#x5929;&#x7684;&#x76D1;&#x63A7;&#x6570;&#x636E;&#x3002;</p>
+<p>Bistoury&#x63D0;&#x4F9B;&#x4E86;&#x65E5;&#x5FD7;&#x67E5;&#x770B;&#x529F;&#x80FD;&#xFF0C;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;tail&#x3001;grep&#x7B49;&#x547D;&#x4EE4;&#x5BF9;&#x5355;&#x53F0;&#x6216;&#x540C;&#x65F6;&#x5BF9;&#x591A;&#x53F0;&#x673A;&#x5668;&#x7684;&#x65E5;&#x5FD7;&#x8FDB;&#x884C;&#x67E5;&#x770B;&#x3002;</p>
+<p>Bistoury&#x63D0;&#x4F9B;&#x53EF;&#x89C6;&#x5316;&#x9875;&#x9762;&#x5B9E;&#x65F6;&#x67E5;&#x770B;&#x673A;&#x5668;&#x548C;&#x5E94;&#x7528;&#x7684;&#x5404;&#x79CD;&#x4FE1;&#x606F;&#xFF0C;&#x5305;&#x62EC;&#x4E3B;&#x673A;&#x5185;&#x5B58;&#x548C;&#x78C1;&#x76D8;&#x4F7F;&#x7528;&#x3001;cpu&#x4F7F;&#x7528;&#x7387;&#x548C;load&#x3001;&#x7CFB;&#x7EDF;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x3001;jar&#x5305;&#x4FE1;&#x606F;&#x3001;jvm&#x4FE1;&#x606F;&#x3001;&#x5185;&#x5B58;&#x4F7F;&#x7528;&#x548C;gc&#x7B49;&#x7B49;&#x3002;</p>
 <h2 class="mume-header" id="bistoury-%E8%83%BD%E5%81%9A%E4%BB%80%E4%B9%88">Bistoury &#x80FD;&#x505A;&#x4EC0;&#x4E48;&#xFF1F;</h2>
 
 <ul>
@@ -428,11 +442,11 @@ html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc
 <h2 class="mume-header" id="%E5%90%AF%E5%8A%A8bistoury-agent">&#x542F;&#x52A8;bistoury agent</h2>
 
 <p>&#x5728;&#x542F;&#x52A8;&#x662F;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;-p&#x6307;&#x5B9A;pid&#x786E;&#x5B9A;agent attach&#x7279;&#x5B9A;&#x7684;java&#x8FDB;&#x7A0B;&#xFF0C;&#x4E0D;&#x6307;&#x5B9A;&#x65F6;&#x4F1A;&#x901A;&#x8FC7;jps -l&#x548C;ps aux|grep java &#x547D;&#x4EE4;&#x53CA;proxy&#x4E2D;&#x914D;&#x7F6E;&#x7684;&#x53C2;&#x6570;&#x89E3;&#x6790;pid&#xFF0C;&#x4F18;&#x5148;&#x7EA7;&#x4F9D;&#x6B21;&#x964D;&#x4F4E;&#x3002;</p>
+<p>&#x4F7F;&#x7528; <code>./bistoury-agent.sh -h</code> &#x67E5;&#x770B;&#x811A;&#x672C;&#x53C2;&#x6570;&#x4FE1;&#x606F;</p>
 <ul>
 <li>&#x542F;&#x52A8;</li>
 </ul>
-<pre data-role="codeBlock" data-info="shell" class="language-shell"><span class="token comment">#&#x6CE8;&#x610F;&#xFF1A;&#x683C;&#x5F0F;&#x56FA;&#x5B9A;</span>
-./bistoury-agent.sh -p 100 start
+<pre data-role="codeBlock" data-info="shell" class="language-shell">./bistoury-agent.sh -p 100 start
 ./bistoury-agent.sh start
 </pre><ul>
 <li>&#x505C;&#x6B62;</li>
@@ -441,8 +455,7 @@ html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc
 </pre><ul>
 <li>&#x91CD;&#x542F;</li>
 </ul>
-<pre data-role="codeBlock" data-info="shell" class="language-shell"><span class="token comment">#&#x6CE8;&#x610F;&#xFF1A;&#x683C;&#x5F0F;&#x56FA;&#x5B9A;</span>
-./bistoury-agent.sh -p 101 restart
+<pre data-role="codeBlock" data-info="shell" class="language-shell">./bistoury-agent.sh -p 101 restart
 ./bistoury-agent.sh restart
 </pre><hr>
 <h1 class="mume-header" id="%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8">&#x5FEB;&#x901F;&#x5165;&#x95E8;</h1>
@@ -472,11 +485,14 @@ html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc
 <li><a href="#mbean">mbean</a> &#x67E5;&#x770B; Mbean &#x7684;&#x4FE1;&#x606F;</li>
 <li><a href="#sysprop">sysprop</a> &#x67E5;&#x770B;&#x548C;&#x4FEE;&#x6539;JVM&#x7684;&#x7CFB;&#x7EDF;&#x5C5E;&#x6027;</li>
 <li><a href="#sysenv">sysenv</a> &#x67E5;&#x770B;&#x5F53;&#x524D;JVM&#x7684;&#x73AF;&#x5883;&#x5C5E;&#x6027;</li>
+<li><a href="#vmoption">vmoption</a> &#x67E5;&#x770B;&#xFF0C;&#x66F4;&#x65B0;VM&#x8BCA;&#x65AD;&#x76F8;&#x5173;&#x7684;&#x53C2;&#x6570;</li>
 <li><a href="#getstatic">getstatic</a> &#x67E5;&#x770B;&#x7C7B;&#x7684;&#x9759;&#x6001;&#x5C5E;&#x6027;</li>
-<li><a href="#qjtop">qjtop</a> &#x89C2;&#x5BDF;JVM&#x8FDB;&#x7A0B;&#x6307;&#x6807;&#x53CA;&#x5176;&#x7E41;&#x5FD9;&#x7EBF;&#x7A0B;</li>
-<li><a href="#qjmap">qjmap</a> JMAP&#x7684;&#x5206;&#x4EE3;&#x6253;&#x5370;&#x7248;</li>
+<li><a href="#heapdump">heapdump</a> dump java heap, &#x7C7B;&#x4F3C;jmap&#x547D;&#x4EE4;&#x7684;heap dump&#x529F;&#x80FD;&#x3002;</li>
+<li><a href="#logger">logger</a> &#x67E5;&#x770B;logger&#x4FE1;&#x606F;&#xFF0C;&#x66F4;&#x65B0;logger level</li>
 <li><a href="#qjdump">qjdump</a> &#x7EBF;&#x4E0A;&#x7D27;&#x6025;&#x6536;&#x96C6;JVM&#x6570;&#x636E;</li>
-<li><a href="#qjmxcli">qjmxcli</a> JMX &#x67E5;&#x770B;&#x5DE5;&#x5177;</li>
+<li><a href="#qjtop">qjtop</a>  &#x4E0D;&#x518D;&#x652F;&#x6301; qjtop &#x547D;&#x4EE4;&#xFF0C;&#x53EF;&#x5230;<a href="../../../../machine.html">&#x4E3B;&#x673A;&#x4FE1;&#x606F;</a>&#x9875;&#x9762;&#x67E5;&#x770B; JVM &#x6307;&#x6807;&#x53CA;&#x7E41;&#x5FD9;&#x7EBF;&#x7A0B;</li>
+<li><a href="#qjmap">qjmap</a>  &#x4E0D;&#x518D;&#x652F;&#x6301; qjmap &#x547D;&#x4EE4;&#xFF0C;&#x8BF7;&#x4F7F;&#x7528; <a href="#heapdump">heapdump</a> &#x547D;&#x4EE4; dump &#x5185;&#x5B58;&#x4FE1;&#x606F;</li>
+<li><a href="#qjmxcli">qjmxcli</a>  &#x4E0D;&#x518D;&#x652F;&#x6301; qjmxcli &#x547D;&#x4EE4;&#xFF0C;&#x8BF7;&#x4F7F;&#x7528; <a href="#mbean">mbean</a> &#x547D;&#x4EE4;&#x67E5;&#x770B; MBean &#x4FE1;&#x606F;&#xFF0C;&#x4F7F;&#x7528; <a href="#jstat">jstat</a> &#x547D;&#x4EE4;&#x67E5;&#x770B; GC &#x4FE1;&#x606F;</li>
 </ul>
 </blockquote>
 <h2 class="mume-header" id="classclassloader%E7%9B%B8%E5%85%B3">class/classloader&#x76F8;&#x5173;</h2>
@@ -515,7 +531,7 @@ html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc
 </blockquote>
 <h1 class="mume-header" id="%E5%91%BD%E4%BB%A4%E5%88%97%E8%A1%A8">&#x547D;&#x4EE4;&#x5217;&#x8868;</h1>
 
-<h2 class="mume-header" id="ls"><strong>ls</strong></h2>
+<h2 class="mume-header" id="ls">ls</h2>
 
 <p><strong>ls&#x547D;&#x4EE4;</strong> &#x7528;&#x6765;&#x663E;&#x793A;&#x76EE;&#x6807;&#x5217;&#x8868;&#xFF0C;&#x53C2;&#x6570;&#x4E0E;linux&#x4E2D;&#x7684;&#x53C2;&#x6570;&#x4E00;&#x6837;&#x3002;</p>
 <blockquote>
@@ -528,18 +544,17 @@ html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc
 </blockquote>
 <h3 class="mume-header" id="%E9%80%89%E9%A1%B9">&#x9009;&#x9879;</h3>
 
-<blockquote>
-<p>-a&#xFF1A;&#x663E;&#x793A;&#x6240;&#x6709;&#x6863;&#x6848;&#x53CA;&#x76EE;&#x5F55;&#xFF08;ls&#x5185;&#x5B9A;&#x5C06;&#x6863;&#x6848;&#x540D;&#x6216;&#x76EE;&#x5F55;&#x540D;&#x79F0;&#x4E3A;&#x201C;.&#x201D;&#x7684;&#x89C6;&#x4E3A;&#x5F71;&#x85CF;&#xFF0C;&#x4E0D;&#x4F1A;&#x5217;&#x51FA;&#xFF09;&#xFF1B;
+<pre class="language-text">-a&#xFF1A;&#x663E;&#x793A;&#x6240;&#x6709;&#x6863;&#x6848;&#x53CA;&#x76EE;&#x5F55;&#xFF08;ls&#x5185;&#x5B9A;&#x5C06;&#x6863;&#x6848;&#x540D;&#x6216;&#x76EE;&#x5F55;&#x540D;&#x79F0;&#x4E3A;&#x201C;.&#x201D;&#x7684;&#x89C6;&#x4E3A;&#x5F71;&#x85CF;&#xFF0C;&#x4E0D;&#x4F1A;&#x5217;&#x51FA;&#xFF09;&#xFF1B;
 -A&#xFF1A;&#x663E;&#x793A;&#x9664;&#x5F71;&#x85CF;&#x6587;&#x4EF6;&#x201C;.&#x201D;&#x548C;&#x201C;..&#x201D;&#x4EE5;&#x5916;&#x7684;&#x6240;&#x6709;&#x6587;&#x4EF6;&#x5217;&#x8868;&#xFF1B;
 -C&#xFF1A;&#x591A;&#x5217;&#x663E;&#x793A;&#x8F93;&#x51FA;&#x7ED3;&#x679C;&#x3002;&#x8FD9;&#x662F;&#x9ED8;&#x8BA4;&#x9009;&#x9879;&#xFF1B;
 -l&#xFF1A;&#x4E0E;&#x201C;-C&#x201D;&#x9009;&#x9879;&#x529F;&#x80FD;&#x76F8;&#x53CD;&#xFF0C;&#x6240;&#x6709;&#x8F93;&#x51FA;&#x4FE1;&#x606F;&#x7528;&#x5355;&#x5217;&#x683C;&#x5F0F;&#x8F93;&#x51FA;&#xFF0C;&#x4E0D;&#x8F93;&#x51FA;&#x4E3A;&#x591A;&#x5217;&#xFF1B;
--F&#xFF1A;&#x5728;&#x6BCF;&#x4E2A;&#x8F93;&#x51FA;&#x9879;&#x540E;&#x8FFD;&#x52A0;&#x6587;&#x4EF6;&#x7684;&#x7C7B;&#x578B;&#x6807;&#x8BC6;&#x7B26;&#xFF0C;&#x5177;&#x4F53;&#x542B;&#x4E49;&#xFF1A;&#x201C;*&#x201D;&#x8868;&#x793A;&#x5177;&#x6709;&#x53EF;&#x6267;&#x884C;&#x6743;&#x9650;&#x7684;&#x666E;&#x901A;&#x6587;&#x4EF6;&#xFF0C;&#x201C;/&#x201D;&#x8868;&#x793A;&#x76EE;&#x5F55;&#xFF0C;&#x201C;@&#x201D;&#x8868;&#x793A;&#x7B26;&#x53F7;&#x94FE;&#x63A5;&#xFF0C;&#x201C;|&#x201D;&#x8868;&#x793A;&#x547D;&#x4EE4;&#x7BA1;&#x9053;FIFO&#xFF0C;&#x201C;=&#x201D;&#x8868;&#x793A;sockets&#x5957;&#x63A5;&#x5B57;&#x3002;&#x5F53;&#x6587;&#x4EF6;&#x4E3A;&#x666E;&#x901A;&#x6587;&#x4EF6;&#x65F6;&#xFF0C;&#x4E0D;&#x8F93;&#x51FA;&#x4EFB;&#x4F55;&#x6807;&#x8BC6;&#x7B26;&#xFF1B;
+-F&#xFF1A;&#x5728;&#x6BCF;&#x4E2A;&#x8F93;&#x51FA;&#x9879;&#x540E;&#x8FFD;&#x52A0;&#x6587;&#x4EF6;&#x7684;&#x7C7B;&#x578B;&#x6807;&#x8BC6;&#x7B26;&#xFF0C;&#x5177;&#x4F53;&#x542B;&#x4E49;&#xFF1A;&#x201C;\*&#x201D;&#x8868;&#x793A;&#x5177;&#x6709;&#x53EF;&#x6267;&#x884C;&#x6743;&#x9650;&#x7684;&#x666E;&#x901A;&#x6587;&#x4EF6;&#xFF0C;&#x201C;/&#x201D;&#x8868;&#x793A;&#x76EE;&#x5F55;&#xFF0C;&#x201C;@&#x201D;&#x8868;&#x793A;&#x7B26;&#x53F7;&#x94FE;&#x63A5;&#xFF0C;&#x201C;|&#x201D;&#x8868;&#x793A;&#x547D;&#x4EE4;&#x7BA1;&#x9053;FIFO&#xFF0C;&#x201C;=&#x201D;&#x8868;&#x793A;sockets&#x5957;&#x63A5;&#x5B57;&#x3002;&#x5F53;&#x6587;&#x4EF6;&#x4E3A;&#x666E;&#x901A;&#x6587;&#x4EF6;&#x65F6;&#xFF0C;&#x4E0D;&#x8F93;&#x51FA;&#x4EFB;&#x4F55;&#x6807;&#x8BC6;&#x7B26;&#xFF1B;
 -b&#xFF1A;&#x5C06;&#x6587;&#x4EF6;&#x4E2D;&#x7684;&#x4E0D;&#x53EF;&#x8F93;&#x51FA;&#x7684;&#x5B57;&#x7B26;&#x4EE5;&#x53CD;&#x659C;&#x7EBF;&#x201C;&#x201D;&#x52A0;&#x5B57;&#x7B26;&#x7F16;&#x7801;&#x7684;&#x65B9;&#x5F0F;&#x8F93;&#x51FA;&#xFF1B;
 -c&#xFF1A;&#x4E0E;&#x201C;-lt&#x201D;&#x9009;&#x9879;&#x8FDE;&#x7528;&#x65F6;&#xFF0C;&#x6309;&#x7167;&#x6587;&#x4EF6;&#x72B6;&#x6001;&#x65F6;&#x95F4;&#x6392;&#x5E8F;&#x8F93;&#x51FA;&#x76EE;&#x5F55;&#x5185;&#x5BB9;&#xFF0C;&#x6392;&#x5E8F;&#x7684;&#x4F9D;&#x636E;&#x662F;&#x6587;&#x4EF6;&#x7684;&#x7D22;&#x5F15;&#x8282;&#x70B9;&#x4E2D;&#x7684;ctime&#x5B57;&#x6BB5;&#x3002;&#x4E0E;&#x201C;-l&#x201D;&#x9009;&#x9879;&#x8FDE;&#x7528;&#x65F6;&#xFF0C;&#x5219;&#x6392;&#x5E8F;&#x7684;&#x4E00;&#x53E5;&#x662F;&#x6587;&#x4EF6;&#x7684;&#x72B6;&#x6001;&#x6539;&#x53D8;&#x65F6;&#x95F4;&#xFF1B;
 -d&#xFF1A;&#x4EC5;&#x663E;&#x793A;&#x76EE;&#x5F55;&#x540D;&#xFF0C;&#x800C;&#x4E0D;&#x663E;&#x793A;&#x76EE;&#x5F55;&#x4E0B;&#x7684;&#x5185;&#x5BB9;&#x5217;&#x8868;&#x3002;&#x663E;&#x793A;&#x7B26;&#x53F7;&#x94FE;&#x63A5;&#x6587;&#x4EF6;&#x672C;&#x8EAB;&#xFF0C;&#x800C;&#x4E0D;&#x663E;&#x793A;&#x5176;&#x6240;&#x6307;&#x5411;&#x7684;&#x76EE;&#x5F55;&#x5217;&#x8868;&#xFF1B;
 -f&#xFF1A;&#x6B64;&#x53C2;&#x6570;&#x7684;&#x6548;&#x679C;&#x548C;&#x540C;&#x65F6;&#x6307;&#x5B9A;&#x201C;aU&#x201D;&#x53C2;&#x6570;&#x76F8;&#x540C;&#xFF0C;&#x5E76;&#x5173;&#x95ED;&#x201C;lst&#x201D;&#x53C2;&#x6570;&#x7684;&#x6548;&#x679C;&#xFF1B;
 -i&#xFF1A;&#x663E;&#x793A;&#x6587;&#x4EF6;&#x7D22;&#x5F15;&#x8282;&#x70B9;&#x53F7;&#xFF08;inode&#xFF09;&#x3002;&#x4E00;&#x4E2A;&#x7D22;&#x5F15;&#x8282;&#x70B9;&#x4EE3;&#x8868;&#x4E00;&#x4E2A;&#x6587;&#x4EF6;&#xFF1B;
---file-type&#xFF1A;&#x4E0E;&#x201C;-F&#x201D;&#x9009;&#x9879;&#x7684;&#x529F;&#x80FD;&#x76F8;&#x540C;&#xFF0C;&#x4F46;&#x662F;&#x4E0D;&#x663E;&#x793A;&#x201C;*&#x201D;&#xFF1B;
+--file-type&#xFF1A;&#x4E0E;&#x201C;-F&#x201D;&#x9009;&#x9879;&#x7684;&#x529F;&#x80FD;&#x76F8;&#x540C;&#xFF0C;&#x4F46;&#x662F;&#x4E0D;&#x663E;&#x793A;&#x201C;\*&#x201D;&#xFF1B;
 -k&#xFF1A;&#x4EE5;KB&#xFF08;&#x5343;&#x5B57;&#x8282;&#xFF09;&#x4E3A;&#x5355;&#x4F4D;&#x663E;&#x793A;&#x6587;&#x4EF6;&#x5927;&#x5C0F;&#xFF1B;
 -l&#xFF1A;&#x4EE5;&#x957F;&#x683C;&#x5F0F;&#x663E;&#x793A;&#x76EE;&#x5F55;&#x4E0B;&#x7684;&#x5185;&#x5BB9;&#x5217;&#x8868;&#x3002;&#x8F93;&#x51FA;&#x7684;&#x4FE1;&#x606F;&#x4ECE;&#x5DE6;&#x5230;&#x53F3;&#x4F9D;&#x6B21;&#x5305;&#x62EC;&#x6587;&#x4EF6;&#x540D;&#xFF0C;&#x6587;&#x4EF6;&#x7C7B;&#x578B;&#x3001;&#x6743;&#x9650;&#x6A21;&#x5F0F;&#x3001;&#x786C;&#x8FDE;&#x63A5;&#x6570;&#x3001;&#x6240;&#x6709;&#x8005;&#x3001;&#x7EC4;&#x3001;&#x6587;&#x4EF6;&#x5927;&#x5C0F;&#x548C;&#x6587;&#x4EF6;&#x7684;&#x6700;&#x540E;&#x4FEE;&#x6539;&#x65F6;&#x95F4;&#x7B49;&#xFF1B;
 -m&#xFF1A;&#x7528;&#x201C;,&#x201D;&#x53F7;&#x533A;&#x9694;&#x6BCF;&#x4E2A;&#x6587;&#x4EF6;&#x548C;&#x76EE;&#x5F55;&#x7684;&#x540D;&#x79F0;&#xFF1B;
@@ -550,8 +565,8 @@ html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc
 -L&#xFF1A;&#x5982;&#x679C;&#x9047;&#x5230;&#x6027;&#x8D28;&#x4E3A;&#x7B26;&#x53F7;&#x94FE;&#x63A5;&#x7684;&#x6587;&#x4EF6;&#x6216;&#x76EE;&#x5F55;&#xFF0C;&#x76F4;&#x63A5;&#x5217;&#x51FA;&#x8BE5;&#x94FE;&#x63A5;&#x6240;&#x6307;&#x5411;&#x7684;&#x539F;&#x59CB;&#x6587;&#x4EF6;&#x6216;&#x76EE;&#x5F55;&#xFF1B;
 -R&#xFF1A;&#x9012;&#x5F52;&#x5904;&#x7406;&#xFF0C;&#x5C06;&#x6307;&#x5B9A;&#x76EE;&#x5F55;&#x4E0B;&#x7684;&#x6240;&#x6709;&#x6587;&#x4EF6;&#x53CA;&#x5B50;&#x76EE;&#x5F55;&#x4E00;&#x5E76;&#x5904;&#x7406;&#xFF1B;
 --full-time&#xFF1A;&#x5217;&#x51FA;&#x5B8C;&#x6574;&#x7684;&#x65E5;&#x671F;&#x4E0E;&#x65F6;&#x95F4;&#xFF1B;
---color[=WHEN]&#xFF1A;&#x4F7F;&#x7528;&#x4E0D;&#x540C;&#x7684;&#x989C;&#x8272;&#x9AD8;&#x4EAE;&#x663E;&#x793A;&#x4E0D;&#x540C;&#x7C7B;&#x578B;&#x7684;&#x3002;</p>
-</blockquote>
+--color[=WHEN]&#xFF1A;&#x4F7F;&#x7528;&#x4E0D;&#x540C;&#x7684;&#x989C;&#x8272;&#x9AD8;&#x4EAE;&#x663E;&#x793A;&#x4E0D;&#x540C;&#x7C7B;&#x578B;&#x7684;&#x3002;
+</pre>
 <h3 class="mume-header" id="%E5%8F%82%E6%95%B0">&#x53C2;&#x6570;</h3>
 
 <blockquote>
@@ -567,14 +582,13 @@ html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc
 </blockquote>
 <h3 class="mume-header" id="%E9%80%89%E9%A1%B9-1">&#x9009;&#x9879;</h3>
 
-<blockquote>
-<p>-n&#x6216;-number&#xFF1A;&#x6709;1&#x5F00;&#x59CB;&#x5BF9;&#x6240;&#x6709;&#x8F93;&#x51FA;&#x7684;&#x884C;&#x6570;&#x7F16;&#x53F7;&#xFF1B;
+<pre class="language-text">-n&#x6216;-number&#xFF1A;&#x6709;1&#x5F00;&#x59CB;&#x5BF9;&#x6240;&#x6709;&#x8F93;&#x51FA;&#x7684;&#x884C;&#x6570;&#x7F16;&#x53F7;&#xFF1B;
 -b&#x6216;--number-nonblank&#xFF1A;&#x548C;-n&#x76F8;&#x4F3C;&#xFF0C;&#x53EA;&#x4E0D;&#x8FC7;&#x5BF9;&#x4E8E;&#x7A7A;&#x767D;&#x884C;&#x4E0D;&#x7F16;&#x53F7;&#xFF1B;
 -s&#x6216;--squeeze-blank&#xFF1A;&#x5F53;&#x9047;&#x5230;&#x6709;&#x8FDE;&#x7EED;&#x4E24;&#x884C;&#x4EE5;&#x4E0A;&#x7684;&#x7A7A;&#x767D;&#x884C;&#xFF0C;&#x5C31;&#x4EE3;&#x6362;&#x4E3A;&#x4E00;&#x884C;&#x7684;&#x7A7A;&#x767D;&#x884C;&#xFF1B;
 -A&#xFF1A;&#x663E;&#x793A;&#x4E0D;&#x53EF;&#x6253;&#x5370;&#x5B57;&#x7B26;&#xFF0C;&#x884C;&#x5C3E;&#x663E;&#x793A;&#x201C;$&#x201D;&#xFF1B;
 -e&#xFF1A;&#x7B49;&#x4EF7;&#x4E8E;&quot;-vE&quot;&#x9009;&#x9879;&#xFF1B;
--t&#xFF1A;&#x7B49;&#x4EF7;&#x4E8E;&quot;-vT&quot;&#x9009;&#x9879;&#xFF1B;</p>
-</blockquote>
+-t&#xFF1A;&#x7B49;&#x4EF7;&#x4E8E;&quot;-vT&quot;&#x9009;&#x9879;&#xFF1B;
+</pre>
 <h3 class="mume-header" id="%E5%8F%82%E6%95%B0-1">&#x53C2;&#x6570;</h3>
 
 <blockquote>
@@ -613,19 +627,18 @@ cat m1 m2 &gt; file &#xFF08;&#x5C06;&#x6587;&#x4EF6;ml&#x548C;m2&#x5408;&#x5E76;
 </blockquote>
 <h3 class="mume-header" id="%E9%80%89%E9%A1%B9-2">&#x9009;&#x9879;</h3>
 
-<blockquote>
-<p>--retry&#xFF1A;&#x5373;&#x662F;&#x5728;tail&#x547D;&#x4EE4;&#x542F;&#x52A8;&#x65F6;&#xFF0C;&#x6587;&#x4EF6;&#x4E0D;&#x53EF;&#x8BBF;&#x95EE;&#x6216;&#x8005;&#x6587;&#x4EF6;&#x7A0D;&#x540E;&#x53D8;&#x5F97;&#x4E0D;&#x53EF;&#x8BBF;&#x95EE;&#xFF0C;&#x90FD;&#x59CB;&#x7EC8;&#x5C1D;&#x8BD5;&#x6253;&#x5F00;&#x6587;&#x4EF6;&#x3002;&#x4F7F;&#x7528;&#x6B64;&#x9009;&#x9879;&#x65F6;&#x9700;&#x8981;&#x4E0E;&#x9009;&#x9879;&#x201C;&#x2014;&#x2014;follow=name&#x201D;&#x8FDE;&#x7528;&#xFF1B;
--c<n>&#x6216;&#x2014;&#x2014;bytes=<n>&#xFF1A;&#x8F93;&#x51FA;&#x6587;&#x4EF6;&#x5C3E;&#x90E8;&#x7684;N&#xFF08;N&#x4E3A;&#x6574;&#x6570;&#xFF09;&#x4E2A;&#x5B57;&#x8282;&#x5185;&#x5BB9;&#xFF1B;
--f &lt;name/descriptor&gt;&#x6216;&#xFF1B;--follow<nameldescript>&#xFF1A;&#x663E;&#x793A;&#x6587;&#x4EF6;&#x6700;&#x65B0;&#x8FFD;&#x52A0;&#x7684;&#x5185;&#x5BB9;&#x3002;&#x201C;name&#x201D;&#x8868;&#x793A;&#x4EE5;&#x6587;&#x4EF6;&#x540D;&#x7684;&#x65B9;&#x5F0F;&#x76D1;&#x89C6;&#x6587;&#x4EF6;&#x7684;&#x53D8;&#x5316;&#x3002;&#x201C;-f&#x201D;&#x4E0E;&#x201C;-fdescriptor&#x201D;&#x7B49;&#x6548;&#xFF1B;
+<pre class="language-text">--retry&#xFF1A;&#x5373;&#x662F;&#x5728;tail&#x547D;&#x4EE4;&#x542F;&#x52A8;&#x65F6;&#xFF0C;&#x6587;&#x4EF6;&#x4E0D;&#x53EF;&#x8BBF;&#x95EE;&#x6216;&#x8005;&#x6587;&#x4EF6;&#x7A0D;&#x540E;&#x53D8;&#x5F97;&#x4E0D;&#x53EF;&#x8BBF;&#x95EE;&#xFF0C;&#x90FD;&#x59CB;&#x7EC8;&#x5C1D;&#x8BD5;&#x6253;&#x5F00;&#x6587;&#x4EF6;&#x3002;&#x4F7F;&#x7528;&#x6B64;&#x9009;&#x9879;&#x65F6;&#x9700;&#x8981;&#x4E0E;&#x9009;&#x9879;&#x201C;&#x2014;&#x2014;follow=name&#x201D;&#x8FDE;&#x7528;&#xFF1B;
+-c&lt;N&gt;&#x6216;&#x2014;&#x2014;bytes=&lt;N&gt;&#xFF1A;&#x8F93;&#x51FA;&#x6587;&#x4EF6;&#x5C3E;&#x90E8;&#x7684;N&#xFF08;N&#x4E3A;&#x6574;&#x6570;&#xFF09;&#x4E2A;&#x5B57;&#x8282;&#x5185;&#x5BB9;&#xFF1B;
+-f &lt;name/descriptor&gt;&#x6216;&#xFF1B;--follow&lt;nameldescript&gt;&#xFF1A;&#x663E;&#x793A;&#x6587;&#x4EF6;&#x6700;&#x65B0;&#x8FFD;&#x52A0;&#x7684;&#x5185;&#x5BB9;&#x3002;&#x201C;name&#x201D;&#x8868;&#x793A;&#x4EE5;&#x6587;&#x4EF6;&#x540D;&#x7684;&#x65B9;&#x5F0F;&#x76D1;&#x89C6;&#x6587;&#x4EF6;&#x7684;&#x53D8;&#x5316;&#x3002;&#x201C;-f&#x201D;&#x4E0E;&#x201C;-fdescriptor&#x201D;&#x7B49;&#x6548;&#xFF1B;
 -F&#xFF1A;&#x4E0E;&#x9009;&#x9879;&#x201C;-follow=name&#x201D;&#x548C;&#x201C;--retry&quot;&#x8FDE;&#x7528;&#x65F6;&#x529F;&#x80FD;&#x76F8;&#x540C;&#xFF1B;
--n <n>&#x6216;&#x2014;&#x2014;line=<n>&#xFF1A;&#x8F93;&#x51FA;&#x6587;&#x4EF6;&#x7684;&#x5C3E;&#x90E8;N&#xFF08;N&#x4F4D;&#x6570;&#x5B57;&#xFF09;&#x884C;&#x5185;&#x5BB9;&#x3002;
+-n &lt;N&gt;&#x6216;&#x2014;&#x2014;line=&lt;N&gt;&#xFF1A;&#x8F93;&#x51FA;&#x6587;&#x4EF6;&#x7684;&#x5C3E;&#x90E8;N&#xFF08;N&#x4F4D;&#x6570;&#x5B57;&#xFF09;&#x884C;&#x5185;&#x5BB9;&#x3002;
 --pid=&lt;&#x8FDB;&#x7A0B;&#x53F7;&gt;&#xFF1A;&#x4E0E;&#x201C;-f&#x201D;&#x9009;&#x9879;&#x8FDE;&#x7528;&#xFF0C;&#x5F53;&#x6307;&#x5B9A;&#x7684;&#x8FDB;&#x7A0B;&#x53F7;&#x7684;&#x8FDB;&#x7A0B;&#x7EC8;&#x6B62;&#x540E;&#xFF0C;&#x81EA;&#x52A8;&#x9000;&#x51FA;tail&#x547D;&#x4EE4;&#xFF1B;
 -q&#x6216;&#x2014;&#x2014;quiet&#x6216;&#x2014;&#x2014;silent&#xFF1A;&#x5F53;&#x6709;&#x591A;&#x4E2A;&#x6587;&#x4EF6;&#x53C2;&#x6570;&#x65F6;&#xFF0C;&#x4E0D;&#x8F93;&#x51FA;&#x5404;&#x4E2A;&#x6587;&#x4EF6;&#x540D;&#xFF1B;
 -s&lt;&#x79D2;&#x6570;&gt;&#x6216;&#x2014;&#x2014;sleep-interal=&lt;&#x79D2;&#x6570;&gt;&#xFF1A;&#x4E0E;&#x201C;-f&#x201D;&#x9009;&#x9879;&#x8FDE;&#x7528;&#xFF0C;&#x6307;&#x5B9A;&#x76D1;&#x89C6;&#x6587;&#x4EF6;&#x53D8;&#x5316;&#x65F6;&#x95F4;&#x9694;&#x7684;&#x79D2;&#x6570;&#xFF1B;
 -v&#x6216;&#x2014;&#x2014;verbose&#xFF1A;&#x5F53;&#x6709;&#x591A;&#x4E2A;&#x6587;&#x4EF6;&#x53C2;&#x6570;&#x65F6;&#xFF0C;&#x603B;&#x662F;&#x8F93;&#x51FA;&#x5404;&#x4E2A;&#x6587;&#x4EF6;&#x540D;&#xFF1B;
 --help&#xFF1A;&#x663E;&#x793A;&#x6307;&#x4EE4;&#x7684;&#x5E2E;&#x52A9;&#x4FE1;&#x606F;&#xFF1B;
---version&#xFF1A;&#x663E;&#x793A;&#x6307;&#x4EE4;&#x7684;&#x7248;&#x672C;&#x4FE1;&#x606F;&#x3002;</n></n></nameldescript></n></n></p>
-</blockquote>
+--version&#xFF1A;&#x663E;&#x793A;&#x6307;&#x4EE4;&#x7684;&#x7248;&#x672C;&#x4FE1;&#x606F;&#x3002;
+</pre>
 <h3 class="mume-header" id="%E5%8F%82%E6%95%B0-2">&#x53C2;&#x6570;</h3>
 
 <blockquote>
@@ -819,9 +832,9 @@ JNI global references: 238
 </table>
 <p>cpu&#x5360;&#x6BD4;&#x662F;&#x5982;&#x4F55;&#x7EDF;&#x8BA1;&#x51FA;&#x6765;&#x7684;&#xFF1F;</p>
 <blockquote>
-<p>&#x8FD9;&#x91CC;&#x7684;cpu&#x7EDF;&#x8BA1;&#x7684;&#x662F;&#xFF0C;&#x4E00;&#x6BB5;&#x91C7;&#x6837;&#x95F4;&#x9694;&#x5185;&#xFF0C;&#x5F53;&#x524D;JVM&#x91CC;&#x5404;&#x4E2A;&#x7EBF;&#x7A0B;&#x6240;&#x5360;&#x7528;&#x7684;cpu&#x65F6;&#x95F4;&#x5360;&#x603B;cpu&#x65F6;&#x95F4;&#x7684;&#x767E;&#x5206;&#x6BD4;&#x3002;&#x5176;&#x8BA1;&#x7B97;&#x65B9;&#x6CD5;&#x4E3A;&#xFF1A; &#x9996;&#x5148;&#x8FDB;&#x884C;&#x4E00;&#x6B21;&#x91C7;&#x6837;&#xFF0C;&#x83B7;&#x5F97;&#x6240;&#x6709;&#x7EBF;&#x7A0B;&#x7684;cpu&#x7684;&#x4F7F;&#x7528;&#x65F6;&#x95F4;(&#x8C03;&#x7528;&#x7684;&#x662F;java.lang.management.ThreadMXBean#getThreadCpuTime&#x8FD9;&#x4E2A;&#x63A5;&#x53E3;)&#xFF0C;&#x7136;&#x540E;&#x7761;&#x7720;&#x4E00;&#x6BB5;&#x65F6;&#x95F4;&#xFF0C;&#x9ED8;&#x8BA4;100ms&#xFF0C;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;-i&#x53C2;&#x6570;&#x6307;&#x5B9A;&#xFF0C;&#x7136;&#x540E;&#x518D;&#x91C7;&#x6837;&#x4E00;&#x6B21;&#xFF0C;&#x6700;&#x540E;&#x5F97;&#x51FA;&#x8FD9;&#x6BB5;&#x65F6;&#x95F4;&#x5185;&#x5404;&#x4E2A;&#x7EBF;&#x7A0B;&#x6D88;&#x8017;&#x7684;cpu&#x65F6;&#x95F4;&#x60C5;&#x51B5;&#xFF0C;&#x6700;&#x540E;&#x7B97;&#x51FA;&#x767E;&#x5206;&#x6BD4;&#x3002;
-<font color="red">&#x6CE8;&#x610F;</font>&#xFF1A;&#x8FD9;&#x4E2A;&#x7EDF;&#x8BA1;&#x4E5F;&#x4F1A;&#x4EA7;&#x751F;&#x4E00;&#x5B9A;&#x7684;&#x5F00;&#x9500;&#xFF08;<font color="red">JDK&#x8FD9;&#x4E2A;&#x63A5;&#x53E3;&#x672C;&#x8EAB;&#x5F00;&#x9500;&#x6BD4;&#x8F83;&#x5927;</font>&#xFF09;&#xFF0C;&#x56E0;&#x6B64;&#x4F1A;&#x770B;&#x5230;as&#x7684;&#x7EBF;&#x7A0B;&#x5360;&#x7528;&#x4E00;&#x5B9A;&#x7684;&#x767E;&#x5206;&#x6BD4;&#xFF0C;&#x4E3A;&#x4E86;&#x964D;&#x4F4E;&#x7EDF;&#x8BA1;&#x81EA;&#x8EAB;&#x7684;&#x5F00;&#x9500;&#x5E26;&#x6765;&#x7684;&#x5F71;&#x54CD;&#xFF0C;&#x53EF;&#x4EE5;&#x628A;&#x91C7;&#x6837;&#x95F4;&#x9694;&#x62C9;&#x957F;&#x4E00;&#x4E9B;&#xFF0C;&#x6BD4;&#x5982;5000&#x6BEB;&#x79D2;&#x3002;</p>
+<p>&#x8FD9;&#x91CC;&#x7684;cpu&#x7EDF;&#x8BA1;&#x7684;&#x662F;&#xFF0C;&#x4E00;&#x6BB5;&#x91C7;&#x6837;&#x95F4;&#x9694;&#x5185;&#xFF0C;&#x5F53;&#x524D;JVM&#x91CC;&#x5404;&#x4E2A;&#x7EBF;&#x7A0B;&#x6240;&#x5360;&#x7528;&#x7684;cpu&#x65F6;&#x95F4;&#x5360;&#x603B;cpu&#x65F6;&#x95F4;&#x7684;&#x767E;&#x5206;&#x6BD4;&#x3002;&#x5176;&#x8BA1;&#x7B97;&#x65B9;&#x6CD5;&#x4E3A;&#xFF1A; &#x9996;&#x5148;&#x8FDB;&#x884C;&#x4E00;&#x6B21;&#x91C7;&#x6837;&#xFF0C;&#x83B7;&#x5F97;&#x6240;&#x6709;&#x7EBF;&#x7A0B;&#x7684;cpu&#x7684;&#x4F7F;&#x7528;&#x65F6;&#x95F4;(&#x8C03;&#x7528;&#x7684;&#x662F;java.lang.management.ThreadMXBean#getThreadCpuTime&#x8FD9;&#x4E2A;&#x63A5;&#x53E3;)&#xFF0C;&#x7136;&#x540E;&#x7761;&#x7720;&#x4E00;&#x6BB5;&#x65F6;&#x95F4;&#xFF0C;&#x9ED8;&#x8BA4;100ms&#xFF0C;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;-i&#x53C2;&#x6570;&#x6307;&#x5B9A;&#xFF0C;&#x7136;&#x540E;&#x518D;&#x91C7;&#x6837;&#x4E00;&#x6B21;&#xFF0C;&#x6700;&#x540E;&#x5F97;&#x51FA;&#x8FD9;&#x6BB5;&#x65F6;&#x95F4;&#x5185;&#x5404;&#x4E2A;&#x7EBF;&#x7A0B;&#x6D88;&#x8017;&#x7684;cpu&#x65F6;&#x95F4;&#x60C5;&#x51B5;&#xFF0C;&#x6700;&#x540E;&#x7B97;&#x51FA;&#x767E;&#x5206;&#x6BD4;&#x3002;</p>
 </blockquote>
+<p><font color="red">&#x6CE8;&#x610F;</font>&#xFF1A;&#x8FD9;&#x4E2A;&#x7EDF;&#x8BA1;&#x4E5F;&#x4F1A;&#x4EA7;&#x751F;&#x4E00;&#x5B9A;&#x7684;&#x5F00;&#x9500;&#xFF08;<font color="red">JDK&#x8FD9;&#x4E2A;&#x63A5;&#x53E3;&#x672C;&#x8EAB;&#x5F00;&#x9500;&#x6BD4;&#x8F83;&#x5927;</font>&#xFF09;&#xFF0C;&#x56E0;&#x6B64;&#x4F1A;&#x770B;&#x5230;as&#x7684;&#x7EBF;&#x7A0B;&#x5360;&#x7528;&#x4E00;&#x5B9A;&#x7684;&#x767E;&#x5206;&#x6BD4;&#xFF0C;&#x4E3A;&#x4E86;&#x964D;&#x4F4E;&#x7EDF;&#x8BA1;&#x81EA;&#x8EAB;&#x7684;&#x5F00;&#x9500;&#x5E26;&#x6765;&#x7684;&#x5F71;&#x54CD;&#xFF0C;&#x53EF;&#x4EE5;&#x628A;&#x91C7;&#x6837;&#x95F4;&#x9694;&#x62C9;&#x957F;&#x4E00;&#x4E9B;&#xFF0C;&#x6BD4;&#x5982;5000&#x6BEB;&#x79D2;&#x3002;</p>
 <h3 class="mume-header" id="%E5%AE%9E%E4%BE%8B-6">&#x5B9E;&#x4F8B;</h3>
 
 <p>1&#x3001;&#x652F;&#x6301;&#x4E00;&#x952E;&#x5C55;&#x793A;&#x5F53;&#x524D;&#x6700;&#x5FD9;&#x7684;&#x524D;N&#x4E2A;&#x7EBF;&#x7A0B;&#x5E76;&#x6253;&#x5370;&#x5806;&#x6808;</p>
@@ -892,9 +905,7 @@ ID     NAME                GROUP        PRIORI STATE %CPU   TIME   INTER DAEMON
 
 Affect<span class="token punctuation">(</span>row-cnt:0<span class="token punctuation">)</span> cost <span class="token keyword">in</span> 60 ms.
 </pre><p>4&#x3001;thread -b, &#x627E;&#x51FA;&#x5F53;&#x524D;&#x963B;&#x585E;&#x5176;&#x4ED6;&#x7EBF;&#x7A0B;&#x7684;&#x7EBF;&#x7A0B;</p>
-<blockquote>
 <p>&#x6709;&#x65F6;&#x5019;&#x6211;&#x4EEC;&#x53D1;&#x73B0;&#x5E94;&#x7528;&#x5361;&#x4F4F;&#x4E86;&#xFF0C; &#x901A;&#x5E38;&#x662F;&#x7531;&#x4E8E;&#x67D0;&#x4E2A;&#x7EBF;&#x7A0B;&#x62FF;&#x4F4F;&#x4E86;&#x67D0;&#x4E2A;&#x9501;&#xFF0C; &#x5E76;&#x4E14;&#x5176;&#x4ED6;&#x7EBF;&#x7A0B;&#x90FD;&#x5728;&#x7B49;&#x5F85;&#x8FD9;&#x628A;&#x9501;&#x9020;&#x6210;&#x7684;&#x3002; &#x4E3A;&#x4E86;&#x6392;&#x67E5;&#x8FD9;&#x7C7B;&#x95EE;&#x9898;&#xFF0C; Bistoury&#x63D0;&#x4F9B;&#x4E86;thread -b&#xFF0C; &#x4E00;&#x952E;&#x627E;&#x51FA;&#x90A3;&#x4E2A;&#x7F6A;&#x9B41;&#x7978;&#x9996;&#x3002;</p>
-</blockquote>
 <pre data-role="codeBlock" data-info="shell" class="language-shell">root@local.example.com@bistoury:\<span class="token operator">&gt;</span>thread -b
 <span class="token string">&quot;http-bio-8080-exec-4&quot;</span> Id<span class="token operator">=</span>27 TIMED_WAITING
     at java.lang.Thread.sleep<span class="token punctuation">(</span>Native Method<span class="token punctuation">)</span>
@@ -1517,6 +1528,38 @@ $
 <pre data-role="codeBlock" data-info="shell" class="language-shell">root@local.example.com@bistoury:\<span class="token operator">&gt;</span>sysenv MAINCLASS
 MAINCLASS<span class="token operator">=</span>org.apache.catalina.startup.Bootstrap
 $
+</pre><h2 class="mume-header" id="vmoption">vmoption</h2>
+
+<blockquote>
+<p>&#x67E5;&#x770B;&#xFF0C;&#x66F4;&#x65B0;VM&#x8BCA;&#x65AD;&#x76F8;&#x5173;&#x7684;&#x53C2;&#x6570;</p>
+</blockquote>
+<h3 class="mume-header" id="%E5%AE%9E%E4%BE%8B-11">&#x5B9E;&#x4F8B;</h3>
+
+<p>&#x67E5;&#x770B;&#x6240;&#x6709;option</p>
+<pre data-role="codeBlock" data-info="shell" class="language-shell">admin@local@bistoury_demo_app:\<span class="token operator">&gt;</span>vmoption
+ KEY                                   VALUE                                ORIGIN                                WRITEABLE                           
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ HeapDumpBeforeFullGC                  <span class="token boolean">false</span>                                DEFAULT                               <span class="token boolean">true</span>                                
+ HeapDumpAfterFullGC                   <span class="token boolean">false</span>                                DEFAULT                               <span class="token boolean">true</span>                                
+ HeapDumpOnOutOfMemoryError            <span class="token boolean">false</span>                                DEFAULT                               <span class="token boolean">true</span>                                
+ HeapDumpPath                                                               DEFAULT                               <span class="token boolean">true</span>                                
+
+ PrintClassHistogram                   <span class="token boolean">false</span>                                DEFAULT                               <span class="token boolean">true</span>                                
+ MinHeapFreeRatio                      40                                   DEFAULT                               <span class="token boolean">true</span>                                
+ MaxHeapFreeRatio                      70                                   DEFAULT                               <span class="token boolean">true</span>                                
+ PrintConcurrentLocks                  <span class="token boolean">false</span>                                DEFAULT                               <span class="token boolean">true</span>                                
+ CMSAbortablePrecleanWaitMillis        100                                  DEFAULT                               <span class="token boolean">true</span>                                
+ CMSWaitDuration                       2000                                 DEFAULT                               <span class="token boolean">true</span>                                
+ CMSTriggerInterval                    -1                                   DEFAULT                               <span class="token boolean">true</span> 
+</pre><p>&#x67E5;&#x770B;&#x6307;&#x5B9A;option</p>
+<pre data-role="codeBlock" data-info="shell" class="language-shell">admin@local@bistoury_demo_app:\<span class="token operator">&gt;</span>vmoption PrintClassHistogram
+ KEY                                   VALUE                                ORIGIN                                WRITEABLE                           
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ PrintClassHistogram                   <span class="token boolean">false</span>                                DEFAULT                               <span class="token boolean">true</span>                                
+</pre><p>&#x66F4;&#x65B0;&#x6307;&#x5B9A;option</p>
+<pre data-role="codeBlock" data-info="shell" class="language-shell">admin@local@bistoury_demo_app:\<span class="token operator">&gt;</span>vmoption PrintClassHistogram <span class="token boolean">true</span>
+Successfully updated the vm option.
+PrintClassHistogram<span class="token operator">=</span>true
 </pre><h2 class="mume-header" id="ognl">ognl</h2>
 
 <blockquote>
@@ -1550,7 +1593,7 @@ $
 
 <p>OGNL&#x7279;&#x6B8A;&#x7528;&#x6CD5;&#x8BF7;&#x53C2;&#x8003;&#xFF1A;<a href="https://github.com/alibaba/arthas/issues/71">https://github.com/alibaba/arthas/issues/71</a>
 OGNL&#x8868;&#x8FBE;&#x5F0F;&#x5B98;&#x65B9;&#x6307;&#x5357;&#xFF1A;<a href="https://commons.apache.org/proper/commons-ognl/language-guide.html">https://commons.apache.org/proper/commons-ognl/language-guide.html</a></p>
-<h3 class="mume-header" id="%E5%AE%9E%E4%BE%8B-11">&#x5B9E;&#x4F8B;</h3>
+<h3 class="mume-header" id="%E5%AE%9E%E4%BE%8B-12">&#x5B9E;&#x4F8B;</h3>
 
 <p>&#x8C03;&#x7528;&#x9759;&#x6001;&#x51FD;&#x6570;</p>
 <pre data-role="codeBlock" data-info="shell" class="language-shell">root@local.example.com@bistoury:\<span class="token operator">&gt;</span>ognl <span class="token string">&apos;@java.lang.System@out.println(&quot;hello&quot;)&apos;</span>
@@ -1603,227 +1646,135 @@ field: m
 @ArrayList<span class="token punctuation">[</span>
     @Node<span class="token punctuation">[</span>a<span class="token operator">=</span>aaa<span class="token punctuation">]</span>,
 <span class="token punctuation">]</span>
-</pre><h2 class="mume-header" id="qjtop">qjtop</h2>
+</pre><h2 class="mume-header" id="heapdump">heapdump</h2>
 
 <blockquote>
-<p>&#x5BF9;&#x5E94;&#x4E8E;&#x89C2;&#x770B;&#x201C;OS&#x6307;&#x6807;&#x53CA;&#x7E41;&#x5FD9;&#x8FDB;&#x7A0B;&#x201D;&#x7684;top&#xFF0C;qjtop&#x5C31;&#x662F;&#x89C2;&#x5BDF;&#x201C;JVM&#x8FDB;&#x7A0B;&#x6307;&#x6807;&#x53CA;&#x5176;&#x7E41;&#x5FD9;&#x7EBF;&#x7A0B;&#x201D;&#x7684;&#x9996;&#x9009;&#x5DE5;&#x5177;&#x3002;
-JVM&#x8FDB;&#x7A0B;&#x4FE1;&#x606F;&#xFF1A;&#x6536;&#x96C6;&#x4E86;&#x8FDB;&#x7A0B;&#x5728;OS&#x5C42;&#x9762;&#x548C;JVM&#x5C42;&#x9762;&#x7684;&#x6240;&#x6709;&#x91CD;&#x8981;&#x6307;&#x6807;&#x3002;&#x5927;&#x5BB6;&#x4E3A;&#x4EC0;&#x4E48;&#x559C;&#x6B22;&#x7528;dstat&#x770B;OS&#x72B6;&#x6001;&#xFF0C;&#x56E0;&#x4E3A;&#x5B83;&#x5C06;&#x4F60;&#x60F3;&#x770B;&#x7684;&#x6570;&#x636E;&#x5168;&#x90FD;&#x6536;&#x96C6;&#x5448;&#x73B0;&#x773C;&#x524D;&#x4E86;&#xFF0C;qjtop&#x4E5F;&#x662F;&#x8FD9;&#x6837;&#x7684;&#x98CE;&#x683C;&#x3002;</p>
+<p>dump java heap, &#x7C7B;&#x4F3C;jmap&#x547D;&#x4EE4;&#x7684;heap dump&#x529F;&#x80FD;&#x3002;<font color="red">&#x8BF7;&#x6458;&#x6389;&#x6D41;&#x91CF;&#x4F7F;&#x7528;</font></p>
 </blockquote>
-<blockquote>
-<p>&#x7E41;&#x5FD9;&#x7EBF;&#x7A0B;&#x4FE1;&#x606F;&#xFF1A; &#x5BF9;&#x6BD4;&#x4E8E;&#x201C;&#x5148;top -H &#x5217;&#x51FA;&#x7EBF;&#x7A0B;&#xFF0C;&#x518D;&#x6267;&#x884C;jstack&#x62FF;&#x5230;&#x5168;&#x90E8;&#x7EBF;&#x7A0B;&#xFF0C;&#x518D;&#x624B;&#x5DE5;&#x6362;&#x7B97;&#x5341;&#x4E0E;&#x5341;&#x516D;&#x8FDB;&#x5236;&#x7684;&#x7EBF;&#x7A0B;&#x53F7;&#x201D;&#x7684;&#x7E41;&#x7410;&#x8FC7;&#x7A0B;&#xFF0C;qjtop&#x65E2;&#x65B9;&#x4FBF;&#xFF0C;&#x53C8;&#x53EF;&#x4EE5;&#x8FDE;&#x7EED;&#x8DDF;&#x8E2A;&#xFF0C;&#x66F4;&#x4E0D;&#x4F1A;&#x56E0;&#x4E3A;jstack&#x9020;&#x6210;JVM&#x505C;&#x987F;&#x3002;
-&#x5BF9;&#x4E8E;&#x8D85;&#x51FA;&#x6B63;&#x5E38;&#x8303;&#x56F4;&#x7684;&#x503C;&#xFF0C;qjtop&#x8FD8;&#x5F88;&#x8D34;&#x5FC3;&#x7684;&#x8FDB;&#x884C;&#x4E86;&#x53D8;&#x8272;&#x663E;&#x793A;&#x3002;
-&#x8FD0;&#x884C;&#x65F6;&#x4E0D;&#x9020;&#x6210;&#x5E94;&#x7528;&#x505C;&#x987F;&#xFF0C;&#x53EF;&#x5728;&#x7EBF;&#x4E0A;&#x5B89;&#x5168;&#x4F7F;&#x7528;&#x3002;</p>
-</blockquote>
-<p>&#x5E38;&#x7528;&#x573A;&#x666F;&#xFF1A;</p>
-<blockquote>
-<ol>
-<li>&#x6027;&#x80FD;&#x95EE;&#x9898;&#x5FEB;&#x901F;&#x5B9A;&#x4F4D;&#xFF0C;&#x7528;vjtop&#x663E;&#x793A;&#x51FA;CPU&#x7E41;&#x5FD9;&#x6216;&#x5185;&#x5B58;&#x6D88;&#x8017;&#x5927;&#x7684;&#x7EBF;&#x7A0B;&#xFF0C;&#x518D;&#x5B9E;&#x65F6;&#x4EA4;&#x4E92;&#x7FFB;&#x67E5;&#x8BE5;&#x7EBF;&#x7A0B;&#x7684;statk trace&#x3002;</li>
-<li>&#x538B;&#x6D4B;&#x573A;&#x666F;&#xFF0C;&#x7528;vjtop&#x5B9E;&#x65F6;&#x53CD;&#x9988;JVM&#x8FDB;&#x7A0B;&#x72B6;&#x6001;&#xFF0C;&#x7C7B;&#x4F3C;&#x4E8E;&#x7528;dstast&#x5BF9;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x6307;&#x6807;&#x7684;&#x76D1;&#x63A7;&#x3002;</li>
-<li>&#x751F;&#x4EA7;&#x73AF;&#x5883;&#xFF0C;&#x5F53;&#x5E94;&#x7528;&#x51FA;&#x73B0;&#x95EE;&#x9898;&#x65F6;&#xFF0C;&#x7528;vjtop&#x5FEB;&#x901F;&#x4E86;&#x89E3;&#x8FDB;&#x7A0B;&#x7684;&#x72B6;&#x6001;&#x3002;&#x8FD8;&#x53EF;&#x4E0E;&#x76D1;&#x63A7;&#x7CFB;&#x7EDF;&#x7ED3;&#x5408;&#xFF0C;&#x53D1;&#x73B0;&#x6307;&#x6807;(&#x5982;CPU&#x3001;&#x8D85;&#x65F6;&#x8BF7;&#x6C42;&#x6570;)&#x8D85;&#x51FA;&#x9608;&#x503C;&#x65F6;&#xFF0C;&#x7528;&#x94A9;&#x5B50;&#x811A;&#x672C;&#x8C03;&#x7528;vjtop&#x6765;&#x7EAA;&#x5F55;&#x4E8B;&#x53D1;&#x5730;&#x7684;&#x72B6;&#x51B5;&#x3002;</li>
-</ol>
-</blockquote>
-<p>&#x5728;jvmtop &#x7684;&#x57FA;&#x7840;&#x4E0A;&#x4E8C;&#x6B21;&#x5F00;&#x53D1;&#xFF0C;&#x7ED3;&#x5408; SJK&#x7684;&#x4F18;&#x70B9;&#xFF0C;&#x4ECE;/proc &#xFF0C;PerfData&#xFF0C;JMX&#x7B49;&#x5904;&#xFF0C;&#x4EE5;&#x66F4;&#x9AD8;&#x7684;&#x6027;&#x80FD;&#xFF0C;&#x83B7;&#x53D6;&#x66F4;&#x591A;&#x7684;&#x4FE1;&#x606F;&#x3002;</p>
-<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-3">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
-
-<table>
-<thead>
-<tr>
-<th>&#x53C2;&#x6570;&#x540D;&#x79F0;</th>
-<th>&#x53C2;&#x6570;&#x8BF4;&#x660E;</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>-?, -h, --help</td>
-<td>shows help</td>
-</tr>
-<tr>
-<td>-m, --mode <code>&lt;Integer&gt;</code></td>
-<td>&#x627E;&#x51FA;CPU&#x6700;&#x7E41;&#x5FD9;&#x7684;&#x7EBF;&#x7A0B;&#xFF0C;&#x627E;&#x51FA;&#x5185;&#x5B58;&#x5206;&#x914D;&#x6700;&#x9891;&#x7E41;&#x7684;&#x7EBF;&#x7A0B;&#xFF0C; mode &#x53D6;&#x503C;&#x5982;&#x4E0B;&#xFF1A;<br>1--&#x6309;&#x65F6;&#x95F4;&#x533A;&#x95F4;&#x5185;&#xFF0C;&#x7EBF;&#x7A0B;&#x5360;&#x7528;&#x7684;CPU&#x6392;&#x5E8F;&#xFF0C;&#x9ED8;&#x8BA4;&#x663E;&#x793A;&#x524D;10&#x7684;&#x7EBF;&#x7A0B;&#xFF0C;&#x9ED8;&#x8BA4;&#x6BCF;10&#x79D2;&#x6253;&#x5370;&#x4E00;&#x6B21; <br>2--&#x6309;&#x65F6;&#x95F4;&#x533A;&#x95F4;&#x5185;&#xFF0C;&#x7EBF;&#x7A0B;&#x5360;&#x7528;&#x7684;SYS CPU&#x6392;&#x5E8F; <br>3--&#x6309;&#x7EBF;&#x7A0B;&#x4ECE;&#x542F;&#x52A8;&#x4EE5;&#x6765;&#x7684;&#x603B;&#x5360;&#x7528;CPU&#x6765;&#x6392;&#x5E8F;<br>4--&#x6309;&#x7EBF;&#x7A0B;&#x4ECE;&#x542F;&#x52A8;&#x4EE5;&#x6765;&#x7684;&#x603B;SYS CPU&#x6392;&#x5E8F; <br>5--&#x7EBF;&#x7A0B;&#x5206;&#x914D;&#x5185;&#x5B58;&#x7684;&#x901F;&#x5EA6;&#x6392;&#x5E8F;&#xFF0C;&#x9ED8;&#x8BA4;&#x663E;&#x793A;&#x524D;10&#x7684;&#x7EBF;&#x7A0B;&#xFF0C;&#x9ED8;&#x8BA4;&#x6BCF;10&#x79D2;&#x6253;&#x5370;&#x4E00;&#x6B21; <br>6--&#x6309;&#x7EBF;&#x7A0B;&#x7684;&#x603B;&#x5185;&#x5B58;&#x5206;&#x914D;&#x800C;&#x4E0D;&#x662F;&#x6253;&#x5370;&#x95F4;&#x9694;&#x5185;&#x7684;&#x5185;&#x5B58;&#x5206;&#x914D;&#x6765;&#x6392;&#x5E8F;</td>
-</tr>
-<tr>
-<td>-i&#xFF0C;--interval <code>&lt;Integer&gt;</code></td>
-<td>&#x8BBE;&#x7F6E;&#x6253;&#x5370;&#x95F4;&#x9694;&#xFF0C;&#x9ED8;&#x8BA4;&#x4E3A;10&#x79D2;</td>
-</tr>
-<tr>
-<td>-n, --iteration <code>&lt;Integer&gt;</code></td>
-<td>&#x8BBE;&#x7F6E;&#x6253;&#x5370;&#x95F4;&#x9694;&#xFF0C;&#x9ED8;&#x8BA4;&#x4E0D;&#x9000;&#x51FA;</td>
-</tr>
-<tr>
-<td>-l, --limit <code>&lt;Integer&gt;</code></td>
-<td>&#x663E;&#x793A;&#x524D;limit&#x4E2A;&#x7EBF;&#x7A0B;&#xFF0C;&#x9ED8;&#x8BA4;&#x4E3A;10</td>
-</tr>
-<tr>
-<td>-c, --content</td>
-<td>all--&#x91C7;&#x96C6;jvm&#x53CA;&#x7E41;&#x5FD9;&#x7EBF;&#x7A0B;&#x4FE1;&#x606F;<br>jvm--&#x53EA;&#x91C7;&#x96C6;jvm&#x4FE1;&#x606F;&#xFF0C;&#x4E0D;&#x91C7;&#x96C6;&#x7E41;&#x5FD9;&#x7EBF;&#x7A0B;&#x4FE1;&#x606F;<br>thread&#x53EA;&#x91C7;&#x96C6;&#x7E41;&#x5FD9;&#x7EBF;&#x7A0B;&#x4FE1;&#x606F;&#xFF0C;&#x4E0D;&#x91C7;&#x96C6;jvm&#x4FE1;&#x606F;</td>
-</tr>
-<tr>
-<td>-w, --width <code>&lt;Integer&gt;</code></td>
-<td>&#x63A7;&#x5236;&#x53F0;&#x8F93;&#x51FA;&#x7684;&#x5BBD;&#x5EA6;&#xFF0C;&#x9ED8;&#x8BA4;&#x4E3A;100</td>
-</tr>
-</tbody>
-</table>
-<h3 class="mume-header" id="%E5%AE%9E%E4%BE%8B-12">&#x5B9E;&#x4F8B;</h3>
-
-<pre data-role="codeBlock" data-info="shell" class="language-shell">root@local.example.com@bistoury:\<span class="token operator">&gt;</span>qjtop
-
-
- 14:51:44 - PID: 12280 JVM: 1.7.0_45 USER: tomcat UPTIME: 21h28m
- PROCESS:  0.00% cpu<span class="token punctuation">(</span> 0.00% of 4 core<span class="token punctuation">)</span>, 142 thread
- MEMORY: 1105m rss, 1106m peak, 0m swap <span class="token operator">|</span> DISK: 0B read, 0B <span class="token function">write</span>
- THREAD: 132 live, 109 daemon, 132 peak, 0 new <span class="token operator">|</span> CLASS: 11449 loaded, 0 unloaded, 0 new
- HEAP: 21m/497m/499m eden, 48m/91m sur, 46m/1365m old
- NON-HEAP: 65m/256m perm, 3m/7m/48m codeCache
- OFF-HEAP: 66m/66m direct<span class="token punctuation">(</span>max<span class="token operator">=</span>NaN<span class="token punctuation">)</span>, 0m/0m map<span class="token punctuation">(</span>count<span class="token operator">=</span>0<span class="token punctuation">)</span>, 132m threadStack
- GC: 0/0ms/0ms ygc, 0/0ms fgc <span class="token operator">|</span> SAFE-POINT: 0 count, 0ms time, 0ms syncTime
-
- VMARGS: -Djava.util.logging.config.file<span class="token operator">=</span>/home/user/tomcat/www/qconfig-admin/conf/logging.properties -Djava.util.logging.manager<span class="token operator">=</span>org.apache.juli.ClassLoaderLogManager -Xms2048m -Xmx2048m -XX:NewSize<span class="token operator">=</span>256m -XX:PermSize<span class="token operator">=</span>256m -XX:+DisableExplicitGC -verbose:gc -XX:+PrintGCDateStamps -XX:+PrintGCDetails -Djava.endorsed.dirs<span class="token operator">=</span>/home/user/tomcat/tomcat/endorsed  -Dcatalina.home<span class="token operator">=</span>/home/user/tomcat/tomcat
-
-
- Collecting data, please <span class="token function">wait</span> <span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span>
-
-
-
- 14:51:54 - PID: 12280 JVM: 1.7.0_45 USER: tomcat UPTIME: 21h28m
- PROCESS:  0.80% cpu<span class="token punctuation">(</span> 0.20% of 4 core<span class="token punctuation">)</span>, 142 thread
- MEMORY: 1105m rss, 1106m peak, 0m swap <span class="token operator">|</span> DISK: 0B read, 408B <span class="token function">write</span>
- THREAD: 132 live, 109 daemon, 132 peak, 0 new <span class="token operator">|</span> CLASS: 11449 loaded, 0 unloaded, 0 new
- HEAP: 21m/497m/499m eden, 48m/91m sur, 46m/1365m old
- NON-HEAP: 65m/256m perm, 3m/7m/48m codeCache
- OFF-HEAP: 66m/66m direct<span class="token punctuation">(</span>max<span class="token operator">=</span>NaN<span class="token punctuation">)</span>, 0m/0m map<span class="token punctuation">(</span>count<span class="token operator">=</span>0<span class="token punctuation">)</span>, 132m threadStack
- GC: 0/0ms/0ms ygc, 0/0ms fgc <span class="token operator">|</span> SAFE-POINT: 1 count, 1ms time, 0ms syncTime
-
-    TID NAME                                                      STATE    CPU SYSCPU  TOTAL TOLSYS
-    187 RMI TCP Connection<span class="token punctuation">(</span>77<span class="token punctuation">)</span>-127.0.0.1                    RUNNABLE  0.08%  0.08%  0.12%  0.01%
-    102 DubboResponseTimeoutScanTimer                        TIMED_WAIT  0.07%  0.07% 11.48%  6.77%
-
- Total  <span class="token keyword">:</span>  0.15% cpu<span class="token punctuation">(</span>user<span class="token operator">=</span> 0.00%, sys<span class="token operator">=</span> 0.15%<span class="token punctuation">)</span> by 2 active threads<span class="token punctuation">(</span>which cpu<span class="token operator">&gt;</span>0.05%<span class="token punctuation">)</span>
- Setting: <span class="token function">top</span> 10 threads order by CPU, flush every 10s
-</pre><p>&#x8FDB;&#x7A0B;&#x533A;&#x6570;&#x636E;&#x89E3;&#x91CA;:</p>
-<ul>
-<li><code>PROCESS</code>: <code>thread</code>: &#x8FDB;&#x7A0B;&#x7684;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x7EBF;&#x7A0B;&#x6570;, <code>cxtsw</code>&#x4E3A;&#x4E3B;&#x52A8;&#x4E0E;&#x88AB;&#x52A8;&#x7684;&#x7EBF;&#x7A0B;&#x4E0A;&#x4E0B;&#x6587;&#x5207;&#x6362;&#x6570;</li>
-<li><code>MEMORY</code>: <code>rss</code> &#x4E3A; <code>Resident Set Size</code>, &#x8FDB;&#x7A0B;&#x5B9E;&#x9645;&#x5360;&#x7528;&#x7684;&#x7269;&#x7406;&#x5185;&#x5B58;; <code>peak</code>&#x4E3A;&#x6700;&#x5CF0;&#x503C;&#x7684;<code>rss</code>; <code>swap</code>&#x4E3A;&#x8FDB;&#x7A0B;&#x88AB;&#x4EA4;&#x6362;&#x5230;&#x78C1;&#x76D8;&#x7684;&#x865A;&#x62DF;&#x5185;&#x5B58;&#x3002;</li>
-<li><code>DISK</code>: &#x771F;&#x6B63;&#x8FBE;&#x5230;&#x7269;&#x7406;&#x5B58;&#x50A8;&#x5C42;&#x7684;&#x8BFB;/&#x5199;&#x7684;&#x901F;&#x5EA6;&#x3002;</li>
-<li><code>THREAD</code>: <code>Java</code>&#x7EBF;&#x7A0B;&#x6570;, <code>active</code>&#x4E3A;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x6570;, <code>daemon</code>&#x4E3A;<code>active</code>&#x7EBF;&#x7A0B;&#x4E2D;&#x7684;<code>daemon</code>&#x7EBF;&#x7A0B;&#x6570;, <code>new</code>&#x4E3A;&#x5237;&#x65B0;&#x5468;&#x671F;&#x5185;&#x65B0;&#x521B;&#x5EFA;&#x7684;&#x7EBF;&#x7A0B;&#x6570;&#x3002;</li>
-<li><code>CLASS</code>: <code>loaded</code>&#x4E3A;&#x5F53;&#x524D;&#x52A0;&#x8F7D;&#x7684;&#x7C7B;&#x6570;&#x91CF;&#xFF0C;<code>unloaded</code>&#x4E3A;&#x603B;&#x5378;&#x8F7D;&#x6389;&#x7684;&#x7C7B;&#x6570;&#x91CF;&#xFF0C;<code>new</code>&#x4E3A;&#x5237;&#x65B0;&#x5468;&#x671F;&#x5185;&#x65B0;&#x52A0;&#x8F7D;&#x7684;&#x7C7B;&#x6570;&#x91CF;&#x3002;</li>
-<li><code>HEAP</code>: 1.0.3&#x7248;&#x5F00;&#x59CB;&#x6BCF;&#x4E00;&#x9879;&#x6709;&#x4E09;&#x4E2A;&#x6570;&#x5B57;, &#x5206;&#x522B;&#x4E3A;1.&#x5F53;&#x524D;&#x4F7F;&#x7528;&#x5185;&#x5B58;, 2.&#x5F53;&#x524D;&#x5DF2;&#x7533;&#x8BF7;&#x5185;&#x5B58;, 3.&#x6700;&#x5927;&#x5185;&#x5B58;; &#x5982;&#x679C;&#x540E;&#x4E24;&#x4E2A;&#x6570;&#x5B57;&#x76F8;&#x540C;&#x65F6;&#x5219;&#x5408;&#x5E76;&#x3002;</li>
-<li><code>sur</code>: &#x5F53;&#x524D;&#x5B58;&#x6D3B;&#x533A;&#x7684;&#x5927;&#x5C0F;&#xFF0C;&#x6CE8;&#x610F;&#x5B9E;&#x9645;&#x6709;<code>from</code>, <code>to</code> &#x4E24;&#x4E2A;&#x5B58;&#x6D3B;&#x533A;&#x3002;</li>
-<li><code>NON-HEAP</code>: &#x6570;&#x5B57;&#x542B;&#x4E49;&#x540C;<code>HEAP</code></li>
-<li><code>codeCache</code>: <code>JIT</code>&#x7F16;&#x8BD1;&#x7684;&#x4E8C;&#x8FDB;&#x5236;&#x4EE3;&#x7801;&#x7684;&#x5B58;&#x653E;&#x533A;&#xFF0C;&#x6EE1;&#x540E;&#x5C06;&#x4E0D;&#x80FD;&#x7F16;&#x8BD1;&#x65B0;&#x7684;&#x4EE3;&#x7801;&#x3002;</li>
-<li><code>direct</code>: &#x5806;&#x5916;&#x5185;&#x5B58;&#xFF0C;&#x4E09;&#x4E2A;&#x6570;&#x5B57;&#x542B;&#x4E49;&#x540C;<code>HEAP</code>, &#x672A;&#x663E;&#x5F0F;&#x8BBE;&#x7F6E;&#x6700;&#x5927;&#x5185;&#x5B58;&#x65F6;&#xFF0C;&#x7EA6;&#x7B49;&#x4E8E;&#x5806;&#x5185;&#x5B58;&#x5927;&#x5C0F;&#x3002;&#x6CE8;&#x610F;&#x65B0;&#x7248;<code>Netty</code>&#x4E0D;&#x7ECF;&#x8FC7;<code>JDK API</code>&#x6240;&#x5206;&#x914D;&#x7684;&#x5806;&#x5916;&#x5185;&#x5B58;&#x672A;&#x5728;&#x6B64;&#x7EDF;&#x8BA1;&#x3002;</li>
-<li><code>map</code>: &#x6620;&#x5C04;&#x6587;&#x4EF6;&#x5185;&#x5B58;&#xFF0C;&#x4E09;&#x4E2A;&#x6570;&#x5B57;&#x5206;&#x522B;&#x4E3A;1. <code>map</code>&#x6570;&#x91CF;&#xFF0C;2.&#x5F53;&#x524D;&#x4F7F;&#x7528;&#x5185;&#x5B58;&#xFF0C;3.&#x5F53;&#x524D;&#x5DF2;&#x7533;&#x8BF7;&#x5185;&#x5B58;&#xFF0C;&#x6CA1;&#x6709;&#x6700;&#x5927;&#x503C;&#x6570;&#x636E;&#x3002;</li>
-<li><code>threadStack</code>: <code>Java</code>&#x7EBF;&#x7A0B;&#x6240;&#x5360;&#x7684;&#x6808;&#x5185;&#x5B58;&#x603B;&#x548C;&#xFF0C;&#x4F46;&#x4E0D;&#x5305;&#x542B;VM&#x7EBF;&#x7A0B;&#x3002;(since 1.0.3)</li>
-<li><code>ygc</code>: <code>YoungGC</code>, &#x4E09;&#x4E2A;&#x6570;&#x5B57;&#x5206;&#x522B;&#x4E3A;&#x6B21;&#x6570;&#xFF0F;&#x603B;&#x505C;&#x987F;&#x65F6;&#x95F4;&#xFF0F;&#x5E73;&#x5747;&#x505C;&#x987F;&#x65F6;&#x95F4;</li>
-<li><code>fgc</code>: <code>OldGC</code> &#xFF0B; <code>FullGC</code>&#xFF0C; &#x4E24;&#x4E2A;&#x6570;&#x5B57;&#x5206;&#x522B;&#x4E3A;&#x6B21;&#x6570;&#xFF0F;&#x603B;&#x6267;&#x884C;&#x65F6;&#x95F4;&#xFF0C;&#x6CE8;&#x610F;&#x6B64;&#x65F6;&#x95F4;&#x4EC5;&#x4E3A;&#x6267;&#x884C;&#x65F6;&#x95F4;&#xFF0C;&#x975E;JVM&#x505C;&#x987F;&#x65F6;&#x95F4;&#x3002;</li>
-<li><code>SAFE-POINT</code>: <code>PerfData</code>&#x5F00;&#x542F;&#x65F6;&#x53EF;&#x7528;&#xFF0C;<code>JVM</code>&#x771F;&#x6B63;&#x7684;&#x505C;&#x987F;&#x6B21;&#x6570;&#x53CA;&#x505C;&#x987F;&#x65F6;&#x95F4;&#xFF0C;&#x4EE5;&#x53CA;&#x7B49;&#x5F85;&#x6240;&#x6709;&#x7EBF;&#x7A0B;&#x8FDB;&#x5165;&#x5B89;&#x5168;&#x70B9;&#x6240;&#x6D88;&#x8017;&#x7684;&#x65F6;&#x95F4;&#x3002;</li>
-</ul>
-<p>&#x7EBF;&#x7A0B;&#x533A;&#x6570;&#x636E;&#x89E3;&#x91CA;:</p>
-<ul>
-<li><code>CPU</code>: &#x7EBF;&#x7A0B;&#x5728;&#x6253;&#x5370;&#x95F4;&#x9694;&#x5185;&#x4F7F;&#x7528;&#x7684;<code>CPU</code>&#x767E;&#x5206;&#x6BD4;(&#x6309;&#x5355;&#x4E2A;&#x6838;&#x8BA1;&#x7B97;)</li>
-<li><code>SYSCPU</code>: &#x7EBF;&#x7A0B;&#x5728;&#x6253;&#x5370;&#x95F4;&#x9694;&#x5185;&#x4F7F;&#x7528;&#x7684;<code>SYS CPU</code>&#x767E;&#x5206;&#x6BD4;(&#x6309;&#x5355;&#x4E2A;&#x6838;&#x8BA1;&#x7B97;)</li>
-<li><code>TOTAL</code>: &#x4ECE;&#x8FDB;&#x7A0B;&#x542F;&#x52A8;&#x5230;&#x73B0;&#x5728;&#xFF0C;&#x7EBF;&#x7A0B;&#x7684;&#x603B;CPU&#x65F6;&#x95F4;/&#x8FDB;&#x7A0B;&#x7684;&#x603B;CPU&#x65F6;&#x95F4;&#x7684;&#x767E;&#x5206;&#x6BD4;</li>
-<li><code>TOLSYS</code>: &#x4ECE;&#x8FDB;&#x7A0B;&#x542F;&#x52A8;&#x5230;&#x73B0;&#x5728;&#xFF0C;&#x7EBF;&#x7A0B;&#x7684;&#x603B;SYS CPU&#x65F6;&#x95F4;/&#x8FDB;&#x7A0B;&#x7684;&#x603B;CPU&#x65F6;&#x95F4;&#x7684;&#x767E;&#x5206;&#x6BD4;</li>
-</ul>
-<p>&#x5E95;&#x90E8;&#x6570;&#x636E;&#x89E3;&#x91CA;:</p>
-<ul>
-<li>&#x5982;&#x679C;&#x8BE5;&#x7EBF;&#x7A0B;&#x7684;&#x5E73;&#x5747;&#x4F7F;&#x7528;<code>CPU</code>&#x5C11;&#x4E8E;&#x5355;&#x6838;&#x7684;0.1%&#xFF0C;&#x8FD9;&#x6761;&#x7EBF;&#x7A0B;&#x5C06;&#x4E0D;&#x53C2;&#x4E0E;&#x6392;&#x5E8F;&#x663E;&#x793A;&#xFF0C;&#x51CF;&#x5C11;&#x6D88;&#x8017;&#x3002;</li>
-</ul>
-<h2 class="mume-header" id="qjmap">qjmap</h2>
-
-<blockquote>
-<p>&#x5206;&#x4EE3;&#x7248;&#x7684;jmap&#xFF08;&#x65B0;&#x751F;&#x4EE3;&#xFF0C;&#x5B58;&#x6D3B;&#x533A;&#xFF0C;&#x8001;&#x751F;&#x4EE3;&#xFF09;&#xFF0C;&#x662F;&#x6392;&#x67E5;&#x5185;&#x5B58;&#x7F13;&#x6162;&#x6CC4;&#x9732;&#xFF0C;&#x8001;&#x751F;&#x4EE3;&#x589E;&#x957F;&#x8FC7;&#x5FEB;&#x539F;&#x56E0;&#x7684;&#x5229;&#x5668;&#x3002;&#x56E0;&#x4E3A;jmap -histo PID &#x6253;&#x5370;&#x7684;&#x662F;&#x6574;&#x4E2A;Heap&#x7684;&#x5BF9;&#x8C61;&#x7EDF;&#x8BA1;&#x4FE1;&#x606F;&#xFF0C;&#x800C;&#x4E3A;&#x4E86;&#x5B9A;&#x4F4D;&#x4E0A;&#x9762;&#x7684;&#x95EE;&#x9898;&#xFF0C;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x4E13;&#x95E8;&#x67E5;&#x770B;OldGen&#x5BF9;&#x8C61;&#xFF0C;&#x548C;Survivor&#x533A;&#x5927;&#x9F84;&#x5BF9;&#x8C61;&#x7684;&#x5DE5;&#x5177;&#x3002;
-qjmap&#x7684;&#x539F;&#x59CB;&#x601D;&#x8DEF;&#x6765;&#x6E90;&#x4E8E;R&#x5927;&#x7684;<a href="https://github.com/alibaba/TBJMap">TBJMap</a> &#xFF0C;&#x7FFB;&#x65B0;&#x540E;&#x652F;&#x6301;JDK8&#xFF0C;&#x652F;&#x6301;Survivor&#x533A;&#x5927;&#x9F84;&#x5BF9;&#x8C61;&#x8FC7;&#x6EE4;&#xFF0C;&#x4EE5;&#x53CA;&#x5927;&#x5929;&#x79E4;&#x5BF9;&#x8F93;&#x51FA;&#x7ED3;&#x679C;&#x4E0D;&#x8981;&#x770B;&#x6B6A;&#x8116;&#x5B50;&#x7684;&#x6267;&#x7740;&#x3002;
-&#x6CE8;&#x610F;&#xFF1A;&#x56E0;&#x4E3A;vjmap&#x7684;&#x539F;&#x7406;&#xFF0C;&#x53EA;&#x652F;&#x6301;CMS&#x548C;ParallelGC&#xFF0C;&#x4E0D;&#x652F;&#x6301;G1&#x3002;</p>
-</blockquote>
-<h3 class="mume-header" id="%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">&#x6CE8;&#x610F;&#x4E8B;&#x9879;</h3>
-
-<blockquote>
-<p><strong><font color="red"> &#x6CE8;&#x610F;&#xFF1A;qjmap&#x5728;&#x6267;&#x884C;&#x8FC7;&#x7A0B;&#x4E2D;&#xFF0C;&#x4F1A;&#x5B8C;&#x5168;&#x505C;&#x6B62;&#x5E94;&#x7528;&#x4E00;&#x6BB5;&#x65F6;&#x95F4;&#xFF0C;&#x5FC5;&#x987B;&#x6458;&#x6D41;&#x91CF;&#x6267;&#x884C;&#xFF01;&#xFF01;&#xFF01;&#xFF01; </font></strong></p>
-</blockquote>
-<blockquote>
-<ol>
-<li>&#x610F;&#x5916;&#x505C;&#x6B62;
-qjmap&#x7684;&#x8FD0;&#x884C;&#x9700;&#x8981;&#x4E00;&#x6BB5;&#x65F6;&#x95F4;&#xFF0C;&#x5982;&#x679C;&#x4E2D;&#x9014;&#x9700;&#x8981;&#x505C;&#x6B62;&#x6267;&#x884C;&#xFF0C;&#x8BF7;&#x4F7F;&#x7528;ctrl&#xFF0B;c&#xFF0C;&#x6216;&#x8005;kill qjmap&#x7684;PID&#xFF0C;&#x8BA9;qjmap&#x4ECE;&#x76EE;&#x6807;&#x8FDB;&#x7A0B;&#x9000;&#x51FA;&#x3002;
-&#x5982;&#x679C;&#x9519;&#x7528;&#x4E86;kill -9 &#xFF0C;&#x76EE;&#x6807;java&#x8FDB;&#x7A0B;&#x4F1A;&#x4FDD;&#x6301;&#x5728;&#x963B;&#x585E;&#x72B6;&#x6001;&#x4E0D;&#x518D;&#x5DE5;&#x4F5C;&#xFF0C;&#x6B64;&#x65F6;&#x5FC5;&#x987B;&#x6267;&#x884C;&#x4E24;&#x6B21; kill -SIGCONT $&#x76EE;&#x6807;&#x8FDB;&#x7A0B;PID&#xFF0C;&#x91CD;&#x65B0;&#x5524;&#x9192;&#x76EE;&#x6807;java&#x8FDB;&#x7A0B;&#x3002;</li>
-</ol>
-</blockquote>
-<blockquote>
-<ol start="2">
-<li>OldGen&#x788E;&#x7247;
-&#x5982;&#x679C;&#x5F88;&#x4E45;&#x6CA1;&#x90FD;&#x6709;&#x8FDB;&#x884C;&#x8FC7;CMS GC or Full GC&#xFF0C;OldGen&#x5C06;&#x6709;&#x975E;&#x5E38;&#x975E;&#x5E38;&#x591A;&#x7684;Live Regions&#xFF0C;&#x6267;&#x884C; -all &#x548C; -old &#x65F6;&#x5C06;&#x975E;&#x5E38;&#x7F13;&#x6162;&#xFF0C;&#x6BD4;&#x5982; -all&#x7684;&#x7B2C;&#x4E00;&#x6B65;Get Live Regions&#x5C31;&#x4F1A;&#x975E;&#x5E38;&#x7F13;&#x6162;&#xFF0C;&#x5982;&#x975E;&#x8981;&#x6545;&#x610F;&#x89C2;&#x5BDF;&#x6B7B;&#x5BF9;&#x8C61;&#x7684;&#x573A;&#x666F;&#xFF0C;&#x6B64;&#x65F6;&#x53EF;&#x5C1D;&#x8BD5;&#x5148;&#x89E6;&#x53D1;&#x4E00;&#x6B21;full gc&#xFF0C; &#x5982;&#x4F7F;&#x7528;qjmap -all:live, &#x6216; jmap -histo:live &#x6216; jcmd GC.run &#x7B49;&#x3002;</li>
-</ol>
-</blockquote>
-<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-4">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
-
-<table>
-<thead>
-<tr>
-<th>&#x53C2;&#x6570;&#x540D;&#x79F0;</th>
-<th>&#x53C2;&#x6570;&#x8BF4;&#x660E;</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>-help</td>
-<td>&#x83B7;&#x53D6;&#x5E2E;&#x52A9;&#x6587;&#x6863;</td>
-</tr>
-<tr>
-<td>-all</td>
-<td>print all gens histogram, order by total size</td>
-</tr>
-<tr>
-<td>-all:minsize=1024</td>
-<td>print all gens histogram, total size&gt;=1024</td>
-</tr>
-<tr>
-<td>-all:minsize=1024,byname</td>
-<td>print all gens histogram, total size&gt;=1024, order by class name</td>
-</tr>
-<tr>
-<td>-old</td>
-<td>print oldgen histogram, order by oldgen size</td>
-</tr>
-<tr>
-<td>-old:live</td>
-<td>print oldgen histogram, live objects only</td>
-</tr>
-<tr>
-<td>-old:minsize=1024</td>
-<td>print oldgen histogram, oldgen size&gt;=1024</td>
-</tr>
-<tr>
-<td>-old:minsize=1024,byname</td>
-<td>print oldgen histogram, oldgen size&gt;=1024, order by class name</td>
-</tr>
-<tr>
-<td>-sur</td>
-<td>print survivor histogram, age&gt;=3</td>
-</tr>
-<tr>
-<td>-sur:minage=4</td>
-<td>print survivor histogram, age&gt;=4</td>
-</tr>
-<tr>
-<td>-sur:minsize=1024,byname</td>
-<td>print survivor histogram, age&gt;=3, survivor size&gt;=1024, order by class  name</td>
-</tr>
-<tr>
-<td>-address</td>
-<td>&#x6253;&#x5370;&#x5404;&#x4EE3;&#x5730;&#x5740;&#xFF0C;&#x4E0D;&#x4F1A;&#x9020;&#x6210;&#x8FC7;&#x957F;&#x65F6;&#x95F4;&#x505C;&#x987F;</td>
-</tr>
-<tr>
-<td>-class</td>
-<td>&#x6253;&#x5370;&#x52A0;&#x8F7D;&#x7684;Class&#x5217;&#x8868;</td>
-</tr>
-</tbody>
-</table>
 <h3 class="mume-header" id="%E5%AE%9E%E4%BE%8B-13">&#x5B9E;&#x4F8B;</h3>
 
-<p>&#x6253;&#x5370;&#x5404;&#x4EE3;&#x5730;&#x5740;</p>
-<pre data-role="codeBlock" data-info="shell" class="language-shell">root@local.example.com@bistoury:\<span class="token operator">&gt;</span>qjmap -address
-PSYoungGen <span class="token punctuation">[</span> eden <span class="token operator">=</span>  <span class="token punctuation">[</span>0x00000007d5500000,0x00000007dcaba290,0x00000007f4600000<span class="token punctuation">]</span> , from <span class="token operator">=</span>  <span class="token punctuation">[</span>0x00000007fa500000,0x00000007fd5f2400,0x0000000800000000<span class="token punctuation">]</span> , to <span class="token operator">=</span>  <span class="token punctuation">[</span>0x00000007f4600000,0x00000007f4600000,0x00000007fa300000<span class="token punctuation">]</span>  <span class="token punctuation">]</span>
-PSOldGen <span class="token punctuation">[</span>  <span class="token punctuation">[</span>0x000000077ff80000,0x0000000782e4d488,0x00000007d5500000<span class="token punctuation">]</span>  <span class="token punctuation">]</span>
- Heap traversal took 0.0 seconds.
+<p>dump&#x5230;&#x6307;&#x5B9A;&#x6587;&#x4EF6;</p>
+<pre data-role="codeBlock" data-info="shell" class="language-shell">admin@local@bistoury_demo_app:\<span class="token operator">&gt;</span>heapdump /home/root/Desktop/bistoury-2.0.7/dump1.hprof
+Dumping heap to /home/root/Desktop/bistoury-2.0.7/dump1.hprof<span class="token punctuation">..</span>.
+Heap dump <span class="token function">file</span> created
+</pre><p>&#x53EA;dump live &#x5BF9;&#x8C61;</p>
+<pre data-role="codeBlock" data-info="shell" class="language-shell">admin@local@bistoury_demo_app:\<span class="token operator">&gt;</span>heapdump --live /home/root/Desktop/bistoury-2.0.7/dump2.hprof
+Dumping heap to /home/root/Desktop/bistoury-2.0.7/dump2.hprof<span class="token punctuation">..</span>.
+Heap dump <span class="token function">file</span> created
+</pre><p>dump &#x5230;&#x4E34;&#x65F6;&#x6587;&#x4EF6;</p>
+<pre data-role="codeBlock" data-info="shell" class="language-shell">admin@local@bistoury_demo_app:\<span class="token operator">&gt;</span>heapdump
+Dumping heap to /var/folders/c5/yvdt09ls5xv2825vp_pqy4200000gn/T/heapdump2019-09-23-20-218597155241814313750.hprof<span class="token punctuation">..</span>.
+Heap dump <span class="token function">file</span> created
+</pre><h2 class="mume-header" id="logger">logger</h2>
+
+<blockquote>
+<p>&#x67E5;&#x770B;logger&#x4FE1;&#x606F;&#xFF0C;&#x66F4;&#x65B0;logger level</p>
+</blockquote>
+<h3 class="mume-header" id="%E5%AE%9E%E4%BE%8B-14">&#x5B9E;&#x4F8B;</h3>
+
+<p>&#x4EE5;&#x4E0B;&#x9762;&#x7684;logbook.xml&#x4E3A;&#x4F8B;</p>
+<pre data-role="codeBlock" data-info="xml" class="language-xml"><span class="token prolog">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>configuration</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>APPLICATION<span class="token punctuation">&quot;</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>ch.qos.logback.core.rolling.RollingFileAppender<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>file</span><span class="token punctuation">&gt;</span></span>app.log<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>file</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>rollingPolicy</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>fileNamePattern</span><span class="token punctuation">&gt;</span></span>mylog-%d{yyyy-MM-dd}.%i.txt<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>fileNamePattern</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maxFileSize</span><span class="token punctuation">&gt;</span></span>100MB<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maxFileSize</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>maxHistory</span><span class="token punctuation">&gt;</span></span>60<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>maxHistory</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>totalSizeCap</span><span class="token punctuation">&gt;</span></span>2GB<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>totalSizeCap</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>rollingPolicy</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>encoder</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>pattern</span><span class="token punctuation">&gt;</span></span>%logger{35} - %msg%n<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>pattern</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>encoder</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>appender</span><span class="token punctuation">&gt;</span></span>
+ 
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>ASYNC<span class="token punctuation">&quot;</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>ch.qos.logback.classic.AsyncAppender<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender-ref</span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>APPLICATION<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>appender</span><span class="token punctuation">&gt;</span></span>
+ 
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>CONSOLE<span class="token punctuation">&quot;</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>ch.qos.logback.core.ConsoleAppender<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>encoder</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>pattern</span><span class="token punctuation">&gt;</span></span>%-4relative [%thread] %-5level %logger{35} - %msg %n
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>pattern</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>charset</span><span class="token punctuation">&gt;</span></span>utf8<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>charset</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>encoder</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>appender</span><span class="token punctuation">&gt;</span></span>
+ 
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>root</span> <span class="token attr-name">level</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>INFO<span class="token punctuation">&quot;</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender-ref</span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>CONSOLE<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>appender-ref</span> <span class="token attr-name">ref</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">&quot;</span>ASYNC<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>root</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>configuration</span><span class="token punctuation">&gt;</span></span>
+</pre><p>&#x4F7F;&#x7528;logger&#x547D;&#x4EE4;&#x6253;&#x5370;&#x7684;&#x7ED3;&#x679C;&#x662F;&#xFF1A;</p>
+<pre data-role="codeBlock" data-info="shell" class="language-shell">admin@local@bistoury_demo_app:\<span class="token operator">&gt;</span>logger
+ name                                   ROOT
+ class                                  ch.qos.logback.classic.Logger
+ classLoader                            sun.misc.Launcher<span class="token variable">$AppClassLoader@2a139a55</span>
+ classLoaderHash                        2a139a55
+ level                                  INFO
+ effectiveLevel                         INFO
+ additivity                             <span class="token boolean">true</span>
+ codeSource                             file:/Users/hengyunabc/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar
+ appenders                              name            CONSOLE
+                                        class           ch.qos.logback.core.ConsoleAppender
+                                        classLoader     sun.misc.Launcher<span class="token variable">$AppClassLoader@2a139a55</span>
+                                        classLoaderHash 2a139a55
+                                        target          System.out
+                                        name            APPLICATION
+                                        class           ch.qos.logback.core.rolling.RollingFileAppender
+                                        classLoader     sun.misc.Launcher<span class="token variable">$AppClassLoader@2a139a55</span>
+                                        classLoaderHash 2a139a55
+                                        <span class="token function">file</span>            app.log
+                                        name            ASYNC
+                                        class           ch.qos.logback.classic.AsyncAppender
+                                        classLoader     sun.misc.Launcher<span class="token variable">$AppClassLoader@2a139a55</span>
+                                        classLoaderHash 2a139a55
+                                        appenderRef     <span class="token punctuation">[</span>APPLICATION<span class="token punctuation">]</span>
+</pre><p>&#x4ECE;appenders&#x7684;&#x4FE1;&#x606F;&#x91CC;&#xFF0C;&#x53EF;&#x4EE5;&#x770B;&#x5230;</p>
+<ul>
+<li>CONSOLE logger&#x7684;target&#x662F;System.out</li>
+<li>APPLICATION logger&#x662F;RollingFileAppender&#xFF0C;&#x5B83;&#x7684;file&#x662F;app.log</li>
+<li>ASYNC&#x5B83;&#x7684;appenderRef&#x662F;APPLICATION&#xFF0C;&#x5373;&#x5F02;&#x6B65;&#x8F93;&#x51FA;&#x5230;&#x6587;&#x4EF6;&#x91CC;</li>
+</ul>
+<p>&#x67E5;&#x770B;&#x6307;&#x5B9A;&#x540D;&#x5B57;&#x7684;logger&#x4FE1;&#x606F;</p>
+<pre data-role="codeBlock" data-info="shell" class="language-shell">admin@local@bistoury_demo_app:\<span class="token operator">&gt;</span>logger -n org.springframework.web
+ name                                   org.springframework.web
+ class                                  ch.qos.logback.classic.Logger
+ classLoader                            sun.misc.Launcher<span class="token variable">$AppClassLoader@2a139a55</span>
+ classLoaderHash                        2a139a55
+ level                                  null
+ effectiveLevel                         INFO
+ additivity                             <span class="token boolean">true</span>
+ codeSource                             file:/Users/hengyunabc/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar
+</pre><p>&#x67E5;&#x770B;&#x6307;&#x5B9A;classloader&#x7684;logger&#x4FE1;&#x606F;</p>
+<pre data-role="codeBlock" data-info="shell" class="language-shell">admin@local@bistoury_demo_app:\<span class="token operator">&gt;</span>logger -c 2a139a55
+ name                                   ROOT
+ class                                  ch.qos.logback.classic.Logger
+ classLoader                            sun.misc.Launcher<span class="token variable">$AppClassLoader@2a139a55</span>
+ classLoaderHash                        2a139a55
+ level                                  DEBUG
+ effectiveLevel                         DEBUG
+ additivity                             <span class="token boolean">true</span>
+ codeSource                             file:/Users/hengyunabc/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar
+ appenders                              name            CONSOLE
+                                        class           ch.qos.logback.core.ConsoleAppender
+                                        classLoader     sun.misc.Launcher<span class="token variable">$AppClassLoader@2a139a55</span>
+                                        classLoaderHash 2a139a55
+                                        target          System.out
+                                        name            APPLICATION
+                                        class           ch.qos.logback.core.rolling.RollingFileAppender
+                                        classLoader     sun.misc.Launcher<span class="token variable">$AppClassLoader@2a139a55</span>
+                                        classLoaderHash 2a139a55
+                                        <span class="token function">file</span>            app.log
+                                        name            ASYNC
+                                        class           ch.qos.logback.classic.AsyncAppender
+                                        classLoader     sun.misc.Launcher<span class="token variable">$AppClassLoader@2a139a55</span>
+                                        classLoaderHash 2a139a55
+                                        appenderRef     <span class="token punctuation">[</span>APPLICATION<span class="token punctuation">]</span>
+
+</pre><p>&#x66F4;&#x65B0;logger level</p>
+<pre data-role="codeBlock" data-info="shell" class="language-shell">admin@local@bistoury_demo_app:\<span class="token operator">&gt;</span>logger --name ROOT --level debug
+update logger level success.
 </pre><h2 class="mume-header" id="qjdump">qjdump</h2>
 
 <blockquote>
@@ -1833,169 +1784,35 @@ PSOldGen <span class="token punctuation">[</span>  <span class="token punctuatio
 <blockquote>
 <ul>
 <li>thread dump&#x6570;&#x636E;&#xFF1A;jstack -l $PID</li>
-<li>qjtop JVM&#x6982;&#x51B5;&#x53CA;&#x7E41;&#x5FD9;&#x7EBF;&#x7A0B;&#xFF1A;<a href="http://qjtop.sh">qjtop.sh</a> -n 1 $PID (<a href="http://xn--qjtop-u08iu03yytwa.sh">&#x9700;&#x8981;&#x5C06;qjtop.sh</a> &#x52A0;&#x5165;&#x7528;&#x6237;&#x7684;PATH&#x53D8;&#x91CF;&#x4E2D;)</li>
+<li>jinfo -flags $PID</li>
 <li>jmap histo &#x5806;&#x5BF9;&#x8C61;&#x7EDF;&#x8BA1;&#x6570;&#x636E;&#xFF1A;jmap -histo $PID &amp; jmap -histo:live $PID</li>
 <li>GC&#x65E5;&#x5FD7;(&#x5982;&#x679C;JVM&#x6709;&#x8BBE;&#x5B9A;GC&#x65E5;&#x5FD7;&#x8F93;&#x51FA;)</li>
 <li>heap dump&#x6570;&#x636E;&#xFF08;&#x9700;&#x6307;&#x5B9A;--liveheap&#x5F00;&#x542F;&#xFF09;&#xFF1A;jmap -dump:live,format=b,file=${DUMP_FILE} $PID</li>
 </ul>
 </blockquote>
 <p>&#x6267;&#x884C;&#x547D;&#x4EE4;&#x540E;&#xFF0C;&#x53EF;&#x4EE5;&#x767B;&#x5F55;&#x673A;&#x5668;&#xFF0C;&#x53BB;&#x6267;&#x884C;&#x7ED3;&#x679C;&#x4E2D;&#x63D0;&#x793A;&#x7684;&#x76EE;&#x5F55;&#x4E0B;&#x8F7D;zip&#x6587;&#x4EF6;&#x3002;</p>
-<h3 class="mume-header" id="%E5%AE%9E%E4%BE%8B-14">&#x5B9E;&#x4F8B;</h3>
+<h3 class="mume-header" id="%E5%AE%9E%E4%BE%8B-15">&#x5B9E;&#x4F8B;</h3>
 
 <pre data-role="codeBlock" data-info="shell" class="language-shell"><span class="token comment"># &#x5BF9;&#x5E94;&#x7528;&#x8FDB;&#x884C;&#x6025;&#x8BCA;</span>
 qjdump
 <span class="token comment"># &#x989D;&#x5916;&#x6536;&#x96C6;heap dump&#x4FE1;&#x606F;&#xFF08;jmap -dump:live&#x7684;&#x4FE1;&#x606F;&#xFF09;</span>
 qjdump --liveheap
-</pre><h2 class="mume-header" id="qjmxcli">qjmxcli</h2>
+</pre><h2 class="mume-header" id="qjtop">qjtop</h2>
 
-<blockquote>
-<p>&#x5728;cmdline-jmxclient&#x9879;&#x76EE;&#x4E0A;&#x5B9A;&#x5236;&#xFF0C;&#x589E;&#x52A0;&#x529F;&#x80FD;
-&#x4E0D;&#x9700;&#x8981;&#x539F;JVM&#x5728;&#x542F;&#x52A8;&#x53C2;&#x6570;&#x4E2D;&#x6253;&#x5F00;&#x4E86;JMX&#x9009;&#x9879;
-&#x5B8C;&#x5168;&#x6A21;&#x62DF;jstat -gcutil&#x8F93;&#x51FA;&#x7684;gcutil&#xFF0C;&#x7528;&#x4E8E;jstat&#x4E0D;&#x80FD;&#x4F7F;&#x7528;&#x7684;&#x60C5;&#x51B5;&#xFF0C; &#x6216;&#x8005;jstat&#x8BA1;&#x7B97;&#x4F7F;&#x7528;&#x767E;&#x5206;&#x6BD4;&#x65F6;&#xFF0C;&#x7528;&#x201C;&#x5DF2;&#x7533;&#x8BF7;&#x5927;&#x5C0F;&#x201D;&#xFF0C;&#x800C;&#x4E0D;&#x662F;&#x201C;Max&#x5927;&#x5C0F;&#x201D;&#x4F5C;&#x4E3A;&#x5206;&#x6BCD;&#xFF0C;&#x4E0D;&#x80FD;&#x53CD;&#x6620;&#x5185;&#x5B58;&#x662F;&#x5426;&#x771F;&#x6B63;&#x4E0D;&#x8DB3;&#x7684;&#x60C5;&#x51B5;&#x3002;
-&#x56E0;&#x4E3A;&#x6BCF;&#x8C03;&#x5EA6;&#x4E00;&#x6B21;java -jar vjmxclient.jar&#xFF0C;&#x5176;&#x5B9E;&#x662F;&#x521B;&#x5EFA;&#x4E86;&#x4E00;&#x4E2A;&#x65B0;&#x7684;JVM&#xFF0C;&#x56E0;&#x6B64;&#x5728;qjmxcli &#x52A0;&#x4E0A;&#x4E86;&#x4E00;&#x7CFB;&#x5217;JVM&#x53C2;&#x6570;&#x51CF;&#x5C11;&#x6D88;&#x8017;&#x3002;</p>
-</blockquote>
-<h3 class="mume-header" id="%E5%AE%9E%E4%BE%8B-15">&#x5B9E;&#x4F8B;</h3>
+<p>Bistoury &#x4E0D;&#x518D;&#x652F;&#x6301; qjtop &#x547D;&#x4EE4;&#xFF0C;&#x53EF;&#x5230;&#x4E3B;&#x673A;&#x4FE1;&#x606F;&#x9875;&#x9762;&#x67E5;&#x770B; JVM &#x6307;&#x6807;&#x53CA;&#x7E41;&#x5FD9;&#x7EBF;&#x7A0B;</p>
+<h2 class="mume-header" id="qjmap">qjmap</h2>
 
-<pre data-role="codeBlock" data-info="shell" class="language-shell">root@local.example.com@bistoury:\<span class="token operator">&gt;</span>qjmxcli
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Filter,name<span class="token operator">=</span>groupAuthorizationFilter
-Catalina:name<span class="token operator">=</span>HttpRequest1,type<span class="token operator">=</span>RequestProcessor,worker<span class="token operator">=</span><span class="token string">&quot;http-bio-8080&quot;</span>
-java.lang:type<span class="token operator">=</span>Memory
-JMImplementation:type<span class="token operator">=</span>MBeanServerDelegate
-Catalina:name<span class="token operator">=</span><span class="token string">&quot;http-bio-8080&quot;</span>,type<span class="token operator">=</span>ThreadPool
-Catalina:port<span class="token operator">=</span>8080,type<span class="token operator">=</span>Connector
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Filter,name<span class="token operator">=</span>loginAuthorizationFilter
-java.lang:name<span class="token operator">=</span>PS MarkSweep,type<span class="token operator">=</span>GarbageCollector
-java.nio:name<span class="token operator">=</span>mapped,type<span class="token operator">=</span>BufferPool
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Servlet,name<span class="token operator">=</span>web
-Catalina:context<span class="token operator">=</span>/,host<span class="token operator">=</span>localhost,type<span class="token operator">=</span>Cache
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Filter,name<span class="token operator">=</span>loginFilter
-java.lang:name<span class="token operator">=</span>PS Survivor Space,type<span class="token operator">=</span>MemoryPool
-java.lang:name<span class="token operator">=</span>CodeCacheManager,type<span class="token operator">=</span>MemoryManager
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Servlet,name<span class="token operator">=</span>jsp
-Catalina:host<span class="token operator">=</span>localhost,type<span class="token operator">=</span>Host
-Catalina:name<span class="token operator">=</span><span class="token string">&quot;http-bio-8080&quot;</span>,type<span class="token operator">=</span>GlobalRequestProcessor
-Catalina:host<span class="token operator">=</span>localhost,name<span class="token operator">=</span>ErrorReportValve,type<span class="token operator">=</span>Valve
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Servlet,name<span class="token operator">=</span>jvm
-java.lang:name<span class="token operator">=</span>PS Old Gen,type<span class="token operator">=</span>MemoryPool
-java.lang:name<span class="token operator">=</span>PS Perm Gen,type<span class="token operator">=</span>MemoryPool
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Filter,name<span class="token operator">=</span>encodingFilter
-java.lang:type<span class="token operator">=</span>Runtime
-Catalina:type<span class="token operator">=</span>Engine
-java.nio:name<span class="token operator">=</span>direct,type<span class="token operator">=</span>BufferPool
-Catalina:name<span class="token operator">=</span>HttpRequest6,type<span class="token operator">=</span>RequestProcessor,worker<span class="token operator">=</span><span class="token string">&quot;http-bio-8080&quot;</span>
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Filter,name<span class="token operator">=</span>clearFilter
-Catalina:context<span class="token operator">=</span>/,host<span class="token operator">=</span>localhost,type<span class="token operator">=</span>Manager
-Catalina:name<span class="token operator">=</span>HttpRequest3,type<span class="token operator">=</span>RequestProcessor,worker<span class="token operator">=</span><span class="token string">&quot;http-bio-8080&quot;</span>
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,name<span class="token operator">=</span>jsp,type<span class="token operator">=</span>JspMonitor
-Catalina:host<span class="token operator">=</span>localhost,name<span class="token operator">=</span>AccessLogValve,type<span class="token operator">=</span>Valve
-Catalina:type<span class="token operator">=</span>Service
-com.sun.management:type<span class="token operator">=</span>HotSpotDiagnostic
-java.lang:name<span class="token operator">=</span>PS Scavenge,type<span class="token operator">=</span>GarbageCollector
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Servlet,name<span class="token operator">=</span>default
-java.lang:name<span class="token operator">=</span>Code Cache,type<span class="token operator">=</span>MemoryPool
-java.util.logging:type<span class="token operator">=</span>Logging
-Catalina:context<span class="token operator">=</span>/,host<span class="token operator">=</span>localhost,type<span class="token operator">=</span>WebappClassLoader
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Filter,name<span class="token operator">=</span>RedirectFilter
-Catalina:type<span class="token operator">=</span>Server
-Catalina:name<span class="token operator">=</span>StandardEngineValve,type<span class="token operator">=</span>Valve
-Catalina:context<span class="token operator">=</span>/,host<span class="token operator">=</span>localhost,name<span class="token operator">=</span>StandardContextValve,type<span class="token operator">=</span>Valve
-Catalina:name<span class="token operator">=</span>HttpRequest5,type<span class="token operator">=</span>RequestProcessor,worker<span class="token operator">=</span><span class="token string">&quot;http-bio-8080&quot;</span>
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,j2eeType<span class="token operator">=</span>WebModule,name<span class="token operator">=</span>//localhost/
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Filter,name<span class="token operator">=</span>org.apache.tomcat.websocket.server.WsFilter
-Catalina:type<span class="token operator">=</span>NamingResources
-Catalina:context<span class="token operator">=</span>/,host<span class="token operator">=</span>localhost,type<span class="token operator">=</span>Loader
-Catalina:name<span class="token operator">=</span>common,type<span class="token operator">=</span>ServerClassLoader
-Catalina:name<span class="token operator">=</span>HttpRequest2,type<span class="token operator">=</span>RequestProcessor,worker<span class="token operator">=</span><span class="token string">&quot;http-bio-8080&quot;</span>
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Servlet,name<span class="token operator">=</span>monitor
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Filter,name<span class="token operator">=</span>recentlyAccessedFilter
-Catalina:context<span class="token operator">=</span>/,host<span class="token operator">=</span>localhost,type<span class="token operator">=</span>NamingResources
-Catalina:context<span class="token operator">=</span>/,host<span class="token operator">=</span>localhost,name<span class="token operator">=</span>NonLoginAuthenticator,type<span class="token operator">=</span>Valve
-java.lang:name<span class="token operator">=</span>PS Eden Space,type<span class="token operator">=</span>MemoryPool
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Filter,name<span class="token operator">=</span>HttpMethodFilter
-Catalina:host<span class="token operator">=</span>localhost,type<span class="token operator">=</span>Deployer
-Catalina:type<span class="token operator">=</span>MBeanFactory
-java.lang:type<span class="token operator">=</span>OperatingSystem
-Catalina:name<span class="token operator">=</span>HttpRequest4,type<span class="token operator">=</span>RequestProcessor,worker<span class="token operator">=</span><span class="token string">&quot;http-bio-8080&quot;</span>
-java.lang:type<span class="token operator">=</span>Compilation
-Catalina:port<span class="token operator">=</span>8080,type<span class="token operator">=</span>ProtocolHandler
-Catalina:type<span class="token operator">=</span>StringCache
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Filter,name<span class="token operator">=</span>watcher
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Servlet,name<span class="token operator">=</span>stats
-java.lang:type<span class="token operator">=</span>Threading
-java.lang:type<span class="token operator">=</span>ClassLoading
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Filter,name<span class="token operator">=</span>uploadFilter
-Catalina:realmPath<span class="token operator">=</span>/realm0,type<span class="token operator">=</span>Realm
-Catalina:J2EEApplication<span class="token operator">=</span>none,J2EEServer<span class="token operator">=</span>none,WebModule<span class="token operator">=</span>//localhost/,j2eeType<span class="token operator">=</span>Filter,name<span class="token operator">=</span>adminAuthorizationFilter
-Catalina:port<span class="token operator">=</span>8080,type<span class="token operator">=</span>Mapper
-Catalina:host<span class="token operator">=</span>localhost,name<span class="token operator">=</span>StandardHostValve,type<span class="token operator">=</span>Valve
-</pre><p>&#x83B7;&#x53D6;MBean&#x5C5E;&#x6027;&#x503C;</p>
-<pre data-role="codeBlock" data-info="shell" class="language-shell">root@local.example.com@bistoury:\<span class="token operator">&gt;</span>qjmxcli java.lang:type<span class="token operator">=</span>Memory HeapMemoryUsage
-HeapMemoryUsage:
-committed: 1925185536
-init: 2147483648
-max: 1925185536
-used: 125783504
-</pre><p>GC&#x7EDF;&#x8BA1;(jstat gcutil)
-&#x4E00;&#x6B21;&#x6027;&#x8F93;&#x51FA;</p>
-<pre data-role="codeBlock" data-info="shell" class="language-shell">root@local.example.com@bistoury:\<span class="token operator">&gt;</span>qjmxcli gcutil
-S	S	E	O	P	YGC	YGCT	FGC	FGCT	GCT
-0.00	0.00	15.40	6.23	26.56	11	0.468	3	0.853	1.321
-</pre><p>&#x6BCF;5s&#x8F93;&#x51FA;&#x4E00;&#x6B21;</p>
-<pre data-role="codeBlock" data-info="shell" class="language-shell">root@local.example.com@bistoury:\<span class="token operator">&gt;</span>qjmxcli gcutil 5
-S	S	E	O	P	YGC	YGCT	FGC	FGCT	GCT
-0.00	0.00	14.54	6.23	26.56	11	0.468	3	0.853	1.321
-S	S	E	O	P	YGC	YGCT	FGC	FGCT	GCT
-0.00	0.00	14.62	6.23	26.56	11	0.468	3	0.853	1.321
-</pre><h3 class="mume-header" id="%E5%B8%B8%E7%94%A8jmx%E6%9D%A1%E7%9B%AE">&#x5E38;&#x7528;JMX&#x6761;&#x76EE;</h3>
+<p>Bistoury &#x4E0D;&#x518D;&#x652F;&#x6301; qjmap &#x547D;&#x4EE4;&#xFF0C;&#x8BF7;&#x4F7F;&#x7528; <a href="#heapdump">heapdump</a> &#x547D;&#x4EE4; dump &#x5185;&#x5B58;&#x4FE1;&#x606F;</p>
+<h2 class="mume-header" id="qjmxcli">qjmxcli</h2>
 
-<table>
-<thead>
-<tr>
-<th>&#x6761;&#x76EE;</th>
-<th>Object Name</th>
-<th>Attribute Name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>&#x5806;&#x5185;&#x5B58;</td>
-<td>java.lang:type=Memory</td>
-<td>HeapMemoryUsage</td>
-</tr>
-<tr>
-<td>&#x975E;&#x5806;&#x5185;&#x5B58;(&#x4E0D;&#x5305;&#x542B;&#x5806;&#x5916;&#x5185;&#x5B58;)</td>
-<td>java.lang:type=Memory</td>
-<td>NonHeapMemoryUsage</td>
-</tr>
-<tr>
-<td>&#x5806;&#x5916;&#x5185;&#x5B58;(&#x4E0D;&#x5305;&#x542B;&#x65B0;&#x7248;Netty&#x7533;&#x8BF7;&#x7684;&#x5806;&#x5916;&#x5185;&#x5B58;)</td>
-<td>java.nio:type=BufferPool,name=direct</td>
-<td>MemoryUsed</td>
-</tr>
-<tr>
-<td>&#x7EBF;&#x7A0B;&#x6570;</td>
-<td>java.lang:type=Threading</td>
-<td>ThreadCount</td>
-</tr>
-<tr>
-<td>&#x5B88;&#x62A4;&#x7EBF;&#x7A0B;&#x6570;</td>
-<td>java.lang:type=Threading</td>
-<td>DaemonThreadCount</td>
-</tr>
-<tr>
-<td>&#x5206;&#x4EE3;&#x5185;&#x5B58;&#x53CA;GC</td>
-<td>&#x4E0D;&#x540C;JDK&#x7684;&#x503C;&#x4E0D;&#x4E00;&#x6837;</td>
-<td>&#x4E0D;&#x540C;JDK&#x7684;&#x503C;&#x4E0D;&#x4E00;&#x6837;</td>
-</tr>
-</tbody>
-</table>
+<p>Bistoury &#x4E0D;&#x518D;&#x652F;&#x6301; qjmxcli &#x547D;&#x4EE4;&#xFF0C;&#x8BF7;&#x4F7F;&#x7528; mbean &#x547D;&#x4EE4;&#x67E5;&#x770B; <a href="#mbean">MBean</a> &#x4FE1;&#x606F;&#xFF0C;&#x4F7F;&#x7528; <a href="#jstat">jstat</a> &#x547D;&#x4EE4;&#x67E5;&#x770B; GC &#x4FE1;&#x606F;</p>
 <h2 class="mume-header" id="sc">sc</h2>
 
 <blockquote>
 <p>&#x67E5;&#x770B;JVM&#x5DF2;&#x52A0;&#x8F7D;&#x7684;&#x7C7B;&#x4FE1;&#x606F;
 &#x201C;Search-Class&#x201D; &#x7684;&#x7B80;&#x5199;&#xFF0C;&#x8FD9;&#x4E2A;&#x547D;&#x4EE4;&#x80FD;&#x641C;&#x7D22;&#x51FA;&#x6240;&#x6709;&#x5DF2;&#x7ECF;&#x52A0;&#x8F7D;&#x5230; JVM &#x4E2D;&#x7684; Class &#x4FE1;&#x606F;&#xFF0C;&#x8FD9;&#x4E2A;&#x547D;&#x4EE4;&#x652F;&#x6301;&#x7684;&#x53C2;&#x6570;&#x6709; [d]&#x3001;[E]&#x3001;[f] &#x548C; [x:]&#x3002;</p>
 </blockquote>
-<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-5">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
+<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-3">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
 
 <table>
 <thead>
@@ -2093,7 +1910,7 @@ Affect<span class="token punctuation">(</span>row-cnt:1<span class="token punctu
 &#x201C;Search-Method&#x201D; &#x7684;&#x7B80;&#x5199;&#xFF0C;&#x8FD9;&#x4E2A;&#x547D;&#x4EE4;&#x80FD;&#x641C;&#x7D22;&#x51FA;&#x6240;&#x6709;&#x5DF2;&#x7ECF;&#x52A0;&#x8F7D;&#x4E86; Class &#x4FE1;&#x606F;&#x7684;&#x65B9;&#x6CD5;&#x4FE1;&#x606F;&#x3002;
 sm &#x547D;&#x4EE4;&#x53EA;&#x80FD;&#x770B;&#x5230;&#x7531;&#x5F53;&#x524D;&#x7C7B;&#x6240;&#x58F0;&#x660E; (declaring) &#x7684;&#x65B9;&#x6CD5;&#xFF0C;&#x7236;&#x7C7B;&#x5219;&#x65E0;&#x6CD5;&#x770B;&#x5230;&#x3002;</p>
 </blockquote>
-<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-6">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
+<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-4">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
 
 <table>
 <thead>
@@ -2190,7 +2007,7 @@ org.apache.catalina.connector.Connector-<span class="token operator">&gt;</span>
 <blockquote>
 <p>dump &#x5DF2;&#x52A0;&#x8F7D;&#x7C7B;&#x7684; bytecode &#x5230;&#x7279;&#x5B9A;&#x76EE;&#x5F55;</p>
 </blockquote>
-<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-7">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
+<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-5">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
 
 <table>
 <thead>
@@ -2240,10 +2057,10 @@ Affect<span class="token punctuation">(</span>row-cnt:1<span class="token punctu
 </pre><h2 class="mume-header" id="redefine">redefine</h2>
 
 <blockquote>
-<p>&#x52A0;&#x8F7D;&#x5916;&#x90E8;&#x7684;.class&#x6587;&#x4EF6;&#xFF0C;redefine jvm&#x5DF2;&#x52A0;&#x8F7D;&#x7684;&#x7C7B;
-<font color="red">&#x6CE8;&#x610F;&#xFF1A;</font>redefine&#x540E;&#x7684;&#x539F;&#x6765;&#x7684;&#x7C7B;&#x4E0D;&#x80FD;&#x6062;&#x590D;&#xFF0C;redefine&#x6709;&#x53EF;&#x80FD;&#x5931;&#x8D25;&#xFF08;&#x6BD4;&#x5982;&#x589E;&#x52A0;&#x4E86;&#x65B0;&#x7684;field&#xFF09;&#xFF0C;&#x53C2;&#x8003;jdk&#x672C;&#x8EAB;&#x7684;&#x6587;&#x6863;&#x3002;</p>
+<p>&#x52A0;&#x8F7D;&#x5916;&#x90E8;&#x7684;.class&#x6587;&#x4EF6;&#xFF0C;redefine jvm&#x5DF2;&#x52A0;&#x8F7D;&#x7684;&#x7C7B;</p>
 </blockquote>
-<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-8">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
+<p><font color="red">&#x6CE8;&#x610F;&#xFF1A;</font>redefine&#x540E;&#x7684;&#x539F;&#x6765;&#x7684;&#x7C7B;&#x4E0D;&#x80FD;&#x6062;&#x590D;&#xFF0C;redefine&#x6709;&#x53EF;&#x80FD;&#x5931;&#x8D25;&#xFF08;&#x6BD4;&#x5982;&#x589E;&#x52A0;&#x4E86;&#x65B0;&#x7684;field&#xFF09;&#xFF0C;&#x53C2;&#x8003;jdk&#x672C;&#x8EAB;&#x7684;&#x6587;&#x6863;&#x3002;</p>
+<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-6">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
 
 <table>
 <thead>
@@ -2282,9 +2099,7 @@ redefine success, size: 0
 </pre><p>&#x53EF;&#x4EE5;&#x901A;&#x8FC7;-d&#x547D;&#x4EE4;&#x6307;&#x5B9A;&#x8F93;&#x51FA;&#x76EE;&#x5F55;&#xFF1A;</p>
 <pre data-role="codeBlock" data-info="shell" class="language-shell"><span class="token function">mc</span> -d /tmp/output /tmp/ClassA.java /tmp/ClassB.java
 </pre><p>&#x7F16;&#x8BD1;&#x751F;&#x6210;.class&#x6587;&#x4EF6;&#x4E4B;&#x540E;&#xFF0C;&#x53EF;&#x4EE5;&#x7ED3;&#x5408;<a href="#redefine">redefine</a>&#x547D;&#x4EE4;&#x5B9E;&#x73B0;&#x70ED;&#x66F4;&#x65B0;&#x4EE3;&#x7801;&#x3002;</p>
-<blockquote>
 <p><font color="red">&#x6CE8;&#x610F;</font>&#xFF1A;mc&#x547D;&#x4EE4;&#x6709;&#x53EF;&#x80FD;&#x5931;&#x8D25;&#x3002;&#x5982;&#x679C;&#x7F16;&#x8BD1;&#x5931;&#x8D25;&#x53EF;&#x4EE5;&#x5728;&#x672C;&#x5730;&#x7F16;&#x8BD1;&#x597D;.class&#x6587;&#x4EF6;&#xFF0C;&#x518D;&#x4E0A;&#x4F20;&#x5230;&#x670D;&#x52A1;&#x5668;&#x3002;&#x5177;&#x4F53;&#x53C2;&#x8003;<a href="#redefine">redefine</a>&#x547D;&#x4EE4;&#x8BF4;&#x660E;&#x3002;</p>
-</blockquote>
 <h2 class="mume-header" id="jad">jad</h2>
 
 <blockquote>
@@ -2292,7 +2107,7 @@ redefine success, size: 0
 jad &#x547D;&#x4EE4;&#x5C06; JVM &#x4E2D;&#x5B9E;&#x9645;&#x8FD0;&#x884C;&#x7684; class &#x7684; byte code &#x53CD;&#x7F16;&#x8BD1;&#x6210; java &#x4EE3;&#x7801;&#xFF0C;&#x4FBF;&#x4E8E;&#x4F60;&#x7406;&#x89E3;&#x4E1A;&#x52A1;&#x903B;&#x8F91;&#xFF1B;
 &#x5F53;&#x7136;&#xFF0C;&#x53CD;&#x7F16;&#x8BD1;&#x51FA;&#x6765;&#x7684; java &#x4EE3;&#x7801;&#x53EF;&#x80FD;&#x4F1A;&#x5B58;&#x5728;&#x8BED;&#x6CD5;&#x9519;&#x8BEF;&#xFF0C;&#x4F46;&#x4E0D;&#x5F71;&#x54CD;&#x4F60;&#x8FDB;&#x884C;&#x9605;&#x8BFB;&#x7406;&#x89E3;</p>
 </blockquote>
-<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-9">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
+<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-7">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
 
 <table>
 <thead>
@@ -2392,7 +2207,7 @@ jad &#x547D;&#x4EE4;&#x5C06; JVM &#x4E2D;&#x5B9E;&#x9645;&#x8FD0;&#x884C;&#x7684
 classloader &#x547D;&#x4EE4;&#x5C06; JVM &#x4E2D;&#x6240;&#x6709;&#x7684;classloader&#x7684;&#x4FE1;&#x606F;&#x7EDF;&#x8BA1;&#x51FA;&#x6765;&#xFF0C;&#x5E76;&#x53EF;&#x4EE5;&#x5C55;&#x793A;&#x7EE7;&#x627F;&#x6811;&#xFF0C;urls&#x7B49;&#x3002;
 &#x53EF;&#x4EE5;&#x8BA9;&#x6307;&#x5B9A;&#x7684;classloader&#x53BB;getResources&#xFF0C;&#x6253;&#x5370;&#x51FA;&#x6240;&#x6709;&#x67E5;&#x627E;&#x5230;&#x7684;resources&#x7684;url&#x3002;&#x5BF9;&#x4E8E;ResourceNotFoundException&#x6BD4;&#x8F83;&#x6709;&#x7528;&#x3002;</p>
 </blockquote>
-<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-10">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
+<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-8">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
 
 <table>
 <thead>
@@ -2565,7 +2380,7 @@ file:/home/user/tomcat/tomcat/lib/tomcat-dbcp.jar
 </tr>
 </tbody>
 </table>
-<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-11">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
+<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-9">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
 
 <table>
 <thead>
@@ -2708,7 +2523,7 @@ OGNL&#x8868;&#x8FBE;&#x5F0F;&#x5B98;&#x7F51;&#xFF1A;<a href="https://commons.apa
 <blockquote>
 <p>&#x6CE8;&#x610F;&#xFF1A;&#x5F88;&#x591A;&#x65F6;&#x5019;&#x6211;&#x4EEC;&#x53EA;&#x60F3;&#x770B;&#x5230;&#x67D0;&#x4E2A;&#x65B9;&#x6CD5;&#x7684;rt&#x5927;&#x4E8E;&#x67D0;&#x4E2A;&#x65F6;&#x95F4;&#x4E4B;&#x540E;&#x7684;trace&#x7ED3;&#x679C;&#xFF0C;&#x53EF;&#x4EE5;&#x6309;&#x7167;&#x65B9;&#x6CD5;&#x6267;&#x884C;&#x7684;&#x8017;&#x65F6;&#x6765;&#x8FDB;&#x884C;&#x8FC7;&#x6EE4;&#x4E86;&#xFF0C;&#x4F8B;&#x5982;trace *StringUtils isBlank #cost&gt;100&#x8868;&#x793A;&#x5F53;&#x6267;&#x884C;&#x65F6;&#x95F4;&#x8D85;&#x8FC7;100ms&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x624D;&#x4F1A;&#x8F93;&#x51FA;trace&#x7684;&#x7ED3;&#x679C;&#x3002;</p>
 </blockquote>
-<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-12">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
+<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-10">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
 
 <table>
 <thead>
@@ -2772,7 +2587,7 @@ Affect<span class="token punctuation">(</span>class-cnt:1 , method-cnt:1<span cl
 <p>&#x8F93;&#x51FA;&#x5F53;&#x524D;&#x65B9;&#x6CD5;&#x88AB;&#x8C03;&#x7528;&#x7684;&#x8C03;&#x7528;&#x8DEF;&#x5F84;
 &#x5F88;&#x591A;&#x65F6;&#x5019;&#x6211;&#x4EEC;&#x90FD;&#x77E5;&#x9053;&#x4E00;&#x4E2A;&#x65B9;&#x6CD5;&#x88AB;&#x6267;&#x884C;&#xFF0C;&#x4F46;&#x8FD9;&#x4E2A;&#x65B9;&#x6CD5;&#x88AB;&#x6267;&#x884C;&#x7684;&#x8DEF;&#x5F84;&#x975E;&#x5E38;&#x591A;&#xFF0C;&#x6216;&#x8005;&#x4F60;&#x6839;&#x672C;&#x5C31;&#x4E0D;&#x77E5;&#x9053;&#x8FD9;&#x4E2A;&#x65B9;&#x6CD5;&#x662F;&#x4ECE;&#x90A3;&#x91CC;&#x88AB;&#x6267;&#x884C;&#x4E86;&#xFF0C;&#x6B64;&#x65F6;&#x4F60;&#x9700;&#x8981;&#x7684;&#x662F; stack &#x547D;&#x4EE4;&#x3002;</p>
 </blockquote>
-<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-13">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
+<h3 class="mume-header" id="%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E-11">&#x53C2;&#x6570;&#x8BF4;&#x660E;</h3>
 
 <table>
 <thead>
@@ -3136,7 +2951,15 @@ options save-result
                                     <span class="token function">command</span><span class="token string">&apos;s resu   command&apos;</span>s result to log file, w
                                     lt to log <span class="token function">file</span>   hich path is <span class="token variable">${user.home}</span>/logs/a
                                                      rthas-cache/result.log.     
-</pre><script type="application/javascript">
+</pre><h2 class="mume-header" id="stopshutdown">stop/shutdown</h2>
+
+<p>&#x505C;&#x6B62;bistoury-agent attach &#x5230;&#x5E94;&#x7528;&#x4E2D;&#x7684;&#x90E8;&#x5206;</p>
+<pre data-role="codeBlock" data-info="shell" class="language-shell">admin@local@bistoury_demo_app:\<span class="token operator">&gt;</span>stop
+Bistoury Server is going to shut down<span class="token punctuation">..</span>.
+</pre><pre data-role="codeBlock" data-info="shell" class="language-shell">admin@local@bistoury_demo_app:\<span class="token operator">&gt;</span>shutdown
+Bistoury Server is going to shut down<span class="token punctuation">..</span>.
+</pre><p>stop&#x548C;shutdown&#x6267;&#x884C;&#x6548;&#x679C;&#x5B8C;&#x5168;&#x4E00;&#x6837;</p>
+<script type="application/javascript">
     $(document).ready(function () {
         $.ajax({
             url: "/version.do",
@@ -3169,6 +2992,7 @@ options save-result
 <li><a href="#bistoury">Bistoury</a>
 <ul>
 <li><a href="#bistoury%E6%98%AF%E4%BB%80%E4%B9%88">Bistoury&#x662F;&#x4EC0;&#x4E48;&#xFF1F;</a></li>
+<li><a href="#%E7%AE%80%E4%BB%8B">&#x7B80;&#x4ECB;</a></li>
 <li><a href="#bistoury-%E8%83%BD%E5%81%9A%E4%BB%80%E4%B9%88">Bistoury &#x80FD;&#x505A;&#x4EC0;&#x4E48;&#xFF1F;</a></li>
 </ul>
 </li>
@@ -3192,7 +3016,7 @@ options save-result
 </li>
 <li><a href="#%E5%91%BD%E4%BB%A4%E5%88%97%E8%A1%A8">&#x547D;&#x4EE4;&#x5217;&#x8868;</a>
 <ul>
-<li><a href="#ls"><strong>ls</strong></a></li>
+<li><a href="#ls">ls</a></li>
 <li><a href="#cat">cat</a></li>
 <li><a href="#pwd">pwd</a></li>
 <li><a href="#history">history</a></li>
@@ -3206,11 +3030,14 @@ options save-result
 <li><a href="#mbean">mbean</a></li>
 <li><a href="#sysprop">sysprop</a></li>
 <li><a href="#sysenv">sysenv</a></li>
+<li><a href="#vmoption">vmoption</a></li>
 <li><a href="#ognl">ognl</a></li>
 <li><a href="#getstatic">getstatic</a></li>
+<li><a href="#heapdump">heapdump</a></li>
+<li><a href="#logger">logger</a></li>
+<li><a href="#qjdump">qjdump</a></li>
 <li><a href="#qjtop">qjtop</a></li>
 <li><a href="#qjmap">qjmap</a></li>
-<li><a href="#qjdump">qjdump</a></li>
 <li><a href="#qjmxcli">qjmxcli</a></li>
 <li><a href="#sc">sc</a></li>
 <li><a href="#sm">sm</a></li>
@@ -3225,6 +3052,7 @@ options save-result
 <li><a href="#stack">stack</a></li>
 <li><a href="#tt">tt</a></li>
 <li><a href="#options-1">options</a></li>
+<li><a href="#stopshutdown">stop/shutdown</a></li>
 </ul>
 </li>
 </ul>

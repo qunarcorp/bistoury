@@ -12,7 +12,7 @@
             "-107": "该命令不支持多机执行",
             "-108": "版本不支持该命令，请升级",
             "-109": "请选择一台主机",
-            "-110": "命令解析错误"
+            "-110": "命令解析错误，请检查命令是否正确"
         }
         this.errorMapping = defaultCodeMap;
         var self = this;
@@ -141,24 +141,31 @@
         });
     }
     Bistoury.prototype.error = function (errorMsg) {
+        var index = errorMsg.indexOf("Command preprocess failed: ");
+        if (index >= 0) {
+            errorMsg = errorMsg.substr(index + 27);
+        }
         spop({
-            template: errorMsg,
+            template: this.getErrorMsg(errorMsg),
             style: 'error',
             autoclose: 7000,
 
         });
     }
+    Bistoury.prototype.errorCode = function (errorCode) {
+        this.error(this.errorMapping[errorCode])
+    }
     Bistoury.prototype.keepError = function (errorMsg, func) {
         if (func) {
             spop({
-                template: errorMsg,
+                template: this.getErrorMsg(errorMsg),
                 position: 'top-center',
                 style: 'error',
                 onClose: func
             });
         } else {
             spop({
-                template: errorMsg,
+                template: this.getErrorMsg(errorMsg),
                 position: 'top-center',
                 style: 'error'
             });
@@ -167,7 +174,7 @@
     }
     Bistoury.prototype.errorAndClose = function (errorMsg) {
         spop({
-            template: errorMsg,
+            template: this.getErrorMsg(errorMsg),
             style: 'error',
             position: 'top-center',
             autoclose: 5000,
@@ -176,6 +183,18 @@
             }
         });
     }
+    Bistoury.prototype.getErrorMsg = function (errorMsg) {
+        try {
+            var index = errorMsg.indexOf("Command preprocess failed: ");
+            if (index >= 0) {
+                return errorMsg.substr(index + 27);
+            }
+        } catch (e) {
+            return errorMsg;
+        }
+        return errorMsg;
+    }
+
     window.bistoury = new Bistoury();
     $.ajaxSetup({
         complete: function (context) {

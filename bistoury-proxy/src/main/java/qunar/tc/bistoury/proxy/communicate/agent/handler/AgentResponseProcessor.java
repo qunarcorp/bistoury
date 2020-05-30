@@ -30,6 +30,8 @@ import qunar.tc.bistoury.remoting.protocol.ResponseCode;
 
 import java.util.Set;
 
+import static qunar.tc.bistoury.remoting.protocol.ResponseCode.RESP_TYPE_CONTENT;
+
 /**
  * @author zhenyu.nie created on 2019 2019/5/14 18:12
  */
@@ -44,7 +46,7 @@ public class AgentResponseProcessor implements AgentMessageProcessor {
     @Override
     public Set<Integer> codes() {
         return ImmutableSet.of(
-                ResponseCode.RESP_TYPE_CONTENT.getCode(),
+                RESP_TYPE_CONTENT.getCode(),
                 ResponseCode.RESP_TYPE_EXCEPTION.getCode(),
                 ResponseCode.RESP_TYPE_SINGLE_END.getCode()
         );
@@ -60,4 +62,5 @@ public class AgentResponseProcessor implements AgentMessageProcessor {
             logger.warn("id [{}] can not get session, write response fail, {}", id, ctx.channel());
         }
     }
+
 }

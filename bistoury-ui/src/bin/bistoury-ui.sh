@@ -69,7 +69,7 @@ stop(){
     then
       echo "no bistoury ui to stop (could not find file $BISTOURY_PID_FILE)"
     else
-      kill -9 $(cat "$BISTOURY_PID_FILE")
+      kill $(cat "$BISTOURY_PID_FILE")
       rm "$BISTOURY_PID_FILE"
       echo "STOPPED"
     fi

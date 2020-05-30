@@ -23,6 +23,7 @@ import com.taobao.arthas.core.command.hidden.JulyCommand;
 import com.taobao.arthas.core.command.hidden.OptionsCommand;
 import com.taobao.arthas.core.command.hidden.ThanksCommand;
 import com.taobao.arthas.core.command.klass100.*;
+import com.taobao.arthas.core.command.logger.LoggerCommand;
 import com.taobao.arthas.core.command.monitor200.*;
 import com.taobao.arthas.core.shell.command.Command;
 import qunar.tc.bistoury.attach.arthas.agentInfo.AgentInfoCommand;
@@ -32,6 +33,10 @@ import qunar.tc.bistoury.attach.arthas.debug.*;
 import qunar.tc.bistoury.attach.arthas.jar.JarInfoCommand;
 import qunar.tc.bistoury.attach.arthas.monitor.QMonitorAddCommand;
 import qunar.tc.bistoury.attach.arthas.monitor.QMonitorSnapshotCommand;
+import qunar.tc.bistoury.attach.arthas.profiler.ProfilerInfoCommand;
+import qunar.tc.bistoury.attach.arthas.profiler.ProfilerStateSearchCommand;
+import qunar.tc.bistoury.attach.arthas.profiler.ProfilerStartCommand;
+import qunar.tc.bistoury.attach.arthas.profiler.ProfilerStopCommand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +92,11 @@ public class QBuiltinCommandPack extends BuiltinCommandPack {
         commands.add(Command.create(MemoryCompilerCommand.class));
         //3.1.1
         commands.add(Command.create(MBeanCommand.class));
+        //3.1.2
+        commands.add(Command.create(HeapDumpCommand.class));
+        commands.add(Command.create(VMOptionCommand.class));
+        commands.add(Command.create(LoggerCommand.class));
+        commands.add(Command.create(QStopCommand.class));
 
         // qunar command
         commands.add(Command.create(AgentInfoCommand.class));
@@ -107,5 +117,10 @@ public class QBuiltinCommandPack extends BuiltinCommandPack {
 
         commands.add(Command.create(AppConfigCommand.class));
         commands.add(Command.create(AppConfigFileCommand.class));
+
+        commands.add(Command.create(ProfilerStartCommand.class));
+        commands.add(Command.create(ProfilerStopCommand.class));
+        commands.add(Command.create(ProfilerStateSearchCommand.class));
+        commands.add(Command.create(ProfilerInfoCommand.class));
     }
 }

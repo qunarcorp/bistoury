@@ -29,15 +29,15 @@ import java.util.concurrent.TimeUnit;
  */
 public class AgentMonitor {
     public static Long start() {
-        return System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
+        return startTime;
     }
 
     public static void stop(String key, long startTime) {
-        if (startTime == 0L || Strings.isNullOrEmpty(key)) {
-            return;
+        if (startTime != 0L && !Strings.isNullOrEmpty(key)) {
+            Metrics.timer(key + "_timer").get().update(System.currentTimeMillis() - startTime, TimeUnit.MILLISECONDS);
+            Metrics.counter(key + "_counter").delta().get().inc();
         }
-        Metrics.counter(key + "_counter").delta().get().inc();
-        Metrics.timer(key + "_timer").get().update(System.currentTimeMillis() - startTime, TimeUnit.MILLISECONDS);
     }
 
     public static void exception(String key) {

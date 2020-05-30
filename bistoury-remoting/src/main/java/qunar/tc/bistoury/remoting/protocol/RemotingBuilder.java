@@ -33,7 +33,7 @@ public class RemotingBuilder {
         return datagram;
     }
 
-    private static RemotingHeader buildRemotingHeader(final int code, final String id) {
+    public static RemotingHeader buildRemotingHeader(final int code, final String id) {
         RemotingHeader header = new RemotingHeader();
         header.setCode(code);
         header.setId(id);
@@ -71,6 +71,7 @@ public class RemotingBuilder {
         header.setAgentVersion(RemotingHeader.AGENT_VERSION);
         header.setFlag(RemotingHeader.DEFAULT_FLAG);
         header.setId(requestHeader.getId());
+        header.setProperties(requestHeader.getProperties());
         return header;
     }
 
@@ -78,6 +79,13 @@ public class RemotingBuilder {
         final Datagram datagram = new Datagram();
         datagram.setHeader(buildRemotingHeader(code, ""));
         datagram.setPayloadHolder(holder);
+        return datagram;
+    }
+
+    public static Datagram buildFullResponseDatagram(final RemotingHeader responseHeader, final PayloadHolder payloadHolder) {
+        final Datagram datagram = new Datagram();
+        datagram.setHeader(responseHeader);
+        datagram.setPayloadHolder(payloadHolder);
         return datagram;
     }
 }

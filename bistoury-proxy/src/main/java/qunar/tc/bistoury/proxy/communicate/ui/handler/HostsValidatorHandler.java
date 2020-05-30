@@ -25,8 +25,8 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.springframework.util.CollectionUtils;
 
 import qunar.tc.bistoury.application.api.pojo.AppServer;
-import qunar.tc.bistoury.proxy.communicate.ui.AgentServerInfo;
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
+import qunar.tc.bistoury.remoting.protocol.AgentServerInfo;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.UiResponses;
 import qunar.tc.bistoury.proxy.util.ServerFinder;
 

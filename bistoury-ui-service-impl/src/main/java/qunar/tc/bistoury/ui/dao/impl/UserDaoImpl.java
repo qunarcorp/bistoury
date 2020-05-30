@@ -24,6 +24,8 @@ import org.springframework.stereotype.Repository;
 import qunar.tc.bistoury.ui.dao.UserDao;
 import qunar.tc.bistoury.ui.model.User;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @author leix.xie
  * @date 2019/7/4 11:01
@@ -38,6 +40,11 @@ public class UserDaoImpl implements UserDao {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @PostConstruct
+    public void init(){
+
+    }
 
     @Override
     public User getUserByUserCode(final String userCode) {

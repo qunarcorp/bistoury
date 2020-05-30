@@ -95,18 +95,18 @@
 
 ---
 #### 应用jdk版本要求
-> 暂时只支持包括jdk7\jdk8在内的应用, 没有测试过低于jdk7的版本, jdk9以上改动比较大, 暂时不支持.
+> 暂时只支持使用java1.7+的应用，当agent和应用Java版本不一致时可能会出现不可预计的错误, 没有测试过低于jdk7的版本。
 
 #### bistoury自带模块最低的jdk版本要求
 |      模块            | 最低jdk版本                         |
 |:---------------------|:------------------------------|
-| 1. agent          | jdk7|
-| 2. proxy         | jdk8 |
-| 3. ui             | jdk8   |
+| 1. agent          | Java1.7+|
+| 2. proxy         | Java1.8+ |
+| 3. ui             | Java1.8+   |
 
-> 如果是使用快速启动脚本，需使用JDK8
+> 如果是使用快速启动脚本，需使用Java1.8+
 
-> 手动指定 **`JAVA_HOME`** 目录(例如目录为`/lib/java_1.8/home`) : `./quick_start.sh -j /lib/java_1.8/home -p 1024 start`
+> 手动指定 **`JAVA_HOME`** 目录(例如目录为`/lib/java_1.8/home`) : `./quick_start.sh -j /lib/java_1.8/home -p 1024(应用进程pid) start`
 
 ### 端口问题
 

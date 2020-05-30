@@ -36,8 +36,9 @@ import qunar.tc.bistoury.proxy.communicate.agent.handler.AgentMessageProcessor;
 import qunar.tc.bistoury.proxy.communicate.ui.NettyServerForUi;
 import qunar.tc.bistoury.proxy.communicate.ui.UiConnectionStore;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommandStore;
+import qunar.tc.bistoury.proxy.generator.IdGenerator;
 import qunar.tc.bistoury.serverside.agile.Conf;
-import qunar.tc.bistoury.serverside.agile.LocalHost;
+import qunar.tc.bistoury.remoting.util.LocalHost;
 import qunar.tc.bistoury.serverside.common.ZKClient;
 import qunar.tc.bistoury.serverside.common.ZKClientCache;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
@@ -79,6 +80,9 @@ public class NettyServerManager {
     private AppServerService appServerService;
 
     @Autowired
+    private IdGenerator sessionIdGenerator;
+
+    @Autowired
     private List<AgentMessageProcessor> agentMessageProcessors;
 
     private volatile String uiNode;
@@ -115,7 +119,14 @@ public class NettyServerManager {
     }
 
     private NettyServerForUi startUiServer(Conf conf) {
-        NettyServerForUi serverForUi = new NettyServerForUi(conf, commandStore, uiConnectionStore, agentConnectionStore, sessionManager, appServerService);
+        NettyServerForUi serverForUi = new NettyServerForUi(
+                conf,
+                sessionIdGenerator,
+                commandStore,
+                uiConnectionStore,
+                agentConnectionStore,
+                sessionManager,
+                appServerService);
         serverForUi.start();
         return serverForUi;
     }

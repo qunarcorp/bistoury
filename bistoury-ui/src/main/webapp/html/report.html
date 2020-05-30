@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>性能分析报告</title>
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../css/bootstrap.min.css?version=2.1.0">
+    <link rel="stylesheet" href="../css/bootstrap-treeview.css?version=2.1.0">
+    <link rel="stylesheet" href="../css/bootstrap-table.css?version=2.1.0">
+    <link rel="stylesheet" href="../css/cpu-profiler.css?version=2.1.0">
+    <link rel="stylesheet" href="../css/spop.min.css?version=2.1.0">
+    <script type="text/javascript" src="../js/jquery-3.3.1.min.js?version=2.1.0"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js?version=2.1.0"></script>
+    <script type="text/javascript" src="../js/bootstrap-treeview.js?version=2.1.0"></script>
+    <script type="text/javascript" src="../js/jquery.cookie.js?version=2.1.0"></script>
+    <script type="text/javascript" src="../js/report.js?version=2.1.0"></script>
+    <script type="text/javascript" src="../js/profiler.js?version=2.1.0"></script>
+    <script type="text/javascript" src="../js/bistoury.js?version=2.1.0"></script>
+    <script type="text/javascript" src="../js/spop.min.js?version=2.1.0"></script>
+    <script type="text/javascript" src="../js/jstree.min.js?version=2.1.0"></script>
+</head>
+<body>
+
+<div class="svg-page">
+    <div class="svg-page-sidebar">
+        <div id="svg-tree">
+        </div>
+        <div style="height: 400px">
+
+        </div>
+        <div>
+            <ul class="list-group">
+                <li class="list-group-item" style="text-align: center;font-weight: bold;">详细信息</li>
+                <li class="list-group-item" id="profiler_mode_info" style="text-align: center"></li>
+                <li class="list-group-item" id="event_type" style="display: none;text-align: center"></li>
+                <li class="list-group-item" id="start_time" style="text-align: center"></li>
+                <li class="list-group-item" id="default_duration" style="text-align: center"></li>
+                <li class="list-group-item" id="duration" style="text-align: center"></li>
+                <li class="list-group-item" id="default_interval" style="text-align: center"></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="svg-page-content">
+
+    </div>
+
+    <div id="tree-page" style="display: none">
+    </div>
+    <div id="tree-page-java" style="display: none">
+    </div>
+    <div id="tree-page-java-compact" style="display: none">
+    </div>
+</div>
+</body>
+</html>

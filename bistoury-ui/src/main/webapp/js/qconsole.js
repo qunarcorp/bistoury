@@ -1,3 +1,5 @@
+var REQ_TYPE_PROFILER_STOP = 52;
+var REQ_TYPE_PROFILER_INFO = 58;
 $(document).ready(function () {
     document.onkeydown = function (e) {
         if ($(e.target).hasClass("chosen-search-input")) {
@@ -19,6 +21,24 @@ $(document).ready(function () {
     $(function () {
         var linuxCommandType = [1, 4, 6];
         var errorMapping = bistoury.errorMapping;
+        var waitCommand = [
+            "ls",
+            "jvm",
+            "thread",
+            "sysprop",
+            "sysenv",
+            "dump",
+            "classloader",
+            "options",
+            "logger",
+            "getstatic",
+            "vmoption",
+            "mbean",
+            "ognl",
+            "jad",
+            "sc",
+            "sm"
+        ];
         var arthasCommands = [
             "dashboard",
             "thread",
@@ -43,7 +63,14 @@ $(document).ready(function () {
             "sysenv",
             "ognl",
             "mc",
-            "mbean"
+            "mbean",
+            "heapdump",
+            "vmoption",
+            "logger",
+            "stop",
+            "profilerstart",
+            "profilerstop",
+            "profilersearch"
         ];
 
         var debugCommand = [
@@ -52,6 +79,10 @@ $(document).ready(function () {
             "qdebugsearch",
             "qdebugreleaseinfo",
         ];
+
+        var profilerStop = "profilerstop";
+
+        var profilerInfo = "profilerinfo";
 
         function arrayContains(array, obj) {
             for (var i = 0; i < array.length; ++i) {
@@ -348,7 +379,11 @@ $(document).ready(function () {
                         jqconsole.Focus();
                         startNewLine();
                     })
-                    $('#host-select-' + tid).chosen({"width": "calc(100% - 60px)", search_contains: true, allow_single_deselect: true});
+                    $('#host-select-' + tid).chosen({
+                        "width": "calc(100% - 60px)",
+                        search_contains: true,
+                        allow_single_deselect: true
+                    });
                     $('.console').focus();
 
                     var fullScreenBtn = $("<button></button>").addClass("btn btn-info btn-sm").css("float", "right").css("height", "32px").css("max-width", "55px").append("全屏");
@@ -508,6 +543,10 @@ $(document).ready(function () {
                         return true;
                     }
                     send(5, commandLine);
+                } else if (command === profilerStop) {
+                    send(REQ_TYPE_PROFILER_STOP, commandLine);
+                } else if (command === profilerInfo) {
+                    send(REQ_TYPE_PROFILER_INFO, commandLine);
                 } else {
                     send(1, commandLine);
                 }
@@ -625,10 +664,13 @@ $(document).ready(function () {
             }
 
             var send = function (type, input) {
+                if (input.indexOf('｜') >= 0) {
+                    outputln("\033[31m[WARING]:\033[0m Chinese character [｜] in command");
+                }
                 proxy = {};
                 lastHost = "";
                 if (hosts == null || hosts.length <= 0) {
-                    output("应用中心未查询到属于该应用的机器")
+                    output("The application center didn't find the machine belonging to the application")
                     startPrompt();
                     return;
                 }
@@ -644,7 +686,7 @@ $(document).ready(function () {
                     return;
                 }
                 if (checkedHost === '') {
-                    output("必须选择一台机器");
+                    output("A machine must be selected");
                     startPrompt();
                     return;
                 }
@@ -657,7 +699,7 @@ $(document).ready(function () {
             };
             var sends = function (type, input, checkHosts) {
                 if (!commandCheck(input)) {
-                    output("该命令不支持多机执行");
+                    output("The command does not support multi machine execution");
                     startPrompt();
                     return;
                 }
@@ -697,7 +739,7 @@ $(document).ready(function () {
             var getWs = function (agentIp) {
                 var deferred = $.Deferred();
                 if (!agentIp) {
-                    output("必须选择一台机器");
+                    output("A machine must be selected");
                     deferred.reject();
                     return deferred.promise();
                 }
@@ -766,7 +808,7 @@ $(document).ready(function () {
 
                         ws.onclose = function (event) {
                             if (context.wsOpen.indexOf(host) >= 0) {
-                                outputln(host + "\\> 已经与proxy断开连接");
+                                outputln(host + "\\> disconnected from proxy");
                             }
                             var open = context.wsOpen.indexOf(host) >= 0;
                             context.wsOpen.remove(host)
@@ -786,11 +828,11 @@ $(document).ready(function () {
                         };
                     } catch (ex) {
                         if (context.wsOpen.indexOf(host) >= 0) {
-                            outputln(host + "\\>连接proxy失败！");
+                            outputln(host + "\\> failed to connect to proxy!");
                         }
                         context.wsOpen.remove(host)
                         context.tabHostLength--;
-                        console.log("连接失败: " + ex.message);
+                        console.log("connection failed: " + ex.message);
                         deferred.reject();
                     }
                 } else {
@@ -889,7 +931,7 @@ $(document).ready(function () {
 
             var wait = function () {
                 //                    return !isTab && (command == 'tail' || command == 'cat' || command == 'awk' || command == 'jstack' || command == 'jstat');
-                return isTab || (command == 'ls');
+                return isTab || arrayContains(waitCommand, command);
             };
 
             var recv = function (data, agentHost) {
@@ -932,6 +974,9 @@ $(document).ready(function () {
                             }
                             output(content);
                         } else {
+                            if (isProfilerReq(context.reqType)) {
+                                content = parseProfilerMsg(context.reqType, content);
+                            }
                             output(content);
                         }
                     } else {
@@ -996,6 +1041,35 @@ $(document).ready(function () {
                     // ignore
                 }
             };
+
+            var isProfilerReq = function (reqType) {
+                return reqType === REQ_TYPE_PROFILER_INFO || reqType === REQ_TYPE_PROFILER_STOP;
+            };
+
+            var parseProfilerMsg = function (reqType, content) {
+                if (reqType === REQ_TYPE_PROFILER_STOP) {
+                    return doParseProfilerStopContent(content);
+                } else if (reqType === REQ_TYPE_PROFILER_INFO) {
+                    return doParseProfilerInfoContent(content);
+                }
+                return content;
+            };
+
+            var doParseProfilerStopContent = function (content) {
+                var response = JSON.parse(content);
+                return response.data.message;
+            };
+
+            var doParseProfilerInfoContent = function (content) {
+                var response = JSON.parse(content);
+                var msg = "";
+                var data = response.data.data;
+                return msg + "is active: " + data.isProfiling
+                    + "\nstart time: " + data.startTime
+                    + "\nid: " + data.id
+                    + "\ninterval(ms): " + data.interval;
+            };
+
             var endWith = function (line, ch) {
                 if (!line) {
                     return false;

@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.common.Throwables;
-import qunar.tc.bistoury.serverside.agile.LocalHost;
+import qunar.tc.bistoury.remoting.util.LocalHost;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;

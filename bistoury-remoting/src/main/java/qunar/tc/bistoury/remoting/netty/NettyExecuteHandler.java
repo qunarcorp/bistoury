@@ -21,7 +21,10 @@ import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
+import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
 import qunar.tc.bistoury.remoting.protocol.RemotingHeader;
+
+import java.util.Map;
 
 /**
  * @author sen.chai
@@ -99,6 +102,13 @@ public class NettyExecuteHandler implements ResponseHandler {
     @Override
     public void handleEOF(int exitCode) {
         responseWriter.writeEOF(ctx, String.valueOf(exitCode), header);
+    }
+
+    @Override
+    public void handle(int code, byte[] data, Map<String, String> responseHeader) {
+        RemotingHeader realHeader = RemotingBuilder.buildRemotingHeader(code, header.getId());
+        realHeader.setProperties(responseHeader);
+        responseWriter.writeFullResponse(ctx, data, realHeader);
     }
 
     private String formatException(Throwable throwable) {

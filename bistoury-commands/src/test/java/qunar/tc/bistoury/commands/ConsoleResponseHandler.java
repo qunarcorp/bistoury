@@ -1,8 +1,11 @@
 package qunar.tc.bistoury.commands;
 
 import com.google.common.base.Optional;
+import com.google.common.io.BaseEncoding;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
 import qunar.tc.bistoury.remoting.protocol.ErrorCode;
+
+import java.util.Map;
 
 /**
  * @author zhenyu.nie created on 2018 2018/10/16 11:03
@@ -67,5 +70,10 @@ public class ConsoleResponseHandler implements ResponseHandler {
     @Override
     public void handleEOF(int exitCode) {
         System.out.print("exit " + exitCode);
+    }
+
+    @Override
+    public void handle(int code, byte[] data, Map<String, String> responseHeader) {
+        System.out.println("header: " + responseHeader + " code: " + code + " data: " + BaseEncoding.base16().lowerCase().encode(data));
     }
 }

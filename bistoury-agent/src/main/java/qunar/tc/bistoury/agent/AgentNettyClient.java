@@ -27,6 +27,8 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.agent.common.job.DefaultResponseJobStore;
+import qunar.tc.bistoury.agent.common.job.ResponseJobStore;
 import qunar.tc.bistoury.commands.HeartbeatProcessor;
 import qunar.tc.bistoury.commands.MetaRefreshProcessor;
 import qunar.tc.bistoury.commands.MetaRefreshTipProcessor;
@@ -70,11 +72,19 @@ class AgentNettyClient {
         final IdleStateHandler idleStateHandler = new IdleStateHandler(heartbeatTimeoutSec, 0, 0, TimeUnit.SECONDS);
 
         List<TaskFactory> taskFactories = ImmutableList.copyOf(ServiceLoader.load(TaskFactory.class));
-        final DefaultTaskStore taskStore = new DefaultTaskStore();
-        TaskProcessor taskProcessor = new TaskProcessor(taskStore, taskFactories);
-        final RequestHandler requestHandler = new RequestHandler(ImmutableList.<Processor>of(new CancelProcessor(taskStore), new HeartbeatProcessor(), new MetaRefreshProcessor(), new MetaRefreshTipProcessor(), taskProcessor));
+        final TaskStore taskStore = new DefaultTaskStore();
+        final ResponseJobStore jobStore = new DefaultResponseJobStore();
+        TaskProcessor taskProcessor = new TaskProcessor(jobStore, taskStore, taskFactories);
+        final RequestHandler requestHandler = new RequestHandler(ImmutableList.<Processor>of(
+                new JobPauseProcessor(jobStore),
+                new JobResumeProcessor(jobStore),
+                new CancelProcessor(taskStore),
+                new HeartbeatProcessor(),
+                new MetaRefreshProcessor(),
+                new MetaRefreshTipProcessor(),
+                taskProcessor));
 
-        final ConnectionManagerHandler connectionManagerHandler = new ConnectionManagerHandler();
+        final ConnectionManagerHandler connectionManagerHandler = new ConnectionManagerHandler(jobStore);
 
         bootstrap.group(workGroup)
                 .channel(NioSocketChannel.class)
@@ -98,7 +108,7 @@ class AgentNettyClient {
                 if (future.isSuccess()) {
                     logger.info("bistoury netty client start success, {}", proxyConfig);
                     channel = future.channel();
-                    closeFuture(taskStore);
+                    closeFuture(jobStore, taskStore);
                     running.compareAndSet(false, true);
                     started.set(null);
                     heartbeatTask.start(channel, running);
@@ -125,10 +135,11 @@ class AgentNettyClient {
         return running.get();
     }
 
-    private void closeFuture(final DefaultTaskStore taskStore) {
+    private void closeFuture(final ResponseJobStore jobStore, final TaskStore taskStore) {
         channel.closeFuture().addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
+                jobStore.close();
                 taskStore.close();
             }
         });
@@ -136,6 +147,12 @@ class AgentNettyClient {
 
     @ChannelHandler.Sharable
     private class ConnectionManagerHandler extends ChannelDuplexHandler {
+
+        private final ResponseJobStore jobStore;
+
+        private ConnectionManagerHandler(ResponseJobStore jobStore) {
+            this.jobStore = jobStore;
+        }
 
         @Override
         public void disconnect(ChannelHandlerContext ctx, ChannelPromise future) throws Exception {
@@ -172,13 +189,21 @@ class AgentNettyClient {
             logger.error("agent netty client error, {}", ctx.channel(), cause);
             destroyAndSync();
         }
+
+        @Override
+        public void channelWritabilityChanged(ChannelHandlerContext ctx) throws Exception {
+            boolean writable = channel.isWritable();
+            logger.info("agent writability changed to {}", writable);
+            jobStore.setWritable(writable);
+            super.channelWritabilityChanged(ctx);
+        }
     }
 
-    public synchronized void destroyAndSync() {
+    public void destroyAndSync() {
         if (running.compareAndSet(true, false)) {
             logger.warn("agent netty client destroy, {}", channel);
             try {
-                channel.close().syncUninterruptibly();
+                channel.close();
             } catch (Exception e) {
                 logger.error("close channel error", e);
             }

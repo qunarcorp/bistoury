@@ -18,7 +18,7 @@
 package qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor;
 
 import io.netty.channel.ChannelHandlerContext;
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
 
 import java.util.Optional;
@@ -33,7 +33,7 @@ public interface CommunicateCommandProcessor<T> {
      * @param ctx
      * @return
      */
-    Optional<RequestData<T>> preprocessor(RequestData<String> requestData, ChannelHandlerContext ctx);
+    Optional<RequestData<T>> preprocessor(RequestData<String> requestData, ChannelHandlerContext ctx) throws Exception;
 
     /**
      * 对请求进行提前处理，将其处理为agent能够识别的协议格式

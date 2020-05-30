@@ -71,8 +71,8 @@ public class MonitorClassFileTransformer extends Transformer {
         try {
             final ClassReader classReader = new ClassReader(classFileBuffer.getClassBuffer(classBeingRedefined, classBytes));
             final ClassWriter classWriter = new ClassWriter(computeFlag(classReader));
-            final ClassVisitor classVisitor = new MonitorClassVisitor(new CheckClassAdapter(classWriter), source, methodName, methodDesc, line);
-            classReader.accept(classVisitor, ClassReader.SKIP_FRAMES);
+            final ClassVisitor classVisitor = new MonitorClassVisitor(new CheckClassAdapter(classWriter), methodName, methodDesc);
+            classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
             byte[] bytes = classWriter.toByteArray();
             classFileBuffer.setClassBuffer(classBeingRedefined, bytes);
             return bytes;

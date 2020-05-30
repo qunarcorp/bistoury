@@ -19,9 +19,12 @@ package qunar.tc.bistoury.commands.host;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.SettableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
+import qunar.tc.bistoury.agent.common.job.BytesJob;
+import qunar.tc.bistoury.agent.common.job.ContinueResponseJob;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.remoting.netty.AgentRemotingExecutor;
 import qunar.tc.bistoury.remoting.netty.Task;
@@ -30,7 +33,6 @@ import java.io.IOException;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.*;
-import java.util.concurrent.Callable;
 
 /**
  * @author: leix.xie
@@ -38,8 +40,8 @@ import java.util.concurrent.Callable;
  * @describe：
  */
 public class ThreadInfoTask implements Task {
+
     private static final Logger logger = LoggerFactory.getLogger(ThreadInfoTask.class);
-    private static final ListeningExecutorService agentExecutor = AgentRemotingExecutor.getExecutor();
 
     private static final Integer ALL_THREADS_INFO = 0;
 
@@ -69,9 +71,7 @@ public class ThreadInfoTask implements Task {
 
     private final long maxRunningMs;
 
-    private volatile ListenableFuture<Integer> future;
-
-    private volatile VirtualMachineUtil.VMConnector connect;
+    private final SettableFuture<Integer> future = SettableFuture.create();
 
     public ThreadInfoTask(String id, int pid, long threadId, int commandType, int maxDepth, ResponseHandler handler, long maxRunningMs) {
         this.id = id;
@@ -83,53 +83,53 @@ public class ThreadInfoTask implements Task {
         this.maxRunningMs = maxRunningMs;
     }
 
+    @Override
+    public ContinueResponseJob createJob() {
+        return new Job();
+    }
 
     @Override
-    public ListenableFuture<Integer> execute() {
-        this.future = agentExecutor.submit(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                try {
-                    connect = VirtualMachineUtil.connect(pid);
-                    Map<String, Object> result = new HashMap<>();
-                    if (ALL_THREADS_INFO == commandType) {
-                        result.put(TYPE, "allThreadInfo");
-                        List<ThreadBrief> threads = getAllThreadsInfo(result);
-                        result.put(THREADS, threads);
-                    } else if (THREAD_DETAIL == commandType) {
-                        result.put(TYPE, "threadDetail");
-                        ThreadInfo threadInfo = getThreadInfo(result);
-                        result.put(THREAD, threadInfo);
-                    } else if (DUMP_THREADS == commandType) {
-                        result.put(TYPE, "threadDump");
-                        ThreadInfo[] threads = dump(maxDepth, false);
-                        result.put(THREADS, threads);
-                    } else if (DEADLOCK_THREAD == commandType) {
-                        result.put(TYPE, "threadDeadLock");
-                        ThreadInfo[] threads = dump(maxDepth, true);
-                        result.put(THREADS, threads);
-                    }
-                    handler.handle(JacksonSerializer.serializeToBytes(result));
-                    return null;
-                } catch (Exception e) {
-                    logger.error("get thread info error", e);
-                    throw new RuntimeException(e);
-                } finally {
-                    try {
-                        if (connect != null) {
-                            connect.disconnect();
-                        }
-                    } catch (IOException e) {
-                        logger.error("disconnect vm error ", e);
-                    }
-                }
-            }
-        });
+    public ListenableFuture<Integer> getResultFuture() {
         return future;
     }
 
+    private class Job extends BytesJob {
 
-    private ThreadInfo[] dump(int maxDepth, boolean onlyDeadLock) {
+        private Job() {
+            super(id, handler, future);
+        }
+
+        @Override
+        protected byte[] getBytes() throws Exception {
+            VirtualMachineUtil.VMConnector connect = VirtualMachineUtil.connect(pid);
+            Map<String, Object> result = new HashMap<>();
+            if (ALL_THREADS_INFO == commandType) {
+                result.put(TYPE, "allThreadInfo");
+                List<ThreadBrief> threads = getAllThreadsInfo(connect, result);
+                result.put(THREADS, threads);
+            } else if (THREAD_DETAIL == commandType) {
+                result.put(TYPE, "threadDetail");
+                ThreadInfo threadInfo = getThreadInfo(connect, result);
+                result.put(THREAD, threadInfo);
+            } else if (DUMP_THREADS == commandType) {
+                result.put(TYPE, "threadDump");
+                ThreadInfo[] threads = dump(connect, maxDepth, false);
+                result.put(THREADS, threads);
+            } else if (DEADLOCK_THREAD == commandType) {
+                result.put(TYPE, "threadDeadLock");
+                ThreadInfo[] threads = dump(connect, maxDepth, true);
+                result.put(THREADS, threads);
+            }
+            return JacksonSerializer.serializeToBytes(result);
+        }
+
+        @Override
+        public ListeningExecutorService getExecutor() {
+            return AgentRemotingExecutor.getExecutor();
+        }
+    }
+
+    private ThreadInfo[] dump(VirtualMachineUtil.VMConnector connect, int maxDepth, boolean onlyDeadLock) {
         try {
             ThreadMXBean threadBean = connect.getThreadMXBean();
             long[] ids;
@@ -149,8 +149,7 @@ public class ThreadInfoTask implements Task {
         }
     }
 
-
-    private ThreadInfo getThreadInfo(Map<String, Object> result) {
+    private ThreadInfo getThreadInfo(VirtualMachineUtil.VMConnector connect, Map<String, Object> result) {
         try {
             ThreadMXBean threadMXBean = connect.getThreadMXBean();
             long threadCpuTime = threadMXBean.getThreadCpuTime(threadId);
@@ -162,7 +161,7 @@ public class ThreadInfoTask implements Task {
         }
     }
 
-    private List<ThreadBrief> getAllThreadsInfo(Map<String, Object> result) {
+    private List<ThreadBrief> getAllThreadsInfo(VirtualMachineUtil.VMConnector connect, Map<String, Object> result) {
         List<ThreadBrief> threads = new ArrayList<>();
         long totalCpuTime = 0;
         try {
@@ -200,28 +199,6 @@ public class ThreadInfoTask implements Task {
     public long getMaxRunningMs() {
         return maxRunningMs;
     }
-
-    @Override
-    public void cancel() {
-        try {
-            if (future != null) {
-                future.cancel(true);
-                future = null;
-            }
-        } catch (Exception e) {
-            logger.error("cancel host thread info task error", e);
-        }
-
-        try {
-            VirtualMachineUtil.VMConnector connect = this.connect;
-            if (connect != null) {
-                connect.disconnect();
-            }
-        } catch (Exception e) {
-            logger.error("cancel host thread info task error", e);
-        }
-    }
-
 
     static class ThreadBrief {
         private long id;

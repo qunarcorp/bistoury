@@ -54,13 +54,13 @@ cd bistoury
 - 如果应用以本人用户启动，可以直接运行
 
 ```bash
-./quick_start.sh -p 1024 start
+./quick_start.sh -p 1024(应用进程pid，自行替换) start
 ```
 
 - 如果应用以其它帐号启动，比如 tomcat，需要指定一下用户然后运行
 
 ```bash
-sudo -u tomcat ./quick_start.sh -p 1024 start
+sudo -u tomcat ./quick_start.sh -p 1024(应用进程pid，自行替换) start
 ```
 
 - 停止运行

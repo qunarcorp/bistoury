@@ -18,7 +18,7 @@
 package qunar.tc.bistoury.proxy.generator;
 
 import org.springframework.stereotype.Service;
-import qunar.tc.bistoury.serverside.agile.LocalHost;
+import qunar.tc.bistoury.remoting.util.LocalHost;
 import qunar.tc.bistoury.serverside.util.ServerManager;
 
 import java.sql.Timestamp;

@@ -17,6 +17,8 @@
 
 package qunar.tc.bistoury.agent.common;
 
+import java.util.Map;
+
 /**
  * @author sen.chai
  * @date 15-6-15
@@ -45,6 +47,7 @@ public interface ResponseHandler {
 
     void handleEOF(int exitCode);
 
+    void handle(int code, byte[] data, Map<String, String> responseHeader);
 }
 
     

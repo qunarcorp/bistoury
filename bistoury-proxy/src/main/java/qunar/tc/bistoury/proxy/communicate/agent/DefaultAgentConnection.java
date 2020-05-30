@@ -51,11 +51,6 @@ public class DefaultAgentConnection extends AbstractConnection implements AgentC
     }
 
     @Override
-    public boolean isActive() {
-        return channel.isActive();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

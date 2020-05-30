@@ -20,10 +20,10 @@ package qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor;
 import com.google.common.base.Preconditions;
 import io.netty.channel.ChannelHandlerContext;
 import qunar.tc.bistoury.common.JacksonSerializer;
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.command.UiRequestCommand;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.remoting.protocol.RemotingBuilder;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.remoting.protocol.payloadHolderImpl.RequestPayloadHolder;
 
 import java.lang.reflect.ParameterizedType;
@@ -49,21 +49,17 @@ public abstract class AbstractCommand<T> implements CommunicateCommandProcessor<
 
     @Override
     @SuppressWarnings("unchecked")
-    public final Optional<RequestData<T>> preprocessor(RequestData<String> requestData, ChannelHandlerContext ctx) {
-        try {
-            if (type.equals(String.class)) {
-                return doPreprocessor((RequestData<T>) requestData, ctx);
-            } else {
-                T command = JacksonSerializer.deSerialize(requestData.getCommand(), this.type);
-                RequestData<T> data = RequestData.copyWithCommand(requestData, command);
-                return doPreprocessor(data, ctx);
-            }
-        } catch (Exception e) {
-            return Optional.empty();
+    public final Optional<RequestData<T>> preprocessor(RequestData<String> requestData, ChannelHandlerContext ctx) throws Exception {
+        if (type.equals(String.class)) {
+            return doPreprocessor((RequestData<T>) requestData, ctx);
+        } else {
+            T command = JacksonSerializer.deSerialize(requestData.getCommand(), this.type);
+            RequestData<T> data = RequestData.copyWithCommand(requestData, command);
+            return doPreprocessor(data, ctx);
         }
     }
 
-    protected Optional<RequestData<T>> doPreprocessor(RequestData<T> requestData, ChannelHandlerContext ctx) {
+    protected Optional<RequestData<T>> doPreprocessor(RequestData<T> requestData, ChannelHandlerContext ctx) throws Exception {
         return Optional.of(requestData);
     }
 
@@ -80,6 +76,11 @@ public abstract class AbstractCommand<T> implements CommunicateCommandProcessor<
     @Override
     public Datagram prepareResponse(Datagram datagram) {
         return datagram;
+    }
+
+    @Override
+    public boolean supportPause() {
+        return true;
     }
 
     @Override

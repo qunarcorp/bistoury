@@ -17,10 +17,16 @@
 
 package qunar.tc.bistoury.instrument.client.monitor;
 
-import org.objectweb.asm.*;
-import qunar.tc.bistoury.instrument.client.common.Access;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.AnalyzerAdapter;
+import org.objectweb.asm.commons.LocalVariablesSorter;
 import qunar.tc.bistoury.instrument.client.util.DescDeal;
 import qunar.tc.bistoury.instrument.spy.BistourySpys1;
+
+import java.util.List;
 
 /**
  * @author: leix.xie
@@ -29,235 +35,121 @@ import qunar.tc.bistoury.instrument.spy.BistourySpys1;
  */
 public class MonitorMethodVisitor extends MethodVisitor implements Opcodes {
 
-    private static final String AGENT_GENERATED_DESC = Type.getDescriptor(AgentGenerated.class);
+    private static final String THROWABLE_CLASS_TYPE = Type.getInternalName(Throwable.class);
+    private static final String SPY_CLASS_TYPE = Type.getInternalName(BistourySpys1.class);
+
+    private static final String START_METHOD_NAME = "start";
+    private static final String STOP_METHOD_NAME = "stop";
+    private static final String EXCEPTION_METHOD_NAME = "exception";
+
+    private static final String START_METHOD_DESC = Type.getMethodDescriptor(Type.getType(Long.class));
+    private static final String STOP_METHOD_DESC = Type.getMethodDescriptor(Type.getType(void.class), Type.getType(String.class), Type.getType(Long.class));
+    private static final String EXCEPTION_METHOD_DESC = Type.getMethodDescriptor(Type.getType(void.class), Type.getType(String.class));
 
     private final String MONITOR_KEY;
-    private static final String SPY_NAME = Type.getInternalName(BistourySpys1.class);
-    private static final String RUNTIME_EXCEPTION = Type.getInternalName(RuntimeException.class);
-    private static final String START_DESC = Type.getMethodDescriptor(Type.getType(Long.class));
-    private static final String STOP_DESC = Type.getMethodDescriptor(Type.getType(void.class), Type.getType(String.class), Type.getType(Long.class));
-    private static final String EXCEPTION_DESC = Type.getMethodDescriptor(Type.getType(void.class), Type.getType(String.class));
 
+    private int scopeVarIndex;
 
-    private final MethodVisitor monitorMethod;
-    private final int newExceptionsLen;
-    private String[] newMethodExceptions;
-    private final Type[] parameterTypes;
-    private final Type returnType;
-    private final boolean hasReturn;
-    private final String desc;
-    private final String className;
-    private final String methodName;
-    private final int totalParameterSize;
-    private final int startOfVarIndex;
+    private Label beginLabel;
+    private Label endLabel;
+    private Label throwableLabel;
 
-    public MonitorMethodVisitor(int access, String desc, String signature, String[] exceptions, String className, String method, int line, ClassVisitor cv) {
-        super(ASM5, cv.visitMethod(Access.of(access).remove(ACC_PUBLIC).remove(ACC_PROTECTED).remove(ACC_SYNCHRONIZED).add(ACC_PRIVATE).add(ACC_FINAL).get(), DescDeal.generateNewName(method), desc, signature, exceptions));
-        this.className = className;
-        this.parameterTypes = Type.getArgumentTypes(desc);
-        this.returnType = Type.getReturnType(desc);
-        this.hasReturn = this.returnType != Type.VOID_TYPE;
-        this.desc = desc;
-        this.methodName = method;
-        this.MONITOR_KEY = className.replaceAll("\\/", ".") + "#" + method + "(" + DescDeal.getSimplifyMethodDesc(desc) + ")";
+    private LocalVariablesSorter localVariablesSorter;
+    private AnalyzerAdapter analyzerAdapter;
 
-        this.totalParameterSize = computeTotalParameterSize(parameterTypes);
-        this.startOfVarIndex = Access.of(access).contain(Opcodes.ACC_STATIC) ? 0 : 1;
-        if (exceptions == null) {
-            newMethodExceptions = new String[]{RUNTIME_EXCEPTION};
-        } else {
-            newMethodExceptions = new String[exceptions.length + 1];
-            newMethodExceptions[0] = RUNTIME_EXCEPTION;
-            System.arraycopy(exceptions, 0, newMethodExceptions, 1, exceptions.length);
-        }
-        newExceptionsLen = newMethodExceptions.length;
-        monitorMethod = cv.visitMethod(access, method, desc, signature, newMethodExceptions);
-        addGeneratedAnnotation();
+    private int maxStack;
+
+    public MonitorMethodVisitor(MethodVisitor methodVisitor, int access, final String name, final String desc, final String className) {
+        super(ASM7, methodVisitor);
+
+        this.MONITOR_KEY = className.replaceAll("\\/", ".") + "#" + name + "(" + DescDeal.getSimplifyMethodDesc(desc) + ")";
+
+        beginLabel = new Label();
+        endLabel = new Label();
+        throwableLabel = new Label();
     }
 
-    private void addGeneratedAnnotation() {
-        AnnotationVisitor av = monitorMethod.visitAnnotation(AGENT_GENERATED_DESC, true);
-        av.visitEnd();
-        av = mv.visitAnnotation(AGENT_GENERATED_DESC, true);
-        av.visitEnd();
-    }
-
-    @Override
-    public void visitParameter(String name, int access) {
-        super.visitParameter(name, access);
-        monitorMethod.visitParameter(name, access);
-    }
-
-    @Override
-    public AnnotationVisitor visitAnnotationDefault() {
-        return monitorMethod.visitAnnotationDefault();
-    }
-
-    @Override
-    public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-        return monitorMethod.visitAnnotation(desc, visible);
-    }
-
-    @Override
-    public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String desc, boolean visible) {
-        return monitorMethod.visitTypeAnnotation(typeRef, typePath, desc, visible);
-    }
-
-    @Override
-    public AnnotationVisitor visitParameterAnnotation(int parameter, String desc, boolean visible) {
-        return monitorMethod.visitParameterAnnotation(parameter, desc, visible);
-    }
-
-    @Override
-    public void visitAttribute(Attribute attr) {
-        super.visitAttribute(attr);
-    }
-
-    /**
-     * 将原来的方法重命名为一个private方法，然后在原来未改名的方法里调用原来的方法
-     */
     @Override
     public void visitCode() {
-        super.visitCode();
-        monitorMethod.visitCode();
+        mv.visitCode();
+        //catch
+        mv.visitTryCatchBlock(beginLabel, endLabel, throwableLabel, THROWABLE_CLASS_TYPE);
 
-        int scopeVarIndex = startOfVarIndex + totalParameterSize;
-        Label startOfTryCatch = new Label();
-        Label endOfTryCatch = new Label();
-        Label[] exceptionHandlers = new Label[newExceptionsLen];
-
-        //catchs
-        for (int i = 0, length = exceptionHandlers.length; i < length; i++) {
-            monitorMethod.visitTryCatchBlock(startOfTryCatch, endOfTryCatch, exceptionHandlers[i] = new Label(), newMethodExceptions[i]);
-        }
-
-        //finally
-        Label endOfFinally = new Label();
-        Label handlerOfFinally = new Label();
-        monitorMethod.visitTryCatchBlock(startOfTryCatch, endOfTryCatch, handlerOfFinally, null);
-        monitorMethod.visitTryCatchBlock(exceptionHandlers[0], endOfFinally, handlerOfFinally, null);
-
-        startTrace(scopeVarIndex);
-
-        int returnVarIndex = scopeVarIndex + 1;
-
-        //try{
-        //call original method
-        //}catch(...){
-        monitorMethod.visitLabel(startOfTryCatch);
-        callOriginal(returnVarIndex, startOfVarIndex, monitorMethod);
-        monitorMethod.visitLabel(endOfTryCatch);
-
-        //attachReturnValue(scopeVarIndex, returnVarIndex);
-
-        endTrace(scopeVarIndex);
-
-        Label end = null;
-        if (!hasReturn) {
-            end = new Label();
-            monitorMethod.visitJumpInsn(GOTO, end);
-        } else {
-            monitorMethod.visitVarInsn(returnType.getOpcode(ILOAD), returnVarIndex);
-            monitorMethod.visitInsn(returnType.getOpcode(IRETURN));
-        }
-
-        emitCatchBlocks(scopeVarIndex, exceptionHandlers);
-
-        monitorMethod.visitLabel(handlerOfFinally);
-        monitorMethod.visitVarInsn(ASTORE, returnVarIndex);
-        //finally
-        monitorMethod.visitLabel(endOfFinally);
-
-        endTrace(scopeVarIndex);
-
-        monitorMethod.visitVarInsn(ALOAD, returnVarIndex);
-        monitorMethod.visitInsn(ATHROW);
-
-        if (!hasReturn) {
-            monitorMethod.visitLabel(end);
-            monitorMethod.visitInsn(RETURN);
-        }
+        startMonitor();
+        mv.visitLabel(beginLabel);
     }
 
-    private void emitCatchBlocks(int scopeVarIndex, Label[] exceptionHandlers) {
-        //catch blocks
-        for (int i = 0; i < newExceptionsLen; i++) {
-            monitorMethod.visitLabel(exceptionHandlers[i]);
-            //ex
-            int exceptionVarIndex = scopeVarIndex + 1;
-            monitorMethod.visitVarInsn(ASTORE, exceptionVarIndex);
+    @Override
+    public void visitInsn(int opcode) {
+        if ((opcode >= IRETURN && opcode <= RETURN)) {
+            endMonitor();
 
-            monitorMethod.visitLdcInsn(MONITOR_KEY);
-            monitorMethod.visitMethodInsn(INVOKESTATIC, SPY_NAME, "exception", EXCEPTION_DESC, false);
-            //throw ex
-            monitorMethod.visitVarInsn(ALOAD, exceptionVarIndex);
-            monitorMethod.visitInsn(ATHROW);
+            List<Object> stack = analyzerAdapter.stack;
+            if (stack == null) {
+                maxStack = Math.max(4, maxStack);
+            } else {
+                maxStack = Math.max(stack.size() + 4, maxStack);
+            }
         }
-    }
-
-    private void endTrace(int scopeVarIndex) {
-        //AgentMonitor.stop(key,startTime);
-        monitorMethod.visitLdcInsn(MONITOR_KEY);
-        //load startTime from local variable
-        monitorMethod.visitVarInsn(ALOAD, scopeVarIndex);
-        monitorMethod.visitMethodInsn(INVOKESTATIC, SPY_NAME, "stop", STOP_DESC, false);
-    }
-
-    private void startTrace(int scopeVarIndex) {
-        //long startTime = AgentMonitor.start(key);
-        //monitorMethod.visitLdcInsn(MONITOR_KEY);
-        monitorMethod.visitMethodInsn(INVOKESTATIC, SPY_NAME, "start", START_DESC, false);
-        //report startTime to local variable
-        monitorMethod.visitVarInsn(ASTORE, scopeVarIndex);
-
+        mv.visitInsn(opcode);
     }
 
     @Override
     public void visitMaxs(int maxStack, int maxLocals) {
-        super.visitMaxs(maxStack, maxLocals);
-        int computeMaxLocals = computeMaxLocals();
-        monitorMethod.visitMaxs(Math.max(maxStack, Math.max(computeMaxLocals, 4)), computeMaxLocals);
+        mv.visitLabel(endLabel);
+
+        emitCatchBlocks();
+
+        //新建了一个throwable变量，maxLocals需要加1
+        super.visitMaxs(Math.max(maxStack, this.maxStack), maxLocals + 1);
     }
 
-    /**
-     * @return this(1) + parameters size(n * per size) + scope(1) + hasReturn ? return size : exception(1)
-     */
-    private int computeMaxLocals() {
-        return startOfVarIndex + totalParameterSize + 1 + (hasReturn ? returnType.getSize() : 1);
+    private void startMonitor() {
+        //long startTime=AgentMonitor.start();
+
+        mv.visitMethodInsn(INVOKESTATIC, SPY_CLASS_TYPE, START_METHOD_NAME, START_METHOD_DESC, false);
+
+        this.scopeVarIndex = localVariablesSorter.newLocal(Type.getType(Long.class));
+        mv.visitVarInsn(ASTORE, scopeVarIndex);
+
+        maxStack = 4;
     }
 
+    private void endMonitor() {
+        //AgentMonitor.stop(key,startTime);
+        mv.visitLdcInsn(MONITOR_KEY);
+        mv.visitVarInsn(ALOAD, scopeVarIndex);
+        mv.visitMethodInsn(INVOKESTATIC, SPY_CLASS_TYPE, STOP_METHOD_NAME, STOP_METHOD_DESC, false);
 
-    private void callOriginal(int returnVarIndex, int defaultSize, MethodVisitor traceMethod) {
-        //this
-        if (defaultSize == 1) {
-            traceMethod.visitVarInsn(ALOAD, 0);
-        }
-        //load parameters to stack
-        for (int i = 0, index = 0, preSize = defaultSize; i < parameterTypes.length; i++) {
-            index += preSize;
-            Type parameterType = parameterTypes[i];
-            traceMethod.visitVarInsn(parameterType.getOpcode(ILOAD), index);
-            preSize = parameterType.getSize();
-        }
-        traceMethod.visitMethodInsn(defaultSize == 1 ? INVOKEVIRTUAL : INVOKESTATIC, this.className, DescDeal.generateNewName(this.methodName), desc, false);
-        if (hasReturn) {
-            traceMethod.visitVarInsn(returnType.getOpcode(ISTORE), returnVarIndex);
-        }
     }
 
-    @Override
-    public void visitEnd() {
-        super.visitEnd();
-        monitorMethod.visitEnd();
+    private void exceptionMonitor() {
+        //AgentMonitor.exception(key);
+        mv.visitLdcInsn(MONITOR_KEY);
+        mv.visitMethodInsn(INVOKESTATIC, SPY_CLASS_TYPE, EXCEPTION_METHOD_NAME, EXCEPTION_METHOD_DESC, false);
     }
 
-    private int computeTotalParameterSize(Type[] parameterTypes) {
-        int result = 0;
-        int parameterCount = parameterTypes.length;
-        for (int i = 0; i < parameterCount; i++) {
-            result += parameterTypes[i].getSize();
-        }
-        return result;
+    private void emitCatchBlocks() {
+        //catch blocks
+        mv.visitLabel(throwableLabel);
+        //ex
+        int exceptionVarIndex = localVariablesSorter.newLocal(Type.getType(Object.class));
+        mv.visitVarInsn(ASTORE, exceptionVarIndex);
+
+        //异常处理中结束
+        endMonitor();
+        exceptionMonitor();
+
+        //throw ex
+        mv.visitVarInsn(ALOAD, exceptionVarIndex);
+        mv.visitInsn(ATHROW);
     }
 
+    public void setLocalVariablesSorter(LocalVariablesSorter localVariablesSorter) {
+        this.localVariablesSorter = localVariablesSorter;
+    }
+
+    public void setAnalyzerAdapter(AnalyzerAdapter analyzerAdapter) {
+        this.analyzerAdapter = analyzerAdapter;
+    }
 }

@@ -20,7 +20,7 @@ package qunar.tc.bistoury.proxy.web.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import qunar.tc.bistoury.serverside.agile.LocalHost;
+import qunar.tc.bistoury.remoting.util.LocalHost;
 import qunar.tc.bistoury.serverside.bean.ApiResult;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfig;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;

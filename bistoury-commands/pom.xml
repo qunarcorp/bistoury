@@ -5,7 +5,7 @@
     <parent>
         <artifactId>bistoury</artifactId>
         <groupId>qunar.tc.bistoury</groupId>
-        <version>2.0.6</version>
+        <version>2.0.7</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -30,18 +30,6 @@
             <artifactId>bistoury-remoting</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.vip.vjtools</groupId>
-            <artifactId>vjtop</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.vip.vjtools</groupId>
-            <artifactId>vjmap</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.vip.vjtools</groupId>
-            <artifactId>vjmxcli</artifactId>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>bistoury-decompiler-fernflower</artifactId>
         </dependency>
@@ -53,10 +41,6 @@
         <dependency>
             <groupId>com.taobao.arthas</groupId>
             <artifactId>arthas-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.benf</groupId>
-            <artifactId>cfr</artifactId>
         </dependency>
 
         <dependency>
@@ -71,6 +55,10 @@
         <dependency>
             <groupId>commons-net</groupId>
             <artifactId>commons-net</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.olivergondza</groupId>
+            <artifactId>maven-jdk-tools-wrapper</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -17,26 +17,24 @@
 
 package qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.processor;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.common.BistouryConstants;
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.commandprocessor.AbstractCommand;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.serverside.agile.Conf;
 import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 
-import org.springframework.stereotype.Service;
+import javax.annotation.PostConstruct;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author zhenyu.nie created on 2019 2019/5/22 12:22
@@ -66,9 +64,9 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
     public void init() {
         DynamicConfigLoader.<LocalDynamicConfig>load("releaseInfo_config.properties", false)
                 .addListener(mapConf -> {
-            conf = Conf.fromMap(mapConf.asMap());
-            defaultCmInfoFilePath = conf.getString(DEFAULT, DEFAULT_RELEASE_INFO_PATH);
-        });
+                    conf = Conf.fromMap(mapConf.asMap());
+                    defaultCmInfoFilePath = conf.getString(DEFAULT, DEFAULT_RELEASE_INFO_PATH);
+                });
     }
 
     @Override
@@ -78,12 +76,14 @@ public class ArthasCommandProcessor extends AbstractCommand<String> {
                 CommandCode.REQ_TYPE_MONITOR.getCode(),
                 CommandCode.REQ_TYPE_JAR_INFO.getCode(),
                 CommandCode.REQ_TYPE_CONFIG.getCode(),
-                CommandCode.REQ_TYPE_JAR_DEBUG.getCode());
+                CommandCode.REQ_TYPE_JAR_DEBUG.getCode(),
+                CommandCode.REQ_TYPE_PROFILER_INFO.getCode());
     }
 
     @Override
     protected String prepareCommand(RequestData<String> data, String agentId) {
-        return encodeCommand(data.getCommand(), data.getApp()) + BistouryConstants.PID_PARAM + BistouryConstants.FILL_PID;
+        String command = encodeCommand(data.getCommand(), data.getApp());
+        return command + BistouryConstants.PID_PARAM + BistouryConstants.FILL_PID;
     }
 
     @Override

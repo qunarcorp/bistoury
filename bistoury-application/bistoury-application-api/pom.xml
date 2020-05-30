@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<artifactId>bistoury-application</artifactId>
-		<groupId>qunar.tc.bistoury</groupId>
-		<version>2.0.6</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>bistoury-application</artifactId>
+        <groupId>qunar.tc.bistoury</groupId>
+        <version>2.0.7</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>bistoury-application-api</artifactId>
-
+    <artifactId>bistoury-application-api</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
+    </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${server_java_source_version}</source>
+                    <target>${server_java_target_version}</target>
                 </configuration>
             </plugin>
         </plugins>

@@ -58,7 +58,7 @@ public class GithubRepositoryApiImpl implements GitRepositoryApi {
     public GithubRepositoryApiImpl(GitPrivateTokenService privateTokenService, DynamicConfig config) {
         this.privateTokenService = privateTokenService;
         filePathFormat = config.getString("file.path.format", "{0}src/main/java/{1}.java");
-        gitEndPoint = config.getString("git.endpoint");
+        gitEndPoint = config.getString("git.endpoint", "");
     }
 
     @Override
@@ -108,6 +108,10 @@ public class GithubRepositoryApiImpl implements GitRepositoryApi {
     }
 
     private String buildFileUrl(final String projectId, final String path) {
+        if (Strings.isNullOrEmpty(gitEndPoint)) {
+            throw new RuntimeException("git 链接配置错误");
+        }
+
         StringBuilder sb = new StringBuilder();
         sb.append(gitEndPoint)
                 .append("/repos/")

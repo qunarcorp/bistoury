@@ -47,20 +47,25 @@ public abstract class AbstractConnection implements Connection {
     @Override
     public ListenableFuture<WriteResult> write(Datagram message) {
         SettableFuture<WriteResult> result = SettableFuture.create();
-        if (channel.isWritable()) {
-            channel.writeAndFlush(message).addListener(future -> {
-                if (future.isSuccess()) {
-                    result.set(WriteResult.success);
-                } else {
-                    logger.warn("{} connection write fail, {}, {}", name, channel, message);
-                    result.set(WriteResult.fail);
-                }
-            });
-        } else {
-            logger.warn("{} connection is not writable, {}, {}", name, channel, message);
-            result.set(WriteResult.fail);
-        }
+        channel.writeAndFlush(message).addListener(future -> {
+            if (future.isSuccess()) {
+                result.set(WriteResult.success);
+            } else {
+                logger.warn("{} connection write fail, {}, {}", name, channel, message);
+                result.set(WriteResult.fail);
+            }
+        });
         return result;
+    }
+
+    @Override
+    public boolean isActive() {
+        return channel.isActive();
+    }
+
+    @Override
+    public boolean isWritable() {
+        return channel.isWritable();
     }
 
     @Override

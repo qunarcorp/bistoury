@@ -17,29 +17,33 @@
 
 package qunar.tc.bistoury.proxy.communicate.ui;
 
+import com.google.common.collect.Sets;
 import io.netty.channel.Channel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.proxy.communicate.AbstractConnection;
+import qunar.tc.bistoury.proxy.communicate.WritableListener;
 
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author zhenyu.nie created on 2019 2019/5/15 11:09
  */
 public class DefaultUiConnection extends AbstractConnection implements UiConnection {
 
+    private static final Logger logger = LoggerFactory.getLogger(DefaultUiConnection.class);
+
     private final Channel channel;
+
+    private final Set<WritableListener> listeners = Sets.newHashSet();
+
+    private boolean writable;
 
     public DefaultUiConnection(Channel channel) {
         super("ui", channel);
         this.channel = channel;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DefaultUiConnection that = (DefaultUiConnection) o;
-        return Objects.equals(channel, that.channel);
+        this.writable = channel.isWritable();
     }
 
     @Override
@@ -48,8 +52,39 @@ public class DefaultUiConnection extends AbstractConnection implements UiConnect
     }
 
     @Override
-    public boolean isActive() {
-        return channel.isActive();
+    public synchronized void setWritable(boolean writable) {
+        if (this.writable == writable) {
+            return;
+        }
+
+        logger.info("channel writable change, {}->{}, {}", this.writable, writable, channel);
+        this.writable = writable;
+        notifyWritableChange(writable);
+    }
+
+    @Override
+    public synchronized void addWritableListener(WritableListener listener) {
+        listeners.add(listener);
+        listener.onChange(this.writable);
+    }
+
+    @Override
+    public synchronized void removeWritableListener(WritableListener listener) {
+        listeners.remove(listener);
+    }
+
+    private void notifyWritableChange(boolean writable) {
+        for (WritableListener listener : listeners) {
+            listener.onChange(writable);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DefaultUiConnection that = (DefaultUiConnection) o;
+        return Objects.equals(channel, that.channel);
     }
 
     @Override

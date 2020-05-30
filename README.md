@@ -1,6 +1,7 @@
 # Bistoury
 
-![GitHub](https://img.shields.io/github/license/qunarcorp/bistoury) 
+![license](https://img.shields.io/github/license/qunarcorp/bistoury)
+![release](https://img.shields.io/github/v/release/qunarcorp/bistoury)
 
 `Bistoury` 是去哪儿网开源的一个对应用透明，无侵入的java应用诊断工具，用于提升开发人员的诊断效率和能力。
 
@@ -45,10 +46,12 @@ Bistoury提供可视化页面实时查看机器和应用的各种信息，包括
 - [生产部署](docs/cn/deploy.md)
 - [常见问题汇总](docs/cn/FAQ.md)
 - [设计文档](docs/cn/design/design.md)
-
+- [应用pid获取](docs/cn/PID.md))
+- [文件下载](docs/cn/downloadFile.md)
+- [性能分析](docs/cn/profiler.md)
 ## java版本要求
 
-ui、proxy使用Java1.8，agent使用java1.7或java1.8，由于agent会attach到应用中，所以应用也需要使用Java1.7或Java1.8。Java9及后续版本由于改动较大，会在以后陆续支持。
+ui、proxy使用Java1.8+，agent使用java1.7+，由于agent会attach到应用中，所以应用也需要使用Java1.7+，最好保持应用和agent的版本一致。点击[这里](docs/cn/java11.md)使用Java11运行bistoury
 
 ## 系统要求
 
@@ -93,3 +96,12 @@ qq群：717242486
 
 线程dump
 ![thread_dump](docs/image/thread_dump.png)
+
+文件下载
+![downlaod](docs/image/download.png)
+
+火焰图
+![性能分析栈](docs/image/profiler_stack.png)
+
+java热点方法
+![性能分析方法](docs/image/profiler_method.png)

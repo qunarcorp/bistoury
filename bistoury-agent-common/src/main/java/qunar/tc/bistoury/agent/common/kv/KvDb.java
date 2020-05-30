@@ -17,6 +17,8 @@
 
 package qunar.tc.bistoury.agent.common.kv;
 
+import java.util.Map;
+
 /**
  * @author zhenyu.nie created on 2019 2019/1/8 17:20
  */
@@ -25,4 +27,6 @@ public interface KvDb {
     String get(String key);
 
     void put(String key, String value);
+
+    void putBatch(Map<String, String> data);
 }

@@ -17,12 +17,9 @@
 
 package qunar.tc.bistoury.clientside.common.meta;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.google.common.collect.ImmutableMap;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -30,22 +27,19 @@ import java.util.Map;
  */
 public class DefaultMetaStore implements MetaStore {
 
-    private volatile Map<String, String> attrs = new HashMap<>();
-
-    private static final Logger logger = LoggerFactory.getLogger(DefaultMetaStore.class);
+    private volatile Map<String, String> attrs = ImmutableMap.of();
 
     DefaultMetaStore() {
     }
 
     @Override
     public void update(Map<String, String> attrs) {
-        logger.debug("update agent info, {}", attrs);
-        this.attrs = attrs;
+        this.attrs = ImmutableMap.copyOf(attrs);
     }
 
     @Override
     public Map<String, String> getAgentInfo() {
-        return Collections.unmodifiableMap(this.attrs);
+        return this.attrs;
     }
 
     @Override

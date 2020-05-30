@@ -44,6 +44,8 @@ $(document).ready(function () {
     var pSSurvivorSpaceCurve = echarts.init(document.getElementById("pSSurvivorSpace-curve"));
     var pSEdenSpaceCurve = echarts.init(document.getElementById("pSEdenSpace-curve"));
     var codeCacheCurve = echarts.init(document.getElementById("codeCache-curve"));
+    var codeHeap_non_nmethods_curve = echarts.init(document.getElementById("codeHeap-non-nmethods"));
+    var codeHeap_non_profiled_nmethods_curve = echarts.init(document.getElementById("codeHeap-non-profiled-nmethods"));
 
     var compileTimeCurve = echarts.init(document.getElementById("compile-time-curve"));
     var classLoaderTimeCurve = echarts.init(document.getElementById("class-loader-time-curve"));
@@ -72,6 +74,10 @@ $(document).ready(function () {
     var pSEdenSpaceCommit = [];
     var codeCacheUsed = [];
     var codeCacheCommit = [];
+    var codeHeapNonMmethodsUsed = [];
+    var codeHeapNonMmethodsCommit = [];
+    var codeHeapNonProfilednmethodsUsed = [];
+    var codeHeapNonProfilednmethodsCommit = [];
 
     var compileTime = [];
     var classLoaderTime = [];
@@ -435,6 +441,8 @@ $(document).ready(function () {
                 $("#file-content-modal").modal('hide');
                 bistoury.error(res.message);
             }
+        } else if (resType === "profilerstart" || resType === "profilerstop" || resType === "profilerstatesearch") {
+            buildProfiler(result);
         }
     }
 
@@ -495,6 +503,8 @@ $(document).ready(function () {
                 if (currentHost != data.value) {
                     keepRunning = false;
                     currentHost = data.value;
+                    stopProcessStateInterval();
+                    stopSearchStateInterval();
                 }
                 startTime = new Date().getTime();
                 currentThreadTime = new Date().getTime();
@@ -514,6 +524,7 @@ $(document).ready(function () {
                 initThreadCurve();
                 initMemPoolCurve();
                 initVisuaCurve();
+                initHeapHisto();
 
                 cleanData();
                 removeActiveClass();
@@ -531,36 +542,58 @@ $(document).ready(function () {
     }
 
     function getAllThreads() {
-        bistouryWS.send(currentHost, 11, "0@-1@-1", {type: 0, maxDepth: -1, threadId: -1}, keepRunningFun, handleResult);
+        bistouryWS.send(currentHost, 11, "0@-1@-1", {
+            type: 0,
+            maxDepth: -1,
+            threadId: -1
+        }, keepRunningFun, handleResult);
         //send(currentHost, 11, "0@-1@-1")
     }
 
     function getThreadDetail(threadId) {
         var maxDepth = $("#thread-max-depth").val();
         //send(currentHost, 11, "1@" + threadId + "@" + maxDepth);
-        bistouryWS.send(currentHost, 11, "1@" + threadId + "@" + maxDepth, {type: 1, maxDepth: maxDepth, threadId: threadId}, keepRunningFun, handleResult)
+        bistouryWS.send(currentHost, 11, "1@" + threadId + "@" + maxDepth, {
+            type: 1,
+            maxDepth: maxDepth,
+            threadId: threadId
+        }, keepRunningFun, handleResult)
     }
 
     function getThreadDump() {
         var maxDepth = $("#thread-max-depth").val();
         //send(currentHost, 11, "2@-1@" + maxDepth);
-        bistouryWS.send(currentHost, 11, "2@-1@" + maxDepth, {type: 2, maxDepth: maxDepth, threadId: -1}, keepRunningFun, handleResult)
+        bistouryWS.send(currentHost, 11, "2@-1@" + maxDepth, {
+            type: 2,
+            maxDepth: maxDepth,
+            threadId: -1
+        }, keepRunningFun, handleResult)
     }
 
     function getDeadLock() {
         var maxDepth = $("#thread-max-depth").val();
         //send(currentHost, 11, "3@-1@" + maxDepth)
-        bistouryWS.send(currentHost, 11, "3@-1@" + maxDepth, {type: 3, maxDepth: maxDepth, threadId: -1}, keepRunningFun, handleResult)
+        bistouryWS.send(currentHost, 11, "3@-1@" + maxDepth, {
+            type: 3,
+            maxDepth: maxDepth,
+            threadId: -1
+        }, keepRunningFun, handleResult)
     }
 
     function getHeapHisto(timestamp) {
         $('#jvm-heap-histo-table').bootstrapTable('removeAll');
         var param = $("#heap-histo-param").val();
         if (timestamp) {
-            bistouryWS.send(currentHost, 12, "heaphisto " + param + " " + timestamp, {param: param, timestamp: timestamp}, keepRunningFun, handleResult);
+            bistouryWS.send(currentHost, 12, "heaphisto " + param + " " + timestamp, {
+                param: param,
+                timestamp: timestamp
+            }, keepRunningFun, handleResult);
             //send(currentHost, 12, "heaphisto " + param + " " + timestamp);
         } else {
-            bistouryWS.send(currentHost, 12, "heaphisto " + param + " " + -1, {param: param, timestamp: -1}, keepRunningFun, handleResult)
+            bistouryWS.send(currentHost, 12, "heaphisto " + param + " " + -1, {
+                param: param,
+                timestamp: -1
+            }, keepRunningFun, handleResult)
             //send(currentHost, 12, "heaphisto " + param + " " + -1);
         }
     }
@@ -601,6 +634,10 @@ $(document).ready(function () {
         pSEdenSpaceCommit = getCurveData();
         codeCacheUsed = getCurveData();
         codeCacheCommit = getCurveData();
+        codeHeapNonMmethodsUsed = getCurveData();
+        codeHeapNonMmethodsCommit = getCurveData();
+        codeHeapNonProfilednmethodsUsed = getCurveData();
+        codeHeapNonProfilednmethodsCommit = getCurveData();
 
         compileTime = getCurveData();
         classLoaderTime = getCurveData();
@@ -618,13 +655,13 @@ $(document).ready(function () {
                 used: metaspaceUsed,
                 committed: metaspaceCommit
             },
-            PSOldGen: {
+            OldGen: {
                 curve: psOldGenCurve,
                 used: psOldGenUsed,
                 committed: psOldGenCommit
             }
             ,
-            PSEdenSpace: {
+            EdenSpace: {
                 curve: pSEdenSpaceCurve,
                 used: pSEdenSpaceUsed,
                 committed: pSEdenSpaceCommit
@@ -639,7 +676,17 @@ $(document).ready(function () {
                 used: codeCacheUsed,
                 committed: codeCacheCommit
             },
-            PSSurvivorSpace: {
+            CodeHeapnonnmethods: {
+                curve: codeHeap_non_nmethods_curve,
+                used: codeHeapNonMmethodsUsed,
+                committed: codeHeapNonMmethodsCommit
+            },
+            CodeHeapnonprofilednmethods: {
+                curve: codeHeap_non_profiled_nmethods_curve,
+                used: codeHeapNonProfilednmethodsUsed,
+                committed: codeHeapNonProfilednmethodsCommit
+            },
+            SurvivorSpace: {
                 curve: pSSurvivorSpaceCurve,
                 used: pSSurvivorSpaceUsed,
                 committed: pSSurvivorSpaceCommit
@@ -649,6 +696,10 @@ $(document).ready(function () {
 
     function getCurveData() {
         return new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+
+    function initHeapHisto() {
+        $('#jvm-heap-histo-table').bootstrapTable('removeAll');
     }
 
     function initVisuaCurve() {
@@ -714,20 +765,26 @@ $(document).ready(function () {
         var title = {text: "Metaspace"}
         dravCurve(metaspaceCurve, memTimeAxis, yAxis, legend, title, getMemPoolSeries(metaspaceUsed, metaspaceCommit));
 
-        title = {text: "PS Old Gen"}
+        title = {text: "Old Gen"}
         dravCurve(psOldGenCurve, memTimeAxis, yAxis, legend, title, getMemPoolSeries(psOldGenUsed, psOldGenCommit));
 
         title = {text: "Compressed Class Space"}
         dravCurve(compressedClassSpaceCurve, memTimeAxis, yAxis, legend, title, getMemPoolSeries(compressedClassSpaceUsed, compressedClassSpaceCommit));
 
-        title = {text: "PS Survivor Space"}
+        title = {text: "Survivor Space"}
         dravCurve(pSSurvivorSpaceCurve, memTimeAxis, yAxis, legend, title, getMemPoolSeries(pSSurvivorSpaceUsed, pSSurvivorSpaceCommit));
 
-        title = {text: "PS Eden Space"}
+        title = {text: "Eden Space"}
         dravCurve(pSEdenSpaceCurve, memTimeAxis, yAxis, legend, title, getMemPoolSeries(pSEdenSpaceUsed, pSEdenSpaceCommit));
 
         title = {text: "Code Cache"}
         dravCurve(codeCacheCurve, memTimeAxis, yAxis, legend, title, getMemPoolSeries(codeCacheUsed, codeCacheCommit));
+
+        title = {text: "CodeHeap 'non-nmethods'"}
+        dravCurve(codeHeap_non_nmethods_curve, memTimeAxis, yAxis, legend, title, getMemPoolSeries(codeHeapNonMmethodsUsed, codeHeapNonMmethodsCommit));
+
+        title = {text: "CodeHeap'non-profilednmethods'"}
+        dravCurve(codeHeap_non_profiled_nmethods_curve, memTimeAxis, yAxis, legend, title, getMemPoolSeries(codeHeapNonProfilednmethodsUsed, codeHeapNonProfilednmethodsCommit));
 
     }
 
@@ -936,6 +993,13 @@ $(document).ready(function () {
         }
     });
 
+    $("#cpu-profiler-menu").click(function () {
+        removeActiveClass();
+        $("#cpu-profiler-menu").addClass("active");
+        $("#cpu-profiler").show();
+        initNoStartState();
+    });
+
     $("#heap-histo-search").click(function () {
         /* var now = new Date(dateFormat(new Date())).getTime();
          var dateStr = $("#heap-histo-time").val()
@@ -1075,10 +1139,25 @@ $(document).ready(function () {
     $("#thread-max-depth").on("keyup", function () {
         var maxDepth = $("#thread-max-depth").val();
         if (maxDepth < 0) {
-            $("#thread-max-depth").val(3);
+            $("#thread-max-depth").val(10);
             alert("max depth 不能小于0")
         }
     });
+
+    $("#profiler-mode").change(function () {
+        var option = $(this).children('option:selected').val();
+        if (option === sampler_code) {
+            $("#profiler-threads-div").css('display', 'none');
+            $("#profiler-event-div").css('display', 'none');
+            $("#async-profiler-href-div").css('display', 'none');
+            $("#profiler-frequency").val(20)
+        } else if (option === async_sampler_code) {
+            $("#profiler-threads-div").css('display', 'flex');
+            $("#profiler-event-div").css('display', 'flex');
+            $("#async-profiler-href-div").css('display', 'flex');
+            $("#profiler-frequency").val(5)
+        }
+    })
 
     function initHeapHistoTable() {
         $('#jvm-heap-histo-table').bootstrapTable({
@@ -1098,7 +1177,33 @@ $(document).ready(function () {
                 title: 'Class',
                 field: 'className',
                 sortable: true,
-                searchable: true
+                searchable: true,
+                formatter: function (vaule) {
+                    switch (vaule) {
+                        case "[B":
+                            return "byte[]";
+                        case "[C":
+                            return "char[]";
+                        case "[I":
+                            return "int[]";
+                        case "[Z":
+                            return "boolean[]";
+                        case "[S":
+                            return "short[]";
+                        case "[J":
+                            return "long[]";
+                        case "[F":
+                            return "float[]";
+                        case "[D":
+                            return "double[]";
+                        default:
+                            break;
+                    }
+                    if ((vaule + "").indexOf("[L") == 0) {
+                        return vaule.substr(2, vaule.length - 2) + "[]"
+                    }
+                    return vaule;
+                }
             }, {
                 title: 'Count',
                 field: 'count',

@@ -24,7 +24,7 @@ import qunar.tc.bistoury.serverside.configuration.DynamicConfigLoader;
 import qunar.tc.bistoury.serverside.configuration.local.LocalDynamicConfig;
 import qunar.tc.bistoury.ui.model.ReleaseInfo;
 import qunar.tc.bistoury.ui.service.ReleaseInfoService;
-import qunar.tc.bistoury.ui.util.PropertiesReleaseInfoParse;
+import qunar.tc.bistoury.ui.util.PropertiesReleaseInfoParser;
 import qunar.tc.bistoury.ui.util.ReleaseInfoParse;
 
 import javax.annotation.PostConstruct;
@@ -38,7 +38,7 @@ import javax.annotation.PostConstruct;
 public class ReleaseInfoServiceImpl implements ReleaseInfoService {
 
 
-    private static final ReleaseInfoParse RELEASE_INFO_PARSE = new PropertiesReleaseInfoParse();
+    private static final ReleaseInfoParse RELEASE_INFO_PARSE = new PropertiesReleaseInfoParser();
     private static final String DEFAULT_RELEASE_INFO_PATH = "../webapps/releaseInfo.properties";
     private static final String DEFAULT = "default";
     private String defaultReleaseInfoPath = DEFAULT_RELEASE_INFO_PATH;

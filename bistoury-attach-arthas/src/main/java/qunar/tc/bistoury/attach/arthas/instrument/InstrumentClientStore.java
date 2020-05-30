@@ -26,6 +26,7 @@ import qunar.tc.bistoury.attach.arthas.debug.JarDebugClients;
 import qunar.tc.bistoury.attach.arthas.debug.QDebugClients;
 import qunar.tc.bistoury.attach.arthas.jar.JarInfoClients;
 import qunar.tc.bistoury.attach.arthas.monitor.QMonitorClients;
+import qunar.tc.bistoury.attach.arthas.profiler.GProfilerClients;
 import qunar.tc.bistoury.attach.common.BistouryLoggger;
 import qunar.tc.bistoury.instrument.client.classpath.AppClassPathSupplier;
 import qunar.tc.bistoury.instrument.client.classpath.AppLibClassSupplier;
@@ -107,6 +108,12 @@ public class InstrumentClientStore {
             builder.add(JarInfoClients.create(instrumentInfo));
         } catch (Exception e) {
             logger.error("", "jar info client init error", e);
+        }
+
+        try {
+            builder.add(GProfilerClients.create());
+        } catch (Exception e) {
+            logger.error("", "profiler client init error", e);
         }
 
         clients = builder.build();

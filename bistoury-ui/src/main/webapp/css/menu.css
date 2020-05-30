@@ -37,6 +37,16 @@ html, body {
     width: 50%;
 }
 
+.content .panel-profiler-left {
+    width: 30%;
+    float: left;
+}
+
+.content .panel-profiler-right {
+    width: 65%;
+    float: right;
+}
+
 .content .panel-right {
     width: 49%;
     margin-left: 1%;
@@ -136,6 +146,8 @@ html, body {
 
 .progress-value {
     position: absolute;
+    left: 10px;
+    background-color: #ff000000;
 }
 
 .host-model .modal-dialog {
@@ -286,3 +298,31 @@ code {
     margin-left: 10px;
     margin-right: 10px;
 }
+
+.content .panel-profiler-left {
+    width: 30%;
+    float: left;
+}
+
+.content .panel-profiler-right {
+    width: 68%;
+    float: right;
+}
+
+.profiler-option-div {
+    display: flex;
+}
+
+.profiler-option-left {
+    width: 150px;
+}
+
+.profiler-option-input {
+    margin-left: 6px;
+}
+
+.modal-profiler {
+    width: 300px;
+    margin: auto;
+}
+

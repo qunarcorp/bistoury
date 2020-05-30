@@ -8,3 +8,6 @@ qunar.tc.bistoury.commands.cpujstack.CpuTimeTaskFactory
 qunar.tc.bistoury.commands.cpujstack.ThreadInfoTaskFactory
 qunar.tc.bistoury.commands.cpujstack.ThreadNumTaskFactory
 qunar.tc.bistoury.commands.decompiler.DecompilerTaskFactory
+qunar.tc.bistoury.commands.profiler.ProfilerFileForProxyTaskFactory
+qunar.tc.bistoury.commands.download.DownloadFileListTaskFactory
+qunar.tc.bistoury.commands.download.DownloadFileTaskFactory

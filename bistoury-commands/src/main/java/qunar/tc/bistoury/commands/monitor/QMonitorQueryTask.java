@@ -19,9 +19,12 @@ package qunar.tc.bistoury.commands.monitor;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.SettableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
+import qunar.tc.bistoury.agent.common.job.BytesJob;
+import qunar.tc.bistoury.agent.common.job.ContinueResponseJob;
 import qunar.tc.bistoury.agent.common.util.Response;
 import qunar.tc.bistoury.common.JacksonSerializer;
 import qunar.tc.bistoury.remoting.command.MonitorCommand;
@@ -30,7 +33,6 @@ import qunar.tc.bistoury.remoting.netty.Task;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 /**
  * @author: leix.xie
@@ -38,16 +40,19 @@ import java.util.concurrent.Callable;
  * @describe：
  */
 public class QMonitorQueryTask implements Task {
+
     private static final Logger logger = LoggerFactory.getLogger(QMonitorQueryTask.class);
-    private static final ListeningExecutorService agentExecutor = AgentRemotingExecutor.getExecutor();
+
     private static final QMonitorStore Q_MONITOR_STORE = QMonitorStore.getInstance();
     private static final String TYPE_LIST = "list";
     private static final String TYPE_LATEST = "latest";
-    private String id;
-    private MonitorCommand command;
-    private ResponseHandler handler;
-    private long maxRunningMs;
-    private volatile ListenableFuture<Integer> future;
+
+    private final String id;
+    private final MonitorCommand command;
+    private final ResponseHandler handler;
+    private final long maxRunningMs;
+
+    private final SettableFuture<Integer> future = SettableFuture.create();
 
     public QMonitorQueryTask(String id, MonitorCommand command, ResponseHandler handler, long maxRunningMs) {
         this.id = id;
@@ -57,53 +62,72 @@ public class QMonitorQueryTask implements Task {
     }
 
     @Override
-    public ListenableFuture<Integer> execute() {
-        this.future = agentExecutor.submit(new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                try {
-                    queryMonitor();
-                } catch (Throwable e) {
-                    logger.error("qmonitor query error", e);
-                    handlerError("qmonitor query error, " + e.getClass().getName() + ", " + e.getMessage());
-                }
-                return null;
-            }
-        });
-        return this.future;
+    public ContinueResponseJob createJob() {
+        return new Job();
     }
 
-    private void queryMonitor() {
-        final String type = command.getType();
+    @Override
+    public ListenableFuture<Integer> getResultFuture() {
+        return future;
+    }
+
+    private class Job extends BytesJob {
+
+        private Job() {
+            super(id, handler, future);
+        }
+
+        @Override
+        protected byte[] getBytes() throws Exception {
+            return getResponseBytes();
+        }
+
+        @Override
+        public ListeningExecutorService getExecutor() {
+            return AgentRemotingExecutor.getExecutor();
+        }
+    }
+
+    private byte[] dealCommand() {
+        String type = command.getType();
         if (TYPE_LIST.equals(type)) {
             Response response = Q_MONITOR_STORE.reportList(command.getName(), command.getStartTime(), command.getEndTime());
-            handlerSuccess(response);
+            return handlerSuccess(response);
         } else if (TYPE_LATEST.equals(type)) {
             Response response = Q_MONITOR_STORE.reportLatest(command.getName(), command.getQuery());
-            handlerSuccess(response);
+            return handlerSuccess(response);
         } else {
             throw new IllegalArgumentException("illegal type: " + type);
         }
     }
 
-    private void handlerSuccess(Object data) {
+    private byte[] getResponseBytes() {
+        try {
+            return dealCommand();
+        } catch (Throwable e) {
+            logger.error("qmonitor query error, {}", command, e);
+            return handlerError("qmonitor query error, " + e.getClass().getName() + ", " + e.getMessage());
+        }
+    }
+
+    private byte[] handlerSuccess(Object data) {
         Map<String, Object> result = new HashMap<>();
         result.put("type", "qmonitorquery");
         result.put("code", 0);
         result.put("data", data);
-        handlerResult(result);
+        return toBytes(result);
     }
 
-    private void handlerError(String errorMsg) {
+    private byte[] handlerError(String errorMsg) {
         Map<String, Object> result = new HashMap<>();
         result.put("type", "qmonitorquery");
         result.put("code", -1);
         result.put("message", errorMsg);
-        handlerResult(result);
+        return toBytes(result);
     }
 
-    private void handlerResult(Map<String, Object> result) {
-        handler.handle(JacksonSerializer.serialize(result));
+    private byte[] toBytes(Map<String, Object> result) {
+        return JacksonSerializer.serializeToBytes(result);
     }
 
     @Override
@@ -114,17 +138,5 @@ public class QMonitorQueryTask implements Task {
     @Override
     public long getMaxRunningMs() {
         return maxRunningMs;
-    }
-
-    @Override
-    public void cancel() {
-        try {
-            if (future != null) {
-                future.cancel(true);
-                future = null;
-            }
-        } catch (Exception e) {
-            logger.error("cancel monitor query task error", e);
-        }
     }
 }

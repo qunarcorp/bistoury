@@ -75,3 +75,32 @@ create table `bistoury_user`(
 )CHARSET = utf8mb4 comment '用户信息表';
 
 insert into bistoury_user (user_code, password) VALUES ('admin','q1mHvT20zskSnIHSF27d/A==')
+
+create table if not exists `bistoury_profiler_lock`
+(
+    `id`       int(10) unsigned auto_increment comment '主键id',
+    `app_code` varchar(50) default '' not null comment '对应的appcode',
+    `agent_id` varchar(32) default '' not null comment 'agent机器对应的id',
+    primary key (`id`),
+    unique index uniq_app_code_agent_id (app_code, agent_id)
+) engine = innodb CHARSET = utf8mb4 comment '性能分析插入锁表';
+
+create table if not exists `bistoury_profiler`
+(
+    `id`          int(10) unsigned auto_increment comment '主键id',
+    `profiler_id` varchar(32)      not null default '' comment '性能分析对应的id',
+    `operator`    varchar(50)      not null default '' comment '操作用户code',
+    `app_code`    varchar(50)      not null default '' comment '对应的appcode',
+    `agent_id`    varchar(32)      not null default '' comment 'agent机器对应的id',
+    `duration`    int(10)          not null default 0 comment '性能分析时长,单位s',
+    `interval_ms` int(10)          not null default 0 comment '抽样间隔时长,单位ms',
+    `mode`        int(3) unsigned  not null default 0 comment '分析模式,异步抽样-0,同步抽样-1',
+    `pid`         int(10) unsigned not null default 0 comment '目标vm对应的pid',
+    `start_time`  timestamp        not null default '1970-01-01 08:00:01' comment '性能分析开始时间',
+    `update_time` timestamp        not null default current_timestamp on update current_timestamp comment '更新时间',
+    `state`       int(3) unsigned  not null default 0 comment '状态, 0: 开始 1: 已结束 2: 准备 4: 错误',
+    primary key (`id`),
+    unique key `uniq_profiler_id` (`profiler_id`),
+    index `idx_start_time` (`start_time`),
+    index `idx_app_code_agent_id` (`app_code`, `agent_id`)
+) engine = innodb CHARSET = utf8mb4 comment '性能分析记录表';

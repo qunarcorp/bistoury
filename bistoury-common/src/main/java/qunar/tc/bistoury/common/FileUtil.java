@@ -50,13 +50,19 @@ public final class FileUtil {
      */
     public static List<String> listFile(File file) {
         List<String> result = new ArrayList<>();
-        listFile(result, file);
+        if (file.exists()) {
+            listFile(result, file);
+        }
         return result;
     }
 
     public static List<File> listFile(File file, Predicate<File> filter) {
         List<File> result = Lists.newArrayList();
-        listFile(result, file, filter);
+
+        if (file.exists()) {
+            listFile(result, file, filter);
+        }
+
         return result;
     }
 
@@ -161,5 +167,35 @@ public final class FileUtil {
             reader.close();
         }
         return sb.toString();
+    }
+
+    public static void ensureDirectoryExists(final String path) {
+        File file = new File(path);
+        if (!file.exists() || !file.isDirectory()) {
+            boolean mkdirs = file.mkdirs();
+            if (!mkdirs) {
+                throw new RuntimeException("mkdirs error, path: " + path);
+            }
+        }
+    }
+
+    public static void deleteDirectory(File file, boolean deleteChildDirectory) {
+        if (file == null) {
+            return;
+        }
+        if (file.isDirectory()) {
+            String[] list = file.list();
+            if (list == null || list.length == 0) {
+                if (deleteChildDirectory) {
+                    file.delete();
+                }
+                return;
+            }
+            for (int i = 0; i < list.length; i++) {
+                deleteDirectory(new File(file, list[i]), deleteChildDirectory);
+            }
+        } else {
+            file.delete();
+        }
     }
 }

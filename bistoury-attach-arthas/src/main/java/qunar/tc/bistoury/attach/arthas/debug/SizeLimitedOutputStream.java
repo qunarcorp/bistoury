@@ -17,7 +17,6 @@
 
 package qunar.tc.bistoury.attach.arthas.debug;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -25,44 +24,46 @@ import java.io.OutputStream;
  * 有长度限制的OutputStream
  * Created by cai.wen on 18-12-12.
  */
-public class SizeLimitedOutputStream extends OutputStream {
-    private final int maxSize;
-    private int size;
-    private final ByteArrayOutputStream byteArrayOutputStream;
+class SizeLimitedOutputStream extends OutputStream {
 
-    public SizeLimitedOutputStream(int maxSize) {
+    private final OutputStream outputStream;
+
+    private final int maxSize;
+
+    private int size;
+
+    SizeLimitedOutputStream(OutputStream outputStream, int maxSize) {
+        this.outputStream = outputStream;
         this.maxSize = maxSize;
-        byteArrayOutputStream = new ByteArrayOutputStream(maxSize);
     }
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
-        size += len;
-        checkSize();
-        byteArrayOutputStream.write(b, off, len);
+        int newSize = size + len;
+        checkSize(newSize);
+        outputStream.write(b, off, len);
+        size = newSize;
     }
 
     @Override
     public void write(byte[] b) throws IOException {
-        size += b.length;
-        checkSize();
-        byteArrayOutputStream.write(b);
+        int newSize = size + b.length;
+        checkSize(newSize);
+        outputStream.write(b);
+        size = newSize;
     }
 
     @Override
     public void write(int b) throws IOException {
-        size++;
-        checkSize();
-        byteArrayOutputStream.write(b);
+        int newSize = size + 1;
+        checkSize(newSize);
+        outputStream.write(b);
+        size = newSize;
     }
 
-    private void checkSize() throws SizeLimitExceededException {
-        if (size > maxSize) {
+    private void checkSize(int newSize) throws SizeLimitExceededException {
+        if (newSize > maxSize) {
             throw new SizeLimitExceededException();
         }
-    }
-
-    public synchronized byte toByteArray()[] {
-        return byteArrayOutputStream.toByteArray();
     }
 }

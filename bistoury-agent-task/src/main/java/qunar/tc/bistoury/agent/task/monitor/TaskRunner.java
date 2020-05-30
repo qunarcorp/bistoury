@@ -21,12 +21,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import qunar.tc.bistoury.clientside.common.monitor.MetricsSnapshot;
-import qunar.tc.bistoury.commands.arthas.telnet.DebugTelnetStore;
 import qunar.tc.bistoury.commands.arthas.telnet.Telnet;
 import qunar.tc.bistoury.commands.arthas.telnet.TelnetStore;
+import qunar.tc.bistoury.commands.arthas.telnet.UrlEncodedTelnetStore;
 import qunar.tc.bistoury.commands.monitor.QMonitorStore;
 import qunar.tc.bistoury.common.*;
-import qunar.tc.bistoury.remoting.netty.MonitorReceiver;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * @author: leix.xie
@@ -36,18 +37,13 @@ import qunar.tc.bistoury.remoting.netty.MonitorReceiver;
 public class TaskRunner implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(TaskRunner.class);
     private static QMonitorStore MONITOR_STORE = QMonitorStore.getInstance();
-    private static final TelnetStore TELNET_STORE = DebugTelnetStore.getInstance();
-    private MonitorReceiver receiver;
+    private static final TelnetStore TELNET_STORE = UrlEncodedTelnetStore.getInstance();
     private static final String COMMAND = BistouryConstants.REQ_MONITOR_SNAPSHOT;
 
     private static final String MIN_VERSION = "1.2.5";
 
     private static final TypeReference<TypeResponse<MetricsSnapshot>> TYPE_REFERENCE = new TypeReference<TypeResponse<MetricsSnapshot>>() {
     };
-
-    TaskRunner(MonitorReceiver receiver) {
-        this.receiver = receiver;
-    }
 
     @Override
     public void run() {
@@ -63,8 +59,8 @@ public class TaskRunner implements Runnable {
                 return;
             }
             telnet.write(COMMAND);
-            telnet.read(COMMAND, receiver);
-            storeMetricsSnapshot(receiver.getAndReset());
+            byte[] result = readAll(telnet);
+            storeMetricsSnapshot(result);
         } catch (Exception e) {
             logger.error("telnet write command error", e);
         } finally {
@@ -72,7 +68,19 @@ public class TaskRunner implements Runnable {
         }
     }
 
-    private void storeMetricsSnapshot(final String content) {
+    private byte[] readAll(Telnet telnet) throws Exception {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        while (true) {
+            byte[] bytes = telnet.read();
+            if (bytes == null) {
+                break;
+            }
+            outputStream.write(bytes);
+        }
+        return outputStream.toByteArray();
+    }
+
+    private void storeMetricsSnapshot(byte[] content) {
         TypeResponse<MetricsSnapshot> typeResponse = JacksonSerializer.deSerialize(content, TYPE_REFERENCE);
         if (!BistouryConstants.REQ_MONITOR_SNAPSHOT.equals(typeResponse.getType())) {
             return;

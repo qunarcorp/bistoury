@@ -17,9 +17,16 @@
 
 package qunar.tc.bistoury.ui.service;
 
+import qunar.tc.bistoury.ui.util.ProxyInfo;
+
 import java.util.List;
+import java.util.Optional;
 
 public interface ProxyService {
 
     List<String> getAllProxyUrls();
+
+    List<String> getWebSocketUrl(final String agentIp);
+
+    Optional<ProxyInfo> getNewProxyInfo(final String agentIp);
 }

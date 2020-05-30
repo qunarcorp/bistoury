@@ -33,10 +33,19 @@ public class RSAEncryption implements Encryption {
 
     private static final String ALGORITHM = "RSA";
 
+
+    private static final String RSA_PUBLIC_KEY = "/rsa-public-key.pem";
+
+    private static final String RSA_PRIVATE_KEY = "/rsa-private-key.pem";
+
     private PublicKey publicKey;
     private PrivateKey privateKey;
 
-    public RSAEncryption(String publicKeyPath, String privateKeyPath) throws IOException, ClassNotFoundException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException {
+    public RSAEncryption() throws IOException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException {
+        this(RSA_PUBLIC_KEY, RSA_PRIVATE_KEY);
+    }
+
+    public RSAEncryption(String publicKeyPath, String privateKeyPath) throws IOException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException {
         this.publicKey = EncryptionUtils.loadRSAPublicKey(publicKeyPath);
         this.privateKey = EncryptionUtils.loadRSAPrivateKey(privateKeyPath);
 

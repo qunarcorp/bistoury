@@ -1,0 +1,32 @@
+.svg-page {
+    display: flex;
+}
+
+.svg-page-sidebar {
+    width: 15%;
+}
+
+.svg-page-content {
+    width: 80%;
+}
+
+.cpu-profiler-container {
+    height: 20px;
+    margin: 20px auto 0;
+    border: 2px solid #388bfb;
+    line-height: 20px;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    overflow: hidden;
+}
+
+.cpu-profiler-process {
+    background: #85B9FF;
+    height: 100%;
+    text-align: center;
+    transition: all 0.5s ease-in-out;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    color: #fff;
+}

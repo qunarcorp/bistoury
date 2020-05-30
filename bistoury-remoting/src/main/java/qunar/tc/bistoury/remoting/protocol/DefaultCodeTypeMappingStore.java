@@ -31,25 +31,28 @@ import static qunar.tc.bistoury.remoting.protocol.CommandCode.*;
  */
 public class DefaultCodeTypeMappingStore implements CodeTypeMappingStore {
 
-    private final Map<Class<?>, Set<Integer>> typeCodeMappings = Maps.newHashMap();
-
     private final Map<Integer, Class<?>> codeTypeMappings = Maps.newHashMap();
 
     DefaultCodeTypeMappingStore() {
         final Class stringClass = String.class;
 
         //arthas
-        register(String.class, ImmutableSet.of(REQ_TYPE_ARTHAS.getCode(),
+        register(stringClass, ImmutableSet.of(REQ_TYPE_ARTHAS.getCode(),
                 REQ_TYPE_DEBUG.getCode(),
                 REQ_TYPE_MONITOR.getCode(),
                 REQ_TYPE_JAR_INFO.getCode(),
                 REQ_TYPE_CONFIG.getCode(),
-                REQ_TYPE_JAR_DEBUG.getCode()));
+                REQ_TYPE_JAR_DEBUG.getCode(),
+                REQ_TYPE_PROFILER_STOP.getCode(),
+                REQ_TYPE_PROFILER_START.getCode(),
+                REQ_TYPE_PROFILER_STATE_SEARCH.getCode(),
+                REQ_TYPE_PROFILER_INFO.getCode()));
 
-        //jstack
+        //线程级cpu监控
         register(CpuTimeCommand.class, ImmutableSet.of(REQ_TYPE_CPU_JSTACK_TIMES.getCode()));
-        register(String.class, ImmutableSet.of(REQ_TYPE_CPU_JSTACK_THREADS.getCode()));
+        register(stringClass, ImmutableSet.of(REQ_TYPE_CPU_JSTACK_THREADS.getCode()));
         register(ThreadNumCommand.class, ImmutableSet.of(REQ_TYPE_CPU_THREAD_NUM.getCode()));
+
         //decompiler
         register(DecompilerCommand.class, ImmutableSet.of(REQ_TYPE_DECOMPILER.getCode()));
         //HeapHisto
@@ -74,7 +77,20 @@ public class DefaultCodeTypeMappingStore implements CodeTypeMappingStore {
         register(stringClass, ImmutableSet.of(REQ_TYPE_REFRESH_TIP.getCode()));
         //cancel
         register(stringClass, ImmutableSet.of(REQ_TYPE_CANCEL.getCode()));
+        //job pause
+        register(stringClass, ImmutableSet.of(REQ_TYPE_JOB_PAUSE.getCode()));
+        //job resume
+        register(stringClass, ImmutableSet.of(REQ_TYPE_JOB_RESUME.getCode()));
+        //download file list
+        register(stringClass, ImmutableSet.of(REQ_TYPE_LIST_DOWNLOAD_FILE.getCode()));
+        //download file
+        register(DownloadCommand.class, ImmutableSet.of(REQ_TYPE_DOWNLOAD_FILE.getCode()));
 
+        //profiler file
+        register(stringClass, ImmutableSet.of(REQ_TYPE_PROFILER_FILE.getCode()));
+        register(stringClass, ImmutableSet.of(REQ_TYPE_PROFILER_FILE_END.getCode()));
+        register(stringClass, ImmutableSet.of(REQ_TYPE_PROFILER_FILE_ERROR.getCode()));
+        register(stringClass, ImmutableSet.of(REQ_TYPE_PROFILER_ALL_FILE_END.getCode()));
     }
 
     public void register(Class<?> type, Set<Integer> codes) {

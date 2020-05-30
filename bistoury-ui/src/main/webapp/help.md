@@ -33,12 +33,43 @@ toc:
 
 [动态监控使用说明](/api/url/redirect.do?name=monitor.help.url)
 
-[线程级cpu使用率监控](/api/url/redirect.do?name=jstack.help.url)
+[线程级cpu使用率监控使用说明](/api/url/redirect.do?name=jstack.help.url)
 
-[堆内存对象监控](/api/url/redirect.do?name=jmap.help.url)
+[堆内存对象监控使用说明](/api/url/redirect.do?name=jmap.help.url)
 # Bistoury
+![license](https://img.shields.io/github/license/qunarcorp/bistoury)
+![release](https://img.shields.io/github/v/release/qunarcorp/bistoury)
 ## Bistoury是什么？
-> `Bistoury` 去哪网开源的一个对应用透明，无侵入的Java诊断工具，Bistoury在公司内部原有agent的基础上集成Alibaba开源的[Arthas](https://github.com/alibaba/arthas)和唯品会开源的[vjtools](https://github.com/vipshop/vjtools)，提供更加丰富的功能。
+
+`Bistoury` 是去哪儿网开源的一个对应用透明，无侵入的java应用诊断工具，用于提升开发人员的诊断效率和能力。
+
+`Bistoury` 的目标是一站式java应用诊断解决方案，让开发人员无需登录机器或修改系统，就可以从日志、内存、线程、类信息、调试、机器和系统属性等各个方面对应用进行诊断，提升开发人员诊断问题的效率和能力。
+
+`Bistoury` 在公司内部原有agent的基础上集成Alibaba开源的[arthas](https://github.com/alibaba/arthas)和唯品会开源的[vjtools](https://github.com/vipshop/vjtools)，提供了更加丰富的功能，感谢他们做出的优秀工作。
+
+## 简介
+
+Arthas和vjtools已经是很优秀的工具，我们为什么还要开发Bistoury？
+
+Arthas和vjtools通过命令行或类似的方式使用，不可否认命令行在很多时候具有比较高的效率；但图形化界面也有其自身的优点，特别是在参数复杂时使用起来更加简单，效率更高。Bistoury在保留命令行界面的基础上，还对很多命令提供了图形化界面，方面用户使用。
+
+Arthas和vjtools针对单台机器，从机器的维度对系统进行诊断，没有提供全局的视角；而在线应用往往部署在多台机器，Bistoury可以和使用方应用中心整合，从应用的维度对系统进行诊断，提供了更多的可能。
+
+Arthas和vjtools在使用上，要么登录机器，要么需要使用者提供相应的ip和端口；Bistoury去掉各种设置，提供统一的web入口，从页面上选择应用和机器即可使用。
+
+除了这些针对性优化，Bistoury在保留arthas和vjtools的所有功能之外，还提供了更加丰富的功能。
+
+Bistoury的[在线debug功能](/api/url/redirect.do?name=debug.help.url)去掉了各种复杂参数，模拟ide调试体验，通过web界面提供断点调试的功能，可以在不阻塞应用的情况下捕获断点处的信息（包括本地变量、成员变量、静态变量和方法调用栈）。
+
+Bistoury提供了[线程级cpu使用率监控](/api/url/redirect.do?name=jstack.help.url)，可以监控系统每个线程的分钟级cpu使用率，并提供最近几天的历史数据查询。
+
+Bistoury可以[动态对方法添加监控](/api/url/redirect.do?name=monitor.help.url)，监控方法的调用次数、异常次数和执行时间，同时也保留最近几天的监控数据。
+
+Bistoury提供了日志查看功能，可以使用tail、grep等命令对单台或同时对多台机器的日志进行查看。
+
+Bistoury提供可视化页面实时查看机器和应用的各种信息，包括主机内存和磁盘使用、cpu使用率和load、系统配置文件、jar包信息、jvm信息、内存使用和gc等等。
+
+
 ## Bistoury 能做什么？
 - 查看应用日志
 - 查看主机运行状态
@@ -95,9 +126,11 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 运行bin目录下的脚本进行启动，可以在bistoury-agent-env.sh中的JAVA_OPTS里配置JVM相关参数，GC相关配置已配置，
 ## 启动bistoury agent
 在启动是可以通过-p指定pid确定agent attach特定的java进程，不指定时会通过jps -l和ps aux|grep java 命令及proxy中配置的参数解析pid，优先级依次降低。
+
+使用 `./bistoury-agent.sh -h` 查看脚本参数信息
+
 + 启动
 ```shell
-#注意：格式固定
 ./bistoury-agent.sh -p 100 start
 ./bistoury-agent.sh start
 ```
@@ -107,7 +140,6 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 ```
 + 重启
 ```shell
-#注意：格式固定
 ./bistoury-agent.sh -p 101 restart
 ./bistoury-agent.sh restart
 ```
@@ -133,11 +165,14 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 >+ [mbean](#mbean) 查看 Mbean 的信息
 >+ [sysprop](#sysprop) 查看和修改JVM的系统属性
 >+ [sysenv](#sysenv) 查看当前JVM的环境属性
+>+ [vmoption](#vmoption) 查看，更新VM诊断相关的参数
 >+ [getstatic](#getstatic) 查看类的静态属性
->+ [qjtop](#qjtop) 观察JVM进程指标及其繁忙线程
->+ [qjmap](#qjmap) JMAP的分代打印版
+>+ [heapdump](#heapdump) dump java heap, 类似jmap命令的heap dump功能。
+>+ [logger](#logger) 查看logger信息，更新logger level
 >+ [qjdump](#qjdump) 线上紧急收集JVM数据
->+ [qjmxcli](#qjmxcli) JMX 查看工具
+>+ [qjtop](#qjtop)  不再支持 qjtop 命令，可到[主机信息](/machine.html)页面查看 JVM 指标及繁忙线程
+>+ [qjmap](#qjmap)  不再支持 qjmap 命令，请使用 [heapdump](#heapdump) 命令 dump 内存信息
+>+ [qjmxcli](#qjmxcli)  不再支持 qjmxcli 命令，请使用 [mbean](#mbean) 命令查看 MBean 信息，使用 [jstat](#jstat) 命令查看 GC 信息
 
 
 ## class/classloader相关
@@ -163,35 +198,35 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 >可以通过 [Web Console](/qconsole.html) 使用`Bistoury`
 # 命令列表
 
-## **ls**
+## ls
 **ls命令** 用来显示目标列表，参数与linux中的参数一样。
 >当选择一台机器时，该命令在一台机器上执行，当选择多台机器时，该命令可以同时在多台机器上执行，未选择机器则在所有机器上执行。
 ### 语法
 > ls (选项) (参数)
 
 ### 选项
-> -a：显示所有档案及目录（ls内定将档案名或目录名称为“.”的视为影藏，不会列出）；
--A：显示除影藏文件“.”和“..”以外的所有文件列表；
--C：多列显示输出结果。这是默认选项；
--l：与“-C”选项功能相反，所有输出信息用单列格式输出，不输出为多列；
--F：在每个输出项后追加文件的类型标识符，具体含义：“\*”表示具有可执行权限的普通文件，“/”表示目录，“@”表示符号链接，“|”表示命令管道FIFO，“=”表示sockets套接字。当文件为普通文件时，不输出任何标识符；
--b：将文件中的不可输出的字符以反斜线“”加字符编码的方式输出；
--c：与“-lt”选项连用时，按照文件状态时间排序输出目录内容，排序的依据是文件的索引节点中的ctime字段。与“-l”选项连用时，则排序的一句是文件的状态改变时间；
--d：仅显示目录名，而不显示目录下的内容列表。显示符号链接文件本身，而不显示其所指向的目录列表；
--f：此参数的效果和同时指定“aU”参数相同，并关闭“lst”参数的效果；
--i：显示文件索引节点号（inode）。一个索引节点代表一个文件；
---file-type：与“-F”选项的功能相同，但是不显示“\*”；
--k：以KB（千字节）为单位显示文件大小；
--l：以长格式显示目录下的内容列表。输出的信息从左到右依次包括文件名，文件类型、权限模式、硬连接数、所有者、组、文件大小和文件的最后修改时间等；
--m：用“,”号区隔每个文件和目录的名称；
--n：以用户识别码和群组识别码替代其名称；
--r：以文件名反序排列并输出目录内容列表；
--s：显示文件和目录的大小，以区块为单位；
--t：用文件和目录的更改时间排序；
--L：如果遇到性质为符号链接的文件或目录，直接列出该链接所指向的原始文件或目录；
--R：递归处理，将指定目录下的所有文件及子目录一并处理；
---full-time：列出完整的日期与时间；
---color[=WHEN]：使用不同的颜色高亮显示不同类型的。
+    -a：显示所有档案及目录（ls内定将档案名或目录名称为“.”的视为影藏，不会列出）；
+    -A：显示除影藏文件“.”和“..”以外的所有文件列表；
+    -C：多列显示输出结果。这是默认选项；
+    -l：与“-C”选项功能相反，所有输出信息用单列格式输出，不输出为多列；
+    -F：在每个输出项后追加文件的类型标识符，具体含义：“\*”表示具有可执行权限的普通文件，“/”表示目录，“@”表示符号链接，“|”表示命令管道FIFO，“=”表示sockets套接字。当文件为普通文件时，不输出任何标识符；
+    -b：将文件中的不可输出的字符以反斜线“”加字符编码的方式输出；
+    -c：与“-lt”选项连用时，按照文件状态时间排序输出目录内容，排序的依据是文件的索引节点中的ctime字段。与“-l”选项连用时，则排序的一句是文件的状态改变时间；
+    -d：仅显示目录名，而不显示目录下的内容列表。显示符号链接文件本身，而不显示其所指向的目录列表；
+    -f：此参数的效果和同时指定“aU”参数相同，并关闭“lst”参数的效果；
+    -i：显示文件索引节点号（inode）。一个索引节点代表一个文件；
+    --file-type：与“-F”选项的功能相同，但是不显示“\*”；
+    -k：以KB（千字节）为单位显示文件大小；
+    -l：以长格式显示目录下的内容列表。输出的信息从左到右依次包括文件名，文件类型、权限模式、硬连接数、所有者、组、文件大小和文件的最后修改时间等；
+    -m：用“,”号区隔每个文件和目录的名称；
+    -n：以用户识别码和群组识别码替代其名称；
+    -r：以文件名反序排列并输出目录内容列表；
+    -s：显示文件和目录的大小，以区块为单位；
+    -t：用文件和目录的更改时间排序；
+    -L：如果遇到性质为符号链接的文件或目录，直接列出该链接所指向的原始文件或目录；
+    -R：递归处理，将指定目录下的所有文件及子目录一并处理；
+    --full-time：列出完整的日期与时间；
+    --color[=WHEN]：使用不同的颜色高亮显示不同类型的。
 
 ### 参数
 >目录：指定要显示列表的目录，也可以是具体的文件。
@@ -202,12 +237,12 @@ Agent启动前需要在bin/bistoury-agent-env.sh的JAVA_OPTS设置以下参数
 >cat (选项) (参数)
 
 ### 选项
-> -n或-number：有1开始对所有输出的行数编号；
--b或--number-nonblank：和-n相似，只不过对于空白行不编号；
--s或--squeeze-blank：当遇到有连续两行以上的空白行，就代换为一行的空白行；
--A：显示不可打印字符，行尾显示“$”；
--e：等价于"-vE"选项；
--t：等价于"-vT"选项；
+    -n或-number：有1开始对所有输出的行数编号；
+    -b或--number-nonblank：和-n相似，只不过对于空白行不编号；
+    -s或--squeeze-blank：当遇到有连续两行以上的空白行，就代换为一行的空白行；
+    -A：显示不可打印字符，行尾显示“$”；
+    -e：等价于"-vE"选项；
+    -t：等价于"-vT"选项；
 
 ### 参数
 > 文件列表：指定要连接的文件列表。
@@ -232,17 +267,17 @@ cat m1 m2 > file （将文件ml和m2合并后放入文件file中）
 >tail(选项)(参数)
 
 ### 选项
->--retry：即是在tail命令启动时，文件不可访问或者文件稍后变得不可访问，都始终尝试打开文件。使用此选项时需要与选项“——follow=name”连用；
--c<N>或——bytes=<N>：输出文件尾部的N（N为整数）个字节内容；
--f <name/descriptor>或；--follow<nameldescript>：显示文件最新追加的内容。“name”表示以文件名的方式监视文件的变化。“-f”与“-fdescriptor”等效；
--F：与选项“-follow=name”和“--retry"连用时功能相同；
--n <N>或——line=<N>：输出文件的尾部N（N位数字）行内容。
---pid=<进程号>：与“-f”选项连用，当指定的进程号的进程终止后，自动退出tail命令；
--q或——quiet或——silent：当有多个文件参数时，不输出各个文件名；
--s<秒数>或——sleep-interal=<秒数>：与“-f”选项连用，指定监视文件变化时间隔的秒数；
--v或——verbose：当有多个文件参数时，总是输出各个文件名；
---help：显示指令的帮助信息；
---version：显示指令的版本信息。
+    --retry：即是在tail命令启动时，文件不可访问或者文件稍后变得不可访问，都始终尝试打开文件。使用此选项时需要与选项“——follow=name”连用；
+    -c<N>或——bytes=<N>：输出文件尾部的N（N为整数）个字节内容；
+    -f <name/descriptor>或；--follow<nameldescript>：显示文件最新追加的内容。“name”表示以文件名的方式监视文件的变化。“-f”与“-fdescriptor”等效；
+    -F：与选项“-follow=name”和“--retry"连用时功能相同；
+    -n <N>或——line=<N>：输出文件的尾部N（N位数字）行内容。
+    --pid=<进程号>：与“-f”选项连用，当指定的进程号的进程终止后，自动退出tail命令；
+    -q或——quiet或——silent：当有多个文件参数时，不输出各个文件名；
+    -s<秒数>或——sleep-interal=<秒数>：与“-f”选项连用，指定监视文件变化时间隔的秒数；
+    -v或——verbose：当有多个文件参数时，总是输出各个文件名；
+    --help：显示指令的帮助信息；
+    --version：显示指令的版本信息。
 
 ### 参数
 >文件列表：指定要显示尾部内容的文件列表。
@@ -389,6 +424,7 @@ root@local.example.com@bistoury:\>jstat
 |[i `<value>`]|指定cpu占比统计的采样间隔，单位为毫秒
 cpu占比是如何统计出来的？
 >这里的cpu统计的是，一段采样间隔内，当前JVM里各个线程所占用的cpu时间占总cpu时间的百分比。其计算方法为： 首先进行一次采样，获得所有线程的cpu的使用时间(调用的是java.lang.management.ThreadMXBean#getThreadCpuTime这个接口)，然后睡眠一段时间，默认100ms，可以通过-i参数指定，然后再采样一次，最后得出这段时间内各个线程消耗的cpu时间情况，最后算出百分比。
+
 <font color="red">注意</font>：这个统计也会产生一定的开销（<font color="red">JDK这个接口本身开销比较大</font>），因此会看到as的线程占用一定的百分比，为了降低统计自身的开销带来的影响，可以把采样间隔拉长一些，比如5000毫秒。
 
 ### 实例
@@ -466,7 +502,9 @@ root@local.example.com@bistoury:\>thread 170
 Affect(row-cnt:0) cost in 60 ms.
 ```
 4、thread -b, 找出当前阻塞其他线程的线程
->有时候我们发现应用卡住了， 通常是由于某个线程拿住了某个锁， 并且其他线程都在等待这把锁造成的。 为了排查这类问题， Bistoury提供了thread -b， 一键找出那个罪魁祸首。
+
+有时候我们发现应用卡住了， 通常是由于某个线程拿住了某个锁， 并且其他线程都在等待这把锁造成的。 为了排查这类问题， Bistoury提供了thread -b， 一键找出那个罪魁祸首。
+
 ```shell
 root@local.example.com@bistoury:\>thread -b
 "http-bio-8080-exec-4" Id=27 TIMED_WAITING
@@ -1064,6 +1102,41 @@ root@local.example.com@bistoury:\>sysenv MAINCLASS
 MAINCLASS=org.apache.catalina.startup.Bootstrap
 $
 ```
+## vmoption
+> 查看，更新VM诊断相关的参数
+
+### 实例
+查看所有option
+```shell
+admin@local@bistoury_demo_app:\>vmoption
+ KEY                                   VALUE                                ORIGIN                                WRITEABLE                           
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ HeapDumpBeforeFullGC                  false                                DEFAULT                               true                                
+ HeapDumpAfterFullGC                   false                                DEFAULT                               true                                
+ HeapDumpOnOutOfMemoryError            false                                DEFAULT                               true                                
+ HeapDumpPath                                                               DEFAULT                               true                                
+
+ PrintClassHistogram                   false                                DEFAULT                               true                                
+ MinHeapFreeRatio                      40                                   DEFAULT                               true                                
+ MaxHeapFreeRatio                      70                                   DEFAULT                               true                                
+ PrintConcurrentLocks                  false                                DEFAULT                               true                                
+ CMSAbortablePrecleanWaitMillis        100                                  DEFAULT                               true                                
+ CMSWaitDuration                       2000                                 DEFAULT                               true                                
+ CMSTriggerInterval                    -1                                   DEFAULT                               true 
+```
+查看指定option
+```shell
+admin@local@bistoury_demo_app:\>vmoption PrintClassHistogram
+ KEY                                   VALUE                                ORIGIN                                WRITEABLE                           
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ PrintClassHistogram                   false                                DEFAULT                               true                                
+```
+更新指定option
+```shell
+admin@local@bistoury_demo_app:\>vmoption PrintClassHistogram true
+Successfully updated the vm option.
+PrintClassHistogram=true
+```
 ## ognl
 >执行ognl表达式
 ### 参数说明
@@ -1134,141 +1207,151 @@ field: m
     @Node[a=aaa],
 ]
 ```
-## qjtop
->对应于观看“OS指标及繁忙进程”的top，qjtop就是观察“JVM进程指标及其繁忙线程”的首选工具。
-JVM进程信息：收集了进程在OS层面和JVM层面的所有重要指标。大家为什么喜欢用dstat看OS状态，因为它将你想看的数据全都收集呈现眼前了，qjtop也是这样的风格。
 
->繁忙线程信息： 对比于“先top -H 列出线程，再执行jstack拿到全部线程，再手工换算十与十六进制的线程号”的繁琐过程，qjtop既方便，又可以连续跟踪，更不会因为jstack造成JVM停顿。
-对于超出正常范围的值，qjtop还很贴心的进行了变色显示。
-运行时不造成应用停顿，可在线上安全使用。
+## heapdump
+> dump java heap, 类似jmap命令的heap dump功能。<font color=red>请摘掉流量使用</font>
 
-常用场景：
-
->1. 性能问题快速定位，用vjtop显示出CPU繁忙或内存消耗大的线程，再实时交互翻查该线程的statk trace。
->2. 压测场景，用vjtop实时反馈JVM进程状态，类似于用dstast对操作系统指标的监控。
->3. 生产环境，当应用出现问题时，用vjtop快速了解进程的状态。还可与监控系统结合，发现指标(如CPU、超时请求数)超出阈值时，用钩子脚本调用vjtop来纪录事发地的状况。
-
-在jvmtop 的基础上二次开发，结合 SJK的优点，从/proc ，PerfData，JMX等处，以更高的性能，获取更多的信息。
-### 参数说明
-|参数名称|参数说明|
-|--------|--------|
-|-?, -h, --help|shows help   
-|-m, --mode `<Integer>` | 找出CPU最繁忙的线程，找出内存分配最频繁的线程， mode 取值如下：<br>1--按时间区间内，线程占用的CPU排序，默认显示前10的线程，默认每10秒打印一次 <br>2--按时间区间内，线程占用的SYS CPU排序 <br>3--按线程从启动以来的总占用CPU来排序<br>4--按线程从启动以来的总SYS CPU排序 <br>5--线程分配内存的速度排序，默认显示前10的线程，默认每10秒打印一次 <br>6--按线程的总内存分配而不是打印间隔内的内存分配来排序         |
-|-i，--interval `<Integer>`|设置打印间隔，默认为10秒|
-|-n, --iteration `<Integer>` |设置打印间隔，默认不退出|
-|-l, --limit `<Integer>`|显示前limit个线程，默认为10|
-|-c, --content |all--采集jvm及繁忙线程信息<br>jvm--只采集jvm信息，不采集繁忙线程信息<br>thread只采集繁忙线程信息，不采集jvm信息|
-|-w, --width `<Integer>`|控制台输出的宽度，默认为100
 ### 实例
+dump到指定文件
 ```shell
-root@local.example.com@bistoury:\>qjtop
-
-
- 14:51:44 - PID: 12280 JVM: 1.7.0_45 USER: tomcat UPTIME: 21h28m
- PROCESS:  0.00% cpu( 0.00% of 4 core), 142 thread
- MEMORY: 1105m rss, 1106m peak, 0m swap | DISK: 0B read, 0B write
- THREAD: 132 live, 109 daemon, 132 peak, 0 new | CLASS: 11449 loaded, 0 unloaded, 0 new
- HEAP: 21m/497m/499m eden, 48m/91m sur, 46m/1365m old
- NON-HEAP: 65m/256m perm, 3m/7m/48m codeCache
- OFF-HEAP: 66m/66m direct(max=NaN), 0m/0m map(count=0), 132m threadStack
- GC: 0/0ms/0ms ygc, 0/0ms fgc | SAFE-POINT: 0 count, 0ms time, 0ms syncTime
-
- VMARGS: -Djava.util.logging.config.file=/home/user/tomcat/www/qconfig-admin/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Xms2048m -Xmx2048m -XX:NewSize=256m -XX:PermSize=256m -XX:+DisableExplicitGC -verbose:gc -XX:+PrintGCDateStamps -XX:+PrintGCDetails -Djava.endorsed.dirs=/home/user/tomcat/tomcat/endorsed  -Dcatalina.home=/home/user/tomcat/tomcat
-
-
- Collecting data, please wait ......
-
-
-
- 14:51:54 - PID: 12280 JVM: 1.7.0_45 USER: tomcat UPTIME: 21h28m
- PROCESS:  0.80% cpu( 0.20% of 4 core), 142 thread
- MEMORY: 1105m rss, 1106m peak, 0m swap | DISK: 0B read, 408B write
- THREAD: 132 live, 109 daemon, 132 peak, 0 new | CLASS: 11449 loaded, 0 unloaded, 0 new
- HEAP: 21m/497m/499m eden, 48m/91m sur, 46m/1365m old
- NON-HEAP: 65m/256m perm, 3m/7m/48m codeCache
- OFF-HEAP: 66m/66m direct(max=NaN), 0m/0m map(count=0), 132m threadStack
- GC: 0/0ms/0ms ygc, 0/0ms fgc | SAFE-POINT: 1 count, 1ms time, 0ms syncTime
-
-    TID NAME                                                      STATE    CPU SYSCPU  TOTAL TOLSYS
-    187 RMI TCP Connection(77)-127.0.0.1                    RUNNABLE  0.08%  0.08%  0.12%  0.01%
-    102 DubboResponseTimeoutScanTimer                        TIMED_WAIT  0.07%  0.07% 11.48%  6.77%
-
- Total  :  0.15% cpu(user= 0.00%, sys= 0.15%) by 2 active threads(which cpu>0.05%)
- Setting: top 10 threads order by CPU, flush every 10s
+admin@local@bistoury_demo_app:\>heapdump /home/root/Desktop/bistoury-2.0.7/dump1.hprof
+Dumping heap to /home/root/Desktop/bistoury-2.0.7/dump1.hprof...
+Heap dump file created
 ```
-进程区数据解释:
-
-- `PROCESS`: `thread`: 进程的操作系统线程数, `cxtsw`为主动与被动的线程上下文切换数
-- `MEMORY`: `rss` 为 `Resident Set Size`, 进程实际占用的物理内存; `peak`为最峰值的`rss`; `swap`为进程被交换到磁盘的虚拟内存。
-- `DISK`: 真正达到物理存储层的读/写的速度。
-- `THREAD`: `Java`线程数, `active`为当前线程数, `daemon`为`active`线程中的`daemon`线程数, `new`为刷新周期内新创建的线程数。
-- `CLASS`: `loaded`为当前加载的类数量，`unloaded`为总卸载掉的类数量，`new`为刷新周期内新加载的类数量。
-- `HEAP`: 1.0.3版开始每一项有三个数字, 分别为1.当前使用内存, 2.当前已申请内存, 3.最大内存; 如果后两个数字相同时则合并。
-- `sur`: 当前存活区的大小，注意实际有`from`, `to` 两个存活区。
-- `NON-HEAP`: 数字含义同`HEAP`
-- `codeCache`: `JIT`编译的二进制代码的存放区，满后将不能编译新的代码。
-- `direct`: 堆外内存，三个数字含义同`HEAP`, 未显式设置最大内存时，约等于堆内存大小。注意新版`Netty`不经过`JDK API`所分配的堆外内存未在此统计。
-- `map`: 映射文件内存，三个数字分别为1. `map`数量，2.当前使用内存，3.当前已申请内存，没有最大值数据。
-- `threadStack`: `Java`线程所占的栈内存总和，但不包含VM线程。(since 1.0.3)
-- `ygc`: `YoungGC`, 三个数字分别为次数／总停顿时间／平均停顿时间
-- `fgc`: `OldGC` ＋ `FullGC`， 两个数字分别为次数／总执行时间，注意此时间仅为执行时间，非JVM停顿时间。
-- `SAFE-POINT`: `PerfData`开启时可用，`JVM`真正的停顿次数及停顿时间，以及等待所有线程进入安全点所消耗的时间。
-
-线程区数据解释:
-
-- `CPU`: 线程在打印间隔内使用的`CPU`百分比(按单个核计算)
-- `SYSCPU`: 线程在打印间隔内使用的`SYS CPU`百分比(按单个核计算)
-- `TOTAL`: 从进程启动到现在，线程的总CPU时间/进程的总CPU时间的百分比
-- `TOLSYS`: 从进程启动到现在，线程的总SYS CPU时间/进程的总CPU时间的百分比
-
-底部数据解释:
-
-- 如果该线程的平均使用`CPU`少于单核的0.1%，这条线程将不参与排序显示，减少消耗。
-
-## qjmap
->分代版的jmap（新生代，存活区，老生代），是排查内存缓慢泄露，老生代增长过快原因的利器。因为jmap -histo PID 打印的是整个Heap的对象统计信息，而为了定位上面的问题，我们需要专门查看OldGen对象，和Survivor区大龄对象的工具。
-qjmap的原始思路来源于R大的[TBJMap](https://github.com/alibaba/TBJMap) ，翻新后支持JDK8，支持Survivor区大龄对象过滤，以及大天秤对输出结果不要看歪脖子的执着。
-注意：因为vjmap的原理，只支持CMS和ParallelGC，不支持G1。
-###注意事项
-> **<font color="red"> 注意：qjmap在执行过程中，会完全停止应用一段时间，必须摘流量执行！！！！ </font>**
-
->1. 意外停止
-qjmap的运行需要一段时间，如果中途需要停止执行，请使用ctrl＋c，或者kill qjmap的PID，让qjmap从目标进程退出。
-如果错用了kill -9 ，目标java进程会保持在阻塞状态不再工作，此时必须执行两次 kill -SIGCONT $目标进程PID，重新唤醒目标java进程。
-
->2. OldGen碎片
-如果很久没都有进行过CMS GC or Full GC，OldGen将有非常非常多的Live Regions，执行 -all 和 -old 时将非常缓慢，比如 -all的第一步Get Live Regions就会非常缓慢，如非要故意观察死对象的场景，此时可尝试先触发一次full gc， 如使用qjmap -all:live, 或 jmap -histo:live 或 jcmd GC.run 等。
-
-### 参数说明
-|参数名称|参数说明|
-|--------|--------|
-|-help|获取帮助文档
-| -all                      |print all gens histogram, order by total size
-| -all:minsize=1024         |print all gens histogram, total size>=1024
-| -all:minsize=1024,byname  |print all gens histogram, total size>=1024, order by class name
-| -old                      |print oldgen histogram, order by oldgen size
-| -old:live                 |print oldgen histogram, live objects only
-| -old:minsize=1024         |print oldgen histogram, oldgen size>=1024
-| -old:minsize=1024,byname  |print oldgen histogram, oldgen size>=1024, order by class name
-| -sur                      |print survivor histogram, age>=3
-| -sur:minage=4             |print survivor histogram, age>=4
-| -sur:minsize=1024,byname  |print survivor histogram, age>=3, survivor size>=1024, order by class  name
-| -address                  | 打印各代地址，不会造成过长时间停顿
-| -class                    | 打印加载的Class列表
-### 实例
-打印各代地址
+只dump live 对象
 ```shell
-root@local.example.com@bistoury:\>qjmap -address
-PSYoungGen [ eden =  [0x00000007d5500000,0x00000007dcaba290,0x00000007f4600000] , from =  [0x00000007fa500000,0x00000007fd5f2400,0x0000000800000000] , to =  [0x00000007f4600000,0x00000007f4600000,0x00000007fa300000]  ]
-PSOldGen [  [0x000000077ff80000,0x0000000782e4d488,0x00000007d5500000]  ]
- Heap traversal took 0.0 seconds.
+admin@local@bistoury_demo_app:\>heapdump --live /home/root/Desktop/bistoury-2.0.7/dump2.hprof
+Dumping heap to /home/root/Desktop/bistoury-2.0.7/dump2.hprof...
+Heap dump file created
+```
+dump 到临时文件
+```shell
+admin@local@bistoury_demo_app:\>heapdump
+Dumping heap to /var/folders/c5/yvdt09ls5xv2825vp_pqy4200000gn/T/heapdump2019-09-23-20-218597155241814313750.hprof...
+Heap dump file created
+```
+
+## logger
+>查看logger信息，更新logger level
+### 实例
+以下面的logbook.xml为例
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="APPLICATION" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>app.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>mylog-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+ 
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="APPLICATION" />
+    </appender>
+ 
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n
+            </pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+ 
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="ASYNC" />
+    </root>
+</configuration>
+```
+使用logger命令打印的结果是：
+```shell
+admin@local@bistoury_demo_app:\>logger
+ name                                   ROOT
+ class                                  ch.qos.logback.classic.Logger
+ classLoader                            sun.misc.Launcher$AppClassLoader@2a139a55
+ classLoaderHash                        2a139a55
+ level                                  INFO
+ effectiveLevel                         INFO
+ additivity                             true
+ codeSource                             file:/Users/hengyunabc/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar
+ appenders                              name            CONSOLE
+                                        class           ch.qos.logback.core.ConsoleAppender
+                                        classLoader     sun.misc.Launcher$AppClassLoader@2a139a55
+                                        classLoaderHash 2a139a55
+                                        target          System.out
+                                        name            APPLICATION
+                                        class           ch.qos.logback.core.rolling.RollingFileAppender
+                                        classLoader     sun.misc.Launcher$AppClassLoader@2a139a55
+                                        classLoaderHash 2a139a55
+                                        file            app.log
+                                        name            ASYNC
+                                        class           ch.qos.logback.classic.AsyncAppender
+                                        classLoader     sun.misc.Launcher$AppClassLoader@2a139a55
+                                        classLoaderHash 2a139a55
+                                        appenderRef     [APPLICATION]
+```
+从appenders的信息里，可以看到
+- CONSOLE logger的target是System.out
+- APPLICATION logger是RollingFileAppender，它的file是app.log
+- ASYNC它的appenderRef是APPLICATION，即异步输出到文件里
+
+查看指定名字的logger信息
+```shell
+admin@local@bistoury_demo_app:\>logger -n org.springframework.web
+ name                                   org.springframework.web
+ class                                  ch.qos.logback.classic.Logger
+ classLoader                            sun.misc.Launcher$AppClassLoader@2a139a55
+ classLoaderHash                        2a139a55
+ level                                  null
+ effectiveLevel                         INFO
+ additivity                             true
+ codeSource                             file:/Users/hengyunabc/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar
+```
+查看指定classloader的logger信息
+```shell
+admin@local@bistoury_demo_app:\>logger -c 2a139a55
+ name                                   ROOT
+ class                                  ch.qos.logback.classic.Logger
+ classLoader                            sun.misc.Launcher$AppClassLoader@2a139a55
+ classLoaderHash                        2a139a55
+ level                                  DEBUG
+ effectiveLevel                         DEBUG
+ additivity                             true
+ codeSource                             file:/Users/hengyunabc/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar
+ appenders                              name            CONSOLE
+                                        class           ch.qos.logback.core.ConsoleAppender
+                                        classLoader     sun.misc.Launcher$AppClassLoader@2a139a55
+                                        classLoaderHash 2a139a55
+                                        target          System.out
+                                        name            APPLICATION
+                                        class           ch.qos.logback.core.rolling.RollingFileAppender
+                                        classLoader     sun.misc.Launcher$AppClassLoader@2a139a55
+                                        classLoaderHash 2a139a55
+                                        file            app.log
+                                        name            ASYNC
+                                        class           ch.qos.logback.classic.AsyncAppender
+                                        classLoader     sun.misc.Launcher$AppClassLoader@2a139a55
+                                        classLoaderHash 2a139a55
+                                        appenderRef     [APPLICATION]
+
+```
+更新logger level
+```shell
+admin@local@bistoury_demo_app:\>logger --name ROOT --level debug
+update logger level success.
 ```
 ## qjdump
 >qjdump是线上JVM数据紧急收集脚本。它可以在<font color=red>紧急场景</font>下（比如马上要对进程进行重启），一键收集jstack、jmap以及GC日志等相关信息，并以zip包保存(默认在目录/tmp/bistoury/qjtools/qjdump/${PID}下)，保证在紧急情况下仍能收集足够的问题排查信息，减轻运维团队的工作量，以及与开发团队的沟通成本。
 
 收集数据包括：
 >- thread dump数据：jstack -l \$PID
->- qjtop JVM概况及繁忙线程：qjtop.sh -n 1 \$PID (需要将qjtop.sh 加入用户的PATH变量中)
+>- jinfo -flags $PID
 >- jmap histo 堆对象统计数据：jmap -histo \$PID & jmap -histo:live \$PID
 >- GC日志(如果JVM有设定GC日志输出)
 >- heap dump数据（需指定--liveheap开启）：jmap -dump:live,format=b,file=\${DUMP_FILE} \$PID
@@ -1281,120 +1364,12 @@ qjdump
 # 额外收集heap dump信息（jmap -dump:live的信息）
 qjdump --liveheap
 ```
+## qjtop
+ Bistoury 不再支持 qjtop 命令，可到主机信息页面查看 JVM 指标及繁忙线程
+## qjmap
+Bistoury 不再支持 qjmap 命令，请使用 [heapdump](#heapdump) 命令 dump 内存信息
 ## qjmxcli
->在cmdline-jmxclient项目上定制，增加功能
-不需要原JVM在启动参数中打开了JMX选项
-完全模拟jstat -gcutil输出的gcutil，用于jstat不能使用的情况， 或者jstat计算使用百分比时，用“已申请大小”，而不是“Max大小”作为分母，不能反映内存是否真正不足的情况。
-因为每调度一次java -jar vjmxclient.jar，其实是创建了一个新的JVM，因此在qjmxcli 加上了一系列JVM参数减少消耗。
-
-### 实例
-```shell
-root@local.example.com@bistoury:\>qjmxcli
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=groupAuthorizationFilter
-Catalina:name=HttpRequest1,type=RequestProcessor,worker="http-bio-8080"
-java.lang:type=Memory
-JMImplementation:type=MBeanServerDelegate
-Catalina:name="http-bio-8080",type=ThreadPool
-Catalina:port=8080,type=Connector
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=loginAuthorizationFilter
-java.lang:name=PS MarkSweep,type=GarbageCollector
-java.nio:name=mapped,type=BufferPool
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Servlet,name=web
-Catalina:context=/,host=localhost,type=Cache
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=loginFilter
-java.lang:name=PS Survivor Space,type=MemoryPool
-java.lang:name=CodeCacheManager,type=MemoryManager
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Servlet,name=jsp
-Catalina:host=localhost,type=Host
-Catalina:name="http-bio-8080",type=GlobalRequestProcessor
-Catalina:host=localhost,name=ErrorReportValve,type=Valve
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Servlet,name=jvm
-java.lang:name=PS Old Gen,type=MemoryPool
-java.lang:name=PS Perm Gen,type=MemoryPool
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=encodingFilter
-java.lang:type=Runtime
-Catalina:type=Engine
-java.nio:name=direct,type=BufferPool
-Catalina:name=HttpRequest6,type=RequestProcessor,worker="http-bio-8080"
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=clearFilter
-Catalina:context=/,host=localhost,type=Manager
-Catalina:name=HttpRequest3,type=RequestProcessor,worker="http-bio-8080"
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,name=jsp,type=JspMonitor
-Catalina:host=localhost,name=AccessLogValve,type=Valve
-Catalina:type=Service
-com.sun.management:type=HotSpotDiagnostic
-java.lang:name=PS Scavenge,type=GarbageCollector
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Servlet,name=default
-java.lang:name=Code Cache,type=MemoryPool
-java.util.logging:type=Logging
-Catalina:context=/,host=localhost,type=WebappClassLoader
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=RedirectFilter
-Catalina:type=Server
-Catalina:name=StandardEngineValve,type=Valve
-Catalina:context=/,host=localhost,name=StandardContextValve,type=Valve
-Catalina:name=HttpRequest5,type=RequestProcessor,worker="http-bio-8080"
-Catalina:J2EEApplication=none,J2EEServer=none,j2eeType=WebModule,name=//localhost/
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=org.apache.tomcat.websocket.server.WsFilter
-Catalina:type=NamingResources
-Catalina:context=/,host=localhost,type=Loader
-Catalina:name=common,type=ServerClassLoader
-Catalina:name=HttpRequest2,type=RequestProcessor,worker="http-bio-8080"
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Servlet,name=monitor
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=recentlyAccessedFilter
-Catalina:context=/,host=localhost,type=NamingResources
-Catalina:context=/,host=localhost,name=NonLoginAuthenticator,type=Valve
-java.lang:name=PS Eden Space,type=MemoryPool
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=HttpMethodFilter
-Catalina:host=localhost,type=Deployer
-Catalina:type=MBeanFactory
-java.lang:type=OperatingSystem
-Catalina:name=HttpRequest4,type=RequestProcessor,worker="http-bio-8080"
-java.lang:type=Compilation
-Catalina:port=8080,type=ProtocolHandler
-Catalina:type=StringCache
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=watcher
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Servlet,name=stats
-java.lang:type=Threading
-java.lang:type=ClassLoading
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=uploadFilter
-Catalina:realmPath=/realm0,type=Realm
-Catalina:J2EEApplication=none,J2EEServer=none,WebModule=//localhost/,j2eeType=Filter,name=adminAuthorizationFilter
-Catalina:port=8080,type=Mapper
-Catalina:host=localhost,name=StandardHostValve,type=Valve
-```
-获取MBean属性值
-```shell
-root@local.example.com@bistoury:\>qjmxcli java.lang:type=Memory HeapMemoryUsage
-HeapMemoryUsage:
-committed: 1925185536
-init: 2147483648
-max: 1925185536
-used: 125783504
-```
-GC统计(jstat gcutil)
-一次性输出
-```shell
-root@local.example.com@bistoury:\>qjmxcli gcutil
-S	S	E	O	P	YGC	YGCT	FGC	FGCT	GCT
-0.00	0.00	15.40	6.23	26.56	11	0.468	3	0.853	1.321
-```
-每5s输出一次
-```shell
-root@local.example.com@bistoury:\>qjmxcli gcutil 5
-S	S	E	O	P	YGC	YGCT	FGC	FGCT	GCT
-0.00	0.00	14.54	6.23	26.56	11	0.468	3	0.853	1.321
-S	S	E	O	P	YGC	YGCT	FGC	FGCT	GCT
-0.00	0.00	14.62	6.23	26.56	11	0.468	3	0.853	1.321
-```
-### 常用JMX条目
-|条目	                |Object Name	|Attribute Name
-|--|--|--|
-|堆内存|	java.lang:type=Memory|HeapMemoryUsage
-|非堆内存(不包含堆外内存)|	java.lang:type=Memory|	NonHeapMemoryUsage
-|堆外内存(不包含新版Netty申请的堆外内存)|	java.nio:type=BufferPool,name=direct|	MemoryUsed
-|线程数|	java.lang:type=Threading|	ThreadCount
-|守护线程数|	java.lang:type=Threading|	DaemonThreadCount
-|分代内存及GC|	不同JDK的值不一样|	不同JDK的值不一样
+Bistoury 不再支持 qjmxcli 命令，请使用 mbean 命令查看 [MBean](#mbean) 信息，使用 [jstat](#jstat) 命令查看 GC 信息
 ## sc
 >查看JVM已加载的类信息
 “Search-Class” 的简写，这个命令能搜索出所有已经加载到 JVM 中的 Class 信息，这个命令支持的参数有 [d]、[E]、[f] 和 [x:]。
@@ -1576,6 +1551,7 @@ Affect(row-cnt:1) cost in 49 ms.
 ```
 ## redefine
 >加载外部的.class文件，redefine jvm已加载的类
+
 <font color="red">注意：</font>redefine后的原来的类不能恢复，redefine有可能失败（比如增加了新的field），参考jdk本身的文档。
 ### 参数说明
 |参数名称	|参数说明|
@@ -1604,7 +1580,8 @@ mc -c 32ba647b /tmp/Test.java
 mc -d /tmp/output /tmp/ClassA.java /tmp/ClassB.java
 ```
 编译生成.class文件之后，可以结合[redefine](#redefine)命令实现热更新代码。
-> <font color=red>注意</font>：mc命令有可能失败。如果编译失败可以在本地编译好.class文件，再上传到服务器。具体参考[redefine](#redefine)命令说明。
+ 
+<font color=red>注意</font>：mc命令有可能失败。如果编译失败可以在本地编译好.class文件，再上传到服务器。具体参考[redefine](#redefine)命令说明。
 
 ## jad
 >反编译指定已加载类的源码
@@ -2190,6 +2167,18 @@ options save-result
                                     lt to log file   hich path is ${user.home}/logs/a
                                                      rthas-cache/result.log.     
 ```
+## stop/shutdown
+停止bistoury-agent attach 到应用中的部分
+
+```shell
+admin@local@bistoury_demo_app:\>stop
+Bistoury Server is going to shut down...
+```
+```shell
+admin@local@bistoury_demo_app:\>shutdown
+Bistoury Server is going to shut down...
+```
+stop和shutdown执行效果完全一样
 <script type="application/javascript">
     $(document).ready(function () {
         $.ajax({

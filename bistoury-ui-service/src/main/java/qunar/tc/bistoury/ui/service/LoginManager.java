@@ -10,5 +10,7 @@ public interface LoginManager {
 
     String current(HttpServletRequest request);
 
+    String token(HttpServletRequest request);
+
     void logout(HttpServletResponse response);
 }

@@ -4,32 +4,34 @@
     <meta charset="UTF-8">
     <title>主机信息</title>
     <link rel="shortcut icon" href="favicon.ico">
-    <link rel="stylesheet" href="css/bootstrap.min.css?version=2.0.2">
-    <link rel="stylesheet" href="css/bootstrap-treeview.css?version=2.0.2">
-    <link rel="stylesheet" href="css/bootstrap-table.css?version=2.0.2">
-    <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css?version=2.0.2">
-    <link rel="stylesheet" href="css/main.css?version=2.0.2"/>
-    <link rel="stylesheet" href="css/menu.css?version=2.0.2"/>
-    <link rel="stylesheet" href="highlight/styles/github-gist.css?version=2.0.2">
-    <link rel="stylesheet" href="css/spop.min.css?version=2.0.2">
-    <script type="text/javascript" src="js/jquery-3.3.1.min.js?version=2.0.2"></script>
-    <script type="text/javascript" src="js/websocket.js?version=2.0.2"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js?version=2.0.2"></script>
-    <script type="text/javascript" src="js/bootstrap-treeview.js?version=2.0.2"></script>
-    <script type="text/javascript" src="js/bootstrap-table.js?version=2.0.2"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css?version=2.0.3">
+    <link rel="stylesheet" href="css/bootstrap-treeview.css?version=2.0.3">
+    <link rel="stylesheet" href="css/bootstrap-table.css?version=2.0.3">
+    <link rel="stylesheet" href="css/main.css?version=2.0.3"/>
+    <link rel="stylesheet" href="css/menu.css?version=2.0.3"/>
+    <link rel="stylesheet" href="css/cpu-profiler.css"/>
+    <link rel="stylesheet" href="highlight/styles/github-gist.css?version=2.0.3">
+    <link rel="stylesheet" href="css/spop.min.css?version=2.0.3">
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/websocket.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/bootstrap-treeview.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/bootstrap-table.js?version=2.0.3"></script>
     <script type="text/javascript" src="js/bootstrap-table-zh-CN.js"></script>
-    <script type="text/javascript" src="js/bootstrap-datetimepicker.min.js?version=2.0.2"></script>
-    <script type="text/javascript" src="js/echarts.common.min.js?version=2.0.2"></script>
-    <script type="text/javascript" src="js/jquery.cookie.js?version=2.0.2"></script>
-    <script type="text/javascript" src="js/base64.js?version=2.0.2"></script>
-    <script type="text/javascript" src="js/jsencrypt.js?version=2.0.2"></script>
-    <script type="text/javascript" src="js/tripledes.js?version=2.0.2"></script>
-    <script type="text/javascript" src="js/mode-ecb.js?version=2.0.2"></script>
-    <script type="text/javascript" src="js/machine.js?version=2.0.2"></script>
-    <script type="text/javascript" src="js/header.js?version=2.0.2"></script>
-    <script type="text/javascript" src="js/spop.min.js?version=2.0.2"></script>
-    <script type="text/javascript" src="js/bistoury.js?version=2.0.2"></script>
-    <script type="text/javascript" src="highlight/highlight.pack.js?version=2.0.2"></script>
+    <script type="text/javascript" src="js/bootstrap-datetimepicker.min.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/base64.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/jsencrypt.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/tripledes.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/mode-ecb.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/machine.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/moment.min.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/profiler.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/header.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/spop.min.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/bistoury.js?version=2.0.3"></script>
+    <script type="text/javascript" src="highlight/highlight.pack.js?version=2.0.3"></script>
 </head>
 <body>
 <div>
@@ -50,6 +52,7 @@
                             <li role="presentation" id="jvm-info-menu"><a href="#">jvm信息</a></li>
                             <li role="presentation" id="thread-info-menu"><a href="#">Thread Dump</a></li>
                             <li role="presentation" id="jstack-dump-menu"><a>线程级CPU监控</a></li>
+                            <li role="presentation" id="cpu-profiler-menu"><a href="#">性能分析</a></li>
                         </ul>
                     </div>
                 </nav>
@@ -357,12 +360,14 @@
                                 <table id="jar-dep-table" class="table table-hover"></table>
                             </div>
                             <div id="jvm-memory-monitor" class="jvm-tab">
+                                <div class="curve" id="pSSurvivorSpace-curve"></div>
+                                <div class="curve" id="pSEdenSpace-curve"></div>
                                 <div class="curve" id="metaspace-curve"></div>
                                 <div class="curve" id="psOldGen-curve"></div>
                                 <div class="curve" id="compressedClassSpace-curve"></div>
-                                <div class="curve" id="pSSurvivorSpace-curve"></div>
-                                <div class="curve" id="pSEdenSpace-curve"></div>
                                 <div class="curve" id="codeCache-curve"></div>
+                                <div class="curve" id="codeHeap-non-nmethods"></div>
+                                <div class="curve" id="codeHeap-non-profiled-nmethods"></div>
                             </div>
                             <div id="jvm-visua-gc" class="jvm-tab">
                                 <div class="curve" id="compile-time-curve"></div>
@@ -377,7 +382,8 @@
                             </div>
                             <div id="jvm-heap-histo" class="jvm-tab">
                                 <div class="col-md-12">
-                                    <p>查询堆对象统计可以选择参数，默认使用 -all。选择后可点击 <i class="glyphicon glyphicon-refresh"></i>（刷新图标）重新查询</p>
+                                    <p>查询堆对象统计可以选择参数，默认使用 -all。选择后可点击 <i class="glyphicon glyphicon-refresh"></i>（刷新图标）重新查询
+                                    </p>
                                     <!--<p>可以通过选择查询时间，查询最近三天中的 heap histo，采用的参数为 -all，选择时间后点击查询按钮查询历史 heap histo</p>-->
                                     <p style="color: red">注意：-live 参数会导致应用进行一次 full gc，请谨慎使用。</p>
                                     <p><a target="_blank"
@@ -445,7 +451,7 @@
                                         <div class="form-group">
                                             <label for="thread-max-depth">max depth:</label>
                                             <input type="number" class="form-control" id="thread-max-depth" min="0"
-                                                   value="3"
+                                                   value="10"
                                                    style="width: 60px;padding-right: 0px;">
                                         </div>
                                         <button type="button" class="btn btn-info"
@@ -496,6 +502,72 @@
                     </div>
                     <div id="process-panel" class="tab"></div>
                     <div id="jstack-dump-panel" class="tab"></div>
+                    <div id="cpu-profiler" class="tab">
+                        <div>
+                            <div class="panel-default panel-profiler-left">
+                                <div class="panel-heading">
+                                    当前性能分析状态
+                                </div>
+                                <div class="panel-body">
+                                    <table class="table table-hover">
+                                        <colgroup>
+                                            <col name="" width="23%">
+                                            <col name="" width="23%">
+                                            <col name="" width="23%">
+                                        </colgroup>
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                                <button id="btn_start_profiler" type="button"
+                                                        class="btn btn-primary btn-block"
+                                                        onclick="openStartSettingModel()">
+                                                    开始
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button id="btn_stop_profiler" type="button"
+                                                        class="btn btn-primary btn-block"
+                                                        onclick="stopProfiler()">手动结束
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <a id="btn_result" class="btn btn-primary btn-block"
+                                                   href="html/report.html?profilerId=111"
+                                                   target="_blank">查看结果</a>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <div id="profiler-process-div" style="display: none">
+                                        <h5 style="font-size: 20px">分析进度</h5>
+                                        <div class="cpu-profiler-container" id="cpu-profiler-container">
+                                            <div class="cpu-profiler-process" id="cpu-profiler-process"
+                                                 style="width:0%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-default panel-profiler-right">
+                                <div class="panel-heading">
+                                    最近3天性能分析记录
+                                </div>
+                                <div class="panel-body">
+                                    <table class="table table-hover" id="profiler-history">
+                                        <thead>
+                                        <tr>
+                                            <th class="col-md-2">开始时间</th>
+                                            <th class="col-md-2">分析模式</th>
+                                            <th class="col-md-2">预设持续时间(s)</th>
+                                            <th class="col-md-2">预设抽样间隔(ms)</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="history-body">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -559,6 +631,65 @@
                     <div class="col-md-12" id="file-content-panel">
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal model-profiler-setting" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-profiler" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" style="font-size: 20px">相关配置</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+<!--                <div class="list-group profiler-option-div ">-->
+<!--                    <div class="profiler-option-left">模式:</div>-->
+<!--                    <select id="profiler-mode">-->
+<!--                        <option value="0">异步抽样</option>-->
+<!--                        <option value="1">抽样</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+                <div class="list-group profiler-option-div ">
+                    <div class="profiler-option-left">时长:</div>
+                    <input class="profiler-option-input" type="number" id="profiler-duration" min="0" value="120"
+                           max="1800">&nbsp;(s)
+                </div>
+<!--                <div class="list-group profiler-option-div ">-->
+<!--                    <div class="profiler-option-left">频率:</div>-->
+<!--                    <input class="profiler-option-input" type="number" id="profiler-frequency" min="5" value="5"-->
+<!--                           max="1800">&nbsp;(ms)-->
+<!--                </div>-->
+<!--                <div class="list-group profiler-option-div " id="profiler-threads-div">-->
+<!--                    <div class="profiler-option-left">是否区分线程:</div>-->
+<!--                    <select id="profiler-threads">-->
+<!--                        <option value="1">不区分</option>-->
+<!--                        <option value="0">区分</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+
+<!--                <div class="list-group profiler-option-div " id="profiler-event-div">-->
+<!--                    <div class="profiler-option-left">事件类型:</div>-->
+<!--                    <select id="profiler-event">-->
+<!--                        <option value="itimer">itimer</option>-->
+<!--                        <option value="cpu">cpu</option>-->
+<!--                        <option value="alloc">alloc</option>-->
+<!--                        <option value="lock">lock</option>-->
+<!--                        <option value="wall">wall</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+<!--                <div class="list-group" id="async-profiler-href-div">-->
+<!--                    <a target="_blank" href="https://github.com/jvm-profiling-tools/async-profiler">-->
+<!--                        相关参数详细介绍（async-profiler项目）</a>-->
+<!--                </div>-->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="startProfiler()">start</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

@@ -38,9 +38,10 @@ import qunar.tc.bistoury.proxy.communicate.SessionManager;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnectionStore;
 import qunar.tc.bistoury.proxy.communicate.ui.command.CommunicateCommandStore;
 import qunar.tc.bistoury.proxy.communicate.ui.handler.*;
-import qunar.tc.bistoury.proxy.communicate.ui.handler.encryption.DefaultRequestEncryption;
+import qunar.tc.bistoury.proxy.generator.IdGenerator;
 import qunar.tc.bistoury.proxy.util.AppCenterServerFinder;
 import qunar.tc.bistoury.serverside.agile.Conf;
+import qunar.tc.bistoury.serverside.common.encryption.DefaultRequestEncryption;
 import qunar.tc.bistoury.serverside.common.encryption.RSAEncryption;
 
 /**
@@ -50,9 +51,6 @@ public class NettyServerForUi implements NettyServer {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServerForUi.class);
 
-    private static final String RSA_PUBLIC_KEY = "/rsa-public-key.pem";
-
-    private static final String RSA_PRIVATE_KEY = "/rsa-private-key.pem";
 
     private static final int DEFAULT_WRITE_LOW_WATER_MARK = 64 * 1024;
 
@@ -64,29 +62,36 @@ public class NettyServerForUi implements NettyServer {
 
     private final int port;
 
-    private UiConnectionStore uiConnectionStore;
+    private final IdGenerator idGenerator;
 
-    private AgentConnectionStore agentConnectionStore;
+    private final UiConnectionStore uiConnectionStore;
 
-    private SessionManager sessionManager;
+    private final AgentConnectionStore agentConnectionStore;
 
-    private CommunicateCommandStore commandStore;
+    private final SessionManager sessionManager;
 
-    private AppServerService appServerService;
+    private final CommunicateCommandStore commandStore;
+
+    private final AppServerService appServerService;
+
+    private final AppCenterServerFinder serverFinder;
 
     private volatile Channel channel;
 
     public NettyServerForUi(Conf conf,
+                            IdGenerator idGenerator,
                             CommunicateCommandStore commandStore,
                             UiConnectionStore uiConnectionStore,
                             AgentConnectionStore agentConnectionStore,
                             SessionManager sessionManager, AppServerService appServerService) {
         this.port = conf.getInt("server.port", -1);
+        this.idGenerator = idGenerator;
         this.uiConnectionStore = uiConnectionStore;
         this.agentConnectionStore = agentConnectionStore;
         this.sessionManager = sessionManager;
         this.commandStore = commandStore;
         this.appServerService = appServerService;
+        this.serverFinder = new AppCenterServerFinder(this.appServerService);
     }
 
     @Override
@@ -109,11 +114,15 @@ public class NettyServerForUi implements NettyServer {
                                 .addLast(new HttpObjectAggregator(1024 * 1024))
                                 .addLast(new WebSocketServerProtocolHandler("/ws"))
                                 .addLast(new WebSocketFrameAggregator(1024 * 1024 * 1024))
-                                .addLast(new RequestDecoder(new DefaultRequestEncryption(new RSAEncryption(RSA_PUBLIC_KEY, RSA_PRIVATE_KEY))))
+                                .addLast(new RequestDecoder(new DefaultRequestEncryption(new RSAEncryption())))
                                 .addLast(new WebSocketEncoder())
                                 .addLast(new TabHandler())
-                                .addLast(new HostsValidatorHandler(new AppCenterServerFinder(appServerService)))
-                                .addLast(new UiRequestHandler(commandStore, uiConnectionStore, agentConnectionStore, sessionManager));
+                                .addLast(new HostsValidatorHandler(serverFinder))
+                                .addLast(new UiRequestHandler(
+                                        commandStore,
+                                        uiConnectionStore,
+                                        agentConnectionStore,
+                                        sessionManager));
                     }
                 });
         try {

@@ -20,9 +20,11 @@ package qunar.tc.bistoury.commands.arthas;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import qunar.tc.bistoury.agent.common.ResponseHandler;
-import qunar.tc.bistoury.commands.arthas.telnet.ArthasTelnetStore;
-import qunar.tc.bistoury.commands.arthas.telnet.DebugTelnetStore;
+import qunar.tc.bistoury.clientside.common.store.BistouryStore;
+import qunar.tc.bistoury.commands.arthas.telnet.NormalTelnetStore;
 import qunar.tc.bistoury.commands.arthas.telnet.TelnetStore;
+import qunar.tc.bistoury.commands.arthas.telnet.UrlEncodedTelnetStore;
+import qunar.tc.bistoury.common.URLCoder;
 import qunar.tc.bistoury.remoting.netty.Task;
 import qunar.tc.bistoury.remoting.netty.TaskFactory;
 import qunar.tc.bistoury.remoting.protocol.CommandCode;
@@ -40,10 +42,9 @@ public class ArthasTaskFactory implements TaskFactory<String> {
 
     private static final String ASYNC_COMMAND_SYMBOL = "&";
 
-    private static final TelnetStore arthasTelnetStore = ArthasTelnetStore.getInstance();
+    private static final TelnetStore arthasTelnetStore = NormalTelnetStore.getInstance();
 
-    private static final TelnetStore debugTelnetStore = DebugTelnetStore.getInstance();
-
+    private static final TelnetStore debugTelnetStore = UrlEncodedTelnetStore.getInstance();
 
     private static final Map<Integer, TelnetStore> storeMapping;
 
@@ -55,6 +56,10 @@ public class ArthasTaskFactory implements TaskFactory<String> {
                 .put(CommandCode.REQ_TYPE_MONITOR.getCode(), debugTelnetStore)
                 .put(CommandCode.REQ_TYPE_JAR_INFO.getCode(), debugTelnetStore)
                 .put(CommandCode.REQ_TYPE_CONFIG.getCode(), debugTelnetStore)
+                .put(CommandCode.REQ_TYPE_PROFILER_START.getCode(), debugTelnetStore)
+                .put(CommandCode.REQ_TYPE_PROFILER_STOP.getCode(), debugTelnetStore)
+                .put(CommandCode.REQ_TYPE_PROFILER_STATE_SEARCH.getCode(), debugTelnetStore)
+                .put(CommandCode.REQ_TYPE_PROFILER_INFO.getCode(), debugTelnetStore)
                 .build();
     }
 
@@ -97,6 +102,12 @@ public class ArthasTaskFactory implements TaskFactory<String> {
             return null;
         }
 
+        if (header.getCode() == CommandCode.REQ_TYPE_PROFILER_START.getCode()) {
+            //增加target profiler的存储文件夹参数
+            realCommand = realCommand + " -s " + URLCoder.encode(BistouryStore.getRootStorePath());
+        }
+
         return new ArthasTask(storeMapping.get(header.getCode()), header.getId(), header.getMaxRunningMs(), pid, realCommand, handler);
     }
+
 }

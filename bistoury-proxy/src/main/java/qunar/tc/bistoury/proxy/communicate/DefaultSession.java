@@ -20,12 +20,15 @@ package qunar.tc.bistoury.proxy.communicate;
 import com.google.common.util.concurrent.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import qunar.tc.bistoury.common.BistouryConstants;
 import qunar.tc.bistoury.proxy.communicate.agent.AgentConnection;
-import qunar.tc.bistoury.proxy.communicate.ui.RequestData;
+import qunar.tc.bistoury.remoting.protocol.RequestData;
 import qunar.tc.bistoury.proxy.communicate.ui.UiConnection;
 import qunar.tc.bistoury.proxy.communicate.ui.UiResponses;
 import qunar.tc.bistoury.remoting.protocol.Datagram;
 import qunar.tc.bistoury.remoting.protocol.ResponseCode;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author zhenyu.nie created on 2019 2019/5/13 14:55
@@ -36,6 +39,8 @@ public class DefaultSession implements Session {
 
     private final String id;
 
+    private final boolean supportPause;
+
     private final RequestData requestData;
 
     private final AgentConnection agentConnection;
@@ -44,8 +49,11 @@ public class DefaultSession implements Session {
 
     private final SettableFuture<State> resultFuture = SettableFuture.create();
 
-    public DefaultSession(String id, RequestData requestData, AgentConnection agentConnection, UiConnection uiConnection) {
+    private final AtomicBoolean end = new AtomicBoolean(false);
+
+    public DefaultSession(String id, boolean supportPause, RequestData requestData, AgentConnection agentConnection, UiConnection uiConnection) {
         this.id = id;
+        this.supportPause = supportPause;
         this.requestData = requestData;
         this.agentConnection = agentConnection;
         this.uiConnection = uiConnection;
@@ -53,8 +61,22 @@ public class DefaultSession implements Session {
 
     @Override
     public void writeToUi(Datagram message) {
+        if (end.get()) {
+            return;
+        }
+
+        boolean isEndMessage = isEndMessage(message);
+        if (isEndMessage) {
+            end.set(true);
+        } else {
+            if (agentConnection.getVersion() < BistouryConstants.MIN_AGENT_VERSION_SUPPORT_JOB_PAUSE &&
+                    !agentConnection.isWritable()) {
+                broken();
+            }
+        }
+
         ListenableFuture<WriteResult> result = uiConnection.write(message);
-        if (isEndMessage(message)) {
+        if (isEndMessage) {
             Futures.addCallback(result, new FutureCallback<WriteResult>() {
                 @Override
                 public void onSuccess(WriteResult result) {
@@ -112,6 +134,11 @@ public class DefaultSession implements Session {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public boolean isSupportPause() {
+        return supportPause;
     }
 
     @Override

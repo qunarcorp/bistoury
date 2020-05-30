@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bistoury文件下载</title>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/bootstrap.min.css?version=2.0.3">
+    <link rel="stylesheet" href="css/bootstrap-treeview.css?version=2.0.3">
+    <link rel="stylesheet" href="css/bootstrap-table.css?version=2.0.3">
+    <link rel="stylesheet" href="css/main.css?version=2.0.3"/>
+    <link rel="stylesheet" href="css/menu.css?version=2.0.3"/>
+    <link rel="stylesheet" href="css/spop.min.css?version=2.0.3">
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/base64.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/websocket.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/bootstrap-treeview.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/bootstrap-table.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/bootstrap-table-zh-CN.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/jsencrypt.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/tripledes.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/mode-ecb.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/header.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/spop.min.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/bistoury.js?version=2.0.3"></script>
+    <script type="text/javascript" src="js/download.js?version=2.0.3"></script>
+</head>
+<body>
+<div>
+    <div class="col-md-12 header" id="header">
+
+    </div>
+    <div class="help-container">
+        <div class="menu" id="menu">
+
+        </div>
+        <div class="content">
+            <div class="tab" id="download-file-panel" style="display: none">
+                <div>
+                    <div>
+                        <table class="table table-condensed table-bordered" style="margin-bottom: 5px;">
+                            <colgroup>
+                                <col width="15%">
+                                <col width="35%">
+                                <col width="15%">
+                                <col width="35%">
+                            </colgroup>
+                            <tbody>
+                            <tr>
+                                <th style="background-color: #e7e7f9;">显示全部</th>
+                                <td>显示以下所有文件下中的文件</td>
+                                <th style="background-color: #e7e7f9;">显示日志文件</th>
+                                <td>仅显示日志文夹下的文件</td>
+                            </tr>
+                            <tr>
+                                <th style="background-color: #e7e7f9;">显示dump文件</th>
+                                <td>仅显示dump文件夹下的文件</td>
+                                <th style="background-color: #e7e7f9;">其他</th>
+                                <td>仅显示配置的其他文件夹下的文件</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">需要的下载的文件不在以上目录下时，可联系管理员配置，<span style="color: red">注意</span>：仅支持运行agent的用户有权限文件下载</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="download-table-toolbar" style="margin-right: 12px;">
+                        <div class="btn-group" role="group" aria-label="list-file" id="list-file-btn">
+                            <button type="button" class="btn btn-default" id="list-all-file">显示全部</button>
+                            <button type="button" class="btn btn-default active" id="list-log-file">显示日志文件</button>
+                            <button type="button" class="btn btn-default" id="list-dump-file">显示dump文件</button>
+                            <button type="button" class="btn btn-default" id="list-other-file">其他</button>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="refresh-file-list">
+                            <button type="button" class="btn btn-warning" id="list-all-refresh">点击刷新</button>
+                        </div>
+                    </div>
+                    <table id="download-file-table" class="table table-hover" style="table-layout:fixed;"></table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div id="download-modal" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 style="margin: 0px;font-size: 25px;">文件下载使用声明</h2>
+                </div>
+                <div class="modal-body">
+                    <h4>
+                        文件较大是可能会长时间占用系统资源，使用时请注意一下几点：
+                    </h4>
+                    <hr>
+                    <p>
+                        1、为了尽可能降低文件下载对系统负载的影响，bistoury将文件下载速度限制为10M/s，大文件可能会长时间占用系统资源，超过一小时会强制停止下载。
+                    </p>
+                    <p>
+                        2、只能下载指定目录下的文件，如果需要下载的文件没在默认提供的目录中，可联系管理员进行配置。
+                    </p>
+                    <p>
+                        3、低版本不支持文件下载功能，需要使用该功能请先升级agent</a>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="agree-download">我已阅读并同意下载</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
