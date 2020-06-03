@@ -4,15 +4,13 @@
 升级bistoury到最新版
 
 ## 保存时间
-性能分析结果只保存三天
+性能分析结果默认只保存三天
 
 ## bistoury中的性能分析
 
-怎样去定位java程序的性能问题，常见的是抽样分析，但是类似于jstack对于程序的影响过大（而且有`Safepoint bias problem`）, 而且像新上的接口耗时上涨了20ms，这种如果使用线程dump之类的，可能无法定位具体问题所在
-
-而bistoury基于异步抽样，是可以很好的定位java程序实际cpu耗时所在方法
-
-基于[async-profiler](https://github.com/jvm-profiling-tools/async-profiler)
+目前对java应用进行性能分析的方法主要有三种，插桩统计，同步抽样，异步抽样。
+在这里面，插桩统计堆应用性能影响过大，基本无法接受；异步抽样无论从性能影响还是准确性上都比同步抽样要更好。
+因此，bistoury选用了基于[async-profiler](https://github.com/jvm-profiling-tools/async-profiler)的异步抽样，并在操作、配置和结果处理上做了一系列优化，开发人员可以一键对应用进行cpu profiling。
 
 
 ## 如何开始
