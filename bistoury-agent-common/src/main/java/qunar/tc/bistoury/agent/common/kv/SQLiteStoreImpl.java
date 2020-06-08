@@ -199,6 +199,9 @@ public class SQLiteStoreImpl implements KvDb {
                     }
                 }
             }
+            if (!batch.isEmpty()) {
+                doPutBatch(batch);
+            }
         } catch (Exception e) {
             logger.error("batch insert into sqlite fail, data: {}", data, e);
         }
