@@ -74,7 +74,7 @@ create table `bistoury_user`(
     constraint  uniq_user_code unique (user_code)
 )CHARSET = utf8mb4 comment '用户信息表';
 
-insert into bistoury_user (user_code, password) VALUES ('admin','q1mHvT20zskSnIHSF27d/A==')
+insert into bistoury_user (user_code, password) VALUES ('admin','q1mHvT20zskSnIHSF27d/A==');
 
 create table if not exists `bistoury_profiler_lock`
 (
