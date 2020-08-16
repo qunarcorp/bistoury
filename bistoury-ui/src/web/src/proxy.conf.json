@@ -1,0 +1,6 @@
+{
+  "/": {
+    "target": "http://local.qunar.com:9091",
+    "secure": false
+  }
+}

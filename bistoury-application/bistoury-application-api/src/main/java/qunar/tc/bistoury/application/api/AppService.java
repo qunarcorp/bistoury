@@ -1,8 +1,8 @@
 package qunar.tc.bistoury.application.api;
 
-import java.util.Set;
-
 import qunar.tc.bistoury.application.api.pojo.Application;
+
+import java.util.Set;
 
 /**
  * @author xkrivzooh
@@ -10,9 +10,12 @@ import qunar.tc.bistoury.application.api.pojo.Application;
  */
 public interface AppService {
 
-	Set<String> getApps(String userCode);
+    Set<String> getApps(String userCode);
 
-	Application getAppInfo(String appCode);
+    Application getAppInfo(String appCode);
+
+    boolean checkUserPermission(String appCode, String usercode, final boolean isAdmin);
 
     boolean checkUserPermission(String appCode, String usercode);
+
 }

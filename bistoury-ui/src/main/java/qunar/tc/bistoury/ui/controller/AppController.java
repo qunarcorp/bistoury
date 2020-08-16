@@ -22,7 +22,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import qunar.tc.bistoury.application.api.AdminAppService;
 import qunar.tc.bistoury.application.api.AppServerService;
 import qunar.tc.bistoury.application.api.AppService;
@@ -90,4 +89,9 @@ public class AppController {
         return ResultHelper.success(this.appService.getAppInfo(appCode));
     }
 
+    @ResponseBody
+    @RequestMapping("app/auth/check")
+    public Object checkApp(@RequestParam("appCode") final String appCode) {
+        return ResultHelper.success(this.appService.checkUserPermission(appCode, LoginContext.getLoginContext().getLoginUser()));
+    }
 }

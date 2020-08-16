@@ -7,7 +7,7 @@
 
 `Bistoury` 的目标是一站式java应用诊断解决方案，让开发人员无需登录机器或修改系统，就可以从日志、内存、线程、类信息、调试、机器和系统属性等各个方面对应用进行诊断，提升开发人员诊断问题的效率和能力。
 
-`Bistoury` 在公司内部原有agent的基础上集成Alibaba开源的[arthas](https://github.com/alibaba/arthas)和唯品会开源的[vjtools](https://github.com/vipshop/vjtools)，提供了更加丰富的功能，感谢他们做出的优秀工作。
+`Bistoury` 在公司内部原有agent的基础上集成Alibaba开源的 [arthas](https://github.com/alibaba/arthas) 和唯品会开源的 [vjtools](https://github.com/vipshop/vjtools) ，提供了更加丰富的功能，感谢他们做出的优秀工作。
 
 ## 简介
 
@@ -81,6 +81,8 @@ qq群：717242486
 
 通过命令行界面查看日志，使用arthas和vjtools的各项功能
 ![console](docs/image/console.png)
+新版的终端（公测）：使用 [xterm.js](https://github.com/xtermjs/xterm.js) 作为前端组件，大大提高终端性能
+![terminal.png](docs/image/terminal.png)
 
 在线debug，在线应用调试神器
 ![debug](docs/image/debug_panel.png)

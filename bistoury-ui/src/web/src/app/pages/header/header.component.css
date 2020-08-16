@@ -1,0 +1,7 @@
+:host {
+
+}
+
+:host ::ng-deep .ant-menu-horizontal {
+    line-height: 45px !important;
+}

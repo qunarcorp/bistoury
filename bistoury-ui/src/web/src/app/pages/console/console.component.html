@@ -1,0 +1,19 @@
+<nz-select
+    nzMode="multiple"
+    nzPlaceHolder="请选择主机"
+    [(ngModel)]="selectedServerValue"
+    (nzOnSearch)="search($event)"
+    style="width: 100%;">
+    <nz-option *ngFor="let item of listOfServerOption" [nzLabel]="item.host" [nzValue]="item">
+    </nz-option>
+</nz-select>
+<div style="
+    position: absolute;
+    bottom: 0;
+    overflow: auto;
+    left: 5px;
+    right: 5px;
+    top: 45px;
+">
+    <app-terminal [appCode]="appCode" [_selectServers]="selectedServerValue" [servers]="serverList"></app-terminal>
+</div>

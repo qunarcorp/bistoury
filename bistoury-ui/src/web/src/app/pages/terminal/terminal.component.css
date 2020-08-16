@@ -1,0 +1,13 @@
+.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-nav-wrap {
+    background-color: #eeeeee !important;
+}
+
+:host {
+    background: #ffffff;
+    overflow: hidden;
+    display: block;
+}
+
+:host ::ng-deep .xterm {
+    padding: 0 0 0 5px;
+}

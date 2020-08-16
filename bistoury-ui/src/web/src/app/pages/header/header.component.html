@@ -1,0 +1,10 @@
+<ul nz-menu nzMode="horizontal" nzTheme="dark">
+    <li [nzTitle]="header.name" nzIcon="setting" *ngFor="let header of headers" nz-menu-item [nzSelected]="header.selected" nz-submenu
+        (click)="jump(header.href,header.selected)">
+        <ul>
+            <li *ngFor="let child of header.child" nz-menu-item (click)="jump(child.href,false)" [nzMatchRouter]="false">
+                {{child.name}}
+            </li>
+        </ul>
+    </li>
+</ul>

@@ -18,6 +18,8 @@
 package qunar.tc.bistoury.application.mysql.service;
 
 import com.google.common.collect.Sets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import qunar.tc.bistoury.application.api.AppService;
@@ -33,6 +35,7 @@ import java.util.Set;
  */
 @Service
 public class AppServiceImpl implements AppService {
+    private static final Logger LOG = LoggerFactory.getLogger(AppServiceImpl.class);
 
     @Autowired
     private ApplicationDao applicationDao;
@@ -52,9 +55,24 @@ public class AppServiceImpl implements AppService {
     }
 
     @Override
-    public boolean checkUserPermission(final String appCode, final String usercode) {
-        List<String> users = this.applicationUserDao.getUsersByAppCode(appCode);
-        return users != null && users.contains(usercode);
+    public boolean checkUserPermission(String appCode, String usercode) {
+        return checkUserPermission(appCode, usercode, false);
+    }
+
+
+    @Override
+    public boolean checkUserPermission(final String appCode, final String usercode, final boolean isAdmin) {
+        try {
+            if (isAdmin) {
+                final Application application = this.getAppInfo(appCode);
+                return application != null;
+            }
+            List<String> users = this.applicationUserDao.getUsersByAppCode(appCode);
+            return users != null && users.contains(usercode);
+        } catch (Exception e) {
+            LOG.error("check user permission fail, appCode: {}, userName: {}, isAdmin: {}", appCode, usercode, isAdmin, e);
+            return false;
+        }
     }
 
 }

@@ -47,9 +47,9 @@ public class XSSRequestWrapper extends HttpServletRequestWrapper {
     }
 
     private String escapeHtml(String value) {
-        if (!Strings.isEmpty(value)) {
+       /* if (!Strings.isEmpty(value)) {
             return StringEscapeUtils.escapeHtml(value);
-        }
+        }*/
         return value;
     }
 }

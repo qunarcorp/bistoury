@@ -1,0 +1,36 @@
+:host {
+    background: #eeeeee;
+    overflow: hidden;
+    padding: 10px;
+    display: block;
+    height: 100%;
+}
+
+.card-container ::ng-deep .ant-tabs-card .ant-tabs-content {
+    height: 120px;
+    margin-top: -16px;
+}
+
+.card-container ::ng-deep .ant-tabs-card .ant-tabs-content .ant-tabs-tabpane {
+    background: #fff;
+    padding: 16px;
+}
+
+.card-container ::ng-deep .ant-tabs-card .ant-tabs-bar {
+    margin: 0;
+    border-color: #fff;
+}
+
+.card-container ::ng-deep .ant-tabs-card .ant-tabs-bar .ant-tabs-tab {
+    border-color: transparent;
+    background: transparent;
+}
+
+.card-container ::ng-deep .ant-tabs-card .ant-tabs-bar .ant-tabs-tab-active {
+    border-color: #fff;
+    background: #fff;
+}
+
+:host ::ng-deep .ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab-active {
+    border: none;
+}

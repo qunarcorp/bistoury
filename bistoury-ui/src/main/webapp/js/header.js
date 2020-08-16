@@ -3,55 +3,45 @@ $(document).ready(function () {
         name: "首页",
         href: "/",
         active: function () {
-            if (window.location.pathname == "/" || window.location.pathname == "/qconsole.html") {
-                return true;
-            }
-            return false;
+            return window.location.pathname == "/" || window.location.pathname == "/qconsole.html";
         }
     }, {
         name: "主机信息",
         href: "/machine.html",
         active: function () {
-            if (window.location.pathname == "/machine.html") {
-                return true;
-            }
-            return false;
+            return window.location.pathname == "/machine.html";
         }
     }, {
         name: "在线Debug",
         href: "/debug.html",
         active: function () {
-            if (window.location.pathname == "/debug.html") {
-                return true;
-            }
-            return false;
+            return window.location.pathname == "/debug.html";
         }
     }, {
         name: "动态监控",
         href: "/monitor.html",
         active: function () {
-            if (window.location.pathname == "/monitor.html") {
-                return true;
-            }
-            return false;
+            return window.location.pathname == "/monitor.html";
         }
     }, {
         name: "文件下载",
         href: "/download.html",
         active: function () {
-            if (window.location.pathname == "/download.html") {
-                return true;
-            }
-            return false;
+            return window.location.pathname == "/download.html";
         }
     }, {
         name: "应用中心",
         href: "/application.html",
         active: function () {
-            if (window.location.pathname == "/application.html") {
-                return true;
-            }
-            return false;
+            return window.location.pathname == "/application.html";
+
+        }
+    }, {
+        name: "新版终端(公测)",
+        href: "/index.html",
+        active: function () {
+            return window.location.pathname == "/index.html";
+
         }
     }]
 

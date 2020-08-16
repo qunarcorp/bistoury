@@ -1,0 +1,39 @@
+<div class="ant-col-md-24" style="height: 100%">
+    <nz-select
+        class="ant-col-md-12"
+        nzShowSearch
+        nzServerSearch
+        nzPlaceHolder="请选择应用"
+        [(ngModel)]="selectedAppCodeValue"
+        [nzShowArrow]="false"
+        [nzFilterOption]="nzFilterOption"
+        (nzOnSearch)="search($event)"
+        (ngModelChange)="newTab($event)"
+        style="width: 50%">
+        <nz-option *ngFor="let item of listOfAppCodeOption" [nzLabel]="item" [nzValue]="item"
+        ></nz-option>
+    </nz-select>
+    <nz-tabset [nzType]="'card'" [nzSelectedIndex]="index" (nzSelectedIndexChange)="tabSelectedIndexChange($event)" style="margin-top: 10px"
+               *ngIf="tabs.length>0">
+        <nz-tab *ngFor="let tab of tabs" [nzTitle]="titleTemplate" [nzForceRender]=true [ngStyle]="{'margin':'10px 0 5px 0'}" style="margin: 10px 0 5px 0">
+            <ng-template #titleTemplate>
+                <div>
+                    {{ tab }}
+                    <i nz-icon nzType="close" (click)="closeTab(tab)" class="ant-tabs-close-x"></i>
+                </div>
+            </ng-template>
+            <ng-template nz-tab>
+                <app-console [appCode]="appCode"></app-console>
+            </ng-template>
+        </nz-tab>
+    </nz-tabset>
+    <div *ngIf="tabs.length<=0" style="height: calc(100% - 100px)">
+        <nz-result [nzIcon]="'smile-twotone'" [nzTitle]="'新的终端正在公测，欢迎试用。'" style="margin-top: 100px">
+            <div nz-result-extra>
+                <button nz-button nzType="primary" (click)="feedback()">反馈</button>
+            </div>
+        </nz-result>
+        <nz-skeleton [nzParagraph]="{ rows: 100 }" nzLoading="true"></nz-skeleton>
+    </div>
+</div>
+

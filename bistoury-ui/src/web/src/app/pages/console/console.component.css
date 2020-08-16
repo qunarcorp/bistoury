@@ -1,0 +1,12 @@
+:host {
+    background: #ffffff;
+    overflow: hidden;
+    display: block;
+    padding: 10px 5px;
+    margin-top: -16px;
+    position: fixed;
+    top: 150px;
+    left: 10px;
+    right: 0px;
+    bottom: 5px;
+}
