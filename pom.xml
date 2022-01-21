@@ -89,7 +89,7 @@
         <slf4j.version>1.7.5</slf4j.version>
         <tomcat-jdbc.version>7.0.30</tomcat-jdbc.version>
         <tomcat.version>8.5.5</tomcat.version>
-        <h2.version>1.4.199</h2.version>
+        <h2.version>2.1.210</h2.version>
 
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
         <prometheus.version>0.6.0</prometheus.version>
