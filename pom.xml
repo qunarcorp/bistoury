@@ -71,7 +71,7 @@
         <server_java_source_version>1.8</server_java_source_version>
         <server_java_target_version>1.8</server_java_target_version>
 
-        <org.springframework.version>4.3.10.RELEASE</org.springframework.version>
+        <org.springframework.version>5.3.19</org.springframework.version>
         <jackson.version>2.9.2</jackson.version>
         <gitlab.version>1.2.5</gitlab.version>
         <servlet.version>3.1.0</servlet.version>
