@@ -79,7 +79,7 @@
         <gson.version>2.6.2</gson.version>
         <guice.version>4.0</guice.version>
         <arthas.version>3.1.4</arthas.version>
-        <fastjson.version>1.2.60</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <vjtools.version>1.0.6</vjtools.version>
         <junit.version>4.10</junit.version>
         <zookeeper.version>3.4.6</zookeeper.version>
